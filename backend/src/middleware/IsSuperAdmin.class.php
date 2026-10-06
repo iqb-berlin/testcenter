@@ -23,7 +23,7 @@ class IsSuperAdmin {
    * @return void
    */
   public function checkAuthToken(Request $request): void {
-    /* @var $authToken AuthToken */
+    /** @var AuthToken $authToken */
     $authToken = $request->getAttribute('AuthToken');
 
     if (!$authToken) {

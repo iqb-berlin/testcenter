@@ -31,14 +31,14 @@ class WorkspaceCache {
 
   public function validate(?string $onlyValidateThisType = null): void {
     if ($onlyValidateThisType) {
+      /** @var File $file */
       foreach ($this->cachedFiles[$onlyValidateThisType] as $file) {
-        /* @var $file File */
         $file->crossValidate($this);
       }
     } else {
       foreach ($this->cachedFiles as $fileSet) {
+        /** @var File $file */
         foreach ($fileSet as $file) {
-          /* @var $file File */
           $file->crossValidate($this);
         }
       }
@@ -112,12 +112,12 @@ class WorkspaceCache {
     $relationsMap = [];
 
     foreach (Workspace::subFolders as $type) {
+      /** @var File $file */
       foreach ($this->cachedFiles[$type] as $file) {
-        /* @var $file File */
         if ($file::canBeRelationSubject) {
           $relations = $file->getRelations();
+          /** @var FileRelation $relation */
           foreach ($relations as $relation) {
-            /* @var FileRelation $relation */
             $relationsMap[$relation->getTargetType()][strtoupper($relation->getTargetName())] = $file->getName();
           }
         }
@@ -125,9 +125,8 @@ class WorkspaceCache {
     }
 
     foreach (Workspace::subFolders as $type) {
+      /** @var File $file */
       foreach ($this->cachedFiles[$type] as $file) {
-        /* @var $file File */
-
         if ($file::canBeRelationObject and !isset($relationsMap[$file->getType()][strtoupper($file->getId())])) {
           $file->report('warning', "{$file->getType()} is never used");
         }

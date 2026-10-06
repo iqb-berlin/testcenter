@@ -109,12 +109,11 @@ class SessionController extends Controller {
     $members = self::sessionDAO()->getDependantSessions($login);
 
     $workspace = self::getWorkspace($login->getLogin()->getWorkspaceId());
+    /** @var XMLFileBooklet[] $bookletFiles */
     $bookletFiles = [];
     $sessionChanges = [];
-    /** @var $bookletFiles XMLFileBooklet[] */
 
     foreach ($members as $member) {
-      /** @var $member LoginSession */
 
       if (Mode::hasCapability($member->getLogin()->getMode(), ModeCapability::ALWAYS_NEW_SESSION)) {
         continue;
@@ -133,7 +132,6 @@ class SessionController extends Controller {
         $memberPersonSession = SessionController::sessionDAO()->createOrUpdatePersonSession($member, (string)$code, true, false);
 
         foreach ($testNames as $testNameStr) {
-          /** @var $testNameStr string */
           $testName = TestName::fromString($testNameStr);
           if (!isset($bookletFiles[$testName->bookletFileId])) {
             $bookletFile = $workspace->getFileById('Booklet', $testName->bookletFileId);

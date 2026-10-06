@@ -15,7 +15,7 @@ use Slim\Http\ServerRequest as Request;
 
 class TestController extends Controller {
   public static function put(Request $request, Response $response): Response {
-    /* @var $authToken AuthToken */
+    /** @var AuthToken $authToken */
     $authToken = $request->getAttribute('AuthToken');
     $body = RequestHelper::getFields($request, [
       'bookletName' => 'REQUIRED'
@@ -58,7 +58,7 @@ class TestController extends Controller {
   }
 
   public static function get(Request $request, Response $response): Response {
-    /* @var $authToken AuthToken */
+    /** @var AuthToken $authToken */
     $authToken = $request->getAttribute('AuthToken');     // auth 1
     $testId = (int) $request->getAttribute('test_id');
 
@@ -108,14 +108,14 @@ class TestController extends Controller {
   }
 
   public static function getUnit(Request $request, Response $response): Response {
-    /* @var $authToken AuthToken */
+    /** @var AuthToken $authToken */
     $authToken = $request->getAttribute('AuthToken');
     $unitName = $request->getAttribute('unit_name');
     $unitAlias = $request->getAttribute('alias');
     $testId = (int) $request->getAttribute('test_id');
 
     $workspace = new Workspace($authToken->getWorkspaceId());
-    /* @var $unitFile XMLFileUnit */
+    /** @var XMLFileUnit $unitFile */
     $unitFile = $workspace->getFileById('Unit', $unitName);
 
     if (!$unitAlias) {
@@ -360,7 +360,7 @@ class TestController extends Controller {
   }
 
   public static function patchState(Request $request, Response $response): Response {
-    /* @var $authToken AuthToken */
+    /** @var AuthToken $authToken */
     $authToken = $request->getAttribute('AuthToken');
 
     $testId = (int) $request->getAttribute('test_id');
@@ -415,7 +415,7 @@ class TestController extends Controller {
   }
 
   public static function patchUnitState(Request $request, Response $response): Response {
-    /* @var $authToken AuthToken */
+    /** @var AuthToken $authToken */
     $authToken = $request->getAttribute('AuthToken');
 
     $testId = (int) $request->getAttribute('test_id');
@@ -510,7 +510,7 @@ class TestController extends Controller {
   }
 
   public static function patchLock(Request $request, Response $response): Response {
-    /* @var $authToken AuthToken */
+    /** @var AuthToken $authToken */
     $authToken = $request->getAttribute('AuthToken');
 
     $testId = (int) $request->getAttribute('test_id');

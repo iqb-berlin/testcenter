@@ -77,7 +77,7 @@ class UserController extends Controller {
   }
 
   public static function patchSuperAdminStatus(Request $request, Response $response): Response {
-    /* @var $authToken AuthToken */
+    /** @var AuthToken $authToken */
     $authToken = $request->getAttribute('AuthToken');
     $requestBody = JSON::decode($request->getBody()->getContents());
     $userId = (int) $request->getAttribute('user_id');

@@ -465,9 +465,8 @@ class Workspace {
 
     $reports = [];
 
+    /** @var File $file */
     foreach ($workspaceCache->getFiles(true) as $file) {
-      /* @var File $file */
-
       if (!$file->isValid()) {
         $invalidCount++;
         $reports[$file->getType() . '/' . $file->getId()] = $file->getValidationReport()['error'];
@@ -519,8 +518,8 @@ class Workspace {
     $deletedLogins = 0;
 
     foreach ($filesInDb as $fileSet) {
+      /** @var File $file */
       foreach ($fileSet as $file) {
-        /* @var File $file */
 
         if (!isset($filesInFolder[$file->getPath()])) {
           $this->workspaceDAO->deleteFile($file);
@@ -580,8 +579,8 @@ class Workspace {
 
     $requestedAttachments = [];
     foreach ($booklet->getUnitIds() as $uniId) {
+      /** @var XMLFileUnit $unit */
       $unit = $workspaceCache?->getUnit($uniId) ?? $this->getFileById('Unit', $uniId);
-      /* @var $unit XMLFileUnit */
       $requestedAttachments = array_merge($requestedAttachments, $unit->getRequestedAttachments());
     }
     return $requestedAttachments;

@@ -92,8 +92,8 @@ class ResourceFile extends File {
 
   private function getPlayerMetaElementV3(DOMDocument $document): ?DOMElement {
     $metaElements = $document->getElementsByTagName('meta');
+    /** @var DOMElement $metaElement */
     foreach ($metaElements as $metaElement) {
-      /* @var $metaElement DOMElement */
       if ($metaElement->getAttribute('name') == 'application-name') {
         return $metaElement;
       }
@@ -205,8 +205,8 @@ class ResourceFile extends File {
 
   private function getPlayerMetaElementV4(DOMDocument $document): ?DOMElement {
     $metaElements = $document->getElementsByTagName('script');
+    /** @var DOMElement $metaElement */
     foreach ($metaElements as $metaElement) {
-      /* @var $metaElement DOMElement */
       if ($metaElement->getAttribute('type') == 'application/ld+json') {
         return $metaElement;
       }
