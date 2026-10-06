@@ -29,7 +29,7 @@ Linted and formatted with [mago](https://mago.carthage.software), configured in 
 
 ## Frontend (Angular)
 
-Linted with ESLint, configured under `eslintConfig` in `package.json`.
+Linted with ESLint, configured in `eslint.config.mjs` in the repository root.
 
 - For small components, keep template and styles inline. Separate files only when readability demands them.
 - In HTML, don't break the line after a tag. Keep everything on one line until it reaches 80 characters.
