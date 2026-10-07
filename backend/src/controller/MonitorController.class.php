@@ -16,7 +16,7 @@ class MonitorController extends Controller {
    * @deprecated
    */
   public static function getGroup(Request $request, Response $response): Response {
-    /* @var $authToken AuthToken */
+    /** @var AuthToken $authToken */
     $authToken = $request->getAttribute('AuthToken');
     $groupName = $request->getAttribute('group_name');
 
@@ -37,7 +37,7 @@ class MonitorController extends Controller {
   }
 
   public static function getTestSessions(Request $request, Response $response): Response {
-    /* @var $authToken AuthToken */
+    /** @var AuthToken $authToken */
     $authToken = $request->getAttribute('AuthToken');
     $groupName = $request->getAttribute('group_name');
     $groupNames = $groupName ? [$groupName] : array_keys($request->getAttribute('groups'));
@@ -55,7 +55,7 @@ class MonitorController extends Controller {
   }
 
   public static function putCommand(Request $request, Response $response): Response {
-    /* @var $authToken AuthToken */
+    /** @var AuthToken $authToken */
     $authToken = $request->getAttribute('AuthToken');
     $personId = $authToken->getId();
 
@@ -116,7 +116,7 @@ class MonitorController extends Controller {
   }
 
   public static function postLock(Request $request, Response $response): Response {
-    /* @var $authToken AuthToken */
+    /** @var AuthToken $authToken */
     $authToken = $request->getAttribute('AuthToken');
 
     $groupName = $request->getAttribute('group_name');

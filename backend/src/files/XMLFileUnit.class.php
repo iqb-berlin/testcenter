@@ -157,8 +157,8 @@ class XMLFileUnit extends XMLFile {
     // at one point we decided to deprecated the type-attribute in <DefinitionRef> or <Definition>, and said, that the
     // type is always indicated by the player. This might change again in the future.
     if (count($this->relations)) {
+      /** @var FileRelation $relation */
       foreach ($this->relations as $relation) {
-        /* @var FileRelation $relation */
         if ($relation->getRelationshipType() === FileRelationshipType::usesPlayer) {
           return strtolower(FileID::normalize($relation->getTargetName()));
         }

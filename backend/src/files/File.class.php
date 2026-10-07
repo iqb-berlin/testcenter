@@ -25,7 +25,7 @@ class File extends FileData {
   }
 
   /** For use in testing classes */
-  static function fromString(string $fileContent, string $fileName = 'virtual_file'): File {
+  static function fromString(string $fileContent, string $fileName = 'virtual_file'): static {
     $file = new static(new FileData($fileName));
     $file->content = $fileContent;
     $file->validate();

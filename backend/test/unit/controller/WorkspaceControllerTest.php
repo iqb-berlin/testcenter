@@ -35,8 +35,6 @@ final class WorkspaceControllerTest extends TestCase {
 
   private array $callable;
   private array $reportMock;
-  private AdminDAO|MockInterface $adminDaoMock;
-  private SysChecksFolder|MockInterface $sysChecksFolderMock;
   private Workspace|MockInterface $workspaceMock;
   private WorkspaceDAO|MockInterface $workspaceDaoMock;
   private UploadedFilesHandler|MockInterface $uploadedFilesHandler;
@@ -62,8 +60,6 @@ final class WorkspaceControllerTest extends TestCase {
       ReportType::REVIEW->value => Mockery::mock('overload:' . ReviewReportOutput::class),
       ReportType::SYSCHECK->value => Mockery::mock('overload:' . SysCheckReportOutput::class)
     ];
-    $this->adminDaoMock = Mockery::mock('overload:' . AdminDAO::class);
-    $this->sysChecksFolderMock = Mockery::mock('overload:' . SysChecksFolder::class);
     $this->workspaceMock = Mockery::mock('overload:' . Workspace::class);
     $this->workspaceDaoMock = Mockery::mock( 'overload:' . WorkspaceDAO::class);
 

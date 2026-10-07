@@ -94,8 +94,8 @@ class WorkspaceDAO extends DAO {
       view_settings
     ) values';
 
+    /** @var Login $login */
     foreach ($logins as $login) {
-      /* @var $login Login */
       $loginValues = array_map(
         function (string|int|null $v): string|int {
           if ($v == null) return 'null';
@@ -259,8 +259,8 @@ class WorkspaceDAO extends DAO {
       ]
     );
 
+    /** @var RequestedAttachment $requestedAttachment */
     foreach ($attachments as $requestedAttachment) {
-      /* @var RequestedAttachment $requestedAttachment */
 
       $this->_(
         // a booklet can request the same attachment twice (same unit listed in two places);
@@ -576,8 +576,8 @@ class WorkspaceDAO extends DAO {
   // Every relation stored here carries a resolved target: validation attaches it and reports an error when the
   // referenced file is missing, which makes the subject file invalid, and invalid files are never stored.
   public function storeRelations(File $file): void {
+    /** @var FileRelation $relation */
     foreach ($file->getRelations() as $relation) {
-      /* @var $relation FileRelation */
 
       $relatedFile = $relation->getTarget();
 

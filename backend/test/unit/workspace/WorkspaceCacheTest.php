@@ -38,8 +38,8 @@ class WorkspaceCacheTest extends TestCase {
     $this->workspaceCache->validate();
 
     $allReports = [];
+    /** @var File $file */
     foreach ($this->workspaceCache->getFiles(true) as $file) {
-      /* @var File $file ; */
       $allReports["{$file->getType()}/{$file->getName()}"] = $file->getValidationReport();
     }
 
