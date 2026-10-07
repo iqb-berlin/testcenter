@@ -3,7 +3,6 @@
 /** @noinspection PhpUnhandledExceptionInspection */
 declare(strict_types=1);
 
-use Slim\Exception\HttpBadRequestException;
 
 class AdminDAO extends DAO {
   /**

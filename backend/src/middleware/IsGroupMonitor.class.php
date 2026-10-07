@@ -3,7 +3,6 @@
 declare(strict_types=1);
 // TODO unit test
 
-use Slim\Exception\HttpBadRequestException;
 use Slim\Exception\HttpForbiddenException;
 use Slim\Exception\HttpNotFoundException;
 use Slim\Http\ServerRequest as Request;

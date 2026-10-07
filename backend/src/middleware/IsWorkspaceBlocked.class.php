@@ -5,7 +5,6 @@ declare(strict_types=1);
 
 use Psr\Http\Message\ResponseInterface;
 use Slim\Exception\HttpException;
-use Slim\Exception\HttpForbiddenException;
 use Slim\Exception\HttpNotFoundException;
 use Slim\Http\ServerRequest as Request;
 use Psr\Http\Server\RequestHandlerInterface as RequestHandler;

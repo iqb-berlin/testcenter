@@ -2,7 +2,6 @@
 /** @noinspection PhpUnhandledExceptionInspection */
 declare(strict_types=1);
 
-use Mockery\MockInterface;
 use PHPUnit\Framework\TestCase;
 
 /**

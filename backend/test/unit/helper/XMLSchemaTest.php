@@ -1,7 +1,6 @@
 <?php
 /** @noinspection PhpUnhandledExceptionInspection */
 
-use org\bovigo\vfs\vfsStreamDirectory;
 use PHPUnit\Framework\TestCase;
 
 /**

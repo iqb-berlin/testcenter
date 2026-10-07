@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 // TODO unit test
 
+use Psr\Http\Message\UploadedFileInterface;
 use Slim\Exception\HttpBadRequestException;
 use Slim\Exception\HttpException;
 use Slim\Http\ServerRequest as Request;
-use Slim\Http\UploadedFile;
 
 class UploadedFilesHandler {
   const errorMessages = [
@@ -61,7 +61,7 @@ class UploadedFilesHandler {
     $filesToImport = [];
 
     foreach ($uploadedFiles as $uploadedFile) {
-      /** @var UploadedFile $uploadedFile */
+      /** @var UploadedFileInterface $uploadedFile */
 
       if ($uploadedFile->getError() !== UPLOAD_ERR_OK) {
         if (isset(UploadedFilesHandler::errorMessages[$uploadedFile->getError()])) {
