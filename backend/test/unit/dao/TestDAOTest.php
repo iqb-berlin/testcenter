@@ -97,6 +97,25 @@ class TestDAOTest extends TestCase {
     $this->assertEquals($expectedLogEmptyContent, $actualLogEmptyContent);
   }
 
+  function test_addTestLogs_rejectsNonTestLogElements() {
+    $testId = 1;
+    $logKey = 'LOG_KEY_REJECTED';
+    $unitLog = new UnitLog($testId, 'UNIT_1', $logKey, 1623456789, '');
+
+    try {
+      $this->dbc->addTestLogs([new TestLog($testId, $logKey, 1623456789, ''), $unitLog]);
+      $this->fail('Expected InvalidArgumentException');
+    } catch (InvalidArgumentException) {
+    }
+
+    $writtenLogs = $this->dbc->_(
+      'select logentry from test_logs where booklet_id = :id and logentry = :logentry',
+      [':id' => $testId, ':logentry' => $logKey],
+      true
+    );
+    $this->assertEmpty($writtenLogs);
+  }
+
   function test_getUnitState() {
     $expected = ['SOME_STATE' => 'WHATEVER'];
     $result = $this->dbc->getUnitState(1, 'UNIT_1');
@@ -415,6 +434,26 @@ class TestDAOTest extends TestCase {
 
     $this->assertNotEmpty($actualLogEmptyContent);
     $this->assertEquals($expectedLogEmptyContent, $actualLogEmptyContent);
+  }
+
+  function test_addUnitLogs_rejectsNonUnitLogElements() {
+    $testId = 1;
+    $unitName = 'UNIT_1';
+    $logKey = 'UNIT_LOG_KEY_REJECTED';
+    $testLog = new TestLog($testId, $logKey, 1623456789, '');
+
+    try {
+      $this->dbc->addUnitLogs([new UnitLog($testId, $unitName, $logKey, 1623456789, ''), $testLog]);
+      $this->fail('Expected InvalidArgumentException');
+    } catch (InvalidArgumentException) {
+    }
+
+    $writtenLogs = $this->dbc->_(
+      'select logentry from unit_logs where unit_name = :unitName and test_id = :testId and logentry = :logkey',
+      [':unitName' => $unitName, ':testId' => $testId, ':logkey' => $logKey],
+      true
+    );
+    $this->assertEmpty($writtenLogs);
   }
 
 }
