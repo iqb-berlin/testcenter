@@ -47,6 +47,7 @@ final class ReportTest extends TestCase {
       'code' => "xxx",
       'bookletname' => "BOOKLET.SAMPLE-1",
       'unitname' => "UNIT.SAMPLE",
+      'originalUnitId' => "",
       'timestamp' => 1627545600000,
       'logentry' => "sample unit log"
     ], [
@@ -55,8 +56,18 @@ final class ReportTest extends TestCase {
       'code' => "xxx",
       'bookletname' => "BOOKLET.SAMPLE-1",
       'unitname' => "",
+      'originalUnitId' => "",
       'timestamp' => 1627545600000,
       'logentry' => "sample log entry"
+    ], [
+      'groupname' => "sample_group",
+      'loginname' => "sample_user",
+      'code' => "xxx",
+      'bookletname' => "BOOKLET.SAMPLE-1",
+      'unitname' => "",
+      'originalUnitId' => "",
+      'timestamp' => 1627545600000,
+      'logentry' => "KEY : \"a;b\"\nnext"
     ]
   ];
   const RESPONSES = [
@@ -66,6 +77,7 @@ final class ReportTest extends TestCase {
       "code" => "xxx",
       "bookletname" => "BOOKLET.SAMPLE-1",
       "unitname" => "UNIT.SAMPLE",
+      "originalUnitId" => "",
       "responses" => "{\"name\":\"Sam Sample\",\"age\":34}",
       "responseType" => "",
       "response-ts" => 1627545600000,
@@ -77,6 +89,7 @@ final class ReportTest extends TestCase {
       "code" => "xxx",
       "bookletname" => "BOOKLET.SAMPLE-2",
       "unitname" => "UNIT.SÄMPLE",
+      "originalUnitId" => "",
       "responses" => "{\"name\":\"Säm Sämple\",\"age\":42}",
       "responseType" => "immediate",
       "response-ts" => 1627545600000,
@@ -383,9 +396,10 @@ final class ReportTest extends TestCase {
     $this->adminDaoMock->allows('getLogReportData')->andReturn(self::LOGS);
 
     $expectedLogsCSVReportData = self::BOM .
-      "groupname;loginname;code;bookletname;unitname;originalUnitId;timestamp;logentry\n" .
-      "\"sample_group\";\"sample_user\";\"xxx\";\"BOOKLET.SAMPLE-1\";\"UNIT.SAMPLE\";\"\";\"1627545600000\";sample unit log\n" .
-      "\"sample_group\";\"sample_user\";\"xxx\";\"BOOKLET.SAMPLE-1\";\"\";\"\";\"1627545600000\";sample log entry";
+      '"groupname";"loginname";"code";"bookletname";"unitname";"originalUnitId";"timestamp";"logentry"' . "\n" .
+      '"sample_group";"sample_user";"xxx";"BOOKLET.SAMPLE-1";"UNIT.SAMPLE";"";"1627545600000";"sample unit log"' . "\n" .
+      '"sample_group";"sample_user";"xxx";"BOOKLET.SAMPLE-1";"";"";"1627545600000";"sample log entry"' . "\n" .
+      '"sample_group";"sample_user";"xxx";"BOOKLET.SAMPLE-1";"";"";"1627545600000";"KEY : ""a;b""' . "\n" . 'next"';
 
     // Act
     $report = new LogReportOutput($this->workspaceId, $this->dataIds, $this->reportFormat);
@@ -444,7 +458,7 @@ final class ReportTest extends TestCase {
     $this->adminDaoMock->allows('getResponseReportData')->andReturn(self::RESPONSES);
 
     $expectedResponsesCSVReportData = self::BOM .
-      "groupname;loginname;code;bookletname;unitname;originalUnitId;responses;laststate\n" .
+      '"groupname";"loginname";"code";"bookletname";"unitname";"originalUnitId";"responses";"laststate"' . "\n" .
       '"sample_group";"sample_user";"xxx";"BOOKLET.SAMPLE-1";"UNIT.SAMPLE";"";"""{\""name\"":\""Sam Sample\"",\""age\"":34}""";"{""PRESENTATIONCOMPLETE"":""yes""}"' . "\n" .
       '"sämple_group";"sämple_user";"xxx";"BOOKLET.SAMPLE-2";"UNIT.SÄMPLE";"";"""{\""name\"":\""S\u00e4m S\u00e4mple\"",\""age\"":42}""";""';
 
@@ -514,11 +528,11 @@ final class ReportTest extends TestCase {
 
     $expectedReviewsCSVReportData = $useNewVersion
       ? self::BOM .
-        "groupname;loginname;code;bookletname;unitname;priority;reviewtime;reviewer;entry;unitlabel;bookletlabel\n" .
+        "\"groupname\";\"loginname\";\"code\";\"bookletname\";\"unitname\";\"priority\";\"reviewtime\";\"reviewer\";\"entry\";\"unitlabel\";\"bookletlabel\"\n" .
         "\"sample_group\";\"sample_user\";\"xxx\";\"BOOKLET.SAMPLE-1\";\"UNIT.SAMPLE\";\"1\";\"2021-07-29 10:00:00\";;\"this is a sample unit review\";\"\";\"\"\n" .
         "\"sample_group\";\"sample_user\";\"xxx\";\"BOOKLET.SAMPLE-1\";\"\";\"1\";\"2021-07-29 10:00:00\";;\"sample booklet review\";\"\";\"\""
       : self::BOM .
-        "groupname;loginname;code;bookletname;unitname;priority;reviewtime;entry\n" .
+        "\"groupname\";\"loginname\";\"code\";\"bookletname\";\"unitname\";\"priority\";\"reviewtime\";\"entry\"\n" .
         "\"sample_group\";\"sample_user\";\"xxx\";\"BOOKLET.SAMPLE-1\";\"UNIT.SAMPLE\";\"1\";\"2021-07-29 10:00:00\";\"this is a sample unit review\"\n" .
         "\"sample_group\";\"sample_user\";\"xxx\";\"BOOKLET.SAMPLE-1\";\"\";\"1\";\"2021-07-29 10:00:00\";\"sample booklet review\"";
 
@@ -549,11 +563,11 @@ final class ReportTest extends TestCase {
 
     $expectedReviewsCSVReportData = $useNewVersion
       ? self::BOM .
-        "groupname;loginname;code;bookletname;unitname;priority;category_content;category_design;category_tech;reviewtime;reviewer;entry;unitlabel;bookletlabel\n" .
+        "\"groupname\";\"loginname\";\"code\";\"bookletname\";\"unitname\";\"priority\";\"category_content\";\"category_design\";\"category_tech\";\"reviewtime\";\"reviewer\";\"entry\";\"unitlabel\";\"bookletlabel\"\n" .
         "\"sample_group\";\"sample_user\";\"xxx\";\"BOOKLET.SAMPLE-1\";\"UNIT.SAMPLE\";\"1\";\"FALSE\";\"FALSE\";\"TRUE\";\"2021-07-29 10:00:00\";;\"this is a sample unit review\";\"\";\"\"\n" .
         "\"sample_group\";\"sample_user\";\"xxx\";\"BOOKLET.SAMPLE-1\";\"\";\"1\";\"TRUE\";\"TRUE\";\"TRUE\";\"2021-07-29 10:00:00\";;\"sample booklet review\";\"\";\"\""
       : self::BOM .
-        "groupname;loginname;code;bookletname;unitname;priority;category: content;category: design;category: tech;reviewtime;entry\n" .
+        "\"groupname\";\"loginname\";\"code\";\"bookletname\";\"unitname\";\"priority\";\"category: content\";\"category: design\";\"category: tech\";\"reviewtime\";\"entry\"\n" .
         "\"sample_group\";\"sample_user\";\"xxx\";\"BOOKLET.SAMPLE-1\";\"UNIT.SAMPLE\";\"1\";;;\"X\";\"2021-07-29 10:00:00\";\"this is a sample unit review\"\n" .
         "\"sample_group\";\"sample_user\";\"xxx\";\"BOOKLET.SAMPLE-1\";\"\";\"1\";\"X\";\"X\";\"X\";\"2021-07-29 10:00:00\";\"sample booklet review\"";
 

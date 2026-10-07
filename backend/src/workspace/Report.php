@@ -4,12 +4,6 @@ declare(strict_types=1);
 
 abstract class Report {
 
-  public const string BOM = "\xEF\xBB\xBF";         // UTF-8 BOM for MS Excel
-  public const string DELIMITER = ';';              // standard delimiter for MS Excel
-  public const string ENCLOSURE = '"';
-  public const string LINE_ENDING = "\n";
-  public const string CSV_CELL_FORMAT = self::ENCLOSURE . "%s" . self::ENCLOSURE;
-
   protected int $workspaceId;
   protected array $dataIds;
   protected ReportFormat $format;

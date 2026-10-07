@@ -143,8 +143,8 @@ class SessionDAO extends DAO {
     // TODO also use customizable use salt for testees? -> change would break current sessions
     $passwordMissing = ($password === '') && Mode::requiresPassword($login->getMode());
     if (!Password::verify($password, $result['password'], 't') || $passwordMissing) {
-      return Mode::hasCapability($login->getMode(), 'protectedLogin') ?
-        FailedLogin::wrongPasswordProtectedLogin :
+      return Mode::hasCapability($login->getMode(), ModeCapability::LOCK_AFTER_FAILED_LOGINS) ?
+        FailedLogin::wrongPasswordLockableLogin :
         FailedLogin::wrongPassword;
     }
 
@@ -264,14 +264,14 @@ class SessionDAO extends DAO {
     if ($code) {
       $suffix[] = $code;
     }
-    if (Mode::hasCapability($loginSession->getLogin()->getMode(), 'alwaysNewSession')) {
+    if (Mode::hasCapability($loginSession->getLogin()->getMode(), ModeCapability::ALWAYS_NEW_SESSION)) {
       // we use random strings to identify the persons, not subsequent numbers, because that caused trouble when
       // two logged in in the very same moment
       $suffix[] = Random::string(8, false);
     }
     $suffix = implode('/', $suffix);
 
-    if (!Mode::hasCapability($loginSession->getLogin()->getMode(), 'alwaysNewSession')) {
+    if (!Mode::hasCapability($loginSession->getLogin()->getMode(), ModeCapability::ALWAYS_NEW_SESSION)) {
       $personSession = $this->_('
         select id, valid_until, token from person_sessions where login_sessions_id = :lsi and name_suffix = :suffix',
         [
@@ -656,7 +656,7 @@ class SessionDAO extends DAO {
    * @return Group[]
    */
   public function getGroups(int $workspaceId): array {
-    $modeSelector = "mode in ('" . implode("', '", Mode::getByCapability('monitorable')) . "')";
+    $modeSelector = "mode in ('" . implode("', '", Mode::getByCapability(ModeCapability::MONITORABLE)) . "')";
     $sql =
       "select
         group_name,

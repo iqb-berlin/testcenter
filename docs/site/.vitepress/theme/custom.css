@@ -1,0 +1,27 @@
+/* Use the full window width on large screens instead of centering the layout at 1440px, so pages with
+   wide tables (see .wide-page) have room to grow. */
+:root {
+  --vp-layout-max-width: 100vw;
+}
+
+/* The outline column is narrow (224px): long headings, e.g. booklet parameter names, wrap instead of
+   being cut off. Padding and line height keep single-line entries at their original height of 32px. */
+.VPDocAsideOutline .VPDocOutlineItem .outline-link {
+  padding-top: 6px;
+  padding-bottom: 6px;
+  line-height: 20px;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+/* Text column next to the outline: wider than VitePress' default of 688px, matching the 784px VitePress
+   uses on pages without an outline. The selector is one class more specific than VitePress' own rule
+   (`.VPDoc.has-aside .content-container[data-v-…]`), so it wins regardless of stylesheet order. */
+.Layout .VPContent .VPDoc.has-aside .content-container {
+  max-width: 784px;
+}
+
+/* Pages with wide tables set `pageClass: wide-page` in their frontmatter. */
+.Layout.wide-page .VPContent .VPDoc.has-aside .content-container {
+  max-width: 1200px;
+}

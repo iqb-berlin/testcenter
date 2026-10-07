@@ -1,5 +1,8 @@
-import { Component, OnDestroy } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { switchMap, take } from 'rxjs';
 import { CodeInputComponent } from '@shared/components/code-input/code-input.component';
+import { AlertComponent } from '@shared/components/alert/alert.component';
 import { AppError, AuthData, CodeInputType } from '@app/app.interfaces';
 import { Router } from '@angular/router';
 import { BackendService } from '@app/backend.service';
@@ -7,18 +10,22 @@ import { MainDataService } from '@shared/services/maindata/maindata.service';
 import { AsyncPipe } from '@angular/common';
 import { CustomtextPipe } from '@shared/pipes/customtext/customtext.pipe';
 import { AssetService } from '@shared/services/asset.service';
-import { Subscription } from 'rxjs';
+import { BruteForceProtectionService } from '@app/brute-force-protection.service';
 
 @Component({
   imports: [
     CodeInputComponent,
+    AlertComponent,
     AsyncPipe,
     CustomtextPipe
   ],
   template: `
     <div class="form" [class.full-width]="inputType === 'keypad-symbols-alt'">
+      @if (insecureContext()) {
+        <tc-alert data-cy="login-insecure-context" level="error" [text]="insecureContextMessage"></tc-alert>
+      }
       <tc-code-input [inputType]="inputType" [length]="length" [problemText]="problemText"
-                     [disabled]="loading"
+                     [disabled]="loading || insecureContext()"
                      (submitCode)="onSubmit($event)">
         @if (inputType !== 'keypad-symbols-alt') {
           <div class="intro-text">
@@ -41,15 +48,17 @@ import { Subscription } from 'rxjs';
     '[class.alt-styling]': 'inputType === "keypad-symbols-alt"'
   }
 })
-export class CodeLoginComponent implements OnDestroy {
+export class CodeLoginComponent {
   inputType: CodeInputType = 'text-field';
   length: number | undefined; // only used for keypad input
   problemText = '';
   problemCode = 0;
   loading = false;
   protected illustrationImageSrc?: string;
-  altchaLib?: Promise<typeof import('altcha-lib')>;
-  altchaLibSubscription?: Subscription;
+  private bruteForceProtectionService = inject(BruteForceProtectionService);
+  readonly insecureContext = toSignal(this.bruteForceProtectionService.isUnavailable$('person'),
+                                      { initialValue: false });
+  readonly insecureContextMessage = BruteForceProtectionService.insecureContextMessage;
 
   constructor(private router: Router, private bs: BackendService, private mds: MainDataService,
               public assetService: AssetService) {
@@ -59,11 +68,6 @@ export class CodeLoginComponent implements OnDestroy {
     this.assetService.assetSlots$.subscribe(() => {
       this.illustrationImageSrc = this.assetService.getAssetSrc('codeInputIllustration');
     });
-    this.altchaLibSubscription = this.mds.appConfig$.subscribe(appConfig => {
-      if (appConfig.bruteForceProtection.includes('person')) {
-        this.altchaLib = import('altcha-lib');
-      }
-    });
   }
 
   protected onSubmit(code: string) {
@@ -72,52 +76,17 @@ export class CodeLoginComponent implements OnDestroy {
     this.problemText = '';
     this.problemCode = 0;
 
-    if (this.mds.appConfig?.bruteForceProtection.includes('person')) {
-      this.bs.createChallenge({ code }).subscribe({
-        next: challenge => {
-          this.altchaLib?.then(({ solveChallengeWorkers }) => solveChallengeWorkers(
-            `${window.document.baseURI}/altcha-lib/dist/worker.js`,
-            8,
-            challenge.challenge,
-            challenge.salt,
-            challenge.algorithm,
-            challenge.maxNumber
-          )).then(solvedChallenge => {
-            if (!solvedChallenge) {
-              this.problemText = 'Problem bei der Anmeldung.';
-              this.loading = false;
-              return;
-            }
-            this.bs.createSession(
-              challenge.algorithm,
-              challenge.challenge,
-              challenge.salt,
-              challenge.signature,
-              solvedChallenge.number
-            ).subscribe(this.codeSubscription);
-          }, error => {
-            this.problemText = 'Problem bei der Anmeldung.';
-            this.loading = false;
-            throw error;
-          });
-        },
-        error: error => {
-          this.problemText = 'Problem bei der Anmeldung.';
-          this.loading = false;
-          throw error;
-        }
-      });
-      return;
-    }
-
-    this.bs.codeLogin(code).subscribe(this.codeSubscription);
+    this.bruteForceProtectionService.isActive$('person')
+      .pipe(
+        take(1),
+        switchMap(isActive => (isActive ?
+          this.bruteForceProtectionService.createSession({ code }) :
+          this.bs.codeLogin(code)))
+      )
+      .subscribe(this.loginObserver);
   }
 
-  ngOnDestroy(): void {
-    this.altchaLibSubscription?.unsubscribe();
-  }
-
-  private codeSubscription = {
+  private loginObserver = {
     next: (authData: AuthData) => {
       this.mds.setAuthData(authData);
       if (authData.claims.test.length === 1 && Object.keys(authData.claims).length === 1) {
@@ -129,6 +98,7 @@ export class CodeLoginComponent implements OnDestroy {
       }
     },
     error: (error: AppError) => {
+      this.loading = false;
       this.problemCode = error.code || 777;
       if (error.code === 400) {
         this.problemText = 'Der Code ist leider nicht gültig. Bitte noch einmal versuchen';
@@ -138,7 +108,6 @@ export class CodeLoginComponent implements OnDestroy {
         this.problemText = 'Problem bei der Anmeldung.';
         throw error;
       }
-      this.loading = false;
     }
   };
 }

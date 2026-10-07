@@ -1,5 +1,8 @@
 import { NgClass } from '@angular/common';
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import {
+  Component, OnDestroy, OnInit, inject
+} from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import {
   FormControl, FormGroup, ReactiveFormsModule, Validators
 } from '@angular/forms';
@@ -8,9 +11,10 @@ import { MatCardModule } from '@angular/material/card';
 import { MatFormField, MatInput, MatLabel } from '@angular/material/input';
 import { MatButton, MatIconButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
-import { Observer, Subscription } from 'rxjs';
+import { Observer, switchMap, take } from 'rxjs';
 import { AuthData } from '@app/app.interfaces';
 import { BackendService } from '@app/backend.service';
+import { BruteForceProtectionService } from '@app/brute-force-protection.service';
 import { MainDataService } from '@shared/services/maindata/maindata.service';
 import { HeaderService } from '@shared/services/header.service';
 import { FooterService } from '@shared/services/footer.service';
@@ -39,10 +43,12 @@ export class AdminLoginComponent implements OnInit, OnDestroy {
   problemLevel: 'error' | 'warning' = 'error';
   problemCode = 0;
   showPassword = false;
-  busyWithChallenge = false;
+  busy = false;
   unsupportedBrowser: [string, string] | [] = [];
-  altchaLib?: Promise<typeof import('altcha-lib')>;
-  altchaLibSubscription?: Subscription;
+  private bruteForceProtectionService = inject(BruteForceProtectionService);
+  readonly insecureContext = toSignal(this.bruteForceProtectionService.isUnavailable$('admin'),
+                                      { initialValue: false });
+  readonly insecureContextMessage = BruteForceProtectionService.insecureContextMessage;
 
   loginForm = new FormGroup({
     name: new FormControl(AdminLoginComponent.oldLoginName, [Validators.required, Validators.minLength(3)]),
@@ -56,16 +62,10 @@ export class AdminLoginComponent implements OnInit, OnDestroy {
     this.headerService.title = 'Anmelden';
     this.checkBrowser();
     this.footerService.showFooter.set(true);
-    this.altchaLibSubscription = this.mainDataService.appConfig$.subscribe(appConfig => {
-      if (appConfig.bruteForceProtection.includes('admin')) {
-        this.altchaLib = import('altcha-lib');
-      }
-    });
   }
 
   ngOnDestroy(): void {
     this.footerService.showFooter.set(false);
-    this.altchaLibSubscription?.unsubscribe();
   }
 
   adminLogin(): void {
@@ -78,57 +78,26 @@ export class AdminLoginComponent implements OnInit, OnDestroy {
     AdminLoginComponent.oldLoginName = name;
     this.problemText = '';
     this.problemCode = 0;
+    this.busy = true;
 
-    if (!this.mainDataService.appConfig?.bruteForceProtection.includes('admin')) {
-      this.backendService.adminLogin(name, password).subscribe(this.getAdminLoginSubscription());
-      return;
-    }
-
-    this.busyWithChallenge = true;
-    this.backendService.createChallenge({ loginType: 'admin', name, password }).subscribe({
-      next: challenge => {
-        this.altchaLib?.then(({ solveChallengeWorkers }) => solveChallengeWorkers(
-          `${window.document.baseURI}/altcha-lib/dist/worker.js`,
-          8,
-          challenge.challenge,
-          challenge.salt,
-          challenge.algorithm,
-          challenge.maxNumber
-        )).then(solvedChallenge => {
-          if (!solvedChallenge) {
-            this.problemText = 'Problem bei der Anmeldung.';
-            return;
-          }
-          this.backendService.createSession(
-            challenge.algorithm,
-            challenge.challenge,
-            challenge.salt,
-            challenge.signature,
-            solvedChallenge.number
-          ).subscribe(this.getAdminLoginSubscription());
-        }, error => {
-          this.problemText = 'Problem bei der Anmeldung.';
-          throw error;
-        }).finally(() => {
-          this.busyWithChallenge = false;
-        });
-      },
-      error: error => {
-        this.problemText = 'Problem bei der Anmeldung.';
-        this.busyWithChallenge = false;
-        throw error;
-      }
-    });
+    this.bruteForceProtectionService.isActive$('admin')
+      .pipe(
+        take(1),
+        switchMap(isActive => (isActive ?
+          this.bruteForceProtectionService.createSession({ loginType: 'admin', name, password }) :
+          this.backendService.adminLogin(name, password)))
+      )
+      .subscribe(this.loginObserver());
   }
 
-  private getAdminLoginSubscription(): Partial<Observer<AuthData>> {
+  private loginObserver(): Partial<Observer<AuthData>> {
     return {
       next: authData => {
         this.mainDataService.setAuthData(authData);
         this.router.navigate(['/r/starter']);
       },
       error: error => {
-        this.busyWithChallenge = false;
+        this.busy = false;
         this.problemCode = error.code;
         if (error.code === 400) {
           this.problemText = 'Anmeldedaten sind nicht gültig. Bitte noch einmal versuchen!';

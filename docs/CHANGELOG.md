@@ -1,3 +1,13 @@
+# next
+
+## Fehlerbehebungen
+- Ist der Brute-Force-Schutz (`BRUTE_FORCE_PROTECTION`) für eine Anmeldeart eingeschaltet, die Seite aber nicht über HTTPS aufgerufen, zeigt die Anmeldeseite einen entsprechenden Hinweis und sperrt die betroffene Anmeldung. Bisher blieb der Anmelde-Knopf nach dem ersten Versuch dauerhaft deaktiviert, weil Browser die für den Schutz nötige Verschlüsselungsfunktion nur über HTTPS bereitstellen.
+- Bei der Anmeldung mit Kennwort, als Administrator:in und mit Code bleibt die Anmeldeschaltfläche während der gesamten ALTCHA-Prüfung deaktiviert, bis der Server die Prüfung abgeschlossen hat. Mehrfaches Absenden während der Prüfung wird verhindert.
+- `make testcenter-update` endet, wenn man nach einem fehlgeschlagenen Daten-Backup oder nach übersprungenen Migrationsskripten das Fortfahren ablehnt. Bisher meldete das Skript zwar „update script finished“, spielte die neue Version aber trotzdem ein.
+
+## Technisches
+- Der Brute-Force-Schutz (`BRUTE_FORCE_PROTECTION` in `.env.prod-template`) ist bei Neuinstallationen via docker-compose ausgeschaltet.
+
 # 19.0.0
 
 ## Umstieg von MySQL auf PostgreSQL
@@ -30,20 +40,29 @@ folgenden Punkten:
 - Codes werden nun unabhängig von Groß- und Kleinschreibung akzeptiert. Das betrifft sowohl den Login-Code (z. B. für Testhefte, die über einen Code ausgewählt werden) als auch das Freigabewort für gesperrte Testheft-Bereiche (`CodeToEnter`).
 - Hochgeladene XML-Dateien werden wieder gegen ihr XSD-Schema geprüft; Verstöße gegen das Schema verhindern den Upload.
 - (breaking) XML-Dateien werden nur noch akzeptiert, wenn sie eine unterstützte Schema-Version angeben; welche das sind, zeigt die Dateiansicht des Arbeitsbereichs.
+- Die Dokumentation der Login-Modi gibt an, dass Anmeldungen in `monitor-group` und `monitor-study` nach 5 fehlgeschlagenen Anmeldeversuchen gesperrt werden, bis 30 Minuten seit dem letzten Fehlversuch vergangen sind.
 
 ## Fehlerbehebungen
 - (breaking) Die Beschriftungen im Systemcheck und in den CSV Reports verwenden die korrekte Schreibweise „Betriebssystem“, „Betriebssystemversion“, „Fenstergröße“, „Browserversion“, „Browsersprache“, „Bildschirmauflösung“ und „Eingabeelementen“.
 - (breaking) Die Zeiteinheit für Millisekunden wird in der Booklet-Konfiguration, im Systemcheck und in neuen CSV-Exporten von Systemcheck-Berichten korrekt als `ms` statt `Ms` geschrieben.
 - Nach einer erfolgreichen Anmeldung wird der Zähler für fehlgeschlagene Anmeldeversuche zurückgesetzt. Damit führt die vorherige Prüfung eines kennwortgeschützten Login-Namens nicht mehr schrittweise zu einer späteren Sperre.
 - In der Gruppenüberwachung sind „Weiter“, „Pause“, „Springe zu“ und „Test entsperren“ deaktiviert, solange kein Test ausgewählt ist. Bisher ließen sie sich anklicken und meldeten lediglich „Keine Tests betroffen“ – etwa direkt nach dem Öffnen einer Gruppe, solange die Liste der Sitzungen noch nicht geladen war.
+- In der Gruppenüberwachung zeigen die Zustände „Test noch nicht gestartet“, „Seite wurde verlassen oder Browserfenster geschlossen“, „Test ist 5 Minuten oder länger inaktiv“ und „Test läuft“ (Polling-Verbindung) wieder ein Symbol; seit Version 18.2.0 blieb es leer. Live- und Polling-Verbindung haben zudem wieder unterschiedliche Symbole (gefüllt bzw. umrandet), seit 18.0.0 sahen sie gleich aus.
 - „Verbleibende Zeit“ wird im Review-Modus nicht länger angezeigt, wenn keine Zeitbeschränkung gesetzt ist.
-- Sicherheitsproblem behoben: Interne Endpunkte des Broadcast-Service waren ohne Anmeldung öffentlich erreichbar, und die Zugangstoken für dessen WebSocket-Verbindungen ließen sich erraten. Eine Aktualisierung wird dringend empfohlen.
+- Interne Endpunkte des Broadcast-Service erfordern nun eine Anmeldung und sind nicht mehr öffentlich erreichbar; die Zugangstoken für dessen WebSocket-Verbindungen werden nun zufällig vergeben.
+- Beim Herunterladen von Arbeitsbereichs- und Testressourcen wird der angeforderte Dateipfad nun strikt auf den jeweiligen Arbeitsbereich begrenzt.
 - Ein bereits vergebener Name beim Anlegen oder Umbenennen eines Workspaces und beim Anlegen eines Benutzers wird als „Konflikt mit vorhandenen Daten“ gemeldet. Bisher erschien „Fehlerhafte Daten“, was einen doppelten Namen nicht von einer unvollständigen Eingabe unterschied.
 - Meldet ein Player beim Start keine Verona-Version (weder `apiVersion` noch `metadata.specVersion`), erscheint die Fehlermeldung „Unbekannte Verona-Version“. Bisher brach der Start mit einem unverständlichen Programmfehler ab.
 - Sicherheitsproblem behoben: Angemeldete Personen können nur noch Antworten, Unit-Zustände und Kommandos ihrer eigenen Tests abrufen. Bisher ließen sich über die Test-ID auch die Antworten anderer Testtakers im selben Arbeitsbereich lesen und deren Kommandos als ausgeführt markieren.
+- Reviews können nur noch in den Modi `run-review` und `run-trial` angelegt, geändert und gelöscht werden; in anderen Modi antworten die Review-Endpunkte unter `/test/{test_id}` mit `403`.
 - Bricht die Verbindung eines Testtakers unbemerkt ab (z. B. durch einen Netzwerkausfall), zeigt die Gruppenüberwachung sie nach spätestens einer Minute als verloren an. Bisher blieb der Test weiter als verbunden angezeigt.
+- Die Dokumentation der Login-Modi weist für `run-demo` und `sys-check-login` korrekt aus, dass bei jedem Einloggen ein neuer Teilnehmer angelegt wird. Bisher war das dort nur für `run-hot-restart` angegeben, obwohl sich die beiden anderen Modi bereits so verhielten.
+- (breaking) Die CSV-Exporte schließen jede Zelle einschließlich der Kopfzeile in Anführungszeichen ein, sodass Semikolons, Anführungszeichen und Zeilenumbrüche in einem Wert in ihrer Zelle bleiben. Bisher war die Spalte `logentry` im Log-Export nicht eingeschlossen, sodass solche Log-Einträge beim Öffnen in Excel auf zusätzliche Spalten oder Zeilen verteilt wurden; sie enthält jetzt den gespeicherten Eintrag unverändert (`\"` statt `""`). Außer beim Systemcheck-Export war die Kopfzeile bisher nicht eingeschlossen, und der Systemcheck-Export ersetzte Anführungszeichen in Werten durch `` ` ``.
 
 ## Technisches
+- Beim Löschen einer Anhang-Datei wird die zugehörige Datei nun auch von der Festplatte entfernt. Bisher blieb sie liegen, sodass gelöschte Anhänge weiter Speicherplatz belegten und nicht tatsächlich entfernt wurden.
+- Der Testmodus des Backends (Umschaltung per `TestMode`-Header, nur für die API- und E2E-Tests gedacht) muss nun ausdrücklich mit der neuen Umgebungsvariable `ALLOW_TEST_MODE=true` erlaubt werden; ohne sie wird der Header ignoriert. Die Entwicklungsumgebung (`docker-compose.dev.yml`) setzt sie; in Produktivinstallationen darf sie nicht gesetzt werden.
+- Das Backend beschränkt PHP-Dateizugriffe per `open_basedir` auf `/var/www/testcenter/` und `/tmp/`. Deployments, die Anwendungs- oder Datenverzeichnisse außerhalb dieser Pfade ablegen, müssen den Wert in `backend/config/local.php.ini` anpassen.
 
 ### Schnittstellenänderungen (breaking)
 - Schema-Verweise in XML-Dateien (`xsi:noNamespaceSchemaLocation`) werden nur noch als Permalink der Form `https://w3id.org/iqb/spec/<repo>/<version>` erkannt. Die alten GitHub-URLs der Form `…/testcenter/<version>/definitions/vo_<Typ>.xsd` werden abgelehnt.
@@ -60,7 +79,9 @@ folgenden Punkten:
 - `GET /workspace/{ws_id}/report/{type}` und `GET /reviews/export` werten den `Accept`-Header jetzt gleich aus: Media-Type-Parameter wie in `text/csv;charset=utf-8` werden ignoriert, aus einer Liste gewinnt der erste lieferbare Typ. Bisher verlangte der Report-Endpunkt exakt `text/csv` und lieferte sonst kommentarlos JSON – auch bei `text/csv;charset=utf-8`, also genau dem Wert, den die Spezifikation als Antwort-Media-Type ausweist. Die Vorgabe bei fehlender oder nicht erfüllbarer Angabe bleibt unverändert (JSON für die Report-Endpunkte, CSV für `GET /reviews/export`).
 - Die Endpunkte unter `/assets` liefern Fehler nun wie alle anderen Endpunkte als Text über den zentralen ErrorHandler, also mit `Error-ID`-Header. Bisher lieferten sie stattdessen ein JSON-Objekt der Form `{"error": "..."}` ohne `Error-ID` und waren damit der letzte verbliebene Sonderfall im Backend.
 - Anfragen an nicht existierende Routen werden wie jeder andere Fehler über den zentralen ErrorHandler behandelt und liefern einen Text im Body. Bisher lieferten sie einen `404` ohne Body-Text und waren damit die einzige Fehlerantwort des Backends ohne Text.
+- Bei internen Serverfehlern (Status `5xx`) enthält der Antwort-Body keine internen Fehlerdetails mehr, sondern einen allgemeinen Text; die vollständige Meldung steht wie bisher im Server-Log und ist über den `Error-ID`-Header auffindbar. Die für Clients gedachten `4xx`-Meldungen bleiben unverändert.
 - Der File-Server schickt bei `403` und `500` einen `Error-ID`-Header (`fs-` gefolgt von der nginx-Request-ID) und schreibt dieselbe ID in sein Log.
+- Antworten mit Datei-Inhalten (Downloads von Arbeitsbereichs- und Testressourcen über das Backend sowie Auslieferungen des File-Servers) senden `Cache-Control: private`, damit geteilte Caches wie ein CDN diese authentifizierten Antworten nicht speichern und ohne erneute Prüfung ausliefern; der private Browser-Cache bleibt möglich.
 - Das Feld `laststate` in `GET /workspace/{ws_id}/report/response` ist anders formatiert: ein Leerzeichen nach den Doppelpunkten, eine andere Reihenfolge der Schlüssel und `\uXXXX`-Escapes als das Zeichen, für das sie stehen. Der Inhalt ist unverändert, wer den Wert als JSON einliest, ist nicht betroffen.
 
 ### API-Dokumentation
@@ -83,7 +104,7 @@ folgenden Punkten:
 - `install.sh` und `update.sh` sind nun schlanke, versionsunabhängige Bootstrap-Skripte: Sie ermitteln nur noch die gewünschte Release-Version und laden anschließend die eigentliche Installations- bzw. Update-Logik der passenden Release-Version nach (`scripts/installer.sh` bzw. `scripts/updater.sh`). Der bisherige Mechanismus, bei dem `install.sh`/`update.sh` sich selbst mit der Zielversion verglichen und sich bei Abweichung durch sich selbst ersetzten, entfällt damit.
   - Bei `update.sh` wird `scripts/updater.sh` dabei zweimal geladen: einmal aus der aktuell installierten Version (für Backup und Migrationsskripte, deren Logik zur tatsächlich laufenden Installation passen muss) und einmal aus der Zielversion (für Datei-Updates, Einstellungen und Neustart).
 - Der Backend-Container fährt beim Stoppen geordnet herunter und endet mit Exit-Code 0. Bisher reagierte er nicht auf das Stopp-Signal, wurde nach 10 Sekunden per SIGKILL beendet (Exit-Code 137) und brach dabei laufende Anfragen ab. Stoppen, Neustarten und Aktualisieren dauern entsprechend 10 Sekunden kürzer.
-- Es gibt eine neue Umgebungsvariable `COMPOSE_PROJECT_NAME` (siehe `.env.dev-template`/`.env.prod-template`), mit der sich Container, Volumes und das Docker-Netzwerk benennen lassen. Sie dient dazu, eine Dev- und eine Produktivinstallation auf demselben Host kollisionsfrei parallel betreiben zu können. Der Netzwerkname war zuvor fest auf `testcenter` gesetzt und ist nun auf `${COMPOSE_PROJECT_NAME:-testcenter}` konfiguriert. Solange `COMPOSE_PROJECT_NAME` nicht gesetzt ist, bleibt der Netzwerkname weiterhin `testcenter`, sodass bestehende Installationen von dieser Änderung nicht betroffen sind.
+- Die neue Umgebungsvariable `COMPOSE_PROJECT_NAME` benennt Container, Volumes und das Docker-Netzwerk, sodass etwa eine Dev- und eine Produktivinstallation auf demselben Host parallel laufen können. Das Netzwerk heißt nun wie das Compose-Projekt statt fest `testcenter`; ohne die Variable ist das wie bisher der Name des Installationsverzeichnisses.
 - Das Einlesen der Arbeitsbereichsdateien beim Start ist etwa dreimal schneller als vorher und geschieht je Arbeitsbereich nun vollständig oder gar nicht; bisher blieben bei einem Abbruch die bis dahin gelesenen Dateien in der Datenbank zurück.
 
 # 18.3.0

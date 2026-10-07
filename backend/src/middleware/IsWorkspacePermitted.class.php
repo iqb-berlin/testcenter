@@ -11,10 +11,10 @@ use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
 use Slim\Routing\RouteContext;
 
 class IsWorkspacePermitted {
-  private string $_necessaryRole;
+  private WorkspaceRole $necessaryRole;
 
-  function __construct(string $necessaryRole = '') {
-    $this->_necessaryRole = $necessaryRole;
+  function __construct(WorkspaceRole $necessaryRole) {
+    $this->necessaryRole = $necessaryRole;
   }
 
   function __invoke(Request $request, RequestHandler $handler): ResponseInterface {
@@ -37,8 +37,8 @@ class IsWorkspacePermitted {
 
     $userRoleOnWorkspace = $adminDAO->getWorkspaceRole($authToken->getToken(), (int) $params['ws_id']);
 
-    if ($this->_necessaryRole and (!in_array($this->_necessaryRole, Mode::withChildren($userRoleOnWorkspace)))) {
-      throw new HttpForbiddenException($request, "Access Denied: Role `{$this->_necessaryRole}` on workspace `ws_{$params['ws_id']}`, needed. Only `{$userRoleOnWorkspace}` provided.");
+    if (!WorkspaceRole::tryFrom($userRoleOnWorkspace)?->includes($this->necessaryRole)) {
+      throw new HttpForbiddenException($request, "Access Denied: Role `{$this->necessaryRole->value}` on workspace `ws_{$params['ws_id']}`, needed. Only `{$userRoleOnWorkspace}` provided.");
     }
 
     return $handler->handle($request);

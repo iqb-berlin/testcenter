@@ -28,15 +28,14 @@ class ReviewController extends Controller {
     // Return as CSV (default)
     $transformedData = ReviewCSVFormatter::transformReviewData($reviewData, true, ReportFormat::CSV);
     $transformedData = ReviewCSVFormatter::enrichWithLabels($transformedData, $workspaceId);
-    $csv = ReviewCSVFormatter::generateCsvReportData($transformedData);
 
-    if ($csv === Report::BOM) {
+    if ($transformedData === []) {
       return $response->withStatus(204);
     }
 
     return $response
       ->withHeader('Content-Type', 'text/csv;charset=UTF-8')
-      ->write($csv);
+      ->write(ReviewCSVFormatter::generateCsvReportData($transformedData));
   }
 
 }

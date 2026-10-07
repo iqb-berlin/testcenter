@@ -98,6 +98,31 @@ class Workspace {
     return $this->workspacePath;
   }
 
+  /**
+   * The only sanctioned way to turn request input (type, file name) into a workspace
+   * file path. Returns null if the type is unknown or the path escapes its sub-folder.
+   */
+  public function getFilePath(string $type, string $fileName): ?string {
+    if (!in_array($type, self::subFolders)) {
+      return null;
+    }
+
+    if (Storage::isObjectStore()) {
+      // no realpath on object keys, so reject traversal segments explicitly
+      if (array_intersect(explode('/', $fileName), ['', '.', '..'])) {
+        return null;
+      }
+      $path = $this->workspacePath . '/' . $type . '/' . $fileName;
+      $logical = Storage::toLogical($path);
+
+      return ($logical !== null and Storage::driver()->exists($logical)) ? $path : null;
+    }
+
+    $path = Folder::getContainedRealPath($this->workspacePath . '/' . $type, $fileName);
+
+    return ($path !== null and is_file($path)) ? $path : null;
+  }
+
   public function deleteFiles(array $filesToDelete): FileDeletionReport {
     $deletionReport = new FileDeletionReport();
 
@@ -175,7 +200,7 @@ class Workspace {
       $this->workspaceDAO->deleteFile($file);
 
     } catch (Exception $e) {
-      echo $e->getMessage();
+      error_log($e->getMessage());
       return false;
     }
     return true;

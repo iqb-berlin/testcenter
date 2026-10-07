@@ -1,6 +1,6 @@
 # PR policy
 
-This document collects bespoke workflows and checklists that are required before a pull request is considered complete and ready for human review. It focuses on objectively reviewable artefacts. For code style and project taste, consult the appropriate AGENTS.md file in each module and the files under docs/agents.
+This document collects bespoke workflows and checklists that are required before a pull request is considered complete and ready for human review. It focuses on objectively reviewable artefacts. For code style and project taste, consult the appropriate AGENTS.md file in each module and the files under docs/agent.
 
 ## Database changes
 

@@ -76,7 +76,7 @@ class TestController extends Controller {
     $bookletFile = $workspace->getFileById('Booklet', $test->bookletFileId);
     $testName = TestName::fromString($test->name);
 
-    // TODO check for Mode::hasCapability('monitorable'))
+    // TODO check for Mode::hasCapability(ModeCapability::MONITORABLE)
 
     if (!$test->running) {
       $personSession = self::sessionDAO()->getPersonSessionByToken($authToken->getToken());
@@ -153,30 +153,19 @@ class TestController extends Controller {
       throw new HttpForbiddenException($request, "Access to file `$path` not allowed with group-token.");
     }
 
-    $workspace = new Workspace($workspaceId);
-    $resourceFile = $workspace->getWorkspacePath() . '/' . $path;
-
-    if (Storage::isObjectStore()) {
-      $logical = Storage::toLogical($resourceFile);
-      if ($logical === null or !Storage::driver()->exists($logical)) {
-        throw new HttpNotFoundException($request, "File not found: `$path`");
-      }
-      $url = Storage::driver()->presignGet($logical, SystemConfig::$storage_presignTtl);
-      return $response->withStatus(302)->withHeader('Location', $url);
-    }
-
-    $res = fopen($resourceFile, 'rb');
-    if (!$res) {
+    [$type, $fileName] = explode('/', $path, 2);
+    $filePath = (new Workspace($workspaceId))->getFilePath($type, $fileName);
+    if ($filePath === null) {
       throw new HttpNotFoundException($request, "File not found: `$path`");
     }
 
-    header('Content-type: ' . FileExt::getMimeType($resourceFile));
-    header('Content-Length: ' . filesize($resourceFile));
-    header('X-Source: backend');
-    fpassthru($res);
-    http_response_code(200);
-    fclose($res);
-    die();
+    if (Storage::isObjectStore()) {
+      $url = Storage::driver()->presignGet(Storage::toLogical($filePath), SystemConfig::$storage_presignTtl);
+      return $response->withStatus(302)->withHeader('Location', $url);
+    }
+
+    return FileResponse::stream($response, $filePath)
+      ->withHeader('X-Source', 'backend');
   }
 
   public static function putUnitReview(Request $request, Response $response): Response {

@@ -68,9 +68,6 @@ RUN docker-php-ext-install -j$(nproc) pdo_pgsql zip opcache
 RUN pecl install igbinary && docker-php-ext-enable igbinary
 RUN pecl install redis && docker-php-ext-enable redis
 
-# Configure PHP runtime
-COPY backend/config/local.php.ini /usr/local/etc/php/conf.d/local.ini
-
 # Configure Apache
 RUN a2enmod rewrite
 RUN a2enmod headers
@@ -92,6 +89,9 @@ RUN docker-php-ext-install pcntl && docker-php-ext-enable pcntl
 
 
 FROM system AS base
+# Configure PHP runtime
+COPY backend/config/local.php.ini /usr/local/etc/php/conf.d/local.ini
+
 # Copy backend code
 WORKDIR /var/www/testcenter/backend/
 

@@ -3,7 +3,8 @@
 </ng-template>
 
 @if (inputType === 'text-field') {
-  <tc-code-text-field-form [buttonLabel]="buttonLabel" (submitCode)="onSubmit($event)">
+  <tc-code-text-field-form [buttonLabel]="buttonLabel" [disabled]="disabled"
+                           (submitCode)="onSubmit($event)">
     <ng-container *ngTemplateOutlet="projectedContent"></ng-container>
   </tc-code-text-field-form>
 } @else {

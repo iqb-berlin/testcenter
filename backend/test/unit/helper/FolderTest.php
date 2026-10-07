@@ -15,8 +15,17 @@ class FolderTest extends TestCase {
     VfsForTest::setUpBeforeClass();
   }
 
+  private string $tmpBase = '';
+
   function setUp(): void {
     $this->vfs = VfsForTest::setUp();
+  }
+
+  function tearDown(): void {
+    if ($this->tmpBase !== '') {
+      $this->removeTree($this->tmpBase);
+      $this->tmpBase = '';
+    }
   }
 
   function test_glob() {
@@ -87,6 +96,66 @@ class FolderTest extends TestCase {
       "ws_1/Resource/coding-scheme.vocs.json"
     ];
     $this->assertEquals($expected, $result);
+  }
+
+  // realpath needs a real filesystem, so these use a temp tree rather than vfsStream:
+  //   $tmpBase/ws/file.txt   (contained)
+  //   $tmpBase/secret.txt    (outside the base)
+  //   $tmpBase/ws-evil/      (prefix-sibling of the base)
+  private function makeTempTree(): string {
+    $this->tmpBase = sys_get_temp_dir() . '/tc_folder_test_' . uniqid('', true);
+    mkdir("$this->tmpBase/ws", 0777, true);
+    file_put_contents("$this->tmpBase/ws/file.txt", 'contained');
+    file_put_contents("$this->tmpBase/secret.txt", 'secret');
+    return "$this->tmpBase/ws";
+  }
+
+  private function removeTree(string $path): void {
+    if (is_link($path)) {
+      unlink($path);
+    } else if (is_dir($path)) {
+      foreach (scandir($path) as $entry) {
+        if ($entry !== '.' and $entry !== '..') {
+          $this->removeTree("$path/$entry");
+        }
+      }
+      rmdir($path);
+    } else if (file_exists($path)) {
+      unlink($path);
+    }
+  }
+
+  function test_getContainedRealPath_returnsPathForContainedFile() {
+    $base = $this->makeTempTree();
+    $this->assertEquals(realpath("$base/file.txt"), Folder::getContainedRealPath($base, 'file.txt'));
+  }
+
+  function test_getContainedRealPath_rejectsTraversalOutsideBase() {
+    $base = $this->makeTempTree();
+    $this->assertNull(Folder::getContainedRealPath($base, '../secret.txt'));
+  }
+
+  function test_getContainedRealPath_rejectsDeepTraversal() {
+    $base = $this->makeTempTree();
+    $this->assertNull(Folder::getContainedRealPath($base, '../../../../../../etc/passwd'));
+  }
+
+  function test_getContainedRealPath_rejectsSymlinkEscape() {
+    $base = $this->makeTempTree();
+    symlink("$this->tmpBase/secret.txt", "$base/link.txt");
+    $this->assertNull(Folder::getContainedRealPath($base, 'link.txt'));
+  }
+
+  function test_getContainedRealPath_rejectsPrefixSiblingDir() {
+    $base = $this->makeTempTree();
+    mkdir("$this->tmpBase/ws-evil");
+    file_put_contents("$this->tmpBase/ws-evil/x.txt", 'evil');
+    $this->assertNull(Folder::getContainedRealPath($base, '../ws-evil/x.txt'));
+  }
+
+  function test_getContainedRealPath_returnsNullForMissingFile() {
+    $base = $this->makeTempTree();
+    $this->assertNull(Folder::getContainedRealPath($base, 'does-not-exist.txt'));
   }
 
   function test_deleteContentsRecursive() {

@@ -1,7 +1,3 @@
----
-layout: default
----
-
 # Transition from MySQL to PostgreSQL
 
 Up to the last MySQL release the application stored its data in MySQL. From this release on it uses PostgreSQL.

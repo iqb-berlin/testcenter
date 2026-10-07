@@ -2,6 +2,9 @@ TC_BASE_DIR := $(shell git rev-parse --show-toplevel)
 MAGO_VERSION := ${shell jq -r '."packages-dev"[] | select(.name == "carthage-software/mago") | .version' $(TC_BASE_DIR)/backend/composer.lock}
 target ?= .
 args ?= --help
+# the leading ':' keeps PHP's default conf.d; the unit-test ini is loaded after it, and the
+# environment variable also reaches the child processes PHPUnit and amphp start
+UNIT_TEST_PHP_INI := --env PHP_INI_SCAN_DIR=:/var/www/testcenter/backend/test/unit/php-ini
 
 test-backend-static-analysis:
 	docker run --rm\
@@ -16,7 +19,7 @@ test-backend-unit:
 			--env-file .env.dev\
 			--file docker-compose.yml\
 			--file docker-compose.dev.yml\
-		run --rm --entrypoint "" backend\
+		run --rm --entrypoint "" $(UNIT_TEST_PHP_INI) backend\
 			php -dxdebug.mode='debug' /var/www/testcenter/backend/vendor/phpunit/phpunit/phpunit\
 						--bootstrap /var/www/testcenter/backend/test/unit/bootstrap.php\
 						--configuration /var/www/testcenter/backend/phpunit.xml\
@@ -28,7 +31,7 @@ test-backend-unit-coverage:
 			--env-file .env.dev\
 			--file docker-compose.yml\
 			--file docker-compose.dev.yml\
-		run --rm --entrypoint "" backend\
+		run --rm --entrypoint "" $(UNIT_TEST_PHP_INI) backend\
 			php -dxdebug.mode='coverage' /var/www/testcenter/backend/vendor/phpunit/phpunit/phpunit\
 					--bootstrap /var/www/testcenter/backend/test/unit/bootstrap.php\
 					--configuration /var/www/testcenter/backend/phpunit.xml\
@@ -92,10 +95,6 @@ test-frontend-unit:
 			--file docker-compose.yml\
 			--file docker-compose.dev.yml run\
 		frontend test --watch=false
-
-# Performs some integration tests with CyPress against mocked backend with Prism
-test-frontend-integration:
-# TODO implement integration tests with CyPress against mocked backend with Prism
 
 # Performs some API tests with Dredd on the file-server
 # ! Attention: The testcenter must not run when starting this # TODO change this

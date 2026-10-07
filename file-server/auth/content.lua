@@ -1,3 +1,7 @@
+-- authenticated resources: keep shared/edge caches (e.g. a CDN) from storing them and
+-- serving them on without re-checking the token; set for every path this handler serves
+ngx.header["Cache-Control"] = "private"
+
 -- Object-store mode (read path B): the bytes live in the bucket, not on disk.
 -- Ask the backend to mint a presigned URL for the already-authorized request
 -- (auth.lua ran first), then redirect the client straight to the object store.

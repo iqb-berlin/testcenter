@@ -68,7 +68,7 @@ class AttachmentFiles {
     $filePath = self::getAttachmentFilePath($workspaceId, $attachmentFileId, $attachment);
     if (Storage::isObjectStore()) {
       Storage::driver()->delete(Storage::toLogical($filePath));
-    } else if (!file_exists($filePath)) {
+    } else if (file_exists($filePath)) {
       unlink($filePath);
     }
   }

@@ -284,7 +284,7 @@ class AdminDAO extends DAO {
       $sql .= ' AND logins.group_name IN (' . implode(', ', $groupPlaceholders) . ')';
     }
 
-    $modes = Mode::getByCapability('monitorable');
+    $modes = Mode::getByCapability(ModeCapability::MONITORABLE);
     if ($modes) {
       $modePlaceholders = [];
       $index = 0;

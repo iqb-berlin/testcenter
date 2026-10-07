@@ -20,6 +20,10 @@ class ErrorHandlerTest extends TestCase {
     );
   }
 
+  public function tearDown(): void {
+    TestEnvironment::$testMode = null;
+  }
+
   public function test_keepsCodeAndMessageOfHttpError() {
     $response = ($this->errorHandler)(
       $this->request,
@@ -44,7 +48,21 @@ class ErrorHandlerTest extends TestCase {
     $response = ($this->errorHandler)($this->request, new Exception('Something went wrong'));
 
     $this->assertEquals(500, $response->getStatusCode());
-    $this->assertEquals('Something went wrong', (string) $response->getBody());
+    $this->assertEquals('Internal error.', (string) $response->getBody());
+  }
+
+  public function test_hidesServerErrorMessageFromClient() {
+    // 5xx messages may carry internal details (e.g. absolute paths) and must not leak
+    $response = ($this->errorHandler)($this->request, new Exception('failed at /var/www/testcenter/data/ws_1'));
+
+    $this->assertStringNotContainsString('/var/www', (string) $response->getBody());
+  }
+
+  public function test_keepsServerErrorMessageInTestMode() {
+    TestEnvironment::$testMode = 'integration';
+    $response = ($this->errorHandler)($this->request, new Exception('failed at /var/www/testcenter/data/ws_1'));
+
+    $this->assertEquals('failed at /var/www/testcenter/data/ws_1', (string) $response->getBody());
   }
 
   public function test_escapesTheMessage() {

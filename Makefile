@@ -33,19 +33,7 @@ init-backend:
 
 create-interfaces:
 	$(MAKE) -f $(MK_FILE_DIR)/dev.mk -C $(MK_FILE_DIR) $@
-update-docs:
-	$(MAKE) -f $(MK_FILE_DIR)/dev.mk -C $(MK_FILE_DIR) $@
 .run-task-runner:
-	$(MAKE) -f $(MK_FILE_DIR)/dev.mk -C $(MK_FILE_DIR) $@
-docs-api-specs:
-	$(MAKE) -f $(MK_FILE_DIR)/dev.mk -C $(MK_FILE_DIR) $@
-docs-user:
-	$(MAKE) -f $(MK_FILE_DIR)/dev.mk -C $(MK_FILE_DIR) $@
-create-pages:
-	$(MAKE) -f $(MK_FILE_DIR)/dev.mk -C $(MK_FILE_DIR) $@
-serve-pages:
-	$(MAKE) -f $(MK_FILE_DIR)/dev.mk -C $(MK_FILE_DIR) $@
-new-version:
 	$(MAKE) -f $(MK_FILE_DIR)/dev.mk -C $(MK_FILE_DIR) $@
 
 data-pull:
@@ -53,10 +41,6 @@ data-pull:
 data-push:
 	$(MAKE) -f $(MK_FILE_DIR)/dev.mk -C $(MK_FILE_DIR) $@
 
-push-dockerhub:
-	$(MAKE) -f $(MK_FILE_DIR)/push.mk -C $(MK_FILE_DIR) $@
-push-iqb-registry:
-	$(MAKE) -f $(MK_FILE_DIR)/push.mk -C $(MK_FILE_DIR) $@
 push-helm-chart:
 	$(MAKE) -f $(MK_FILE_DIR)/push.mk -C $(MK_FILE_DIR) $@
 push-helm-chart-production:
@@ -94,8 +78,6 @@ test-backend-initialization-general:
 test-broadcaster-unit:
 	$(MAKE) -f $(MK_FILE_DIR)/dev-test.mk -C $(MK_FILE_DIR) $@
 test-frontend-unit:
-	$(MAKE) -f $(MK_FILE_DIR)/dev-test.mk -C $(MK_FILE_DIR) $@
-test-frontend-integration:
 	$(MAKE) -f $(MK_FILE_DIR)/dev-test.mk -C $(MK_FILE_DIR) $@
 test-file-server-api:
 	$(MAKE) -f $(MK_FILE_DIR)/dev-test.mk -C $(MK_FILE_DIR) $@
@@ -148,18 +130,3 @@ testcenter-init:
 	$(MAKE) -f $(MK_FILE_DIR)/prod.mk -C $(MK_FILE_DIR) $@
 testcenter-update:
 	$(MAKE) -f $(MK_FILE_DIR)/prod.mk -C $(MK_FILE_DIR) $@
-
-prod-test-registry-login:
-	$(MAKE) -f $(MK_FILE_DIR)/prod-test.mk -C $(MK_FILE_DIR) $@
-prod-test-registry-logout:
-	$(MAKE) -f $(MK_FILE_DIR)/prod-test.mk -C $(MK_FILE_DIR) $@
-prod-test-build:
-	$(MAKE) -f $(MK_FILE_DIR)/prod-test.mk -C $(MK_FILE_DIR) $@
-prod-test-up:
-	$(MAKE) -f $(MK_FILE_DIR)/prod-test.mk -C $(MK_FILE_DIR) $@
-prod-test-down:
-	$(MAKE) -f $(MK_FILE_DIR)/prod-test.mk -C $(MK_FILE_DIR) $@
-prod-test-logs:
-	$(MAKE) -f $(MK_FILE_DIR)/prod-test.mk -C $(MK_FILE_DIR) $@
-
--include testcenter-scripts/makefile-plus.mk

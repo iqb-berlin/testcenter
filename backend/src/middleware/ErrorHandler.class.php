@@ -75,13 +75,20 @@ class ErrorHandler {
       $throwable = $newThrowable;
     }
 
+    // Server faults (5xx) may carry internal details like absolute paths in their message.
+    // Clients get a generic text plus the Error-ID (the full message stays in the log);
+    // in test mode the real message is kept so the test suite can assert on it.
+    $clientMessage = ($code >= 500 and !TestEnvironment::$testMode)
+      ? 'Internal error.'
+      : ($throwable->getMessage() ?: $throwable->getDescription());
+
     $response = $app
       ->getResponseFactory()
       ->createResponse()
       ->withStatus($throwable->getCode(), $throwable->getTitle())
       ->withHeader('Content-Type', 'text/html')
       ->withHeader('Error-ID', $errorUniqueId)
-      ->write(htmlspecialchars($throwable->getMessage() ?: $throwable->getDescription()));
+      ->write(htmlspecialchars($clientMessage));
 
     if (TestEnvironment::$testMode) {
       return $response

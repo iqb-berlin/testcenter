@@ -7,38 +7,25 @@
 
 # IQB-Testcenter
 
-The IQB-Testcenter is a web application for technology based accessed and surveys. It is developed by
+The IQB-Testcenter is a web application for technology based assessments and surveys. It is developed by
 [the Institute for Educational Quality Improvement (IQB)](https://www.iqb.hu-berlin.de/) in Berlin, Germany.
 
-### General
+### Running a study
 
-* [Bug Reports](https://github.com/iqb-berlin/testcenter/issues)
-* [Changelog](https://github.com/iqb-berlin/testcenter/releases/latest)
-* **[Detailed Documentation to start the test run](https://iqb-berlin.github.io/tba-info/study-run/)**
+How to prepare and run a study with the Testcenter is described in the TBA-Wiki:
 
-### Advanced Documentation
+* [Running a study](https://iqb-berlin.github.io/tba-info/study-run/)
+* [Test files](https://iqb-berlin.github.io/tba-info/study-run/preparation/test-files/)
 
-To start a test via the Testcenter, several test files are required. These contain the units and serve the purpose of configuration.
-Two test files are required for the configuration. They are named **Booklet-XML** and **Testtaker-XML**. The structure and content of these two files are documented in [IQB-Specifications](https://iqb-specifications.github.io/).
-There are one repository for testtaker-XML and one for booklet-XML:
+### Documentation
 
-* [Booklet](https://iqb-specifications.github.io/testcenter-booklet-xml/)
-* [Testtaker](https://iqb-specifications.github.io/testcenter-testtaker-xml/)
+[**Here**](https://pages.cms.hu-berlin.de/iqb/testcenter/) you can find documentation for administrators and developers:
+  configuration, development, file specifications and APIs
 
-**More detailed information about the test files can be found in the [TBA-Wiki](https://iqb-berlin.github.io/tba-info/study-run/preparation/test-files/).**
+The changes of each version are listed with its release under
+[Releases](https://github.com/iqb-berlin/testcenter/releases).
 
-### Install & Run
+### Contributing
 
-* [Installation and Update](https://pages.cms.hu-berlin.de/iqb/testcenter/pages/installation-prod.html)
-
-### For Developers
-
-* [Installation for Development](https://pages.cms.hu-berlin.de/iqb/testcenter/pages/installation-dev.html)
-* [Developer's Guide](https://pages.cms.hu-berlin.de/iqb/testcenter/pages/developer-guide.html)
-* [Contributing Guide](docs/CONTRIBUTING.md)
-* [Style Guide](docs/style-guide.md)
-
-### API Documentation
-
-* [HTTP API Backend](https://pages.cms.hu-berlin.de/iqb/testcenter/dist/api/index.html)
-* [Verona Player API](https://verona-interfaces.github.io/player/)
+How a contribution goes from idea to merge is described in the
+[Contributing Guide](docs/CONTRIBUTING.md).

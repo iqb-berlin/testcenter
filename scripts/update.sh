@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-set -e
 
 # This is a small, version-independent bootstrap script, analogous to scripts/install.sh. Its only
 # job is to figure out which release the user wants to update to and then download + run the
@@ -23,6 +22,10 @@ declare REPO_API="https://api.github.com/repos/iqb-berlin/${APP_NAME}"
 declare UPDATE_OPTION
 declare SOURCE_VERSION
 declare TARGET_VERSION
+
+# Exit code of the backup phase when the user chose to stop the update there. Must match
+# ABORTED_BY_USER in scripts/updater.sh.
+declare ABORTED_BY_USER=2
 
 check_version_tag_exists() {
   declare tag="${1}"
@@ -122,6 +125,10 @@ run_backup_phase() {
   bash "${source_updater}" -s "${SOURCE_VERSION}" -t "${TARGET_VERSION}" -p backup
   declare exit_code=$?
   rm -f "${source_updater}"
+
+  if [ ${exit_code} -eq ${ABORTED_BY_USER} ]; then
+    exit 0
+  fi
 
   if [ ${exit_code} -ne 0 ]; then
     exit ${exit_code}

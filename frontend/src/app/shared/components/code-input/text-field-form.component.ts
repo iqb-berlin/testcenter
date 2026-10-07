@@ -36,7 +36,7 @@ import {
           </button>
         }
       </mat-form-field>
-      <button type="submit" matButton="filled" [disabled]="codeinputform.invalid" data-cy="continue">
+      <button type="submit" matButton="filled" [disabled]="codeinputform.invalid || disabled" data-cy="continue">
         <mat-icon svgIcon="keyboard_arrow_right"></mat-icon>
         {{ buttonLabel }}
       </button>
@@ -60,6 +60,7 @@ import {
 })
 export class TextFieldFormComponent {
   @Input() buttonLabel: string = 'Anmelden';
+  @Input() disabled: boolean = false;
   @Output() submitCode = new EventEmitter<string>();
 
   codeinputform = new FormGroup({

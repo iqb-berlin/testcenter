@@ -13,7 +13,7 @@ paths:
         Retrieves a certain test: It's content, state and the mode of current login-session.
         `laststate` is an array of key-value-pairs stored for this test.
         The test-mode is basically a string to be interpretated by the frontend. For more details
-        about that see: https://github.com/iqb-berlin/testcenter/blob/master/docs/pages/test-mode.md
+        about that see: https://pages.cms.hu-berlin.de/iqb/testcenter/pages/test-mode.html
 
           * `run-hot-return` and `run-hot-restart` - the real testing situation
           * `run-review` - for reviewers of of units and booklets
@@ -26,7 +26,8 @@ paths:
           * `monitor-group` is the monitor account to supervise a group of testees
           * `monitor-study` is an account to supervise alls groups of a study
           * For `run-hot-restart` and `demo` every session is unique so the test will be restarted everytime a new session is started (eg after logout) and it will not possible to return to the previous session. Provided data from previous sessions will be stored anyway.
-          * `run-hot-return` and `run-hot-restart` - only these types of test wil be broadcasted via Broadcaster, so they can be views in the group-monitor.
+          * `run-hot-return`, `run-hot-restart` and `run-trial` - only these types of test wil be broadcasted via Broadcaster, so they can be views in the group-monitor.
+          * `run-review` and `run-trial` - only these can create, change and delete reviews.
       tags:
         - run test
       parameters:
@@ -209,7 +210,7 @@ paths:
               schema:
                 $ref: './components.spec.yml#/components/schemas/error'
         "403":
-          description: Forbidden
+          description: Forbidden - the test belongs to someone else, or the mode of the login does not allow reviews
           content:
             text/html:
               schema:
@@ -275,7 +276,7 @@ paths:
               schema:
                 $ref: './components.spec.yml#/components/schemas/error'
         "403":
-          description: Forbidden
+          description: Forbidden - the test belongs to someone else, or the mode of the login does not allow reviews
           content:
             text/html:
               schema:
@@ -592,7 +593,7 @@ paths:
                 schema:
                   $ref: './components.spec.yml#/components/schemas/error'
           "403":
-            description: Forbidden
+            description: Forbidden - the test belongs to someone else, or the mode of the login does not allow reviews
             content:
               text/html:
                 schema:
@@ -648,7 +649,7 @@ paths:
                 schema:
                   $ref: './components.spec.yml#/components/schemas/error'
           "403":
-            description: Forbidden
+            description: Forbidden - the test belongs to someone else, or the mode of the login does not allow reviews
             content:
               text/html:
                 schema:
@@ -727,7 +728,7 @@ paths:
                 schema:
                   $ref: './components.spec.yml#/components/schemas/error'
           "403":
-            description: Forbidden
+            description: Forbidden - the test belongs to someone else, or the mode of the login does not allow reviews
             content:
               text/html:
                 schema:
@@ -776,7 +777,7 @@ paths:
                 schema:
                   $ref: './components.spec.yml#/components/schemas/error'
           "403":
-            description: Forbidden
+            description: Forbidden - the test belongs to someone else, or the mode of the login does not allow reviews
             content:
               text/html:
                 schema:

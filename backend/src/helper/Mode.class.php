@@ -3,77 +3,34 @@
 /** @noinspection PhpUnhandledExceptionInspection */
 declare(strict_types=1);
 
-// TODO unit test
-
 class Mode {
-  const array relations = [
-    'RW' => ['RO'],
-    'RO' => [],
-    'monitor' => [
-      'monitor-group',
-      'monitor-study'
-    ],
-    'monitor-group' => [],
-    'monitor-study' => [],
-  ];
+  /** @var array<string, array<string, bool>>|null mode (upper case) => option => enabled */
+  private static ?array $capabilities = null;
 
-  // capabilities are defined in /definitions/, this is a digest on what concerns the backend TODO use the /definitions/ maybe
-  const array capabilities = [
-    'run-hot-return' => [
-      'monitorable'
-    ],
-    'run-hot-restart' => [
-      'alwaysNewSession',
-      'monitorable'
-    ],
-    'run-demo' => [
-      'alwaysNewSession'
-    ],
-    'run-trial' => [
-      'monitorable'
-    ],
-    'run-review' => [],
-    'run-simulation' => [],
-    'monitor-group' => [
-      'protectedLogin'
-    ],
-    'monitor-study' => [
-      'protectedLogin'
-    ],
-    'sys-check-login' => [
-      'alwaysNewSession'
-    ],
-  ];
-
-  static function withChildren(string $role): array {
-    if (!isset(Mode::relations[$role])) {
-      return [];
-    }
-
-    $roles = [$role];
-
-    foreach (Mode::relations[$role] as $childRole) {
-      $roles = array_merge($roles, Mode::withChildren($childRole));
-    }
-
-    return $roles;
-  }
-
-  static function hasCapability(string $role, string $capability): bool {
-    return in_array($capability, Mode::capabilities[$role] ?? []);
+  static function hasCapability(string $mode, ModeCapability $capability): bool {
+    return self::capabilities()[strtoupper($mode)][$capability->value] ?? false;
   }
 
   static function requiresPassword(string $role): bool {
     return SystemConfig::$login_requirePassword && ($role !== 'sys-check-login');
   }
 
-  static function getByCapability(string $capability): array {
-    $roles = [];
-    foreach (Mode::capabilities as $role => $capabilities) {
-      if (in_array($capability, $capabilities)) {
-        $roles[] = $role;
-      }
+  /**
+   * @return string[] - the modes (lower case, as used in Testtakers files) that have the capability
+   */
+  static function getByCapability(ModeCapability $capability): array {
+    $modes = array_filter(self::capabilities(), fn(array $options) => $options[$capability->value] ?? false);
+    return array_map('strtolower', array_keys($modes));
+  }
+
+  /**
+   * @return array<string, array<string, bool>> - mode (upper case) => option => enabled
+   */
+  private static function capabilities(): array {
+    if (self::$capabilities === null) {
+      $definition = JSON::decode(file_get_contents(ROOT_DIR . '/definitions/testtaker/test-mode.json'), true);
+      self::$capabilities = array_map(fn(array $mode) => $mode['config'], $definition);
     }
-    return $roles;
+    return self::$capabilities;
   }
 }

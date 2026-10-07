@@ -23,30 +23,11 @@ class ResponseReportOutput extends Report {
   }
 
   private function generateCsvReportData(array $responseData): string {
-    $csv[] = implode(
-      self::DELIMITER,
-      ['groupname', 'loginname', 'code', 'bookletname', 'unitname', 'originalUnitId', 'responses', 'laststate']
+    $columns = ['groupname', 'loginname', 'code', 'bookletname', 'unitname', 'originalUnitId', 'responses', 'laststate'];
+    $rows = array_map(
+      fn(array $row) => [...$row, 'responses' => json_encode($row['responses'])],
+      $responseData
     );
-
-    foreach ($responseData as $row) {
-      $csv[] = implode(
-        self::DELIMITER,
-        [
-          sprintf(self::CSV_CELL_FORMAT, $row['groupname']),
-          sprintf(self::CSV_CELL_FORMAT, $row['loginname']),
-          sprintf(self::CSV_CELL_FORMAT, $row['code']),
-          sprintf(self::CSV_CELL_FORMAT, $row['bookletname']),
-          sprintf(self::CSV_CELL_FORMAT, $row['unitname']),
-          sprintf(self::CSV_CELL_FORMAT, $row['originalUnitId']),
-          sprintf(self::CSV_CELL_FORMAT, preg_replace('/"/', '""', json_encode($row['responses']))),
-          sprintf(self::CSV_CELL_FORMAT, preg_replace('/"/', '""', $row['laststate'] ?? ''))
-        ]
-      );
-
-    }
-
-    $csv = implode(self::LINE_ENDING, $csv);
-
-    return self::BOM . $csv;
+    return CSV::BOM . CSV::build($rows, $columns);
   }
 }
