@@ -2,8 +2,16 @@
 
 @mixin overrides {
   @include mat.toolbar-overrides((
-    container-background-color: var(--mat-sys-primary)
+    container-background-color: var(--mat-sys-primary),
+    container-text-color: var(--mat-sys-on-primary)
   ));
+
+  .mat-toolbar {
+    @include mat.icon-button-overrides((
+      icon-color: var(--mat-sys-on-primary),
+      disabled-icon-color: color-mix(in srgb, var(--mat-sys-on-primary) 38%, transparent)
+    ));
+  }
 
   @include mat.button-overrides((
     filled-container-shape: 10px,
