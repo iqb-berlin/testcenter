@@ -42,4 +42,10 @@ describe('check parameter: header_content', { testIsolation: true }, () => {
     cy.get('[data-cy="unit-screenheader"]')
       .contains('Aufgabe1');
   });
+
+  it('UNIT_LABEL_SHORT', () => {
+    loginTestTaker('Bklt_Config-55', '123');
+    cy.get('[data-cy="header"] h1')
+      .should('have.text', 'A1');
+  });
 });

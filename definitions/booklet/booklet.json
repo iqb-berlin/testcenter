@@ -134,7 +134,7 @@
         "label": { "type": "string" },
         "labelshort": {
           "type": "string",
-          "description": "Optionaler Kurzname der Unit, der in der Aufgabennavigation angezeigt werden kann. Ab Testcenterversion 18.0.0 hat dieses Label keine Funktion mehr."},
+          "description": "Optionaler Kurzname der Unit. Wird im Gruppen-Monitor angezeigt und kann über die Booklet-Parameter header_content, navbar_unit_label und toolbar_unit_label auch während des Tests angezeigt werden."},
         "alias": {
           "type": "string",
           "description": "Da im Booklet keine Unit-Id Duplikate zulässig sind, kann manuell ein Alias vergeben werden. Wird ein Booklet in das Testcenter geladen mit Unit-Id Duplikaten, wird automatisch ein Alias vergeben.",

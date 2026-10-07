@@ -55,10 +55,12 @@ export class BookletConfig extends BookletConfigData {
   get navbar_page_controls_hidden() { return this._navbar_page_controls_hidden; }
   get navbar_backward_button() { return this._navbar_backward_button; }
   get navbar_forward_button() { return this._navbar_forward_button; }
-  get toolbar_show_unit_title() {
+  get toolbar_unit_label() {
+    // toolbar_show_unit_title replaced unit_title, so either of them counts as the configured legacy key
+    const legacyKey = this.configuredKeys.has('toolbar_show_unit_title') ? 'toolbar_show_unit_title' : 'unit_title';
     return this.resolveLegacyValue(
-      'toolbar_show_unit_title', 'unit_title', this._toolbar_show_unit_title, this._unit_title,
-      { OFF: 'FALSE', ON: 'TRUE' }
+      'toolbar_unit_label', legacyKey, this._toolbar_unit_label, this.toolbar_show_unit_title,
+      { TRUE: 'LABEL', FALSE: 'HIDDEN' }
     );
   }
 
@@ -104,6 +106,13 @@ export class BookletConfig extends BookletConfigData {
   get unit_navibuttons() { return this._unit_navibuttons; }
   get unit_menu() { return this._unit_menu; }
   get unit_screenheader() { return this._unit_screenheader; }
+  get toolbar_show_unit_title() {
+    return this.resolveLegacyValue(
+      'toolbar_show_unit_title', 'unit_title', this._toolbar_show_unit_title, this._unit_title,
+      { OFF: 'FALSE', ON: 'TRUE' }
+    );
+  }
+
   get unit_title() { return this._unit_title; }
   get unit_show_time_left() { return this._unit_show_time_left; }
   get show_fullscreen_button() { return this._show_fullscreen_button; }

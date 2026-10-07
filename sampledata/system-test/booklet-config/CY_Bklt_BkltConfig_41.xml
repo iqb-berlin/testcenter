@@ -4,11 +4,11 @@
 	<Metadata>
 		<Id>Cy-Bklt_BkltConfig-41</Id>
 		<Label>Bklt-config-41</Label>
-		<Description>toolbar_show_unit_title value 1</Description>
+		<Description>toolbar_unit_label value 1</Description>
 	</Metadata>
 
   <BookletConfig>
-    <Config key="toolbar_show_unit_title">FALSE</Config>
+    <Config key="toolbar_unit_label">HIDDEN</Config>
   </BookletConfig>
 
   <Units>

@@ -39,8 +39,8 @@
 
 @if (!isLoading) {
   <div class="toolbar-header flex-row" data-cy="unit-screenheader">
-    @if (tcs.booklet?.config?.toolbar_show_unit_title !== 'FALSE') {
-      <p data-cy="unit-title">{{currentUnit?.label}}</p>
+    @if (tcs.booklet?.config?.toolbar_unit_label !== 'HIDDEN') {
+      <p data-cy="unit-title">{{toolbarUnitLabel}}</p>
     }
 
     <div class="toolbar-right" data-cy="toolbar-right">

@@ -2,19 +2,19 @@
 <Booklet xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                xsi:noNamespaceSchemaLocation="https://w3id.org/iqb/spec/testcenter-booklet-xml/18.0">
 	<Metadata>
-		<Id>Cy-Bklt_BkltConfig-40</Id>
-		<Label>Bklt-config-40</Label>
-		<Description>toolbar_unit_label default</Description>
+		<Id>Cy-Bklt_BkltConfig-52</Id>
+		<Label>Bklt-config-52</Label>
+		<Description>toolbar_unit_label value 2</Description>
 	</Metadata>
 
   <BookletConfig>
-    <Config key="toolbar_unit_label">LABEL</Config>
+    <Config key="toolbar_unit_label">LABEL_SHORT</Config>
   </BookletConfig>
 
   <Units>
     <Testlet id="Tslt1" label="Aufgabenblock">
-      <Unit id="CY-Unit.Sample-101" label="Aufgabe1" labelshort="1"/>
-      <Unit id="CY-Unit.Sample-101" label="Aufgabe2" labelshort="2" alias="cpy"/>
+      <Unit id="CY-Unit.Sample-101" label="Aufgabe1" labelshort="A1"/>
+      <Unit id="CY-Unit.Sample-101" label="Aufgabe2" labelshort="A2" alias="cpy"/>
     </Testlet>
   </Units>
 </Booklet>

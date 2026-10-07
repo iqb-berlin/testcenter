@@ -16,14 +16,14 @@ export class BookletConfigData {
   protected _unit_state_buffer_time: string = '6000';
   protected _test_state_buffer_time: string = '1000';
   protected _header_hidden: 'TRUE' | 'FALSE' = 'FALSE';
-  protected _header_content: 'NONE' | 'BOOKLET_LABEL' | 'BLOCK_LABEL' | 'UNIT_LABEL' = 'BOOKLET_LABEL';
-  protected _navbar_unit_label: 'HIDDEN' | 'INDEX' | 'LABEL' = 'INDEX';
+  protected _header_content: 'NONE' | 'BOOKLET_LABEL' | 'BLOCK_LABEL' | 'UNIT_LABEL' | 'UNIT_LABEL_SHORT' = 'BOOKLET_LABEL';
+  protected _navbar_unit_label: 'HIDDEN' | 'INDEX' | 'LABEL' | 'LABEL_SHORT' = 'INDEX';
   protected _navbar_unit_controls_hidden: 'TRUE' | 'FALSE' = 'FALSE';
   protected _navbar_page_label: 'HIDDEN' | 'INDEX' | 'LABEL' | 'LIST' = 'INDEX';
   protected _navbar_page_controls_hidden: 'TRUE' | 'FALSE' = 'FALSE';
   protected _navbar_backward_button: 'HIDDEN' | 'DYNAMIC' | 'UNITS' | 'PAGES' = 'HIDDEN';
   protected _navbar_forward_button: 'HIDDEN' | 'DYNAMIC' | 'UNITS' | 'PAGES' = 'HIDDEN';
-  protected _toolbar_show_unit_title: 'TRUE' | 'FALSE' = 'TRUE';
+  protected _toolbar_unit_label: 'HIDDEN' | 'LABEL' | 'LABEL_SHORT' = 'LABEL';
   protected _toolbar_show_unit_list: 'TRUE' | 'FALSE' = 'FALSE';
   protected _toolbar_show_fullscreen_button: 'TRUE' | 'FALSE' = 'FALSE';
   protected _toolbar_show_reload_button: 'TRUE' | 'FALSE' = 'FALSE';
@@ -33,6 +33,7 @@ export class BookletConfigData {
   protected _unit_navibuttons: 'OFF' | 'INDEX' | 'LABEL' = 'INDEX';
   protected _unit_menu: 'OFF' | 'FULL' = 'OFF';
   protected _unit_screenheader: 'OFF' | 'WITH_UNIT_TITLE' | 'WITH_BOOKLET_TITLE' | 'WITH_BLOCK_TITLE' | 'EMPTY' = 'EMPTY';
+  protected _toolbar_show_unit_title: 'TRUE' | 'FALSE' = 'TRUE';
   protected _unit_title: 'OFF' | 'ON' = 'ON';
   protected _unit_show_time_left: 'OFF' | 'ON' = 'OFF';
   protected _show_fullscreen_button: 'ON' | 'OFF' = 'OFF';

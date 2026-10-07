@@ -130,7 +130,8 @@
       "NONE": "Titel auf der Kopfzeile bleibt leer",
       "BOOKLET_LABEL": "Titel des Testhefts/Booklets",
       "BLOCK_LABEL": "Titel des Aufgabenblocks",
-      "UNIT_LABEL": "Titel der Unit"
+      "UNIT_LABEL": "Titel der Unit",
+      "UNIT_LABEL_SHORT": "Kurztitel der Unit (Attribut labelshort im Booklet-XML; fehlt es, wird der Titel der Unit angezeigt)"
     },
     "defaultvalue": "BOOKLET_LABEL"
   },
@@ -139,7 +140,8 @@
     "options": {
       "HIDDEN": "Anzeige der aktiven Unit wird ausgeblendet (übernimmt ggf. die Aufgabe selbst)",
       "INDEX": "Index der aktuellen Unit und die Gesamtzahl der Units",
-      "LABEL": "Der Anzeigename der aktuellen Unit wird angezeigt"
+      "LABEL": "Der Anzeigename der aktuellen Unit wird angezeigt",
+      "LABEL_SHORT": "Der Kurztitel der aktuellen Unit wird angezeigt (Attribut labelshort im Booklet-XML; fehlt es, wird der Anzeigename angezeigt)"
     },
     "defaultvalue": "INDEX"
   },
@@ -189,13 +191,14 @@
     },
     "defaultvalue": "HIDDEN"
   },
-  "toolbar_show_unit_title": {
+  "toolbar_unit_label": {
     "label": "Anzeige des Titels der aktiven Unit auf der Werkzeugleiste",
     "options": {
-      "TRUE": "Titel der Unit wird angezeigt",
-      "FALSE": "Titel wird ausgeblendet"
+      "HIDDEN": "Titel wird ausgeblendet",
+      "LABEL": "Titel der Unit wird angezeigt",
+      "LABEL_SHORT": "Kurztitel der Unit wird angezeigt (Attribut labelshort im Booklet-XML; fehlt es, wird der Titel der Unit angezeigt)"
     },
-    "defaultvalue": "TRUE"
+    "defaultvalue": "LABEL"
   },
   "toolbar_show_unit_list": {
     "label": "Listenansicht aller Units via Werkzeugleiste",
@@ -282,10 +285,20 @@
     },
     "defaultvalue": "EMPTY"
   },
+  "toolbar_show_unit_title": {
+    "label": "Anzeige des Titels der aktiven Unit auf der Werkzeugleiste",
+    "deprecated": true,
+    "deprecationNote": "Nutzen Sie stattdessen toolbar_unit_label",
+    "options": {
+      "TRUE": "Titel der Unit wird angezeigt",
+      "FALSE": "Titel wird ausgeblendet"
+    },
+    "defaultvalue": "TRUE"
+  },
   "unit_title": {
     "label": "Festlegung, ob oberhalb des Unitbereiches eine Zeile mit dem Unit-Titel gezeigt werden soll",
     "deprecated": true,
-    "deprecationNote": "Nutzen Sie stattdessen toolbar_show_unit_title",
+    "deprecationNote": "Nutzen Sie stattdessen toolbar_unit_label",
     "options": {
       "OFF": "Keine Titelzeile",
       "ON": "Eine Zeile wird eingeblendet mit dem Unit-Titel (s. Booklet-XML)."

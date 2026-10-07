@@ -52,6 +52,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
   sideNavContent: 'unit-menu' | 'review-form' = 'unit-menu';
 
   currentUnit: Unit | null = null;
+  toolbarUnitLabel = '';
 
   unitNavContext: NavControlContext = {
     labelMode: 'INDEX',
@@ -156,10 +157,19 @@ export class TestControllerComponent implements OnInit, OnDestroy {
 
       this.tcs.currentUnitSequenceId$.subscribe(() => {
         this.currentUnit = this.tcs.currentUnit;
+        const unitLabel = this.currentUnit?.label || '';
+        const unitLabelShort = this.currentUnit?.labelShort || unitLabel;
+        this.toolbarUnitLabel = (this.tcs.booklet?.config.toolbar_unit_label === 'LABEL_SHORT') ?
+          unitLabelShort :
+          unitLabel;
+
+        let navbarUnitLabel = unitLabel;
+        if (this.tcs.booklet?.config.navbar_unit_label === 'INDEX') navbarUnitLabel = 'Aufgabe';
+        if (this.tcs.booklet?.config.navbar_unit_label === 'LABEL_SHORT') navbarUnitLabel = unitLabelShort;
         this.unitNavContext = {
           labelMode: (this.tcs.booklet?.config.navbar_unit_label === 'INDEX') ? 'INDEX' : 'LABEL',
           readonly: (this.tcs.booklet?.config.navbar_unit_controls_hidden === 'TRUE'),
-          label: (this.tcs.booklet?.config.navbar_unit_label === 'INDEX') ? 'Aufgabe' : this.currentUnit?.label || '',
+          label: navbarUnitLabel,
           currentIndex: this.tcs.currentUnitSequenceId - 1,
           maxIndex: Object.keys(this.tcs.units).length
         };
@@ -178,7 +188,10 @@ export class TestControllerComponent implements OnInit, OnDestroy {
             this.headerService.title = this.tcs.booklet?.metadata.label;
             break;
           case 'UNIT_LABEL':
-            this.headerService.title = this.currentUnit?.label;
+            this.headerService.title = unitLabel;
+            break;
+          case 'UNIT_LABEL_SHORT':
+            this.headerService.title = unitLabelShort;
             break;
           // no default
           }

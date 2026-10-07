@@ -6,6 +6,8 @@ describe('BookletConfig migration layer', () => {
     ['page_navibuttons', 'FULL', 'navbar_page_label', 'LIST'],
     ['unit_screenheader', 'WITH_BLOCK_TITLE', 'header_content', 'BLOCK_LABEL'],
     ['unit_title', 'OFF', 'toolbar_show_unit_title', 'FALSE'],
+    ['unit_title', 'OFF', 'toolbar_unit_label', 'HIDDEN'],
+    ['toolbar_show_unit_title', 'FALSE', 'toolbar_unit_label', 'HIDDEN'],
     ['unit_menu', 'FULL', 'toolbar_show_unit_list', 'TRUE'],
     ['show_fullscreen_button', 'ON', 'toolbar_show_fullscreen_button', 'TRUE'],
     ['show_reload_button', 'ON', 'toolbar_show_reload_button', 'TRUE'],
@@ -50,6 +52,17 @@ describe('BookletConfig migration layer', () => {
     });
 
     expect(config.navbar_page_label).toBe('LIST');
+  });
+
+  it('prefers toolbar_show_unit_title over unit_title when resolving toolbar_unit_label', () => {
+    const config = new BookletConfig();
+
+    config.setFromKeyValuePairs({
+      unit_title: 'OFF',
+      toolbar_show_unit_title: 'TRUE'
+    });
+
+    expect(config.toolbar_unit_label).toBe('LABEL');
   });
 
   it('loads old and new keys from XML', () => {

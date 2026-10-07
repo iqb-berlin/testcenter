@@ -26,7 +26,7 @@
     <Config key="navbar_page_controls_hidden">FALSE</Config>
     <Config key="navbar_backward_button">HIDDEN</Config>
     <Config key="navbar_forward_button">HIDDEN</Config>
-    <Config key="toolbar_show_unit_title">TRUE</Config>
+    <Config key="toolbar_unit_label">LABEL</Config>
     <Config key="toolbar_show_unit_list">FALSE</Config>
     <Config key="toolbar_show_fullscreen_button">FALSE</Config>
     <Config key="toolbar_show_reload_button">FALSE</Config>

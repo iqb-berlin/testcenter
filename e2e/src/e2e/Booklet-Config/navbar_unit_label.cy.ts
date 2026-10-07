@@ -29,6 +29,14 @@ describe('check parameter: navbar_unit_label', { testIsolation: true }, () => {
       .contains('Aufgabe1');
   });
 
+  it('LABEL_SHORT', () => {
+    loginTestTaker('Bklt_Config-54', '123');
+    cy.get('[data-cy="unit-navigation-label"]')
+      .invoke('text')
+      .invoke('trim')
+      .should('equal', 'A1');
+  });
+
   it('HIDDEN', () => {
     loginTestTaker('Bklt_Config-31', '123');
     cy.get('[data-cy="unit-title"]')
