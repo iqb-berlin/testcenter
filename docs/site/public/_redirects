@@ -1,0 +1,5 @@
+# Read by GitLab Pages: https://docs.gitlab.com/user/project/pages/redirects/
+# Paths start with the project path because the site is served from the default Pages domain.
+
+# The API reference was published under dist/api/ before the switch to VitePress.
+/testcenter/dist/api/* /testcenter/api/:splat 301
