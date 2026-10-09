@@ -117,7 +117,7 @@ merged.
 
 ## 4. Coding Standards
 
-- Our conventions are collected in the [style guide](style-guide.md).
+- Our conventions are collected in the chapter: **Style Guide**.
 - Please run formatting and linting locally before pushing.
 - New functionality needs **tests**; bugfixes should ideally include a
   regression test.
