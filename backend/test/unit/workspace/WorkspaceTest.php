@@ -84,6 +84,8 @@ class WorkspaceTest extends TestCase {
 
   function tearDown(): void {
     Mockery::close();
+    SystemConfig::$storage_driver = 'filesystem';
+    Storage::setDriver(null);
     unset($this->vfs);
   }
 
@@ -102,6 +104,58 @@ class WorkspaceTest extends TestCase {
     $result = $workspace->getWorkspacePath();
     $expectation = 'vfs://root/data/ws_1';
     $this->assertEquals($expectation, $result);
+  }
+
+  /**
+   * @param string[] $objectKeys keys the fake object store holds
+   */
+  private function useObjectStore(array $objectKeys): StorageDriver|MockInterface {
+    $driver = Mockery::mock(StorageDriver::class);
+    $driver->allows('exists')->andReturnUsing(fn(string $key): bool => in_array($key, $objectKeys));
+    SystemConfig::$storage_driver = 's3';
+    Storage::setDriver($driver);
+
+    return $driver;
+  }
+
+  function test_getFilePath_objectStore_existingObject() {
+    $this->useObjectStore(['ws_1/Resource/player.html', 'ws_1/Resource/sub/file.html']);
+    $workspace = new Workspace(1);
+
+    $this->assertSame('vfs://root/data/ws_1/Resource/player.html', $workspace->getFilePath('Resource', 'player.html'));
+    $this->assertSame(
+      'vfs://root/data/ws_1/Resource/sub/file.html',
+      $workspace->getFilePath('Resource', 'sub/file.html')
+    );
+  }
+
+  function test_getFilePath_objectStore_missingObject() {
+    $this->useObjectStore(['ws_1/Resource/player.html']);
+
+    $this->assertNull((new Workspace(1))->getFilePath('Resource', 'other.html'));
+  }
+
+  function test_getFilePath_objectStore_rejectsUnknownTypeWithoutAskingTheStore() {
+    $driver = $this->useObjectStore(['ws_1/Secrets/player.html']);
+    $driver->shouldNotReceive('exists');
+
+    $this->assertNull((new Workspace(1))->getFilePath('Secrets', 'player.html'));
+  }
+
+  function test_getFilePath_objectStore_rejectsTraversalWithoutAskingTheStore() {
+    $driver = $this->useObjectStore([
+      'ws_1/Resource/../Booklet/SAMPLE_BOOKLET.XML',
+      'ws_1/Resource/../../ws_2/Resource/player.html',
+      'ws_1/Resource/./player.html',
+      'ws_1/Resource/sub//file.html',
+      'ws_1/Resource/',
+    ]);
+    $driver->shouldNotReceive('exists');
+    $workspace = new Workspace(1);
+
+    foreach (['../Booklet/SAMPLE_BOOKLET.XML', '../../ws_2/Resource/player.html', './player.html', 'sub//file.html', ''] as $fileName) {
+      $this->assertNull($workspace->getFilePath('Resource', $fileName), "`$fileName` must be rejected");
+    }
   }
 
   function test_deleteFiles() {

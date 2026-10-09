@@ -140,6 +140,11 @@ class TestController extends Controller {
       throw new HttpNotFoundException($request, "File not found: `$path`");
     }
 
+    if (Storage::isObjectStore()) {
+      $url = Storage::driver()->presignGet(Storage::toLogical($filePath), SystemConfig::$storage_presignTtl);
+      return $response->withStatus(302)->withHeader('Location', $url);
+    }
+
     return FileResponse::stream($response, $filePath)
       ->withHeader('X-Source', 'backend');
   }
