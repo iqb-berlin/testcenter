@@ -48,4 +48,10 @@ describe('check parameter: header_content', { testIsolation: true }, () => {
     cy.get('[data-cy="header"] h1')
       .should('have.text', 'A1');
   });
+
+  it('UNIT_LABEL_SHORT falls back to the label if the unit has no labelshort', () => {
+    loginTestTaker('Bklt_Config-56', '123');
+    cy.get('[data-cy="unit-title"]')
+      .should('have.text', 'Aufgabe1');
+  });
 });
