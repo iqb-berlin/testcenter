@@ -71,7 +71,7 @@ class ErrorHandlerTest extends TestCase {
     $this->assertEquals('Invalid root-tag: `&lt;Invalid&gt;`', (string) $response->getBody());
   }
 
-  // this is what the api-docs promise for every error response, see docs/api/components.spec.yml
+  // this is what the api-docs promise for every error response, see docs/api/api.spec.yml
   public function test_answersEveryErrorAsTextWithMessageAndErrorId() {
     $errors = [
       'error with a code of its own' => new HttpError('Workspace with id `13` does not exist!', 400),

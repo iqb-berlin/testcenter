@@ -1,9 +1,3 @@
-openapi: 3.0.0
-
-info:
-  title: ""
-  version: "%%%VERSION%%%"
-
 paths:
 
   /test/{test_id}:
@@ -57,19 +51,19 @@ paths:
           content:
             text/html:
               schema:
-                $ref: './components.spec.yml#/components/schemas/error'
+                $ref: './api.spec.yml#/components/schemas/error'
         "403":
           description: Forbidden
           content:
             text/html:
               schema:
-                $ref: './components.spec.yml#/components/schemas/error'
+                $ref: './api.spec.yml#/components/schemas/error'
         "500":
           description: Server Error
           content:
             text/html:
               schema:
-                $ref: './components.spec.yml#/components/schemas/error'
+                $ref: './api.spec.yml#/components/schemas/error'
 
   /test/{test_id}/unit/{unit_name}:
     get:
@@ -130,19 +124,19 @@ paths:
           content:
             text/html:
               schema:
-                $ref: './components.spec.yml#/components/schemas/error'
+                $ref: './api.spec.yml#/components/schemas/error'
         "403":
           description: Forbidden
           content:
             text/html:
               schema:
-                $ref: './components.spec.yml#/components/schemas/error'
+                $ref: './api.spec.yml#/components/schemas/error'
         "500":
           description: Server Error
           content:
             text/html:
               schema:
-                $ref: './components.spec.yml#/components/schemas/error'
+                $ref: './api.spec.yml#/components/schemas/error'
 
   /test/{test_id}/unit/{unit_name}/review:
     put:
@@ -208,19 +202,19 @@ paths:
           content:
             text/html:
               schema:
-                $ref: './components.spec.yml#/components/schemas/error'
+                $ref: './api.spec.yml#/components/schemas/error'
         "403":
           description: Forbidden - the test belongs to someone else, or the mode of the login does not allow reviews
           content:
             text/html:
               schema:
-                $ref: './components.spec.yml#/components/schemas/error'
+                $ref: './api.spec.yml#/components/schemas/error'
         "500":
           description: Server Error
           content:
             text/html:
               schema:
-                $ref: './components.spec.yml#/components/schemas/error'
+                $ref: './api.spec.yml#/components/schemas/error'
 
   /test/{test_id}/review:
     put:
@@ -274,19 +268,19 @@ paths:
           content:
             text/html:
               schema:
-                $ref: './components.spec.yml#/components/schemas/error'
+                $ref: './api.spec.yml#/components/schemas/error'
         "403":
           description: Forbidden - the test belongs to someone else, or the mode of the login does not allow reviews
           content:
             text/html:
               schema:
-                $ref: './components.spec.yml#/components/schemas/error'
+                $ref: './api.spec.yml#/components/schemas/error'
         "500":
           description: Server Error
           content:
             text/html:
               schema:
-                $ref: './components.spec.yml#/components/schemas/error'
+                $ref: './api.spec.yml#/components/schemas/error'
 
   /test/{test_id}/unit/{unit_name}/reviews:
     get:
@@ -404,19 +398,19 @@ paths:
           content:
             text/html:
               schema:
-                $ref: './components.spec.yml#/components/schemas/error'
+                $ref: './api.spec.yml#/components/schemas/error'
         "403":
           description: Forbidden
           content:
             text/html:
               schema:
-                $ref: './components.spec.yml#/components/schemas/error'
+                $ref: './api.spec.yml#/components/schemas/error'
         "500":
           description: Server Error
           content:
             text/html:
               schema:
-                $ref: './components.spec.yml#/components/schemas/error'
+                $ref: './api.spec.yml#/components/schemas/error'
 
   /test/{test_id}/reviews:
       get:
@@ -505,19 +499,19 @@ paths:
             content:
               text/html:
                 schema:
-                  $ref: './components.spec.yml#/components/schemas/error'
+                  $ref: './api.spec.yml#/components/schemas/error'
           "403":
             description: Forbidden
             content:
               text/html:
                 schema:
-                  $ref: './components.spec.yml#/components/schemas/error'
+                  $ref: './api.spec.yml#/components/schemas/error'
           "500":
             description: Server Error
             content:
               text/html:
                 schema:
-                  $ref: './components.spec.yml#/components/schemas/error'
+                  $ref: './api.spec.yml#/components/schemas/error'
 
   /test/{test_id}/unit/{unit_name}/review/{review_id}:
       patch:
@@ -591,19 +585,19 @@ paths:
             content:
               text/html:
                 schema:
-                  $ref: './components.spec.yml#/components/schemas/error'
+                  $ref: './api.spec.yml#/components/schemas/error'
           "403":
             description: Forbidden - the test belongs to someone else, or the mode of the login does not allow reviews
             content:
               text/html:
                 schema:
-                  $ref: './components.spec.yml#/components/schemas/error'
+                  $ref: './api.spec.yml#/components/schemas/error'
           "500":
             description: Server Error
             content:
               text/html:
                 schema:
-                  $ref: './components.spec.yml#/components/schemas/error'
+                  $ref: './api.spec.yml#/components/schemas/error'
 
       delete:
         summary: delete a unit review
@@ -647,19 +641,19 @@ paths:
             content:
               text/html:
                 schema:
-                  $ref: './components.spec.yml#/components/schemas/error'
+                  $ref: './api.spec.yml#/components/schemas/error'
           "403":
             description: Forbidden - the test belongs to someone else, or the mode of the login does not allow reviews
             content:
               text/html:
                 schema:
-                  $ref: './components.spec.yml#/components/schemas/error'
+                  $ref: './api.spec.yml#/components/schemas/error'
           "500":
             description: Server Error
             content:
               text/html:
                 schema:
-                  $ref: './components.spec.yml#/components/schemas/error'
+                  $ref: './api.spec.yml#/components/schemas/error'
 
   /test/{test_id}/review/{review_id}:
       patch:
@@ -726,19 +720,19 @@ paths:
             content:
               text/html:
                 schema:
-                  $ref: './components.spec.yml#/components/schemas/error'
+                  $ref: './api.spec.yml#/components/schemas/error'
           "403":
             description: Forbidden - the test belongs to someone else, or the mode of the login does not allow reviews
             content:
               text/html:
                 schema:
-                  $ref: './components.spec.yml#/components/schemas/error'
+                  $ref: './api.spec.yml#/components/schemas/error'
           "500":
             description: Server Error
             content:
               text/html:
                 schema:
-                  $ref: './components.spec.yml#/components/schemas/error'
+                  $ref: './api.spec.yml#/components/schemas/error'
 
       delete:
         summary: delete a booklet review
@@ -775,19 +769,19 @@ paths:
             content:
               text/html:
                 schema:
-                  $ref: './components.spec.yml#/components/schemas/error'
+                  $ref: './api.spec.yml#/components/schemas/error'
           "403":
             description: Forbidden - the test belongs to someone else, or the mode of the login does not allow reviews
             content:
               text/html:
                 schema:
-                  $ref: './components.spec.yml#/components/schemas/error'
+                  $ref: './api.spec.yml#/components/schemas/error'
           "500":
             description: Server Error
             content:
               text/html:
                 schema:
-                  $ref: './components.spec.yml#/components/schemas/error'
+                  $ref: './api.spec.yml#/components/schemas/error'
 
   /test/{test_id}/unit/{unit_name}/response:
     put:
@@ -848,19 +842,19 @@ paths:
           content:
             text/html:
               schema:
-                $ref: './components.spec.yml#/components/schemas/error'
+                $ref: './api.spec.yml#/components/schemas/error'
         "403":
           description: Forbidden
           content:
             text/html:
               schema:
-                $ref: './components.spec.yml#/components/schemas/error'
+                $ref: './api.spec.yml#/components/schemas/error'
         "500":
           description: Server Error
           content:
             text/html:
               schema:
-                $ref: './components.spec.yml#/components/schemas/error'
+                $ref: './api.spec.yml#/components/schemas/error'
 
   /test/{test_id}/unit/{unit_name}/state:
     patch:
@@ -903,7 +897,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: './components.spec.yml#/components/schemas/state'
+              $ref: './api.spec.yml#/components/schemas/state'
             example:
             - key: PRESENTATIONCOMPLETE
               content: |
@@ -920,19 +914,19 @@ paths:
           content:
             text/html:
               schema:
-                $ref: './components.spec.yml#/components/schemas/error'
+                $ref: './api.spec.yml#/components/schemas/error'
         "403":
           description: Forbidden
           content:
             text/html:
               schema:
-                $ref: './components.spec.yml#/components/schemas/error'
+                $ref: './api.spec.yml#/components/schemas/error'
         "500":
           description: Server Error
           content:
             text/html:
               schema:
-                $ref: './components.spec.yml#/components/schemas/error'
+                $ref: './api.spec.yml#/components/schemas/error'
 
   /test/{test_id}/state:
     patch:
@@ -964,7 +958,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: './components.spec.yml#/components/schemas/state'
+              $ref: './api.spec.yml#/components/schemas/state'
             example:
               - key: "CURRENT_UNIT_ID"
                 content: "UNIT_ID_X"
@@ -980,19 +974,19 @@ paths:
           content:
             text/html:
               schema:
-                $ref: './components.spec.yml#/components/schemas/error'
+                $ref: './api.spec.yml#/components/schemas/error'
         "403":
           description: Forbidden
           content:
             text/html:
               schema:
-                $ref: './components.spec.yml#/components/schemas/error'
+                $ref: './api.spec.yml#/components/schemas/error'
         "500":
           description: Server Error
           content:
             text/html:
               schema:
-                $ref: './components.spec.yml#/components/schemas/error'
+                $ref: './api.spec.yml#/components/schemas/error'
 
   /test/{test_id}/unit/{unit_name}/log:
     put:
@@ -1027,7 +1021,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: './components.spec.yml#/components/schemas/log_set'
+              $ref: './api.spec.yml#/components/schemas/log_set'
             example:
               - key: 'PAGENAVIGATIONSTART: "#first"'
                 timeStamp: 1582230020
@@ -1042,19 +1036,19 @@ paths:
           content:
             text/html:
               schema:
-                $ref: './components.spec.yml#/components/schemas/error'
+                $ref: './api.spec.yml#/components/schemas/error'
         "403":
           description: Forbidden
           content:
             text/html:
               schema:
-                $ref: './components.spec.yml#/components/schemas/error'
+                $ref: './api.spec.yml#/components/schemas/error'
         "500":
           description: Server Error
           content:
             text/html:
               schema:
-                $ref: './components.spec.yml#/components/schemas/error'
+                $ref: './api.spec.yml#/components/schemas/error'
 
   /test/{test_id}/log:
     put:
@@ -1081,7 +1075,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: './components.spec.yml#/components/schemas/log_set'
+              $ref: './api.spec.yml#/components/schemas/log_set'
             example:
               - key: 'BOOKLETLOADSTART'
                 content: '{Browser:"Dredd"}'
@@ -1094,19 +1088,19 @@ paths:
           content:
             text/html:
               schema:
-                $ref: './components.spec.yml#/components/schemas/error'
+                $ref: './api.spec.yml#/components/schemas/error'
         "403":
           description: Forbidden
           content:
             text/html:
               schema:
-                $ref: './components.spec.yml#/components/schemas/error'
+                $ref: './api.spec.yml#/components/schemas/error'
         "500":
           description: Server Error
           content:
             text/html:
               schema:
-                $ref: './components.spec.yml#/components/schemas/error'
+                $ref: './api.spec.yml#/components/schemas/error'
 
 
   /test/{test_id}/lock:
@@ -1153,19 +1147,19 @@ paths:
           content:
             text/html:
               schema:
-                $ref: './components.spec.yml#/components/schemas/error'
+                $ref: './api.spec.yml#/components/schemas/error'
         "403":
           description: Forbidden
           content:
             text/html:
               schema:
-                $ref: './components.spec.yml#/components/schemas/error'
+                $ref: './api.spec.yml#/components/schemas/error'
         "500":
           description: Server Error
           content:
             text/html:
               schema:
-                $ref: './components.spec.yml#/components/schemas/error'
+                $ref: './api.spec.yml#/components/schemas/error'
 
   /test:
     put:
@@ -1203,25 +1197,25 @@ paths:
           content:
             text/html:
               schema:
-                $ref: './components.spec.yml#/components/schemas/error'
+                $ref: './api.spec.yml#/components/schemas/error'
         "403":
           description: Forbidden
           content:
             text/html:
               schema:
-                $ref: './components.spec.yml#/components/schemas/error'
+                $ref: './api.spec.yml#/components/schemas/error'
         "423":
           description: Test is locked!
           content:
             text/html:
               schema:
-                $ref: './components.spec.yml#/components/schemas/error'
+                $ref: './api.spec.yml#/components/schemas/error'
         "500":
           description: Server Error
           content:
             text/html:
               schema:
-                $ref: './components.spec.yml#/components/schemas/error'
+                $ref: './api.spec.yml#/components/schemas/error'
 
   /test/{test_id}/command/{command_id}/executed:
     patch:
@@ -1260,25 +1254,25 @@ paths:
           content:
             text/html:
               schema:
-                $ref: './components.spec.yml#/components/schemas/error'
+                $ref: './api.spec.yml#/components/schemas/error'
         "403":
           description: Forbidden
           content:
             text/html:
               schema:
-                $ref: './components.spec.yml#/components/schemas/error'
+                $ref: './api.spec.yml#/components/schemas/error'
         "423":
           description: Test is locked!
           content:
             text/html:
               schema:
-                $ref: './components.spec.yml#/components/schemas/error'
+                $ref: './api.spec.yml#/components/schemas/error'
         "500":
           description: Server Error
           content:
             text/html:
               schema:
-                $ref: './components.spec.yml#/components/schemas/error'
+                $ref: './api.spec.yml#/components/schemas/error'
 
   /test/{test_id}/commands:
     get:
@@ -1347,25 +1341,25 @@ paths:
           content:
             text/html:
               schema:
-                $ref: './components.spec.yml#/components/schemas/error'
+                $ref: './api.spec.yml#/components/schemas/error'
         "403":
           description: Forbidden
           content:
             text/html:
               schema:
-                $ref: './components.spec.yml#/components/schemas/error'
+                $ref: './api.spec.yml#/components/schemas/error'
         "423":
           description: Test is locked!
           content:
             text/html:
               schema:
-                $ref: './components.spec.yml#/components/schemas/error'
+                $ref: './api.spec.yml#/components/schemas/error'
         "500":
           description: Server Error
           content:
             text/html:
               schema:
-                $ref: './components.spec.yml#/components/schemas/error'
+                $ref: './api.spec.yml#/components/schemas/error'
 
   /test/{test_id}/connection-lost:
     post:
@@ -1392,10 +1386,10 @@ paths:
           content:
             text/html:
               schema:
-                $ref: './components.spec.yml#/components/schemas/error'
+                $ref: './api.spec.yml#/components/schemas/error'
         "500":
           description: Server Error
           content:
             text/html:
               schema:
-                $ref: './components.spec.yml#/components/schemas/error'
+                $ref: './api.spec.yml#/components/schemas/error'

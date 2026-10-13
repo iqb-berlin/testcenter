@@ -1,9 +1,3 @@
-openapi: 3.0.0
-
-info:
-  title: ""
-  version: "%%%VERSION%%%"
-
 paths:
   /reviews/export:
     get:
@@ -115,22 +109,22 @@ paths:
           content:
             text/html:
               schema:
-                $ref: './components.spec.yml#/components/schemas/error'
+                $ref: './api.spec.yml#/components/schemas/error'
         "403":
           description: Forbidden
           content:
             text/html:
               schema:
-                $ref: './components.spec.yml#/components/schemas/error'
+                $ref: './api.spec.yml#/components/schemas/error'
         "410":
           description: Session Expired
           content:
             text/html:
               schema:
-                $ref: './components.spec.yml#/components/schemas/error'
+                $ref: './api.spec.yml#/components/schemas/error'
         "500":
           description: Server Error
           content:
             text/html:
               schema:
-                $ref: './components.spec.yml#/components/schemas/error'
+                $ref: './api.spec.yml#/components/schemas/error'

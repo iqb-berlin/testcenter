@@ -1,9 +1,3 @@
-openapi: 3.0.0
-
-info:
-    title: ""
-    version: "%%%VERSION%%%"
-
 paths:
 
   /monitor/group/{group_name}:
@@ -42,31 +36,31 @@ paths:
           content:
             text/html:
               schema:
-                $ref: './components.spec.yml#/components/schemas/error'
+                $ref: './api.spec.yml#/components/schemas/error'
         "410":
           description: Session Expired
           content:
             text/html:
               schema:
-                $ref: './components.spec.yml#/components/schemas/error'
+                $ref: './api.spec.yml#/components/schemas/error'
         "403":
           description: Forbidden
           content:
             text/html:
               schema:
-                $ref: './components.spec.yml#/components/schemas/error'
+                $ref: './api.spec.yml#/components/schemas/error'
         "404":
           description: Group not found
           content:
             text/html:
               schema:
-                $ref: './components.spec.yml#/components/schemas/error'
+                $ref: './api.spec.yml#/components/schemas/error'
         "500":
           description: Server Error
           content:
             text/html:
               schema:
-                $ref: './components.spec.yml#/components/schemas/error'
+                $ref: './api.spec.yml#/components/schemas/error'
 
   /monitor/test-sessions:
     get:
@@ -118,25 +112,25 @@ paths:
           content:
             text/html:
               schema:
-                $ref: './components.spec.yml#/components/schemas/error'
+                $ref: './api.spec.yml#/components/schemas/error'
         "410":
           description: Session Expired
           content:
             text/html:
               schema:
-                $ref: './components.spec.yml#/components/schemas/error'
+                $ref: './api.spec.yml#/components/schemas/error'
         "403":
           description: Forbidden
           content:
             text/html:
               schema:
-                $ref: './components.spec.yml#/components/schemas/error'
+                $ref: './api.spec.yml#/components/schemas/error'
         "500":
           description: Server Error
           content:
             text/html:
               schema:
-                $ref: './components.spec.yml#/components/schemas/error'
+                $ref: './api.spec.yml#/components/schemas/error'
 
   /monitor/group/{group_name}/test-sessions:
     get:
@@ -200,25 +194,25 @@ paths:
           content:
             text/html:
               schema:
-                $ref: './components.spec.yml#/components/schemas/error'
+                $ref: './api.spec.yml#/components/schemas/error'
         "410":
           description: Session Expired
           content:
             text/html:
               schema:
-                $ref: './components.spec.yml#/components/schemas/error'
+                $ref: './api.spec.yml#/components/schemas/error'
         "403":
           description: Forbidden
           content:
             text/html:
               schema:
-                $ref: './components.spec.yml#/components/schemas/error'
+                $ref: './api.spec.yml#/components/schemas/error'
         "500":
           description: Server Error
           content:
             text/html:
               schema:
-                $ref: './components.spec.yml#/components/schemas/error'
+                $ref: './api.spec.yml#/components/schemas/error'
 
   /monitor/command:
     put:
@@ -264,25 +258,25 @@ paths:
           content:
             text/html:
               schema:
-                $ref: './components.spec.yml#/components/schemas/error'
+                $ref: './api.spec.yml#/components/schemas/error'
         "410":
           description: Session Expired
           content:
             text/html:
               schema:
-                $ref: './components.spec.yml#/components/schemas/error'
+                $ref: './api.spec.yml#/components/schemas/error'
         "403":
           description: Forbidden
           content:
             text/html:
               schema:
-                $ref: './components.spec.yml#/components/schemas/error'
+                $ref: './api.spec.yml#/components/schemas/error'
         "500":
           description: Server Error
           content:
             text/html:
               schema:
-                $ref: './components.spec.yml#/components/schemas/error'
+                $ref: './api.spec.yml#/components/schemas/error'
 
   /monitor/group/{group_name}/tests/unlock:
     post:
@@ -320,25 +314,25 @@ paths:
           content:
             text/html:
               schema:
-                $ref: './components.spec.yml#/components/schemas/error'
+                $ref: './api.spec.yml#/components/schemas/error'
         "410":
           description: Session Expired
           content:
             text/html:
               schema:
-                $ref: './components.spec.yml#/components/schemas/error'
+                $ref: './api.spec.yml#/components/schemas/error'
         "403":
           description: Forbidden
           content:
             text/html:
               schema:
-                $ref: './components.spec.yml#/components/schemas/error'
+                $ref: './api.spec.yml#/components/schemas/error'
         "500":
           description: Server Error
           content:
             text/html:
               schema:
-                $ref: './components.spec.yml#/components/schemas/error'
+                $ref: './api.spec.yml#/components/schemas/error'
 
   /monitor/group/{group_name}/tests/lock:
     post:
@@ -376,22 +370,22 @@ paths:
           content:
             text/html:
               schema:
-                $ref: './components.spec.yml#/components/schemas/error'
+                $ref: './api.spec.yml#/components/schemas/error'
         "410":
           description: Session Expired
           content:
             text/html:
               schema:
-                $ref: './components.spec.yml#/components/schemas/error'
+                $ref: './api.spec.yml#/components/schemas/error'
         "403":
           description: Forbidden
           content:
             text/html:
               schema:
-                $ref: './components.spec.yml#/components/schemas/error'
+                $ref: './api.spec.yml#/components/schemas/error'
         "500":
           description: Server Error
           content:
             text/html:
               schema:
-                $ref: './components.spec.yml#/components/schemas/error'
+                $ref: './api.spec.yml#/components/schemas/error'

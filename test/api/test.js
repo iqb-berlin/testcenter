@@ -1,5 +1,6 @@
 /* eslint-disable no-console,import/no-extraneous-dependencies,implicit-arrow-linebreak,function-paren-newline */
 const fs = require('fs');
+const fsExtra = require('fs-extra');
 const Dredd = require('dredd');
 const gulp = require('gulp');
 const redis = require('redis');
@@ -9,9 +10,10 @@ const http = require('http');
 const cliPrint = require('../../scripts/helper/cli-print');
 const jsonTransform = require('../../scripts/helper/json-transformer');
 const testConfig = require('../config.json');
-const { mergeSpecFiles, clearTmpDir } = require('../../scripts/update-specs');
+const { loadSpecs } = require('../../scripts/update-specs');
 
-const tmpDir = fs.realpathSync(`${__dirname}'/../../tmp`);
+fs.mkdirSync(`${__dirname}/../../tmp`, { recursive: true });
+const tmpDir = fs.realpathSync(`${__dirname}/../../tmp`);
 
 const getStatus = async statusRequest => {
   const startTime = Date.now();
@@ -74,9 +76,13 @@ const confirmTestConfig = (serviceUrl, statusRequest) => (async done => {
   throw new Error(cliPrint.get.error(`Could not connect to ${serviceUrl}`));
 });
 
-const prepareSpecsForDredd = done => {
-  const compiledFileName = `${tmpDir}/compiled.specs.yml`;
-  cliPrint.headline(`Creating Dredd-compatible API-spec version from ${compiledFileName}`);
+const clearTmpDir = (done) => {
+  fsExtra.emptyDirSync(tmpDir);
+  done();
+};
+
+const prepareSpecsForDredd = fragmentFileNames => (done) => {
+  cliPrint.headline('Creating Dredd-compatible API-spec version');
 
   /**
    * Before testing the standard OpenApi3-file have to be manipulated:
@@ -95,7 +101,7 @@ const prepareSpecsForDredd = done => {
    * * * [429] (too many requests) // can not be created with only one call
    */
 
-  const specsJson = YAML.parse(fs.readFileSync(compiledFileName, 'utf8'));
+  const specsJson = loadSpecs(fragmentFileNames);
   let iterations = 1;
   let iteration = 0;
   let splitPaths = [];
@@ -215,8 +221,7 @@ exports.runDreddTest = gulp.series(
     }
   ),
   clearTmpDir,
-  mergeSpecFiles('api/*.spec.yml'),
-  prepareSpecsForDredd,
+  prepareSpecsForDredd(),
   runDredd(testConfig.backend_url)
 );
 
@@ -229,8 +234,7 @@ exports.runDreddTestFs = gulp.series(
     }
   ),
   clearTmpDir,
-  mergeSpecFiles('api/file.spec.yml'),
-  prepareSpecsForDredd,
+  prepareSpecsForDredd(['file.spec.yml']),
   insertGroupTokenToCacheService,
   runDredd(testConfig.file_service_url)
 );

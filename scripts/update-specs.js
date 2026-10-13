@@ -1,92 +1,78 @@
-/* eslint-disable no-console */
-
 /**
- * Creates the documentation of the Backend-API. It's a Package called Redoc, which takes the API-sepcs in OpenApi3
- * format and makes HTML out of it.
+ * The API specs are split over several files in `docs/api`: `api.spec.yml` is the OpenAPI document with everything
+ * but the endpoints, every other `*.spec.yml` contains nothing but `paths`. `loadSpecs` merges them into one document.
  *
- * See more documentation at the bottom of this file.
+ * Run directly, this writes the merged document to `docs/site/public/api/specs.yml`, from which Redoc builds the
+ * API documentation.
  */
 
 const fs = require('fs');
-const gulp = require('gulp');
-const yamlMerge = require('gulp-yaml-merge');
-const YAML = require('yamljs');
-const fsExtra = require('fs-extra');
-const cliPrint = require('./helper/cli-print');
-const jsonTransform = require('./helper/json-transformer');
+const YAML = require('yaml');
 const packageJson = require('../package.json');
 
-fs.mkdirSync(`${__dirname}/../tmp`, { recursive: true });
-const tmpDir = fs.realpathSync(`${__dirname}/../tmp`);
-const docsDir = fs.realpathSync(`${__dirname}/../docs`);
+const specsDir = fs.realpathSync(`${__dirname}/../docs/api`);
+const docsTargetDir = `${__dirname}/../docs/site/public/api`;
+const rootFileName = 'api.spec.yml';
+const versionPlaceholder = '%%%VERSION%%%';
 
-exports.mergeSpecFiles = (selector = 'api/*.spec.yml') => (() => {
-  cliPrint.headline(`compile spec files to one selector: ${selector}`);
-  return gulp.src(`${docsDir}/${selector}`)
-    .on('data', d => { console.log(`File: ${d.path}`); })
-    .on('error', e => { console.warn(e); })
-    .pipe(yamlMerge('compiled.specs.yml'))
-    .on('error', e => { console.warn('error', e); })
-    .pipe(gulp.dest(tmpDir));
-});
+const isPlainObject = value => (typeof value === 'object') && (value !== null) && !Array.isArray(value);
 
-const prepareDocsDestinationFolder = done => {
-  cliPrint.headline('Prepare destination Folder');
-
-  fs.mkdirSync(`${docsDir}/site/public/api`, { recursive: true });
-  done();
+// references into the root file become local, as all fragments end up in it
+const localizeReference = (reference, fileName) => {
+  const [file, pointer] = reference.split('#');
+  if (!['', `./${rootFileName}`].includes(file)) {
+    throw new Error(`${fileName}: \`${reference}\` - references may only point into ${rootFileName}`);
+  }
+  return `#${pointer}`;
 };
 
-const updateDocs = done => {
-  cliPrint.headline('write compiled spec to docs folder');
+const localizeReferencesAndVersion = (node, fileName) => {
+  if (Array.isArray(node)) {
+    return node.map(item => localizeReferencesAndVersion(item, fileName));
+  }
+  if (!isPlainObject(node)) {
+    return (node === versionPlaceholder) ? packageJson.version : node;
+  }
+  return Object.fromEntries(Object.entries(node)
+    .map(([key, value]) => [
+      key,
+      (key === '$ref') ? localizeReference(value, fileName) : localizeReferencesAndVersion(value, fileName)
+    ]));
+};
 
-  const compiledFileName = `${tmpDir}/compiled.specs.yml`;
-  const targetFileName = `${docsDir}/site/public/api/specs.yml`;
-  const yamlTree = YAML.parse(fs.readFileSync(compiledFileName, 'utf8'));
+const readSpecFile = fileName => localizeReferencesAndVersion(
+  YAML.parse(fs.readFileSync(`${specsDir}/${fileName}`, 'utf8')),
+  fileName
+);
 
-  const localizeReference = (key, val) => {
-    const referenceString = val.substring(val.lastIndexOf('#'));
-    return {
-      key: '$ref',
-      val: referenceString
-    };
-  };
+const allFragmentFileNames = () => fs.readdirSync(specsDir)
+  .filter(fileName => fileName.endsWith('.spec.yml') && (fileName !== rootFileName))
+  .toSorted();
 
-  const replaceVersion = (key, val) => ({
-    key: 'version',
-    val: (val === '%%%VERSION%%%') ? packageJson.version : val
+exports.loadSpecs = (fragmentFileNames = allFragmentFileNames()) => {
+  const specs = readSpecFile(rootFileName);
+  const definedIn = {};
+
+  fragmentFileNames.forEach((fileName) => {
+    const fragment = readSpecFile(fileName);
+    const unexpectedKeys = Object.keys(fragment).filter(key => key !== 'paths');
+    if (unexpectedKeys.length) {
+      throw new Error(`${fileName}: may contain nothing but \`paths\`, found \`${unexpectedKeys.join('`, `')}\``);
+    }
+    Object.entries(fragment.paths).forEach(([path, pathItem]) => {
+      if (definedIn[path]) {
+        throw new Error(`${fileName}: \`${path}\` is already defined in ${definedIn[path]}`);
+      }
+      definedIn[path] = fileName;
+      specs.paths[path] = pathItem;
+    });
   });
 
-  const makeRedocCompatible = {
-    'schema > \\$ref$': localizeReference,
-    'items > \\$ref$': localizeReference,
-    '> version$': replaceVersion
-  };
-
-  const transformed = jsonTransform(yamlTree, makeRedocCompatible, false);
-  const transformedAsString = YAML.stringify(transformed, 10);
-  fs.writeFileSync(targetFileName, transformedAsString, 'utf8');
-
-  done();
+  return specs;
 };
 
-exports.clearTmpDir = done => {
-  cliPrint.headline('clear tmp dir');
-
-  fsExtra.emptyDirSync(tmpDir);
-  done();
-};
-
-/**
- * To be more manageable the specs are distributed over several files in `docs/api`.
- * This takes the files and merges them together as needed by ReDoc. Also OpenApi3 is not OpenApi3.
- * While the specs are written in Standard OpenApi3, on both use-cases, Dredd and ReDoc,
- * some special treatment is needed.
- * This places the compiled, Re-Docs-compatible specs into `docs/site/public/api`.
- */
-exports.updateSpecs = gulp.series(
-  exports.clearTmpDir,
-  prepareDocsDestinationFolder,
-  exports.mergeSpecFiles(),
-  updateDocs
-);
+if (require.main === module) {
+  fs.mkdirSync(docsTargetDir, { recursive: true });
+  fs.writeFileSync(`${docsTargetDir}/specs.yml`, YAML.stringify(exports.loadSpecs()), 'utf8');
+  console.log(`API specs written to ${fs.realpathSync(docsTargetDir)}/specs.yml`);
+}

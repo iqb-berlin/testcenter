@@ -23,7 +23,7 @@
   "private": true,
   "scripts": {
     "lint": "eslint",
-    "backend:update-specs": "npx gulp --gulpfile=./scripts/update-specs.js updateSpecs",
+    "backend:update-specs": "node scripts/update-specs.js",
     "backend:api-test": "node_modules/.bin/gulp --gulpfile=./test/api/test.js runDreddTest",
     "file-server:api-test": "node_modules/.bin/gulp --gulpfile=./test/api/test.js runDreddTestFs",
     "create-interfaces": "npx --yes update-browserslist-db@latest && npx gulp --gulpfile=./scripts/create-interfaces.js createInterfaces"
@@ -40,7 +40,6 @@
     "fs-extra": "^11.4.0",
     "globals": "^17.13.0",
     "gulp": "^4.0.2",
-    "gulp-yaml-merge": "~2.0.0",
     "ini": ">=1.3.6",
     "is-promise": "^4.0.0",
     "json-pointer": ">=0.6.1",
@@ -51,6 +50,7 @@
     "typescript": "~5.8.3",
     "typescript-eslint": "^8.71.1",
     "y18n": ">=3.2.2",
+    "yaml": "^2.9.1",
     "yamljs": "^0.3.0"
   }
 }

@@ -1,9 +1,3 @@
-openapi: 3.0.0
-
-info:
-  title: ""
-  version: "%%%VERSION%%%"
-
 paths:
 
   /session/challenge:
@@ -69,7 +63,7 @@ paths:
           content:
             text/html:
               schema:
-                $ref: './components.spec.yml#/components/schemas/error'
+                $ref: './api.spec.yml#/components/schemas/error'
 
   /session/person/challenge:
     post:
@@ -131,13 +125,13 @@ paths:
           content:
             text/html:
               schema:
-                $ref: './components.spec.yml#/components/schemas/error'
+                $ref: './api.spec.yml#/components/schemas/error'
         '500':
           description: Server Error
           content:
             text/html:
               schema:
-                $ref: './components.spec.yml#/components/schemas/error'
+                $ref: './api.spec.yml#/components/schemas/error'
 
   /session:
     get:
@@ -168,7 +162,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: './components.spec.yml#/components/schemas/session'
+                $ref: './api.spec.yml#/components/schemas/session'
               examples:
                 personToken:
                   value:
@@ -225,19 +219,19 @@ paths:
           content:
             text/html:
               schema:
-                $ref: './components.spec.yml#/components/schemas/error'
+                $ref: './api.spec.yml#/components/schemas/error'
         "410":
           description: Session Expired
           content:
             text/html:
               schema:
-                $ref: './components.spec.yml#/components/schemas/error'
+                $ref: './api.spec.yml#/components/schemas/error'
         "500":
           description: Server Error
           content:
             text/html:
               schema:
-                $ref: './components.spec.yml#/components/schemas/error'
+                $ref: './api.spec.yml#/components/schemas/error'
     put:
       summary: Verify Challenge and create Session
       description: Verifies a solved proof-of-work challenge and starts the requested session.
@@ -283,7 +277,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: './components.spec.yml#/components/schemas/session'
+                $ref: './api.spec.yml#/components/schemas/session'
               example:
                 token: 'static:admin:super'
                 displayName: super
@@ -318,13 +312,13 @@ paths:
           content:
             text/html:
               schema:
-                $ref: './components.spec.yml#/components/schemas/error'
+                $ref: './api.spec.yml#/components/schemas/error'
         '500':
           description: Server Error
           content:
             text/html:
               schema:
-                $ref: './components.spec.yml#/components/schemas/error'
+                $ref: './api.spec.yml#/components/schemas/error'
     delete:
       summary: delete a session
       description: Performs a logout
@@ -352,13 +346,13 @@ paths:
           content:
             text/html:
               schema:
-                $ref: './components.spec.yml#/components/schemas/error'
+                $ref: './api.spec.yml#/components/schemas/error'
         "500":
           description: Server Error
           content:
             text/html:
               schema:
-                $ref: './components.spec.yml#/components/schemas/error'
+                $ref: './api.spec.yml#/components/schemas/error'
   /session/admin:
     put:
       summary: Start Admin Session
@@ -369,7 +363,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: './components.spec.yml#/components/schemas/login_request'
+              $ref: './api.spec.yml#/components/schemas/login_request'
 
       responses:
         "200":
@@ -377,7 +371,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: './components.spec.yml#/components/schemas/session'
+                $ref: './api.spec.yml#/components/schemas/session'
               example:
                 token: user000000000.0000000000
                 displayName: super
@@ -391,19 +385,19 @@ paths:
           content:
             text/html:
               schema:
-                $ref: './components.spec.yml#/components/schemas/error'
+                $ref: './api.spec.yml#/components/schemas/error'
         "429":
           description: User temporally locked
           content:
             text/html:
               schema:
-                $ref: './components.spec.yml#/components/schemas/error'
+                $ref: './api.spec.yml#/components/schemas/error'
         "500":
           description: Server Error
           content:
             text/html:
               schema:
-                $ref: './components.spec.yml#/components/schemas/error'
+                $ref: './api.spec.yml#/components/schemas/error'
 
   /session/login:
     put:
@@ -417,7 +411,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: './components.spec.yml#/components/schemas/login_request'
+              $ref: './api.spec.yml#/components/schemas/login_request'
             example:
               name: test
               password: user123
@@ -428,7 +422,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: './components.spec.yml#/components/schemas/session'
+                $ref: './api.spec.yml#/components/schemas/session'
               example:
                 token:  "static_login_sample_login"
                 displayName: "sample_group/test"
@@ -441,13 +435,13 @@ paths:
           content:
             text/html:
               schema:
-                $ref: './components.spec.yml#/components/schemas/error'
+                $ref: './api.spec.yml#/components/schemas/error'
         "400":
           description: Insufficent Crendetials
           content:
             text/html:
               schema:
-                $ref: './components.spec.yml#/components/schemas/error'
+                $ref: './api.spec.yml#/components/schemas/error'
 #        "410": # - must be removed because test fails other wise... TODO find better solution
 #          description: Session Expired
         "500":
@@ -455,7 +449,7 @@ paths:
           content:
             text/html:
               schema:
-                $ref: './components.spec.yml#/components/schemas/error'
+                $ref: './api.spec.yml#/components/schemas/error'
 
   /session/person:
     put:
@@ -489,7 +483,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: './components.spec.yml#/components/schemas/session'
+                $ref: './api.spec.yml#/components/schemas/session'
               example:
                 token:  "static_person_xxx"
                 displayName: "sample_group/test/xxx"
@@ -513,16 +507,16 @@ paths:
           content:
             text/html:
               schema:
-                $ref: './components.spec.yml#/components/schemas/error'
+                $ref: './api.spec.yml#/components/schemas/error'
         "410":
           description: Session Expired
           content:
             text/html:
               schema:
-                $ref: './components.spec.yml#/components/schemas/error'
+                $ref: './api.spec.yml#/components/schemas/error'
         "500":
           description: Server Error
           content:
             text/html:
               schema:
-                $ref: './components.spec.yml#/components/schemas/error'
+                $ref: './api.spec.yml#/components/schemas/error'

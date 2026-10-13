@@ -7,7 +7,9 @@ info:
     It's the basis for our vision of continuous integration."
   version: "%%%VERSION%%%"
 
-paths:
+# The endpoints are defined in the other *.spec.yml files in this folder; each contains nothing but `paths`.
+# scripts/update-specs.js merges them into this document.
+paths: {}
 
 components:
   schemas:
@@ -38,7 +40,7 @@ components:
 
 
     # Referenced from every error response across the other spec files as
-    # `./components.spec.yml#/components/schemas/error`.
+    # `./api.spec.yml#/components/schemas/error`.
     error:
       type: string
       description: >-
