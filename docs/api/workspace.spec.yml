@@ -661,10 +661,10 @@ paths:
                     info:
                       label: Similar Booklet to Sample 1
                       description: "\n      This booklet has the same species as sample Booklet 1. The
-                      term booklet species indicates that both booklets can\n      be controlled by
-                      the group-monitor as if they where the same.\n      The species is currently
-                      defined as having the same number of testlets on the first level (called blocks).
-                      This\n      definition may change later.\n    "
+                        term booklet species indicates that both booklets can\n      be controlled by
+                        the group-monitor as if they where the same.\n      The species is currently
+                        defined as having the same number of testlets on the first level (called blocks).
+                        This\n      definition may change later.\n    "
                 SysCheck:
                   - name: SAMPLE_SYSCHECK.XML
                     size: 1232
