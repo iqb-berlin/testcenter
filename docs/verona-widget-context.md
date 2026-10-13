@@ -441,7 +441,7 @@ SHA-256 hashes, calculated from the inspected UTF-8 text:
 
 These are unresolved design choices, not implementation defaults.
 
-1. Widget provisioning and selection. The user chose uploaded workspace resources on 2026-10-13. How to expose their widget metadata to the test and what to do when multiple implementations match remain undecided. The current frontend cannot discover models from the resource-path map alone.
+1. Widget provisioning and selection. The user chose uploaded workspace resources on 2026-10-13. The user chose a dedicated `files.verona_model` column rather than `contextData` on 2026-10-13. How to expose their widget metadata to the test and what to do when multiple implementations match remain undecided. The current frontend cannot discover models from the resource-path map alone.
 2. Remaining type-to-model mapping. `MOLECULE_EDITOR` and `PERIODIC_TABLE` are agreed player names and match the supplied widgets' metadata models directly. Support for the Player `WIDGET_...` names, calculator names, and other aliases remains undecided.
 3. `UNIT` widget requests. Player 6.3.0 includes this enum value. Decide whether this feature covers unit-as-widget execution or reports unsupported type. It is not implemented by either inspected widget path.
 4. Initial state precedence. Decide whether an explicit player state overrides cached state, whether omitted state restores the cache, and how an explicit empty state behaves.
@@ -492,7 +492,15 @@ Scenarios worth covering once the behavior is agreed:
 - Existing old-player compatibility and the iframe-unload state regression.
 - Widget state causes no backend persistence request; existing unrelated response/shared-parameter persistence still behaves according to its separate contract.
 
-## 12. Suggested use in a new session
+## 12. Completed implementation steps
+
+Implementation update on 2026-10-13: `files.verona_model` stores the unchanged metadata model. Schema patch `19.0.0` adds the column and module type `widget`, then invalidates workspace file hashes so initialization re-reads existing uploads. The parser accepts the modern metadata schema URLs used by the uploaded files. File API responses expose a nonempty model as `info.veronaModel`. The running workspace now stores `MOLECULE_EDITOR` and `PERIODIC_TABLE` for its two widgets. Widget discovery, selection, loading, and execution remain future steps.
+
+Migration file: `scripts/database/patches.d/19.0.0.sql`. The same schema changes are included in `scripts/database/full.sql`, and `DBSchema::REQUIRED_VERSION` is `19.0.0`. The migration was applied successfully to the running development database.
+
+Verification: 40 file tests, 5 WorkspaceDAO tests, and 1 schema-version test passed. The backend API suite completed with 292 passing checks, 13 skipped checks, and no failures or errors. The frontend TypeScript check and `git diff --check` passed. A direct database query confirmed the two uploaded widgets' stored models and module type `widget`.
+
+## 13. Suggested use in a new session
 
 A suitable opening instruction is:
 

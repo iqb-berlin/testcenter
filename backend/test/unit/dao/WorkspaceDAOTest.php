@@ -65,6 +65,7 @@ class WorkspaceDAOTest extends TestCase {
         'verona_module_type' => null,
         'verona_version' => null,
         'verona_module_id' => null,
+        'verona_model' => '',
         'is_valid' => false,
         'validation_report' => 'ignore',
         'modification_ts' => '2023-01-16 08:00:00+00',
@@ -85,6 +86,7 @@ class WorkspaceDAOTest extends TestCase {
         'verona_module_type' => '',
         'verona_version' => '',
         'verona_module_id' => '',
+        'verona_model' => '',
         'is_valid' => false,
         'validation_report' => 'ignore',
         'modification_ts' => '1970-01-01 00:00:01+00',
@@ -93,6 +95,29 @@ class WorkspaceDAOTest extends TestCase {
       ]
     ];
     $this->assertEquals($expectation, $files);
+  }
+
+  public function test_storeAndRestoreVeronaModel(): void {
+    $file = new ResourceFile(new FileData(
+      path: '/data_dir/ws_1/Resource/widget.html',
+      type: 'Resource',
+      id: 'WIDGET-1.0',
+      veronaModuleType: 'widget',
+      veronaModuleId: 'widget',
+      veronaModel: 'MOLECULE_EDITOR'
+    ));
+    $this->dbc->storeFile($file);
+    $stored = $this->dbc->getFileById('WIDGET-1.0', 'Resource');
+    $this->assertNotNull($stored);
+    $this->assertSame('widget', $stored->getVeronaModuleType());
+    $this->assertSame('MOLECULE_EDITOR', $stored->getVeronaModel());
+    $this->assertSame('MOLECULE_EDITOR', $stored->jsonSerialize()['info']['veronaModel']);
+
+    $replacement = new ResourceFile(new FileData(
+      path: '/data_dir/ws_1/Resource/widget.html', type: 'Resource', id: 'WIDGET-1.0'
+    ));
+    $this->dbc->storeFile($replacement);
+    $this->assertSame('', $this->dbc->getFileById('WIDGET-1.0', 'Resource')->getVeronaModel());
   }
 
   public function test_addLoginSource(): void {

@@ -62,7 +62,7 @@ CREATE TYPE file_type AS ENUM (
 );
 
 CREATE TYPE verona_module_type AS ENUM (
-  'player', 'schemer', 'editor', ''
+  'player', 'schemer', 'editor', 'widget', ''
 );
 
 CREATE TYPE file_relationship_type AS ENUM (
@@ -423,6 +423,7 @@ CREATE TABLE files (
   verona_module_type verona_module_type DEFAULT NULL,
   verona_version     varchar(12) COLLATE german2_ci DEFAULT NULL,
   verona_module_id   varchar(50) COLLATE german2_ci DEFAULT NULL,
+  verona_model       text NOT NULL DEFAULT '',
   is_valid           boolean NOT NULL,
   validation_report  text COLLATE german2_ci,
   modification_ts    timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -566,6 +567,6 @@ CREATE TRIGGER unit_reviews_reviewtime_bu
 -- patches.d empty it is the release this schema belongs to. Changes from the unreleased
 -- `scripts/database/next.sql` are folded in as well, but raise this stamp only at release.
 INSERT INTO meta ("metaKey", value, category)
-VALUES ('dbSchemaVersion', '18.3.0', NULL);
+VALUES ('dbSchemaVersion', '19.0.0', NULL);
 
 COMMIT;
