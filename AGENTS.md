@@ -13,7 +13,9 @@
 - Do not change production code just to make tests work (e.g. branches only the test environment takes). Adapt the test setup or test infrastructure instead.
 - Commit subjects start with a tag in square brackets naming the area the change is about, e.g. `[be] Fix …`.
   - Tags: `[be]` backend, `[fe]` frontend, `[e2e]` end-to-end tests, `[docs]` documentation, `[db]` database,
-    `[bs]` broadcasting service, `[fs]` file server, `[ci]` CI pipelines, `[infra]` Docker images and deployment,
+    `[bs]` broadcasting service, `[fs]` file server, `[ci]` CI pipelines,
+    `[ops]` operating a deployment (Docker images, install/update scripts, backups),
+    `[tooling]` developer tooling (build and helper scripts, make targets, dev dependencies),
     `[helm]` helm chart, `[xsd]` XML schemas, `[ai]` instructions and config for AI coding agents.
   - Several areas: adjacent tags, `[be][fe]`. Tests and docs that come with a change get no tag of their own.
   - Do not use other tags. Ask first if none of these fits.
