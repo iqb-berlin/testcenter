@@ -163,7 +163,7 @@ Widget and player sessions are different conversations. Do not reuse the player 
 
 The modern metadata schema 3.1 permits `type: 'WIDGET'` and a free-form `model: string`. It does not impose a canonical model enum. Its model examples include `CALC` and `PSE`, which also differ from some prose/example spellings. Metadata `specVersion` uses MAJOR.MINOR, so `1.0` in the samples is not by itself evidence of incompatibility with patch release 1.0.1.
 
-No automatic alias policy was chosen during research. Resolving Player widget types to actual model names is an explicit open decision.
+Decision recorded on 2026-10-13 after the logging step: use `MOLECULE_EDITOR` and `PERIODIC_TABLE` as the player widget type names for the current integration. The running player emits these names, and the supplied widgets use the same metadata models. Preserve these names without adding the `WIDGET_` prefix. This is a compatibility decision for the current player, despite the different enum names in Player 6.3.0. Support for prefixed aliases, calculator names, and other models remains undecided.
 
 The prose site displays a deprecation notice. Its modal behavior and model-based selection remain useful under the user's precedence rule. Its old field and operation names do not override Widget 1.0.1.
 
@@ -441,8 +441,8 @@ SHA-256 hashes, calculated from the inspected UTF-8 text:
 
 These are unresolved design choices, not implementation defaults.
 
-1. Widget provisioning and selection. Choose among workspace resources exposed through test data, a dedicated test-accessible registry, or explicitly bundled/configured widgets. Define what happens if multiple implementations match. The current frontend cannot discover models from the resource-path map alone.
-2. Type-to-model mapping. Resolve the Player `WIDGET_...` enum versus modern metadata models, prose aliases, and `CALCULATOR` in the calculator sample. Decide whether legacy aliases are supported or fixtures are updated.
+1. Widget provisioning and selection. The user chose uploaded workspace resources on 2026-10-13. How to expose their widget metadata to the test and what to do when multiple implementations match remain undecided. The current frontend cannot discover models from the resource-path map alone.
+2. Remaining type-to-model mapping. `MOLECULE_EDITOR` and `PERIODIC_TABLE` are agreed player names and match the supplied widgets' metadata models directly. Support for the Player `WIDGET_...` names, calculator names, and other aliases remains undecided.
 3. `UNIT` widget requests. Player 6.3.0 includes this enum value. Decide whether this feature covers unit-as-widget execution or reports unsupported type. It is not implemented by either inspected widget path.
 4. Initial state precedence. Decide whether an explicit player state overrides cached state, whether omitted state restores the cache, and how an explicit empty state behaves.
 5. Cache identity. Decide whether memory is keyed by model, resolved module identity, another scope, or a combination. `callId` identifies the requesting player element; it is not specified as the cross-unit cache key.

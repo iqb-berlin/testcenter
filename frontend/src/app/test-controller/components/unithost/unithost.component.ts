@@ -115,6 +115,9 @@ export class UnithostComponent implements OnInit, OnDestroy {
     case 'vopRuntimeErrorNotification':
       this.handleRuntimeError(msgData);
       break;
+    case 'vopWidgetCall':
+      console.log('vopWidgetCall received:', msgData);
+      break;
     default:
       console.log(`processMessagePost ignored message: ${msgType}`);
       break;
