@@ -4,9 +4,12 @@ declare(strict_types=1);
 
 class ReportOutputFactory
 {
+  /**
+   * @param string[]|null $dataIds null = no filter
+   */
   public static function createReportOutput(
     int $workspaceId,
-    array $dataIds,
+    ?array $dataIds,
     ReportType $reportType,
     ReportFormat $reportFormat
   ): LogReportOutput | ResponseReportOutput | ReviewReportOutput | SysCheckReportOutput {

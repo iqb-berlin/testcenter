@@ -5,7 +5,8 @@ declare(strict_types=1);
 abstract class Report {
 
   protected int $workspaceId;
-  protected array $dataIds;
+  /** @var string[]|null null = no filter */
+  protected ?array $dataIds;
   protected ReportFormat $format;
   protected AdminDAO $adminDAO;
   protected SysChecksFolder $sysChecksFolder;
@@ -14,7 +15,10 @@ abstract class Report {
   protected array $reportData;
   protected bool $useNewVersion = false;
 
-  function __construct(int $workspaceId, array $dataIds, ReportFormat $reportFormat) {
+  /**
+   * @param string[]|null $dataIds null = no filter
+   */
+  function __construct(int $workspaceId, ?array $dataIds, ReportFormat $reportFormat) {
     $this->workspaceId = $workspaceId;
     $this->dataIds = $dataIds;
     $this->format = $reportFormat;
@@ -26,7 +30,10 @@ abstract class Report {
     return $this->workspaceId;
   }
 
-  public function getDataIds(): array {
+  /**
+   * @return string[]|null null = no filter
+   */
+  public function getDataIds(): ?array {
     return $this->dataIds;
   }
 

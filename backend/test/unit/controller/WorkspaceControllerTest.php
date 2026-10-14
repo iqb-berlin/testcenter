@@ -192,6 +192,34 @@ final class WorkspaceControllerTest extends TestCase {
     $this->testGetReportWithEmptyDataIds(ReportType::SYSCHECK->value, 'application/json');
   }
 
+  function test_GetReport_WithoutDataIdsCreatesUnfilteredReport(): void {
+    $this->testGetReportPassesDataIdsToFactory('', null);
+  }
+
+  function test_GetReport_WithDataIdsCreatesFilteredReport(): void {
+    $this->testGetReportPassesDataIdsToFactory('id1,id2', ['id1', 'id2']);
+  }
+
+  private function testGetReportPassesDataIdsToFactory(string $dataIdsParam, ?array $expectedDataIds): void {
+    // Arrange
+    $this->dataIds = $dataIdsParam;
+    $reportType = ReportType::LOG->value;
+    $path = "/$this->workspaceId/report/$reportType";
+
+    // overload-mocked instances take over the expectations set before they are created
+    $this->reportMock[$reportType]->expects('generate')->andReturn(false);
+    Mockery::mock('alias:' . ReportOutputFactory::class)
+      ->expects('createReportOutput')
+      ->with($this->workspaceId, $expectedDataIds, ReportType::LOG, ReportFormat::JSON)
+      ->andReturn(new LogReportOutput($this->workspaceId, $expectedDataIds, ReportFormat::JSON));
+
+    // Act
+    $response = $this->callSlimFramework($path, 'application/json', $reportType);
+
+    // Assert
+    parent::assertSame(200, $response->getStatusCode());
+  }
+
   function test_GetReportWithLogAndCSVAndNoneReportGeneration(): void {
     $this->testGetReportWithoutReportGeneration(ReportType::LOG->value, 'text/csv');
   }

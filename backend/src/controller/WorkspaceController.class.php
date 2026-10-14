@@ -219,8 +219,9 @@ class WorkspaceController extends Controller {
   public static function getReport(Request $request, Response $response): ?Response {
     $workspaceId = (int) $request->getAttribute('ws_id');
 
+    // null: no filter, the report covers all groups / sys-checks of the workspace
     $dataIds = $request->getParam('dataIds', '') === ''
-      ? []
+      ? null
       : explode(',', $request->getParam('dataIds', ''));
 
     try {

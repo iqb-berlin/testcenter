@@ -215,6 +215,38 @@ final class AdminDAOTest extends TestCase {
     parent::assertSame($expectedReviewReportData, $actualReviewReportData);
   }
 
+  /**
+   * @dataProvider reportDataMethods
+   */
+  function testGetReportDataWithoutGroupFilterCoversAllGroups(string $method): void {
+    $allGroups = $this->dbc->$method(1, null);
+
+    $perGroup = array_merge(
+      $this->dbc->$method(1, ['sample_group']),
+      $this->dbc->$method(1, ['review_group'])
+    );
+    parent::assertNotEmpty($allGroups);
+    $this->assertSameIgnoringOrder($perGroup, $allGroups);
+  }
+
+  /**
+   * @dataProvider reportDataMethods
+   */
+  function testGetReportDataWithEmptyGroupFilterReturnsNothing(string $method): void {
+    parent::assertSame([], $this->dbc->$method(1, []));
+  }
+
+  /**
+   * @return array<string, string[]>
+   */
+  static function reportDataMethods(): array {
+    return [
+      'responses' => ['getResponseReportData'],
+      'logs' => ['getLogReportData'],
+      'reviews' => ['getReviewReportData']
+    ];
+  }
+
   function test_addCommand() {
     $command = new Command(-1, 'a_keyword', 1597905000, 'first_argument', 'second_argument');
     $commandId = $this->dbc->storeCommand(1, [1], $command);

@@ -1432,7 +1432,9 @@ paths:
             type: integer
         - in: query
           name: dataIds
-          description: a comma separated list of report data-ids
+          description: a comma separated list of group names. If omitted, the report covers all groups of the workspace.
+          style: form
+          explode: false
           schema:
             type: array
             items:
@@ -1503,7 +1505,9 @@ paths:
             type: integer
         - in: query
           name: dataIds
-          description: a comma separated list of report data-ids
+          description: a comma separated list of group names. If omitted, the report covers all groups of the workspace.
+          style: form
+          explode: false
           schema:
             type: array
             items:
@@ -1591,7 +1595,9 @@ paths:
             type: integer
         - in: query
           name: dataIds
-          description: a comma separated list of report data-ids
+          description: a comma separated list of group names. If omitted, the report covers all groups of the workspace.
+          style: form
+          explode: false
           schema:
             type: array
             items:
@@ -1687,7 +1693,9 @@ paths:
             type: integer
         - in: query
           name: dataIds
-          description: a comma separated list of report data-ids
+          description: a comma separated list of sys-check ids. If omitted, the report covers all sys-checks of the workspace.
+          style: form
+          explode: false
           schema:
             type: array
             items:
