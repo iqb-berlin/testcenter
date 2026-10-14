@@ -73,6 +73,8 @@ type LeaveCheckResult =
   providedIn: 'root'
 })
 export class TestControllerService {
+  private readonly runResetSubject = new Subject<void>();
+  readonly runReset$ = this.runResetSubject.asObservable();
   testId = '';
   readonly state$ = new BehaviorSubject<TestControllerState>('INIT');
   workspaceId = 0;
@@ -316,6 +318,7 @@ export class TestControllerService {
   }
 
   reset(): void {
+    this.runResetSubject.next();
     this.players = {};
     this.widgets = {};
     this.sharedParameters = [];

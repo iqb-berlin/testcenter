@@ -45,6 +45,7 @@ const MockTestControllerService = {
   currentUnitSequenceId: 1,
   currentUnitSequenceId$: new BehaviorSubject(1),
   state$: new BehaviorSubject('RUNNING'),
+  runReset$: new Subject<void>(),
   sharedParameters: [{ key: 'shared', value: '' }],
   currentUnit: getTestData().Units.u1,
   getUnit: () => getTestData().Units.u1,
@@ -83,6 +84,7 @@ describe('UnithostComponent', () => {
   let component: UnithostComponent;
   let fixture: ComponentFixture<UnithostComponent>;
   let http: HttpTestingController;
+  let playerReturns: WeakMap<Window, jasmine.Spy>;
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
@@ -112,6 +114,7 @@ describe('UnithostComponent', () => {
   }));
 
   beforeEach(fakeAsync(() => {
+    playerReturns = new WeakMap();
     MockTestControllerService.currentUnitSequenceId$.next(1);
     MockTestControllerService.state$.next('RUNNING');
     MockTestControllerService.AddToUnitStateBuffer.calls.reset();
@@ -370,8 +373,8 @@ describe('UnithostComponent', () => {
     specVersion: '1.0', metadataVersion: '3.1', name: [{ lang: 'de', value: 'Periodensystem' }]
   };
 
-  function loadedIframe(): HTMLIFrameElement {
-    http.expectOne('/api/file/test-group/ws_1/Resource/periodic.html').flush('<html>widget</html>');
+  function loadedIframe(resourcePath = 'Resource/periodic.html'): HTMLIFrameElement {
+    http.expectOne(`/api/file/test-group/ws_1/${resourcePath}`).flush('<html>widget</html>');
     tick();
     const iframe = document.querySelector<HTMLIFrameElement>('[role="dialog"] iframe');
     if (!iframe?.contentWindow) throw new Error('Widget iframe is missing');
@@ -525,16 +528,17 @@ describe('UnithostComponent', () => {
     </script>`;
   });
 
-  function runningWidget(initialState?: string) {
+  function runningWidget(initialState?: string, resourcePath = 'Resource/periodic.html',
+                         service?: WidgetService) {
     const playerWindow = component['iFrameItemplayer']?.contentWindow;
     if (!playerWindow) throw new Error('Missing player window');
-    MockTestControllerService.getWidgetResourcePath.and.returnValue('Resource/periodic.html');
-    MockMainDataService.postMessage$.next(new MessageEvent('message', {
-      source: playerWindow, data: { type: 'vopWidgetCall', sessionId: 'u1', callId: 'button-1',
-        widgetType: 'PERIODIC_TABLE', ...(initialState !== undefined ? { state: initialState } : {}) }
-    }));
+    MockTestControllerService.getWidgetResourcePath.and.returnValue(resourcePath);
+    const call = { type: 'vopWidgetCall', sessionId: 'u1', callId: 'button-1',
+      widgetType: 'PERIODIC_TABLE', ...(initialState !== undefined ? { state: initialState } : {}) };
+    if (service) service.open({ call, source: playerWindow, playerIframe: component['iFrameItemplayer'] });
+    else MockMainDataService.postMessage$.next(new MessageEvent('message', { source: playerWindow, data: call }));
     fixture.detectChanges();
-    const iframe = loadedIframe();
+    const iframe = loadedIframe(resourcePath);
     const widgetWindow = iframe.contentWindow;
     if (!widgetWindow) throw new Error('Missing widget window');
     const start = spyOn(widgetWindow, 'postMessage');
@@ -542,13 +546,14 @@ describe('UnithostComponent', () => {
       source: widgetWindow, data: { type: 'vowReadyNotification', metadata: JSON.stringify(metadata) }
     }));
     const sessionId = start.calls.mostRecent().args[0].sessionId;
-    const returned = spyOn(playerWindow, 'postMessage');
+    const returned = playerReturns.get(playerWindow) ?? spyOn(playerWindow, 'postMessage');
+    playerReturns.set(playerWindow, returned);
     const send = (type: string, fields: object = {}, source: MessageEventSource = widgetWindow): void => {
       MockMainDataService.postMessage$.next(new MessageEvent('message', {
         source, data: { type, sessionId, timeStamp: '2026-10-14T12:00:00Z', ...fields }
       }));
     };
-    return { send, returned, sessionId, widgetWindow };
+    return { send, returned, sessionId, widgetWindow, command: start.calls.mostRecent().args[0] };
   }
 
   it('returns final state with the original player session and call ID exactly once', fakeAsync(() => {
@@ -680,5 +685,106 @@ describe('UnithostComponent', () => {
     </script>`;
     http.expectOne('/api/file/test-group/ws_1/Resource/periodic.html').flush(html);
   });
+
+  function cancelWidget(): void {
+    document.querySelector<HTMLButtonElement>('[aria-label="Widget schließen"]')?.click();
+    tick();
+  }
+
+  it('restores interim state after cancellation and a unit change without persisting it', fakeAsync(() => {
+    const first = runningWidget();
+    first.send('vowStateChangedNotification', { state: 'selection' });
+    cancelWidget();
+    MockTestControllerService.currentUnitSequenceId$.next(2);
+    const second = runningWidget();
+    expect(second.command.state).toBe('selection');
+    expect(first.returned).not.toHaveBeenCalled();
+    expect(MockTestControllerService.AddToUnitStateBuffer).not.toHaveBeenCalled();
+    expect(MockTestControllerService.AddToUnitStateDataPartsBuffer).not.toHaveBeenCalled();
+    cancelWidget();
+  }));
+
+  it('restores final state after a normal return', fakeAsync(() => {
+    const first = runningWidget();
+    first.send('vowReturnRequested', { state: 'final' });
+    tick();
+    expect(runningWidget().command.state).toBe('final');
+    cancelWidget();
+  }));
+
+  it('lets explicit state override cached state, including an empty string', fakeAsync(() => {
+    runningWidget('old');
+    cancelWidget();
+    expect(runningWidget('override').command.state).toBe('override');
+    cancelWidget();
+    expect(runningWidget('').command.state).toBe('');
+    cancelWidget();
+    expect(runningWidget().command.state).toBe('');
+    cancelWidget();
+  }));
+
+  it('retains empty received state and saveState false without a player return', fakeAsync(() => {
+    const first = runningWidget('old');
+    first.send('vowReturnRequested', { state: '', saveState: false });
+    tick();
+    expect(first.returned).not.toHaveBeenCalled();
+    expect(runningWidget().command.state).toBe('');
+    cancelWidget();
+  }));
+
+  it('isolates resource paths and starts each call with fresh timestamp ordering', fakeAsync(() => {
+    const first = runningWidget();
+    first.send('vowStateChangedNotification', { state: 'first file', timeStamp: '2026-10-14T12:00:10Z' });
+    cancelWidget();
+    const other = runningWidget(undefined, 'Resource/other.html');
+    expect(Object.hasOwn(other.command, 'state')).toBeFalse();
+    other.send('vowStateChangedNotification', { state: 'other file' });
+    cancelWidget();
+    const reopened = runningWidget();
+    expect(reopened.command.state).toBe('first file');
+    reopened.send('vowStateChangedNotification', { state: 'fresh call', timeStamp: '2026-10-14T12:00:00Z' });
+    cancelWidget();
+    expect(runningWidget().command.state).toBe('fresh call');
+    cancelWidget();
+  }));
+
+  it('preserves state through pause and resume', fakeAsync(() => {
+    const first = runningWidget();
+    first.send('vowStateChangedNotification', { state: 'paused selection' });
+    MockTestControllerService.state$.next('PAUSED');
+    tick();
+    MockTestControllerService.state$.next('RUNNING');
+    expect(runningWidget().command.state).toBe('paused selection');
+    cancelWidget();
+  }));
+
+  it('clears state on test reload and ignores messages from the old call', fakeAsync(() => {
+    const first = runningWidget();
+    first.send('vowStateChangedNotification', { state: 'old run' });
+    MockTestControllerService.runReset$.next();
+    first.send('vowStateChangedNotification', { state: 'late old run' });
+    tick();
+    expect(Object.hasOwn(runningWidget().command, 'state')).toBeFalse();
+    cancelWidget();
+  }));
+
+  it('discards state when the controller owner is destroyed', fakeAsync(() => {
+    const owner = TestBed.createComponent(WidgetServiceOwnerComponent);
+    const firstPlayer = document.createElement('iframe');
+    owner.nativeElement.appendChild(firstPlayer);
+    component['iFrameItemplayer'] = firstPlayer;
+    const first = runningWidget(undefined, 'Resource/periodic.html', owner.componentInstance.widgets);
+    first.send('vowStateChangedNotification', { state: 'old owner' });
+    owner.destroy();
+    tick();
+    const nextOwner = TestBed.createComponent(WidgetServiceOwnerComponent);
+    const nextPlayer = document.createElement('iframe');
+    nextOwner.nativeElement.appendChild(nextPlayer);
+    component['iFrameItemplayer'] = nextPlayer;
+    const next = runningWidget(undefined, 'Resource/periodic.html', nextOwner.componentInstance.widgets);
+    expect(Object.hasOwn(next.command, 'state')).toBeFalse();
+    nextOwner.destroy();
+    tick();
+  }));
 
 });

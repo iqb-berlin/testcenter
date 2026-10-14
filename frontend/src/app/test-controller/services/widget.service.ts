@@ -21,6 +21,7 @@ interface WidgetRequest {
 @Injectable()
 export class WidgetService implements OnDestroy {
   private readonly subscriptions = new Subscription();
+  private readonly states = new Map<string, string>();
   private activeDialog: {
     ref: MatDialogRef<WidgetDialogComponent>;
     download: Subscription;
@@ -31,6 +32,10 @@ export class WidgetService implements OnDestroy {
               private readonly mds: MainDataService,
               private readonly backend: BackendService,
               private readonly dialog: MatDialog) {
+    this.subscriptions.add(this.tcs.runReset$.subscribe(() => {
+      this.close();
+      this.states.clear();
+    }));
     this.subscriptions.add(merge(
       this.tcs.currentUnitSequenceId$.pipe(distinctUntilChanged()),
       this.tcs.state$.pipe(distinctUntilChanged()),
@@ -103,8 +108,9 @@ export class WidgetService implements OnDestroy {
               call !== null && typeof call === 'object' && 'parameters' in call ? call.parameters : undefined
             );
             const sharedParameters = widgetParameters(this.tcs.sharedParameters);
-            const state = call !== null && typeof call === 'object' && 'state' in call ? call.state : undefined;
-            if (state !== undefined && typeof state !== 'string') throw new Error('Invalid widget state');
+            const callState = call !== null && typeof call === 'object' && 'state' in call ? call.state : undefined;
+            if (callState !== undefined && typeof callState !== 'string') throw new Error('Invalid widget state');
+            const state = callState !== undefined ? callState : this.states.get(resourcePath);
             status.set('starting');
             iframe = ref.componentInstance.createIframe(`Widget ${widgetType}`);
             const widgetWindow = iframe.contentWindow;
@@ -138,6 +144,7 @@ export class WidgetService implements OnDestroy {
                   if (iframe) iframe.title = name;
                   ref.componentInstance.setName(name);
                   widgetWindow.postMessage(command, '*');
+                  if (state !== undefined) this.states.set(resourcePath, state);
                   status.set('running');
                 } catch (error) { fail(error); }
                 return;
@@ -155,7 +162,10 @@ export class WidgetService implements OnDestroy {
               }
               if (update.timeStamp >= session.latestTimestamp) {
                 session.latestTimestamp = update.timeStamp;
-                if (update.state !== undefined) session.state = update.state;
+                if (update.state !== undefined) {
+                  session.state = update.state;
+                  this.states.set(resourcePath, update.state);
+                }
               }
               if (update.type === 'vowReturnRequested') {
                 const finalState = session.state;
@@ -189,6 +199,7 @@ export class WidgetService implements OnDestroy {
 
   ngOnDestroy(): void {
     this.close();
+    this.states.clear();
     this.subscriptions.unsubscribe();
   }
 }

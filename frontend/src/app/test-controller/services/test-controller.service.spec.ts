@@ -136,8 +136,12 @@ describe('TestControllerService', () => {
   });
 
   it('should clear widget paths when resetting the test run', () => {
+    const reset = jasmine.createSpy('run reset');
+    const subscription = service.runReset$.subscribe(reset);
     service.widgets = { PERIODIC_TABLE: ['Resource/periodic.html'] };
     service.reset();
+    expect(reset).toHaveBeenCalledTimes(1);
+    subscription.unsubscribe();
     expect(service.widgets).toEqual({});
     expect(service.getWidgetResourcePath('PERIODIC_TABLE')).toBeUndefined();
   });
