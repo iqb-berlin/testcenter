@@ -10,7 +10,7 @@ import { TestControllerService } from './test-controller.service';
 import { BackendService } from './backend.service';
 import {
   KeyValuePairString, NavigationLeaveRestrictionValue, StateReportEntry, Testlet, Unit,
-  UnitDataParts, UnitStateKey, UnitStateUpdate
+  UnitDataParts, UnitStateKey, UnitStateUpdate, TestStateUpdate
 } from '../interfaces/test-controller.interfaces';
 import { MainDataService, TestMode } from '../../shared/shared.module';
 import { MessageService } from '../../shared/services/message.service';
@@ -24,6 +24,11 @@ const uploadedData: UnitDataParts[] = [];
 const uploadedStates: UnitStateUpdate[] = [];
 
 class MockBackendService {
+  // eslint-disable-next-line class-methods-use-this
+  patchTestState(update: TestStateUpdate): Observable<string> {
+    return of('ok');
+  }
+
   // eslint-disable-next-line class-methods-use-this
   updateDataParts(
     testId: string, unitDbKey: string, originalUnitId: string, dataParts: KeyValuePairString, unitStateDataType: string
@@ -145,6 +150,46 @@ describe('TestControllerService', () => {
     expect(service.widgets).toEqual({});
     expect(service.getWidgetResourcePath('PERIODIC_TABLE')).toBeUndefined();
   });
+
+
+  it('updates existing shared parameters and persists empty values with one config notification', () => {
+    const buffer = spyOn(service, 'addToTestStateBuffer');
+    const changed = jasmine.createSpy('config changed');
+    const subscription = service.configChanged$.subscribe(changed);
+    service.sharedParameters = [{ key: 'existing', value: 'old' }];
+    service.addSharedParameters([{ key: 'existing', value: '' }, { key: 'new', value: '' }]);
+    expect(service.sharedParameters).toEqual([{ key: 'existing', value: '' }, { key: 'new', value: '' }]);
+    expect(buffer).toHaveBeenCalledOnceWith('SHARED_PARAMETERS', JSON.stringify(service.sharedParameters));
+    expect(changed).toHaveBeenCalledTimes(1);
+    buffer.calls.reset();
+    changed.calls.reset();
+    service.addSharedParameters([{ key: 'existing', value: '' }, { key: 'new', value: '' }, { key: 'omitted' }]);
+    expect(buffer).not.toHaveBeenCalled();
+    expect(changed).not.toHaveBeenCalled();
+    subscription.unsubscribe();
+  });
+
+  it('flushes changed shared parameters through the existing test-state persistence path', fakeAsync(() => {
+    const uploaded: TestStateUpdate[] = [];
+    const backend = TestBed.inject(BackendService);
+    spyOn(backend, 'patchTestState').and.callFake(update => {
+      uploaded.push(update);
+      return of('ok');
+    });
+    service.testId = 'shared-parameter-test';
+    service.testMode = new TestMode('run-hot-return');
+    service.sharedParameters = [{ key: 'selection', value: 'old' }];
+    service.setupTestStateBuffer();
+    service.addSharedParameters([{ key: 'selection', value: '' }]);
+    service.closeAllBuffers('shared-parameter-test');
+    tick();
+    expect(uploaded.length).toBe(1);
+    expect(uploaded[0].testId).toBe('shared-parameter-test');
+    expect(uploaded[0].state).toEqual([jasmine.objectContaining({
+      key: 'SHARED_PARAMETERS', content: JSON.stringify([{ key: 'selection', value: '' }])
+    })]);
+    discardPeriodicTasks();
+  }));
 
   it('should code aliased and derived variables in a subform with the current responses API', () => {
     service.units[1] = {

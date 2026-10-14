@@ -1217,7 +1217,7 @@ export class TestControllerService {
     let hasChanged = false;
 
     parameters.forEach(param => {
-      if (param.key && param.value) {
+      if (param.key && typeof param.value === 'string') {
         hasChanged = this.addSharedParameter(param.key, param.value) || hasChanged;
       }
     });
@@ -1233,8 +1233,8 @@ export class TestControllerService {
     const existingParam = this.sharedParameters.find(p => p.key === key);
 
     if (existingParam) {
-      existingParam.value = value;
       hasChanged = existingParam.value !== value;
+      existingParam.value = value;
     } else {
       const newParameter: SharedParameter = {
         key: key,

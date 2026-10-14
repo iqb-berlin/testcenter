@@ -166,6 +166,7 @@ export class WidgetService implements OnDestroy {
                   session.state = update.state;
                   this.states.set(resourcePath, update.state);
                 }
+                if (update.sharedParameters !== undefined) this.tcs.addSharedParameters(update.sharedParameters);
               }
               if (update.type === 'vowReturnRequested') {
                 const finalState = session.state;

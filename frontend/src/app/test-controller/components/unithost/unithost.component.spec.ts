@@ -47,6 +47,7 @@ const MockTestControllerService = {
   state$: new BehaviorSubject('RUNNING'),
   runReset$: new Subject<void>(),
   sharedParameters: [{ key: 'shared', value: '' }],
+  addSharedParameters: jasmine.createSpy('addSharedParameters'),
   currentUnit: getTestData().Units.u1,
   getUnit: () => getTestData().Units.u1,
   AddToUnitStateBuffer: jasmine.createSpy('AddToUnitStateBuffer'),
@@ -117,6 +118,7 @@ describe('UnithostComponent', () => {
     playerReturns = new WeakMap();
     MockTestControllerService.currentUnitSequenceId$.next(1);
     MockTestControllerService.state$.next('RUNNING');
+    MockTestControllerService.addSharedParameters.calls.reset();
     MockTestControllerService.AddToUnitStateBuffer.calls.reset();
     MockTestControllerService.AddToUnitStateDataPartsBuffer.calls.reset();
     MockTestControllerService.getWidgetResourcePath.calls.reset();
@@ -785,6 +787,57 @@ describe('UnithostComponent', () => {
     expect(Object.hasOwn(next.command, 'state')).toBeFalse();
     nextOwner.destroy();
     tick();
+  }));
+
+  it('applies interim and final shared parameters, including empty values and saveState false', fakeAsync(() => {
+    const { send, returned } = runningWidget();
+    send('vowStateChangedNotification', { sharedParameters: [{ key: 'shared', value: 'changed' }] });
+    send('vowReturnRequested', { sharedParameters: [{ key: 'shared', value: '' }], saveState: false });
+    tick();
+    expect(MockTestControllerService.addSharedParameters.calls.allArgs()).toEqual([
+      [[{ key: 'shared', value: 'changed' }]], [[{ key: 'shared', value: '' }]]
+    ]);
+    expect(returned).not.toHaveBeenCalled();
+    expect(TestBed.inject(MatDialog).openDialogs.length).toBe(0);
+  }));
+
+  it('filters shared parameters by source, session, and timestamp, including stale final returns', fakeAsync(() => {
+    spyOn(console, 'warn');
+    const { send } = runningWidget();
+    send('vowStateChangedNotification', { sharedParameters: [{ key: 'shared', value: 'wrong source' }] }, window);
+    send('vowStateChangedNotification', {
+      sharedParameters: [{ key: 'shared', value: 'wrong session' }], sessionId: 'other'
+    });
+    send('vowStateChangedNotification', {
+      sharedParameters: [{ key: 'shared', value: 'newest' }], timeStamp: '2026-10-14T12:00:02Z'
+    });
+    send('vowStateChangedNotification', {
+      sharedParameters: [{ key: 'shared', value: 'stale' }], timeStamp: '2026-10-14T12:00:01Z'
+    });
+    send('vowStateChangedNotification', {
+      sharedParameters: [{ key: 'shared', value: 'equal' }], timeStamp: '2026-10-14T12:00:02Z'
+    });
+    send('vowReturnRequested', { sharedParameters: [{ key: 'shared', value: 'stale final' }] });
+    tick();
+    expect(MockTestControllerService.addSharedParameters.calls.allArgs()).toEqual([
+      [[{ key: 'shared', value: 'newest' }]], [[{ key: 'shared', value: 'equal' }]]
+    ]);
+    expect(TestBed.inject(MatDialog).openDialogs.length).toBe(0);
+  }));
+
+  it('rejects malformed shared parameters without applying partial updates or closing', fakeAsync(() => {
+    spyOn(console, 'warn');
+    const { send, returned } = runningWidget('initial');
+    for (const sharedParameters of [null, {}, [{ key: 'shared' }], [{ key: 'x', value: 'bad' }],
+      [{ key: 'shared', value: 0 }], [{ key: 'valid', value: 'yes' }, { key: 'broken' }]]) {
+      send('vowStateChangedNotification', { sharedParameters, state: 'invalid' });
+      send('vowReturnRequested', { sharedParameters, state: 'invalid' });
+    }
+    expect(MockTestControllerService.addSharedParameters).not.toHaveBeenCalled();
+    expect(TestBed.inject(MatDialog).openDialogs.length).toBe(1);
+    send('vowReturnRequested');
+    tick();
+    expect(returned.calls.mostRecent().args[0].state).toBe('initial');
   }));
 
 });

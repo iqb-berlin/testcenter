@@ -1,15 +1,31 @@
+import { WidgetParameter } from './widget-start.util';
+
 export type WidgetEvent = {
   type: 'vowStateChangedNotification';
   sessionId: string;
   timeStamp: number;
   state?: string;
+  sharedParameters?: WidgetParameter[];
 } | {
   type: 'vowReturnRequested';
   sessionId: string;
   timeStamp: number;
   state?: string;
+  sharedParameters?: WidgetParameter[];
   saveState: boolean;
 };
+
+function sharedParameters(value: unknown): WidgetParameter[] {
+  if (!Array.isArray(value)) throw new Error('Widget shared parameters must be an array');
+  return value.map((parameter: unknown) => {
+    if (parameter === null || typeof parameter !== 'object' ||
+        !('key' in parameter) || typeof parameter.key !== 'string' || parameter.key.length < 2 ||
+        !('value' in parameter) || typeof parameter.value !== 'string') {
+      throw new Error('Invalid widget shared parameter');
+    }
+    return { key: parameter.key, value: parameter.value };
+  });
+}
 
 function timestamp(value: unknown): number {
   if (typeof value !== 'string') throw new Error('Missing widget timestamp');
@@ -37,6 +53,7 @@ export function widgetEvent(data: unknown): WidgetEvent {
   const base = {
     sessionId: data.sessionId,
     timeStamp: timestamp(data.timeStamp),
+    ...('sharedParameters' in data ? { sharedParameters: sharedParameters(data.sharedParameters) } : {}),
     ...('state' in data && typeof data.state === 'string' ? { state: data.state } : {})
   };
   if (data.type === 'vowStateChangedNotification') return { ...base, type: data.type };
