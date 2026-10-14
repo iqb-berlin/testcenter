@@ -502,6 +502,8 @@ Verification: 40 file tests, 5 WorkspaceDAO tests, and 1 schema-version test pas
 
 Implementation update on 2026-10-14: `GET /test/{test_id}` includes all valid widget resources with a nonempty model in the authenticated workspace, grouped as `widgets: {model: ['Resource/file.html']}`. No unit-widget relations are created. An empty list of widgets is serialized as `{}`. The backend registers the paths with the existing file cache. The frontend test-response type includes the map, but widget-call selection, HTML loading, and execution remain future steps. Ordering and its temporary selection policy are recorded in decision 1 above.
 
+Implementation update on 2026-10-14, widget-call resolution: `TestLoaderService` stores the response's `widgets` map in `TestControllerService`. The service clears it on test-run reset and resolves an exact model match to the last resource path using the temporary policy from decision 1. `UnithostComponent` logs `vopWidgetCall resolved:` with the selected path and original call. Missing or unusable widget types produce `No uploaded widget found for vopWidgetCall:`. No aliases are added. Widget HTML downloading, the modal, and Widget-interface communication remain future steps.
+
 ## 13. Suggested use in a new session
 
 A suitable opening instruction is:

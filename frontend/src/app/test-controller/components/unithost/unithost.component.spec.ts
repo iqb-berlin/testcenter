@@ -1,8 +1,8 @@
 import {
-  ComponentFixture, TestBed, waitForAsync
+  ComponentFixture, fakeAsync, TestBed, tick, waitForAsync
 } from '@angular/core/testing';
 import { ActivatedRoute, Params } from '@angular/router';
-import { Subject } from 'rxjs';
+import { of, Subject } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDividerModule } from '@angular/material/divider';
@@ -12,6 +12,9 @@ import { TestControllerService } from '../../services/test-controller.service';
 import { BackendService } from '../../services/backend.service';
 import { MainDataService, BookletConfig } from '../../../shared/shared.module';
 import { VeronaNavigationDeniedReason } from '../../interfaces/verona.interfaces';
+import { NavigationState } from '../../interfaces/test-controller.interfaces';
+import { getTestData } from '../../test/test-data';
+import { MessageService } from '../../../shared/services/message.service';
 
 const bookletConfig = new BookletConfig();
 bookletConfig.setFromKeyValuePairs({
@@ -30,7 +33,13 @@ bookletConfig.setFromKeyValuePairs({
 
 const MockTestControllerService = {
   bookletConfig,
-  navigationDenial: new Subject<{ sourceUnitSequenceId: number, reason: VeronaNavigationDeniedReason[] }>()
+  currentUnit: getTestData().Units.u1,
+  unitAliasMap: { u1: 1 },
+  unitContentReady$: of(false),
+  navigationDenial$: new Subject<{ sourceUnitSequenceId: number, reason: VeronaNavigationDeniedReason[] }>(),
+  navigation$: new Subject<NavigationState>(),
+  configChanged$: new Subject<void>(),
+  getWidgetResourcePath: jasmine.createSpy('getWidgetResourcePath')
 };
 const MockBackendService = { };
 const MockMainDataService = {
@@ -39,7 +48,8 @@ const MockMainDataService = {
   getAuthData: () => null
 };
 const MockActivatedRoute = {
-  params: new Subject<Params>()
+  params: new Subject<Params>(),
+  queryParamMap: new Subject()
 };
 const MockAssetService = {
   getAssetSrc: () => ''
@@ -62,17 +72,22 @@ describe('UnithostComponent', () => {
         { provide: BackendService, useValue: MockBackendService },
         { provide: AssetService, useValue: MockAssetService },
         { provide: MainDataService, useValue: MockMainDataService },
-        { provide: ActivatedRoute, useValue: MockActivatedRoute }
+        { provide: ActivatedRoute, useValue: MockActivatedRoute },
+        { provide: 'FILE_SERVER_URL', useValue: '' },
+        { provide: MessageService, useValue: {} }
       ]
     })
       .compileComponents();
   }));
 
-  beforeEach(() => {
+  beforeEach(fakeAsync(() => {
+    MockTestControllerService.getWidgetResourcePath.calls.reset();
+    MockTestControllerService.getWidgetResourcePath.and.returnValue(undefined);
     fixture = TestBed.createComponent(UnithostComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
-  });
+    tick();
+  }));
 
   afterEach(() => {
     fixture.destroy();
@@ -80,5 +95,29 @@ describe('UnithostComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('should log the resolved widget file and original call', () => {
+    const log = spyOn(console, 'log');
+    const warn = spyOn(console, 'warn');
+    MockTestControllerService.getWidgetResourcePath.and.returnValue('Resource/periodic.html');
+    const call = { type: 'vopWidgetCall', sessionId: 'u1', callId: 'button-1', widgetType: 'PERIODIC_TABLE' };
+
+    MockMainDataService.postMessage$.next(new MessageEvent('message', { data: call, source: window }));
+
+    expect(MockTestControllerService.getWidgetResourcePath).toHaveBeenCalledOnceWith('PERIODIC_TABLE');
+    expect(log).toHaveBeenCalledOnceWith('vopWidgetCall resolved:', 'Resource/periodic.html', call);
+    expect(warn).not.toHaveBeenCalled();
+  });
+
+  it('should warn when no uploaded widget matches the call', () => {
+    const log = spyOn(console, 'log');
+    const warn = spyOn(console, 'warn');
+    const call = { type: 'vopWidgetCall', sessionId: 'u1', widgetType: 'UNKNOWN' };
+
+    MockMainDataService.postMessage$.next(new MessageEvent('message', { data: call, source: window }));
+
+    expect(warn).toHaveBeenCalledOnceWith('No uploaded widget found for vopWidgetCall:', call);
+    expect(log).not.toHaveBeenCalled();
   });
 });

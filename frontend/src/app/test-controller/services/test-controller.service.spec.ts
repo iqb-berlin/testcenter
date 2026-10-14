@@ -120,6 +120,28 @@ describe('TestControllerService', () => {
     expect(service).toBeTruthy();
   });
 
+  it('should resolve the last widget path using an exact model match', () => {
+    service.widgets = {
+      PERIODIC_TABLE: ['Resource/older.html', 'Resource/newer.html'],
+      MOLECULE_EDITOR: ['Resource/molecule.html'],
+      EMPTY: []
+    };
+    expect(service.getWidgetResourcePath('PERIODIC_TABLE')).toBe('Resource/newer.html');
+    expect(service.getWidgetResourcePath('MOLECULE_EDITOR')).toBe('Resource/molecule.html');
+    expect(service.getWidgetResourcePath('periodic_table')).toBeUndefined();
+    expect(service.getWidgetResourcePath('WIDGET_PERIODIC_TABLE')).toBeUndefined();
+    expect(service.getWidgetResourcePath('EMPTY')).toBeUndefined();
+    expect(service.getWidgetResourcePath('toString')).toBeUndefined();
+    expect(service.getWidgetResourcePath('__proto__')).toBeUndefined();
+  });
+
+  it('should clear widget paths when resetting the test run', () => {
+    service.widgets = { PERIODIC_TABLE: ['Resource/periodic.html'] };
+    service.reset();
+    expect(service.widgets).toEqual({});
+    expect(service.getWidgetResourcePath('PERIODIC_TABLE')).toBeUndefined();
+  });
+
   it('should code aliased and derived variables in a subform with the current responses API', () => {
     service.units[1] = {
       ...service.units[1],

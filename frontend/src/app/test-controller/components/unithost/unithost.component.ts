@@ -115,9 +115,16 @@ export class UnithostComponent implements OnInit, OnDestroy {
     case 'vopRuntimeErrorNotification':
       this.handleRuntimeError(msgData);
       break;
-    case 'vopWidgetCall':
-      console.log('vopWidgetCall received:', msgData);
+    case 'vopWidgetCall': {
+      const widgetType: unknown = msgData.widgetType;
+      const resourcePath = typeof widgetType === 'string' ? this.tcs.getWidgetResourcePath(widgetType) : undefined;
+      if (resourcePath === undefined) {
+        console.log('No uploaded widget found for vopWidgetCall:', msgData);
+      } else {
+        console.log('vopWidgetCall resolved:', resourcePath, msgData);
+      }
       break;
+    }
     default:
       console.log(`processMessagePost ignored message: ${msgType}`);
       break;

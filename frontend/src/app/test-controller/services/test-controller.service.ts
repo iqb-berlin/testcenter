@@ -27,6 +27,7 @@ import {
   NavigationState,
   StateReportEntry,
   TestControllerState,
+  TestData,
   Testlet,
   TestletLockType,
   TestletLockTypes,
@@ -116,6 +117,7 @@ export class TestControllerService {
   }
 
   private players: { [filename: string]: string } = {};
+  widgets: TestData['widgets'] = {};
   private testState: { [key in TestStateKey]?: string } = {};
 
   sharedParameters: SharedParameter[] = [];
@@ -315,6 +317,7 @@ export class TestControllerService {
 
   reset(): void {
     this.players = {};
+    this.widgets = {};
     this.sharedParameters = [];
 
     this.currentUnitSequenceId = -Infinity;
@@ -336,6 +339,12 @@ export class TestControllerService {
       this.timerIntervalSubscription = null;
     }
     this.currentTimerId = '';
+  }
+
+  getWidgetResourcePath(model: string): string | undefined {
+    const paths = Object.prototype.hasOwnProperty.call(this.widgets, model) ? this.widgets[model] : undefined;
+    // Temporary policy: the backend orders candidates by modification time, then filename.
+    return paths?.[paths.length - 1];
   }
 
   AddToUnitStateDataPartsBuffer(unitSequenceId: number, dataParts: KeyValuePairString, unitStateDataType: string): void {

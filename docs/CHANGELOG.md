@@ -1,6 +1,7 @@
 # next
 
 ## Neue Funktionen
+- Widget-Aufrufe im Testcontroller wählen vorläufig die letzte zum Modell passende Workspace-Datei. Die Browser-Konsole zeigt bei Erfolg den Ressourcenpfad und die Aufrufnachricht, bei fehlendem Treffer eine Warnung.
 - Der Testcontroller erhält eine nach Modell gruppierte Liste der verfügbaren Workspace-Widgets, unabhängig von Unit-Abhängigkeiten.
 - Beim Hochladen von Verona-Modulen wird das Modell aus den Metadaten erkannt und gespeichert. Das aktuelle Metadatenformat wird auch für Widgets unterstützt.
 - Der Kurztitel einer Unit (Attribut `labelshort` im Booklet) lässt sich während des Tests anzeigen: im Kopfbereich über `header_content` = `UNIT_LABEL_SHORT`, auf der Navigationsleiste über `navbar_unit_label` = `LABEL_SHORT` und auf der Werkzeugleiste über den neuen Booklet-Parameter `toolbar_unit_label` = `LABEL_SHORT`. Fehlt der Kurztitel, wird der Titel der Unit angezeigt. `toolbar_unit_label` ersetzt `toolbar_show_unit_title`, das weiterhin ausgewertet wird, aber als veraltet gilt. Bisher wurde `labelshort` nur im Gruppen-Monitor angezeigt.
