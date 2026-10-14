@@ -70,3 +70,8 @@ body {
   margin-top: 12px;
   border: 1px solid var(--mat-sys-primary);
 }
+
+.widget-dialog .mat-mdc-dialog-surface {
+  background: white;
+  border-radius: 12px;
+}

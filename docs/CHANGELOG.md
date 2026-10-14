@@ -1,6 +1,7 @@
 # next
 
 ## Neue Funktionen
+- Widget-Aufrufe öffnen sofort ein modales Fenster mit Ladeanzeige, Download-Ergebnis und Schließen-Schaltfläche. Ladefehler erscheinen im Fenster. Beim Verlassen des Testlaufs werden das Fenster und ein laufender Download beendet. Weitere Aufrufe werden währenddessen ignoriert; bei Unit-Wechsel, Pause, Abmeldung oder einem Systemdialog wird das Fenster geschlossen. Die Widget-Ausführung folgt in einem weiteren Schritt.
 - Der Testcontroller lädt die bei einem Widget-Aufruf ausgewählte HTML-Datei über den authentifizierten Ressourcenzugriff. Die Browser-Konsole zeigt bei Erfolg den Pfad und die Textlänge, bei einem Ladefehler eine Fehlermeldung.
 - Widget-Aufrufe im Testcontroller wählen vorläufig die letzte zum Modell passende Workspace-Datei. Die Browser-Konsole zeigt bei Erfolg den Ressourcenpfad und die Aufrufnachricht, bei fehlendem Treffer eine Warnung.
 - Der Testcontroller erhält eine nach Modell gruppierte Liste der verfügbaren Workspace-Widgets, unabhängig von Unit-Abhängigkeiten.

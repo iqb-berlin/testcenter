@@ -6,15 +6,14 @@ import { AsyncPipe, NgIf } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Params } from '@angular/router';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { distinctUntilChanged, first, map, withLatestFrom } from 'rxjs/operators';
+import { distinctUntilChanged, map, withLatestFrom } from 'rxjs/operators';
 import { CustomtextPipe, MainDataService } from '@shared/shared.module';
 import { AppError, AuthData, CodeInputType } from '@app/app.interfaces';
 import { ThemeService } from '@shared/services/theme.service';
 import { CodeInputComponent } from '@shared/components/code-input/code-input.component';
 import { TestControllerService } from '../../services/test-controller.service';
 import { BackendService } from '../../services/backend.service';
-import { NavigationState, isEqualNavigation, isLoadingFileLoaded } from '../../interfaces/test-controller.interfaces';
+import { NavigationState, isEqualNavigation } from '../../interfaces/test-controller.interfaces';
 import {
   isVeronaNavigationTarget, SharedParameter,
   VeronaNavigationDeniedReason,
@@ -28,6 +27,7 @@ import {
 import { PageService } from '../../services/page.service';
 import { VeronaAPIService } from '../../services/verona-api.service';
 import { MessageService } from '@app/shared/services/message.service';
+import { WidgetService } from '../../services/widget.service';
 
 @Component({
   templateUrl: './unithost.component.html',
@@ -46,7 +46,6 @@ export class UnithostComponent implements OnInit, OnDestroy {
   @ViewChild('iframeHost') private iFrameHostElement!: ElementRef;
   private iFrameItemplayer: HTMLIFrameElement | null = null;
   private subscriptions: { [tag: string ]: Subscription } = {};
-  private readonly widgetDownloads = new Subscription();
   clearCode: string = '';
 
   codeInputMode: CodeInputType = 'text-field';
@@ -58,7 +57,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
               @Inject('FILE_SERVER_URL') private readonly fileServerUrl: string,
               public themeService: ThemeService,
               private messageService: MessageService,
-              private bs: BackendService, private route: ActivatedRoute) { }
+              private bs: BackendService, private route: ActivatedRoute, private widgets: WidgetService) { }
 
   ngOnInit(): void {
     this.iFrameItemplayer = null;
@@ -84,7 +83,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.widgetDownloads.unsubscribe();
+    this.widgets.close();
     Object.values(this.subscriptions).forEach(subscription => subscription.unsubscribe());
   }
 
@@ -117,22 +116,11 @@ export class UnithostComponent implements OnInit, OnDestroy {
     case 'vopRuntimeErrorNotification':
       this.handleRuntimeError(msgData);
       break;
-    case 'vopWidgetCall': {
-      const widgetType: unknown = msgData.widgetType;
-      const resourcePath = typeof widgetType === 'string' ? this.tcs.getWidgetResourcePath(widgetType) : undefined;
-      if (resourcePath === undefined) {
-        console.log('No uploaded widget found for vopWidgetCall:', msgData);
-      } else {
-        console.log('vopWidgetCall resolved:', resourcePath, msgData);
-        this.widgetDownloads.add(
-          this.bs.getResource(this.tcs.workspaceId, resourcePath).pipe(first(isLoadingFileLoaded)).subscribe({
-            next: file => console.log('Widget HTML downloaded:', { resourcePath, htmlLength: file.content.length }),
-            error: error => console.error('Widget HTML download failed:', resourcePath, error)
-          })
-        );
-      }
+    case 'vopWidgetCall':
+      this.widgets.open({
+        call: msgData, source: messageEvent.source, playerIframe: this.iFrameItemplayer
+      });
       break;
-    }
     default:
       console.log(`processMessagePost ignored message: ${msgType}`);
       break;
@@ -305,6 +293,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
   }
 
   private open(unitSequenceId: number): void {
+    this.widgets.close();
     while (this.iFrameHostElement.nativeElement.hasChildNodes()) {
       this.iFrameHostElement.nativeElement.removeChild(this.iFrameHostElement.nativeElement.lastChild);
     }

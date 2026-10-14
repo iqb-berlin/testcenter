@@ -2,6 +2,8 @@
 
 Research date: 2026-10-13, Europe/Berlin.
 
+Latest handoff: [Verona widget handoff after HTML download](verona-widget-handoff.md), written on 2026-10-14. It records completed work, current Studio Lite overlay research, recommendations, and open choices. Historical "future steps" statements below describe the state at their respective snapshot dates.
+
 Purpose: a reference handoff for a new session. This document records the requested feature, verified source facts, differences between sources, and open decisions. It does not authorize implementation of the entire feature.
 
 ## 1. User request and working rules
@@ -439,20 +441,20 @@ SHA-256 hashes, calculated from the inspected UTF-8 text:
 
 ## 10. Decisions to ask about in later steps
 
-These are unresolved design choices, not implementation defaults.
+This list records decisions and remaining questions. The accepted modal, lifecycle, state, and protocol-hardening recommendations from 2026-10-14 are recorded in `docs/verona-widget-handoff.md`, under "Accepted decisions for the coming implementation". Those decisions supersede the corresponding open questions below and do not authorize implementing the entire feature.
 
 1. Widget provisioning and selection. The user chose uploaded workspace resources and a dedicated `files.verona_model` column rather than `contextData` on 2026-10-13. On 2026-10-14, the user chose a `widgets` map in the existing test response, keyed by exact model, with lists of resource paths. The temporary selection policy is to take the last entry. Lists use file modification time ascending, then bytewise filename ascending for ties. The user explicitly accepted modification time for now: it is not upload time, and ZIP imports can preserve older timestamps. PIN: this is not the final policy for multiple files per model. Revisit selection before treating it as permanent. No ambiguity dialog or automatic semantic-version selection was chosen.
 2. Remaining type-to-model mapping. `MOLECULE_EDITOR` and `PERIODIC_TABLE` are agreed player names and match the supplied widgets' metadata models directly. Support for the Player `WIDGET_...` names, calculator names, and other aliases remains undecided.
 3. `UNIT` widget requests. Player 6.3.0 includes this enum value. Decide whether this feature covers unit-as-widget execution or reports unsupported type. It is not implemented by either inspected widget path.
-4. Initial state precedence. Decide whether an explicit player state overrides cached state, whether omitted state restores the cache, and how an explicit empty state behaves.
+4. Initial state precedence, accepted 2026-10-14. Explicit call state overrides cached state, including an empty string. Omitted state restores cached state.
 5. Cache identity. Decide whether memory is keyed by model, resolved module identity, another scope, or a combination. `callId` identifies the requesting player element; it is not specified as the cross-unit cache key.
-6. Cancel and memory semantics. `saveState: false` definitively suppresses `vopWidgetReturn`. The specification does not settle whether interim state remains cached or rolls back. The user wants received state stored in memory; confirm the intended cancellation effect.
+6. Cancel and memory semantics, accepted 2026-10-14. Cancellation suppresses the player return and keeps received interim state updates in run-level memory. Do not roll them back. Widget state remains memory-only.
 7. Run boundaries. Define clearing on different test ID, termination, leaving/reentering a test, reload/reinitialization, and pause/status transitions.
 8. Shared parameters. Define integration with existing persistent shared parameters while keeping widget state memory-only. Repair the helper's relevant defects if this path is used.
 9. Timestamp policy. Define stale/equal timestamp handling across notifications and final return; define malformed input behavior.
-10. Modal implementation. Choose Material dialog or a properly managed CDK overlay, with focus trapping, restore-focus, close controls, sizing, accessibility, and backdrop/Escape behavior. Both are available.
-11. Forced transitions. Define behavior for timer expiry, proctor commands, pause, logout, errors, and navigation while loading or displaying a widget. Modal interaction must not accidentally redefine test timing.
-12. Repeated calls and failures. Define active-call conflicts, late events, duplicate ready/return messages, missing widgets, network failure, malformed metadata, and handshake timeout.
+10. Modal implementation, accepted 2026-10-14. Start with Material `MatDialog`, with focus trapping, dialog-container initial focus, restoration to the player iframe, accessible naming, a close button, and no Escape or backdrop dismissal. See the handoff for sizing and remaining presentation questions.
+11. Forced transitions, accepted 2026-10-14. Test timers continue. Close and dispose on unit change, pause, termination, logout, or controller destruction, without returning to a departing player. System dialogs take priority. Whether a same-unit competing dialog closes or covers the widget remains open.
+12. Repeated calls and failures, accepted 2026-10-14. Open the loading dialog immediately after resolution. Allow one active call including loading and ignore additional calls with a diagnostic. Show failures in the dialog with a close button and use a 15-second ready timeout after loading HTML. Retry controls and detailed late-event/duplicate-message policies remain open.
 13. Player protocol update scope. Decide whether to update only widget-related contracts and metadata parsing or also unrelated Player 6.3 configuration additions. No unrelated printing feature was selected during this research.
 
 Ask only the questions needed for the next explicitly requested step. Do not make the user settle the entire implementation at once.
@@ -511,6 +513,8 @@ Implementation update on 2026-10-14, HTML download: after resolving a call, `Uni
 A suitable opening instruction is:
 
 > Read docs/verona-widget-context.md and the applicable AGENTS.md files. Treat the document as a research snapshot, not authorization to implement the entire feature. Recheck the latest authoritative Verona documentation for the step being changed. I will request implementation one step at a time. Ask about meaningful alternatives before choosing them.
+
+For the current handoff, also read `docs/verona-widget-handoff.md` before resuming.
 
 Possible iteration boundaries are protocol contracts/message ownership, widget provisioning, run-level state, modal/handshake, return/shared-parameter semantics, and full integration checks/documentation. These are navigation aids for future prompts, not an approved implementation plan.
 
