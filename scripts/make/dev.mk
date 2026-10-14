@@ -2,6 +2,15 @@ TC_BASE_DIR := $(shell git rev-parse --show-toplevel)
 
 -include $(TC_BASE_DIR)/.env.dev
 
+# Activates the compose `s3` profile (starts the bundled local SeaweedFS, see
+# docker-compose.dev.yml) whenever .env.dev has STORAGE_DRIVER=s3, without a
+# separate variable to keep in sync. `down` without it leaves a profiled
+# service's container running (and blocking network teardown) if that
+# container was started via a `run`-triggered dependency rather than `up`, so
+# every target touching this project's containers needs it, not just the ones
+# that create them.
+COMPOSE_PROFILE := $(if $(filter s3,$(STORAGE_DRIVER)),--profile s3,)
+
 ## prevents collisions of make target names with possible file names
 .PHONY: init dev-registry-login dev-registry-logout build up down start stop logs composer-install composer-update\
 	composer-refresh-autoload init-backend create-interfaces
@@ -41,6 +50,7 @@ up:
 			--env-file .env.dev\
 			--file docker-compose.yml\
 			--file docker-compose.dev.yml\
+			$(COMPOSE_PROFILE)\
 		up $(service)
 
 # Stop and remove all application containers.
@@ -50,6 +60,7 @@ down:
 			--env-file .env.dev\
 			--file docker-compose.yml\
 			--file docker-compose.dev.yml\
+			$(COMPOSE_PROFILE)\
 		down --remove-orphans $(service)
 
 # Start the application with already existing containers.
@@ -60,6 +71,7 @@ start:
 			--env-file .env.dev\
 			--file docker-compose.yml\
 			--file docker-compose.dev.yml\
+			$(COMPOSE_PROFILE)\
 		start $(service)
 
 # Stop the application but don't remove the service containers.
@@ -70,6 +82,7 @@ stop:
 			--env-file .env.dev\
 			--file docker-compose.yml\
 			--file docker-compose.dev.yml\
+			$(COMPOSE_PROFILE)\
 		stop $(service)
 
 # Log the application.
@@ -80,6 +93,7 @@ logs:
 			--env-file .env.dev\
 			--file docker-compose.yml\
 			--file docker-compose.dev.yml\
+			$(COMPOSE_PROFILE)\
 		logs --follow $(service)
 
 ## Open DB console
@@ -169,6 +183,7 @@ init-backend:
 			--env-file .env.dev\
 			--file docker-compose.yml\
 			--file docker-compose.dev.yml\
+			$(COMPOSE_PROFILE)\
 		run --rm --no-TTY --entrypoint /initialize_only.sh backend
 
 # Creates some interfaces for booklets and test-modes out of the definitions.
