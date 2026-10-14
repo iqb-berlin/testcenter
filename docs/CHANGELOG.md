@@ -1,6 +1,7 @@
 # next
 
 ## Neue Funktionen
+- Der Testcontroller lädt die bei einem Widget-Aufruf ausgewählte HTML-Datei über den authentifizierten Ressourcenzugriff. Die Browser-Konsole zeigt bei Erfolg den Pfad und die Textlänge, bei einem Ladefehler eine Fehlermeldung.
 - Widget-Aufrufe im Testcontroller wählen vorläufig die letzte zum Modell passende Workspace-Datei. Die Browser-Konsole zeigt bei Erfolg den Ressourcenpfad und die Aufrufnachricht, bei fehlendem Treffer eine Warnung.
 - Der Testcontroller erhält eine nach Modell gruppierte Liste der verfügbaren Workspace-Widgets, unabhängig von Unit-Abhängigkeiten.
 - Beim Hochladen von Verona-Modulen wird das Modell aus den Metadaten erkannt und gespeichert. Das aktuelle Metadatenformat wird auch für Widgets unterstützt.

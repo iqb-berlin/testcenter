@@ -7,14 +7,14 @@ import { MatCardModule } from '@angular/material/card';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Params } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { distinctUntilChanged, map, withLatestFrom } from 'rxjs/operators';
+import { distinctUntilChanged, first, map, withLatestFrom } from 'rxjs/operators';
 import { CustomtextPipe, MainDataService } from '@shared/shared.module';
 import { AppError, AuthData, CodeInputType } from '@app/app.interfaces';
 import { ThemeService } from '@shared/services/theme.service';
 import { CodeInputComponent } from '@shared/components/code-input/code-input.component';
 import { TestControllerService } from '../../services/test-controller.service';
 import { BackendService } from '../../services/backend.service';
-import { NavigationState, isEqualNavigation } from '../../interfaces/test-controller.interfaces';
+import { NavigationState, isEqualNavigation, isLoadingFileLoaded } from '../../interfaces/test-controller.interfaces';
 import {
   isVeronaNavigationTarget, SharedParameter,
   VeronaNavigationDeniedReason,
@@ -46,6 +46,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
   @ViewChild('iframeHost') private iFrameHostElement!: ElementRef;
   private iFrameItemplayer: HTMLIFrameElement | null = null;
   private subscriptions: { [tag: string ]: Subscription } = {};
+  private readonly widgetDownloads = new Subscription();
   clearCode: string = '';
 
   codeInputMode: CodeInputType = 'text-field';
@@ -83,6 +84,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this.widgetDownloads.unsubscribe();
     Object.values(this.subscriptions).forEach(subscription => subscription.unsubscribe());
   }
 
@@ -122,6 +124,12 @@ export class UnithostComponent implements OnInit, OnDestroy {
         console.log('No uploaded widget found for vopWidgetCall:', msgData);
       } else {
         console.log('vopWidgetCall resolved:', resourcePath, msgData);
+        this.widgetDownloads.add(
+          this.bs.getResource(this.tcs.workspaceId, resourcePath).pipe(first(isLoadingFileLoaded)).subscribe({
+            next: file => console.log('Widget HTML downloaded:', { resourcePath, htmlLength: file.content.length }),
+            error: error => console.error('Widget HTML download failed:', resourcePath, error)
+          })
+        );
       }
       break;
     }

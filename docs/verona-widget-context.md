@@ -504,6 +504,8 @@ Implementation update on 2026-10-14: `GET /test/{test_id}` includes all valid wi
 
 Implementation update on 2026-10-14, widget-call resolution: `TestLoaderService` stores the response's `widgets` map in `TestControllerService`. The service clears it on test-run reset and resolves an exact model match to the last resource path using the temporary policy from decision 1. `UnithostComponent` logs `vopWidgetCall resolved:` with the selected path and original call. Missing or unusable widget types produce `No uploaded widget found for vopWidgetCall:`. No aliases are added. Widget HTML downloading, the modal, and Widget-interface communication remain future steps.
 
+Implementation update on 2026-10-14, HTML download: after resolving a call, `UnithostComponent` downloads the selected resource through `BackendService.getResource()` using the current workspace and existing group-token authentication. It waits for HTML content rather than logging progress events as success. Success logs `Widget HTML downloaded:` with `resourcePath` and `htmlLength`, the JavaScript string length, not a byte count. Failures log `Widget HTML download failed:` with the path and error. Pending downloads are canceled on unit-host destruction. This step does not cache or execute HTML. The modal, iframe, and Widget-interface handshake remain future steps.
+
 ## 13. Suggested use in a new session
 
 A suitable opening instruction is:

@@ -3,6 +3,8 @@ import {
 } from '@angular/core/testing';
 import { ActivatedRoute, Params } from '@angular/router';
 import { of, Subject } from 'rxjs';
+import { HttpEventType, provideHttpClient } from '@angular/common/http';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { CommonModule } from '@angular/common';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDividerModule } from '@angular/material/divider';
@@ -33,6 +35,7 @@ bookletConfig.setFromKeyValuePairs({
 
 const MockTestControllerService = {
   bookletConfig,
+  workspaceId: 1,
   currentUnit: getTestData().Units.u1,
   unitAliasMap: { u1: 1 },
   unitContentReady$: of(false),
@@ -41,11 +44,11 @@ const MockTestControllerService = {
   configChanged$: new Subject<void>(),
   getWidgetResourcePath: jasmine.createSpy('getWidgetResourcePath')
 };
-const MockBackendService = { };
 const MockMainDataService = {
   postMessage$: new Subject(),
   authData$: new Subject(),
-  getAuthData: () => null
+  appConfig: { fileServiceUri: '' },
+  getAuthData: () => ({ groupToken: 'test-group', viewSettings: {} })
 };
 const MockActivatedRoute = {
   params: new Subject<Params>(),
@@ -58,6 +61,7 @@ const MockAssetService = {
 describe('UnithostComponent', () => {
   let component: UnithostComponent;
   let fixture: ComponentFixture<UnithostComponent>;
+  let http: HttpTestingController;
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
@@ -69,11 +73,14 @@ describe('UnithostComponent', () => {
       ],
       providers: [
         { provide: TestControllerService, useValue: MockTestControllerService },
-        { provide: BackendService, useValue: MockBackendService },
+        BackendService,
+        provideHttpClient(),
+        provideHttpClientTesting(),
         { provide: AssetService, useValue: MockAssetService },
         { provide: MainDataService, useValue: MockMainDataService },
         { provide: ActivatedRoute, useValue: MockActivatedRoute },
-        { provide: 'FILE_SERVER_URL', useValue: '' },
+        { provide: 'FILE_SERVER_URL', useValue: '/files/' },
+        { provide: 'BACKEND_URL', useValue: '/api/' },
         { provide: MessageService, useValue: {} }
       ]
     })
@@ -83,6 +90,8 @@ describe('UnithostComponent', () => {
   beforeEach(fakeAsync(() => {
     MockTestControllerService.getWidgetResourcePath.calls.reset();
     MockTestControllerService.getWidgetResourcePath.and.returnValue(undefined);
+    MockMainDataService.appConfig.fileServiceUri = '';
+    http = TestBed.inject(HttpTestingController);
     fixture = TestBed.createComponent(UnithostComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
@@ -91,6 +100,7 @@ describe('UnithostComponent', () => {
 
   afterEach(() => {
     fixture.destroy();
+    http.verify();
   });
 
   it('should create', () => {
@@ -108,16 +118,81 @@ describe('UnithostComponent', () => {
     expect(MockTestControllerService.getWidgetResourcePath).toHaveBeenCalledOnceWith('PERIODIC_TABLE');
     expect(log).toHaveBeenCalledOnceWith('vopWidgetCall resolved:', 'Resource/periodic.html', call);
     expect(warn).not.toHaveBeenCalled();
+
+    const request = http.expectOne('/api/file/test-group/ws_1/Resource/periodic.html');
+    expect(request.request.responseType).toBe('text');
+    request.event({ type: HttpEventType.DownloadProgress, loaded: 5, total: 20 });
+    expect(log).toHaveBeenCalledTimes(1);
+    const html = '<html>widget</html>';
+    request.flush(html);
+    expect(log).toHaveBeenCalledWith('Widget HTML downloaded:', {
+      resourcePath: 'Resource/periodic.html', htmlLength: html.length
+    });
   });
 
-  it('should warn when no uploaded widget matches the call', () => {
+  it('should log a missing widget without starting a download', () => {
     const log = spyOn(console, 'log');
     const warn = spyOn(console, 'warn');
     const call = { type: 'vopWidgetCall', sessionId: 'u1', widgetType: 'UNKNOWN' };
 
     MockMainDataService.postMessage$.next(new MessageEvent('message', { data: call, source: window }));
 
-    expect(warn).toHaveBeenCalledOnceWith('No uploaded widget found for vopWidgetCall:', call);
-    expect(log).not.toHaveBeenCalled();
+    expect(log).toHaveBeenCalledOnceWith('No uploaded widget found for vopWidgetCall:', call);
+    expect(warn).not.toHaveBeenCalled();
+  });
+
+  it('should report a widget download failure without logging success', () => {
+    const log = spyOn(console, 'log');
+    const error = spyOn(console, 'error');
+    MockTestControllerService.getWidgetResourcePath.and.returnValue('Resource/missing.html');
+    MockMainDataService.postMessage$.next(new MessageEvent('message', {
+      data: { type: 'vopWidgetCall', sessionId: 'u1', widgetType: 'PERIODIC_TABLE' }, source: window
+    }));
+
+    http.expectOne('/api/file/test-group/ws_1/Resource/missing.html').flush('Not found', {
+      status: 404, statusText: 'Not Found'
+    });
+    expect(error).toHaveBeenCalledOnceWith('Widget HTML download failed:', 'Resource/missing.html', jasmine.anything());
+    expect(log).toHaveBeenCalledTimes(1);
+  });
+
+  it('should download through the file server when configured', () => {
+    const log = spyOn(console, 'log');
+    MockMainDataService.appConfig.fileServiceUri = 'configured';
+    MockTestControllerService.getWidgetResourcePath.and.returnValue('Resource/periodic.html');
+    MockMainDataService.postMessage$.next(new MessageEvent('message', {
+      data: { type: 'vopWidgetCall', sessionId: 'u1', widgetType: 'PERIODIC_TABLE' }, source: window
+    }));
+
+    http.expectOne('/files/file/test-group/ws_1/Resource/periodic.html').flush('<html>widget</html>');
+    expect(log).toHaveBeenCalledWith('Widget HTML downloaded:', {
+      resourcePath: 'Resource/periodic.html', htmlLength: '<html>widget</html>'.length
+    });
+  });
+
+  it('should report an empty HTML response as a download failure', () => {
+    const log = spyOn(console, 'log');
+    const error = spyOn(console, 'error');
+    MockTestControllerService.getWidgetResourcePath.and.returnValue('Resource/empty.html');
+    MockMainDataService.postMessage$.next(new MessageEvent('message', {
+      data: { type: 'vopWidgetCall', sessionId: 'u1', widgetType: 'PERIODIC_TABLE' }, source: window
+    }));
+
+    http.expectOne('/api/file/test-group/ws_1/Resource/empty.html').flush('');
+    expect(error).toHaveBeenCalledOnceWith('Widget HTML download failed:', 'Resource/empty.html', jasmine.any(Error));
+    expect(log).toHaveBeenCalledTimes(1);
+  });
+
+  it('should cancel pending downloads when the unit host is destroyed', () => {
+    const log = spyOn(console, 'log');
+    MockTestControllerService.getWidgetResourcePath.and.returnValue('Resource/periodic.html');
+    MockMainDataService.postMessage$.next(new MessageEvent('message', {
+      data: { type: 'vopWidgetCall', sessionId: 'u1', widgetType: 'PERIODIC_TABLE' }, source: window
+    }));
+    const request = http.expectOne('/api/file/test-group/ws_1/Resource/periodic.html');
+
+    fixture.destroy();
+    expect(request.cancelled).toBeTrue();
+    expect(log).toHaveBeenCalledTimes(1);
   });
 });
