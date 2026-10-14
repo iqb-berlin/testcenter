@@ -120,6 +120,64 @@ class WorkspaceDAOTest extends TestCase {
     $this->assertSame('', $this->dbc->getFileById('WIDGET-1.0', 'Resource')->getVeronaModel());
   }
 
+  public function test_getWidgetResourcesFiltersCandidates(): void {
+    foreach ([
+      ['widget.html', 'Resource', 'widget', 'PERIODIC_TABLE', true],
+      ['player.html', 'Resource', 'player', 'PERIODIC_TABLE', true],
+      ['invalid.html', 'Resource', 'widget', 'PERIODIC_TABLE', false],
+      ['missing-model.html', 'Resource', 'widget', '', true],
+      ['unit.xml', 'Unit', 'widget', 'PERIODIC_TABLE', true]
+    ] as [$name, $type, $moduleType, $model, $valid]) {
+      $file = File::get(new FileData(
+        path: "/data_dir/ws_1/$type/$name",
+        type: $type,
+        id: $name,
+        isValid: $valid,
+        validationReport: $valid ? [] : ['error' => ['Invalid widget']],
+        veronaModuleType: $moduleType,
+        veronaModel: $model
+      ));
+      $this->dbc->storeFile($file);
+    }
+    $this->dbc->_("INSERT INTO workspaces (id, name, workspace_hash, content_type) VALUES (2, 'other', '', 'mixed')");
+    $this->dbc->_(
+      "INSERT INTO files (workspace_id, name, id, type, verona_module_type, verona_model, is_valid, size)
+       VALUES (2, 'other-workspace.html', 'other-workspace', 'Resource', 'widget', 'PERIODIC_TABLE', true, 0)"
+    );
+
+    $this->assertSame([
+      ['name' => 'widget.html', 'verona_model' => 'PERIODIC_TABLE']
+    ], $this->dbc->getWidgetResources());
+  }
+
+  public function test_getWidgetResourcesHasDeterministicOrder(): void {
+    foreach ([
+      ['z-oldest.html', 'PERIODIC_TABLE', 100],
+      ['z-newest.html', 'PERIODIC_TABLE', 200],
+      ['a-newest.html', 'PERIODIC_TABLE', 200],
+      ['molecule.html', 'MOLECULE_EDITOR', 300],
+      ['lowercase.html', 'periodic_table', 100]
+    ] as [$name, $model, $time]) {
+      $this->dbc->storeFile(new ResourceFile(new FileData(
+        path: "/data_dir/ws_1/Resource/$name",
+        type: 'Resource',
+        id: $name,
+        modificationTime: $time,
+        veronaModuleType: 'widget',
+        veronaModel: $model
+      )));
+    }
+    $expected = [
+      ['name' => 'molecule.html', 'verona_model' => 'MOLECULE_EDITOR'],
+      ['name' => 'z-oldest.html', 'verona_model' => 'PERIODIC_TABLE'],
+      ['name' => 'a-newest.html', 'verona_model' => 'PERIODIC_TABLE'],
+      ['name' => 'z-newest.html', 'verona_model' => 'PERIODIC_TABLE'],
+      ['name' => 'lowercase.html', 'verona_model' => 'periodic_table']
+    ];
+    $this->assertSame($expected, $this->dbc->getWidgetResources());
+    $this->assertSame($expected, $this->dbc->getWidgetResources());
+  }
+
   public function test_addLoginSource(): void {
     $logins = new LoginArray(
       new Login('first', 'some', 'run-hot-return', 'grp', 'Grp', [], 1, 1000000, 200000, 0, (object) ['some' => 'thing']),

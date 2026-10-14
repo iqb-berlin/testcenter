@@ -53,6 +53,7 @@ export interface TestData {
   mode: string;
   laststate: { [k in TestStateKey]?: string };
   resources: TestDataResourcesMap;
+  widgets: { [model: string]: string[] };
   firstStart: boolean;
   workspaceId: number;
   presetBookletStates: { [ k :string]: string };

@@ -643,6 +643,25 @@ class WorkspaceDAO extends DAO {
         );
     }
 
+  /**
+   * @return list<array{name: string, verona_model: string}>
+   * Oldest modification first within each model; filename breaks timestamp ties.
+   */
+  public function getWidgetResources(): array {
+    return $this->_(
+      "SELECT name, verona_model
+       FROM files
+       WHERE workspace_id = :ws_id
+         AND type = 'Resource'
+         AND verona_module_type = 'widget'
+         AND is_valid = true
+         AND verona_model <> ''
+       ORDER BY verona_model COLLATE \"C\", modification_ts ASC, name COLLATE \"C\" ASC",
+      [':ws_id' => $this->workspaceId],
+      true
+    );
+  }
+
   public function getWorkspaceHash(): string
   {
     return $this->_(

@@ -1,6 +1,7 @@
 # next
 
 ## Neue Funktionen
+- Der Testcontroller erhält eine nach Modell gruppierte Liste der verfügbaren Workspace-Widgets, unabhängig von Unit-Abhängigkeiten.
 - Beim Hochladen von Verona-Modulen wird das Modell aus den Metadaten erkannt und gespeichert. Das aktuelle Metadatenformat wird auch für Widgets unterstützt.
 - Der Kurztitel einer Unit (Attribut `labelshort` im Booklet) lässt sich während des Tests anzeigen: im Kopfbereich über `header_content` = `UNIT_LABEL_SHORT`, auf der Navigationsleiste über `navbar_unit_label` = `LABEL_SHORT` und auf der Werkzeugleiste über den neuen Booklet-Parameter `toolbar_unit_label` = `LABEL_SHORT`. Fehlt der Kurztitel, wird der Titel der Unit angezeigt. `toolbar_unit_label` ersetzt `toolbar_show_unit_title`, das weiterhin ausgewertet wird, aber als veraltet gilt. Bisher wurde `labelshort` nur im Gruppen-Monitor angezeigt.
 
@@ -11,6 +12,7 @@
 - API: Berichte (`GET /workspace/{ws_id}/report/{type}`) ohne den optionalen Parameter `dataIds` umfassen alle Gruppen bzw. alle System-Checks des Arbeitsbereichs. Bisher brachen Log-, Antwort- und Review-Berichte mit einem SQL-Fehler ab, und der System-Check-Bericht war leer. (#1614)
 
 ## Technisches
+- `GET /test/{test_id}` liefert `widgets` als Objekt mit Verona-Modellen als Schlüsseln und Ressourcenpfaden als Listen. Die Listen sind nach Dateiänderungszeit und bei Gleichstand nach Dateiname aufsteigend sortiert. Vorläufig soll der letzte Eintrag gewählt werden. Dateiänderungszeit entspricht insbesondere bei ZIP-Importen nicht zwingend der Uploadzeit; die Auswahlregel ist noch nicht endgültig.
 - Die Tabelle `files` erhält die Spalte `verona_model`; der Modultyp `widget` wird unterstützt. Die Datei-API liefert ein vorhandenes Modell als `info.veronaModel`. Die Datenbankinitialisierung liest bestehende Workspace-Dateien nach der Migration erneut ein.
 - Der Brute-Force-Schutz (`BRUTE_FORCE_PROTECTION` in `.env.prod-template`) ist bei Neuinstallationen via docker-compose ausgeschaltet.
 

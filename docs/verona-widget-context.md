@@ -441,7 +441,7 @@ SHA-256 hashes, calculated from the inspected UTF-8 text:
 
 These are unresolved design choices, not implementation defaults.
 
-1. Widget provisioning and selection. The user chose uploaded workspace resources on 2026-10-13. The user chose a dedicated `files.verona_model` column rather than `contextData` on 2026-10-13. How to expose their widget metadata to the test and what to do when multiple implementations match remain undecided. The current frontend cannot discover models from the resource-path map alone.
+1. Widget provisioning and selection. The user chose uploaded workspace resources and a dedicated `files.verona_model` column rather than `contextData` on 2026-10-13. On 2026-10-14, the user chose a `widgets` map in the existing test response, keyed by exact model, with lists of resource paths. The temporary selection policy is to take the last entry. Lists use file modification time ascending, then bytewise filename ascending for ties. The user explicitly accepted modification time for now: it is not upload time, and ZIP imports can preserve older timestamps. PIN: this is not the final policy for multiple files per model. Revisit selection before treating it as permanent. No ambiguity dialog or automatic semantic-version selection was chosen.
 2. Remaining type-to-model mapping. `MOLECULE_EDITOR` and `PERIODIC_TABLE` are agreed player names and match the supplied widgets' metadata models directly. Support for the Player `WIDGET_...` names, calculator names, and other aliases remains undecided.
 3. `UNIT` widget requests. Player 6.3.0 includes this enum value. Decide whether this feature covers unit-as-widget execution or reports unsupported type. It is not implemented by either inspected widget path.
 4. Initial state precedence. Decide whether an explicit player state overrides cached state, whether omitted state restores the cache, and how an explicit empty state behaves.
@@ -499,6 +499,8 @@ Implementation update on 2026-10-13: `files.verona_model` stores the unchanged m
 Migration file: `scripts/database/patches.d/19.0.0.sql`. The same schema changes are included in `scripts/database/full.sql`, and `DBSchema::REQUIRED_VERSION` is `19.0.0`. The migration was applied successfully to the running development database.
 
 Verification: 40 file tests, 5 WorkspaceDAO tests, and 1 schema-version test passed. The backend API suite completed with 292 passing checks, 13 skipped checks, and no failures or errors. The frontend TypeScript check and `git diff --check` passed. A direct database query confirmed the two uploaded widgets' stored models and module type `widget`.
+
+Implementation update on 2026-10-14: `GET /test/{test_id}` includes all valid widget resources with a nonempty model in the authenticated workspace, grouped as `widgets: {model: ['Resource/file.html']}`. No unit-widget relations are created. An empty list of widgets is serialized as `{}`. The backend registers the paths with the existing file cache. The frontend test-response type includes the map, but widget-call selection, HTML loading, and execution remain future steps. Ordering and its temporary selection policy are recorded in decision 1 above.
 
 ## 13. Suggested use in a new session
 
