@@ -21,6 +21,7 @@ import { MainDataService, BookletConfig } from '../../../shared/shared.module';
 import { VeronaNavigationDeniedReason } from '../../interfaces/verona.interfaces';
 import { NavigationState } from '../../interfaces/test-controller.interfaces';
 import { getTestData } from '../../test/test-data';
+import { VeronaAPIService } from '../../services/verona-api.service';
 import { MessageService } from '../../../shared/services/message.service';
 
 const bookletConfig = new BookletConfig();
@@ -44,7 +45,11 @@ const MockTestControllerService = {
   currentUnitSequenceId: 1,
   currentUnitSequenceId$: new BehaviorSubject(1),
   state$: new BehaviorSubject('RUNNING'),
+  sharedParameters: [{ key: 'shared', value: '' }],
   currentUnit: getTestData().Units.u1,
+  getUnit: () => getTestData().Units.u1,
+  AddToUnitStateBuffer: jasmine.createSpy('AddToUnitStateBuffer'),
+  AddToUnitStateDataPartsBuffer: jasmine.createSpy('AddToUnitStateDataPartsBuffer'),
   unitAliasMap: { u1: 1 },
   unitContentReady$: of(false),
   navigationDenial$: new Subject<{ sourceUnitSequenceId: number, reason: VeronaNavigationDeniedReason[] }>(),
@@ -109,6 +114,8 @@ describe('UnithostComponent', () => {
   beforeEach(fakeAsync(() => {
     MockTestControllerService.currentUnitSequenceId$.next(1);
     MockTestControllerService.state$.next('RUNNING');
+    MockTestControllerService.AddToUnitStateBuffer.calls.reset();
+    MockTestControllerService.AddToUnitStateDataPartsBuffer.calls.reset();
     MockTestControllerService.getWidgetResourcePath.calls.reset();
     MockTestControllerService.getWidgetResourcePath.and.returnValue(undefined);
     MockMainDataService.appConfig.fileServiceUri = '';
@@ -117,6 +124,12 @@ describe('UnithostComponent', () => {
     component = fixture.componentInstance;
     fixture.detectChanges();
     tick();
+    const player = document.createElement('iframe');
+    fixture.nativeElement.appendChild(player);
+    component['iFrameItemplayer'] = player;
+    if (!player.contentWindow) throw new Error('No player window');
+    TestBed.inject(VeronaAPIService).postMessageTarget = player.contentWindow;
+    component['playerSessions'].set(player.contentWindow, 'u1');
   }));
 
   afterEach(() => {
@@ -134,7 +147,7 @@ describe('UnithostComponent', () => {
     MockTestControllerService.getWidgetResourcePath.and.returnValue('Resource/periodic.html');
     const call = { type: 'vopWidgetCall', sessionId: 'u1', callId: 'button-1', widgetType: 'PERIODIC_TABLE' };
 
-    MockMainDataService.postMessage$.next(new MessageEvent('message', { data: call, source: window }));
+    MockMainDataService.postMessage$.next(new MessageEvent('message', { data: call, source: component['iFrameItemplayer']?.contentWindow ?? null }));
 
     expect(MockTestControllerService.getWidgetResourcePath).toHaveBeenCalledOnceWith('PERIODIC_TABLE');
     expect(log).toHaveBeenCalledOnceWith('vopWidgetCall resolved:', 'Resource/periodic.html', call);
@@ -158,7 +171,7 @@ describe('UnithostComponent', () => {
     const warn = spyOn(console, 'warn');
     const call = { type: 'vopWidgetCall', sessionId: 'u1', widgetType: 'UNKNOWN' };
 
-    MockMainDataService.postMessage$.next(new MessageEvent('message', { data: call, source: window }));
+    MockMainDataService.postMessage$.next(new MessageEvent('message', { data: call, source: component['iFrameItemplayer']?.contentWindow ?? null }));
 
     expect(log).toHaveBeenCalledOnceWith('No uploaded widget found for vopWidgetCall:', call);
     expect(warn).not.toHaveBeenCalled();
@@ -169,7 +182,7 @@ describe('UnithostComponent', () => {
     const error = spyOn(console, 'error');
     MockTestControllerService.getWidgetResourcePath.and.returnValue('Resource/missing.html');
     MockMainDataService.postMessage$.next(new MessageEvent('message', {
-      data: { type: 'vopWidgetCall', sessionId: 'u1', widgetType: 'PERIODIC_TABLE' }, source: window
+      data: { type: 'vopWidgetCall', sessionId: 'u1', widgetType: 'PERIODIC_TABLE' }, source: component['iFrameItemplayer']?.contentWindow ?? null
     }));
 
     fixture.detectChanges();
@@ -185,7 +198,7 @@ describe('UnithostComponent', () => {
     MockMainDataService.appConfig.fileServiceUri = 'configured';
     MockTestControllerService.getWidgetResourcePath.and.returnValue('Resource/periodic.html');
     MockMainDataService.postMessage$.next(new MessageEvent('message', {
-      data: { type: 'vopWidgetCall', sessionId: 'u1', widgetType: 'PERIODIC_TABLE' }, source: window
+      data: { type: 'vopWidgetCall', sessionId: 'u1', widgetType: 'PERIODIC_TABLE' }, source: component['iFrameItemplayer']?.contentWindow ?? null
     }));
 
     fixture.detectChanges();
@@ -200,7 +213,7 @@ describe('UnithostComponent', () => {
     const error = spyOn(console, 'error');
     MockTestControllerService.getWidgetResourcePath.and.returnValue('Resource/empty.html');
     MockMainDataService.postMessage$.next(new MessageEvent('message', {
-      data: { type: 'vopWidgetCall', sessionId: 'u1', widgetType: 'PERIODIC_TABLE' }, source: window
+      data: { type: 'vopWidgetCall', sessionId: 'u1', widgetType: 'PERIODIC_TABLE' }, source: component['iFrameItemplayer']?.contentWindow ?? null
     }));
 
     fixture.detectChanges();
@@ -213,7 +226,7 @@ describe('UnithostComponent', () => {
     const log = spyOn(console, 'log');
     MockTestControllerService.getWidgetResourcePath.and.returnValue('Resource/periodic.html');
     MockMainDataService.postMessage$.next(new MessageEvent('message', {
-      data: { type: 'vopWidgetCall', sessionId: 'u1', widgetType: 'PERIODIC_TABLE' }, source: window
+      data: { type: 'vopWidgetCall', sessionId: 'u1', widgetType: 'PERIODIC_TABLE' }, source: component['iFrameItemplayer']?.contentWindow ?? null
     }));
     fixture.detectChanges();
     const request = http.expectOne('/api/file/test-group/ws_1/Resource/periodic.html');
@@ -222,7 +235,7 @@ describe('UnithostComponent', () => {
     expect(request.cancelled).toBeTrue();
     expect(log).toHaveBeenCalledTimes(1);
   });
-  function openWidget(source: Window = window): void {
+  function openWidget(source = component['iFrameItemplayer']?.contentWindow): void {
     MockTestControllerService.getWidgetResourcePath.and.returnValue('Resource/periodic.html');
     MockMainDataService.postMessage$.next(new MessageEvent('message', {
       data: { type: 'vopWidgetCall', sessionId: 'u1', widgetType: 'PERIODIC_TABLE' }, source
@@ -272,17 +285,17 @@ describe('UnithostComponent', () => {
     expect(postMessage).not.toHaveBeenCalled();
   }));
 
-  it('ignores repeated calls while loading and after download, and never executes HTML', fakeAsync(() => {
+  it('ignores repeated calls while loading and starting', fakeAsync(() => {
     spyOn(console, 'warn');
     openWidget();
     openWidget();
     const request = http.expectOne('/api/file/test-group/ws_1/Resource/periodic.html');
-    request.flush('<script>throw new Error("must not execute")</script>');
+    request.flush('<html>widget</html>');
     openWidget();
     tick();
     expect(TestBed.inject(MatDialog).openDialogs.length).toBe(1);
-    expect(TestBed.inject(MatDialog).openDialogs[0].componentInstance.status()).toBe('loaded');
-    expect(document.querySelector('[role="dialog"] iframe')).toBeNull();
+    expect(TestBed.inject(MatDialog).openDialogs[0].componentInstance.status()).toBe('starting');
+    expect(document.querySelector('[role="dialog"] iframe')).not.toBeNull();
     expect(console.warn).toHaveBeenCalledTimes(2);
     TestBed.inject(MatDialog).closeAll();
     tick();
@@ -323,7 +336,7 @@ describe('UnithostComponent', () => {
     const request = http.expectOne('/api/file/test-group/ws_1/Resource/periodic.html');
     const dialog = TestBed.inject(MatDialog);
     dialog.open(WidgetDialogComponent, {
-      data: { status: signal<WidgetDialogStatus>('loaded') }
+      data: { status: signal<WidgetDialogStatus>('running') }
     });
     fixture.detectChanges();
     tick();
@@ -342,7 +355,7 @@ describe('UnithostComponent', () => {
     expect(owner.componentInstance.widgets).not.toBe(TestBed.inject(WidgetService));
     MockTestControllerService.getWidgetResourcePath.and.returnValue('Resource/periodic.html');
     owner.componentInstance.widgets.open({
-      call: { widgetType: 'PERIODIC_TABLE' }, source: window, playerIframe: null
+      call: { widgetType: 'PERIODIC_TABLE' }, source: component['iFrameItemplayer']?.contentWindow ?? null, playerIframe: null
     });
     const request = http.expectOne('/api/file/test-group/ws_1/Resource/periodic.html');
     owner.destroy();
@@ -351,5 +364,321 @@ describe('UnithostComponent', () => {
     expect(TestBed.inject(MatDialog).openDialogs.length).toBe(0);
     otherOwner.destroy();
   }));
+
+  const metadata = {
+    id: 'periodic-table', type: 'WIDGET', model: 'PERIODIC_TABLE', version: '1.0.0',
+    specVersion: '1.0', metadataVersion: '3.1', name: [{ lang: 'de', value: 'Periodensystem' }]
+  };
+
+  function loadedIframe(): HTMLIFrameElement {
+    http.expectOne('/api/file/test-group/ws_1/Resource/periodic.html').flush('<html>widget</html>');
+    tick();
+    const iframe = document.querySelector<HTMLIFrameElement>('[role="dialog"] iframe');
+    if (!iframe?.contentWindow) throw new Error('Widget iframe is missing');
+    return iframe;
+  }
+
+  it('starts only its own widget once with a separate session, arrays, and explicit empty state', fakeAsync(() => {
+    const playerWindow = component['iFrameItemplayer']?.contentWindow;
+    if (!playerWindow) throw new Error('Missing player window');
+    MockTestControllerService.getWidgetResourcePath.and.returnValue('Resource/periodic.html');
+    MockMainDataService.postMessage$.next(new MessageEvent('message', {
+      source: playerWindow,
+      data: { type: 'vopWidgetCall', sessionId: 'u1', callId: 'button', widgetType: 'PERIODIC_TABLE',
+        parameters: [{ key: 'empty' }, { key: 'mode', value: 'select' }], state: '' }
+    }));
+    fixture.detectChanges();
+    const iframe = loadedIframe();
+    const widgetWindow = iframe.contentWindow;
+    if (!widgetWindow) throw new Error('Missing widget window');
+    const start = spyOn(widgetWindow, 'postMessage');
+    const ready = { type: 'vowReadyNotification', metadata: JSON.stringify(metadata) };
+    MockMainDataService.postMessage$.next(new MessageEvent('message', { source: window, data: ready }));
+    expect(start).not.toHaveBeenCalled();
+    MockMainDataService.postMessage$.next(new MessageEvent('message', { source: widgetWindow, data: ready }));
+    MockMainDataService.postMessage$.next(new MessageEvent('message', { source: widgetWindow, data: ready }));
+    expect(start).toHaveBeenCalledTimes(1);
+    const command = start.calls.mostRecent().args[0];
+    expect(command.type).toBe('vowStartCommand');
+    expect(command.sessionId).toMatch(/^[0-9a-f]{32}$/);
+    expect(command.sessionId).not.toBe('u1');
+    expect(command.parameters).toEqual([{ key: 'empty', value: '' }, { key: 'mode', value: 'select' }]);
+    expect(command.sharedParameters).toEqual([{ key: 'shared', value: '' }]);
+    expect(command.state).toBe('');
+    expect(command.callId).toBeUndefined();
+    expect(iframe.title).toBe('Periodensystem');
+    expect(document.querySelector('[role="dialog"]')?.getAttribute('aria-label')).toBe('Periodensystem');
+    expect(TestBed.inject(VeronaAPIService).postMessageTarget).toBe(playerWindow);
+    const playerMessage = spyOn(playerWindow!, 'postMessage');
+    TestBed.inject(VeronaAPIService).sendPageNav('u1', '#next');
+    expect(playerMessage).toHaveBeenCalled();
+    tick(15000);
+    expect(TestBed.inject(MatDialog).openDialogs[0].componentInstance.status()).toBe('running');
+    TestBed.inject(MatDialog).closeAll();
+    tick();
+  }));
+
+  it('shows a startup error at 15 seconds and ignores ready messages after failure', fakeAsync(() => {
+    spyOn(console, 'error');
+    openWidget();
+    const iframe = loadedIframe();
+    const source = iframe.contentWindow;
+    tick(14999);
+    expect(TestBed.inject(MatDialog).openDialogs[0].componentInstance.status()).toBe('starting');
+    tick(1);
+    expect(TestBed.inject(MatDialog).openDialogs[0].componentInstance.status()).toBe('startup-error');
+    expect(document.querySelector('[role="dialog"] iframe')).toBeNull();
+    MockMainDataService.postMessage$.next(new MessageEvent('message', {
+      source, data: { type: 'vowReadyNotification', metadata: JSON.stringify(metadata) }
+    }));
+    expect(TestBed.inject(MatDialog).openDialogs[0].componentInstance.status()).toBe('startup-error');
+    TestBed.inject(MatDialog).closeAll();
+    tick();
+  }));
+
+  for (const invalidMetadata of ['{', JSON.stringify({ ...metadata, model: 'OTHER' }),
+    JSON.stringify({ ...metadata, type: 'PLAYER' }), JSON.stringify({ ...metadata, specVersion: '2.0' })]) {
+    it(`rejects invalid ready metadata ${invalidMetadata}`, fakeAsync(() => {
+      spyOn(console, 'error');
+      openWidget();
+      const iframe = loadedIframe();
+      MockMainDataService.postMessage$.next(new MessageEvent('message', {
+        source: iframe.contentWindow, data: { type: 'vowReadyNotification', metadata: invalidMetadata }
+      }));
+      expect(TestBed.inject(MatDialog).openDialogs[0].componentInstance.status()).toBe('startup-error');
+      expect(document.querySelector('[role="dialog"] iframe')).toBeNull();
+      TestBed.inject(MatDialog).closeAll();
+      tick(15000);
+    }));
+  }
+
+  it('preserves an outgoing player state without redirecting commands to it', () => {
+    const outgoing = document.createElement('iframe');
+    fixture.nativeElement.appendChild(outgoing);
+    const outgoingWindow = outgoing.contentWindow;
+    if (!outgoingWindow) throw new Error('Missing outgoing window');
+    component['playerSessions'].set(outgoingWindow, 'u1');
+    const handleState = spyOn<any>(component, 'handleStateChangedNotification');
+    const currentTarget = TestBed.inject(VeronaAPIService).postMessageTarget;
+    MockMainDataService.postMessage$.next(new MessageEvent('message', {
+      source: outgoingWindow, data: { type: 'vopStateChangedNotification', sessionId: 'u1', unitState: {} }
+    }));
+    expect(handleState).toHaveBeenCalledTimes(1);
+    expect(TestBed.inject(VeronaAPIService).postMessageTarget).toBe(currentTarget);
+    MockMainDataService.postMessage$.next(new MessageEvent('message', {
+      source: outgoingWindow, data: { type: 'vopWidgetCall', sessionId: 'u1', widgetType: 'PERIODIC_TABLE' }
+    }));
+    expect(TestBed.inject(MatDialog).openDialogs.length).toBe(0);
+  });
+
+  it('executes downloaded HTML and completes the real browser ready/start exchange', done => {
+    MockTestControllerService.getWidgetResourcePath.and.returnValue('Resource/periodic.html');
+    const listener = (event: MessageEvent): void => {
+      if (event.data?.type === 'vowReadyNotification') MockMainDataService.postMessage$.next(event);
+      if (event.data?.type === 'testWidgetStarted') {
+        window.removeEventListener('message', listener);
+        expect(event.data.command.type).toBe('vowStartCommand');
+        expect(event.data.command.parameters).toEqual([]);
+        expect(event.data.command.state).toBeUndefined();
+        expect(TestBed.inject(MatDialog).openDialogs[0].componentInstance.status()).toBe('running');
+        done();
+      }
+    };
+    window.addEventListener('message', listener);
+    openWidget();
+    const html = `<script>
+      window.addEventListener('message', event => {
+        if (event.data.type === 'vowStartCommand') {
+          parent.postMessage({type: 'testWidgetStarted', command: event.data}, '*');
+        }
+      });
+      parent.postMessage({type: 'vowReadyNotification', metadata: ${JSON.stringify(JSON.stringify(metadata))}}, '*');
+    </script>`;
+    http.expectOne('/api/file/test-group/ws_1/Resource/periodic.html').flush(html);
+  });
+
+  it('accepts the actual final state emitted when an outgoing iframe unloads', done => {
+    const outgoing = document.createElement('iframe');
+    fixture.nativeElement.appendChild(outgoing);
+    const outgoingWindow = outgoing.contentWindow;
+    if (!outgoingWindow) throw new Error('Missing outgoing player');
+    component['playerSessions'].set(outgoingWindow, 'u1');
+    const currentTarget = TestBed.inject(VeronaAPIService).postMessageTarget;
+    const listener = (event: MessageEvent): void => {
+      if (event.data?.type === 'testOutgoingReady') outgoing.remove();
+      if (event.data?.type === 'vopStateChangedNotification' && event.data.unitState?.dataParts?.final === 'saved') {
+        window.removeEventListener('message', listener);
+        MockMainDataService.postMessage$.next(event);
+        expect(MockTestControllerService.AddToUnitStateDataPartsBuffer).toHaveBeenCalledWith(
+          getTestData().Units.u1.sequenceId, { final: 'saved' }, ''
+        );
+        expect(TestBed.inject(VeronaAPIService).postMessageTarget).toBe(currentTarget);
+        done();
+      }
+    };
+    window.addEventListener('message', listener);
+    outgoing.srcdoc = `<script>
+      window.addEventListener('unload', () => parent.postMessage({
+        type: 'vopStateChangedNotification', sessionId: 'u1', unitState: {dataParts: {final: 'saved'}}
+      }, '*'));
+      parent.postMessage({type: 'testOutgoingReady'}, '*');
+    </script>`;
+  });
+
+  function runningWidget(initialState?: string) {
+    const playerWindow = component['iFrameItemplayer']?.contentWindow;
+    if (!playerWindow) throw new Error('Missing player window');
+    MockTestControllerService.getWidgetResourcePath.and.returnValue('Resource/periodic.html');
+    MockMainDataService.postMessage$.next(new MessageEvent('message', {
+      source: playerWindow, data: { type: 'vopWidgetCall', sessionId: 'u1', callId: 'button-1',
+        widgetType: 'PERIODIC_TABLE', ...(initialState !== undefined ? { state: initialState } : {}) }
+    }));
+    fixture.detectChanges();
+    const iframe = loadedIframe();
+    const widgetWindow = iframe.contentWindow;
+    if (!widgetWindow) throw new Error('Missing widget window');
+    const start = spyOn(widgetWindow, 'postMessage');
+    MockMainDataService.postMessage$.next(new MessageEvent('message', {
+      source: widgetWindow, data: { type: 'vowReadyNotification', metadata: JSON.stringify(metadata) }
+    }));
+    const sessionId = start.calls.mostRecent().args[0].sessionId;
+    const returned = spyOn(playerWindow, 'postMessage');
+    const send = (type: string, fields: object = {}, source: MessageEventSource = widgetWindow): void => {
+      MockMainDataService.postMessage$.next(new MessageEvent('message', {
+        source, data: { type, sessionId, timeStamp: '2026-10-14T12:00:00Z', ...fields }
+      }));
+    };
+    return { send, returned, sessionId, widgetWindow };
+  }
+
+  it('returns final state with the original player session and call ID exactly once', fakeAsync(() => {
+    const { send, returned } = runningWidget('initial');
+    send('vowStateChangedNotification', { state: 'interim' });
+    TestBed.inject(VeronaAPIService).postMessageTarget = window;
+    send('vowReturnRequested', { state: 'final' });
+    send('vowReturnRequested', { state: 'duplicate' });
+    tick();
+    expect(returned).toHaveBeenCalledOnceWith({
+      type: 'vopWidgetReturn', sessionId: 'u1', callId: 'button-1', state: 'final'
+    }, '*');
+    expect(TestBed.inject(MatDialog).openDialogs.length).toBe(0);
+    expect(document.querySelector('[role="dialog"] iframe')).toBeNull();
+  }));
+
+  it('preserves an empty interim state when return omits state', fakeAsync(() => {
+    const { send, returned } = runningWidget('initial');
+    send('vowStateChangedNotification', { state: '' });
+    send('vowReturnRequested');
+    tick();
+    expect(returned.calls.mostRecent().args[0].state).toBe('');
+  }));
+
+  it('applies an empty final state and honors explicit saveState true', fakeAsync(() => {
+    const { send, returned } = runningWidget('initial');
+    send('vowReturnRequested', { state: '', saveState: true });
+    tick();
+    expect(returned.calls.mostRecent().args[0].state).toBe('');
+  }));
+
+  it('returns the call state when no widget state update was received', fakeAsync(() => {
+    const { send, returned } = runningWidget('initial');
+    send('vowReturnRequested');
+    tick();
+    expect(returned.calls.mostRecent().args[0].state).toBe('initial');
+  }));
+
+  it('keeps missing state absent in the player return', fakeAsync(() => {
+    const { send, returned } = runningWidget();
+    send('vowReturnRequested');
+    tick();
+    expect(Object.hasOwn(returned.calls.mostRecent().args[0], 'state')).toBeFalse();
+  }));
+
+  it('closes without a return when saveState is false', fakeAsync(() => {
+    const { send, returned } = runningWidget();
+    send('vowStateChangedNotification', { state: 'interim' });
+    send('vowReturnRequested', { state: 'final', saveState: false });
+    tick();
+    expect(returned).not.toHaveBeenCalled();
+    expect(TestBed.inject(MatDialog).openDialogs.length).toBe(0);
+  }));
+
+  it('orders state by timestamp, accepts equal times, and closes on a stale return', fakeAsync(() => {
+    const { send, returned } = runningWidget();
+    send('vowStateChangedNotification', { state: 'newest', timeStamp: '2026-10-14T12:00:02Z' });
+    send('vowStateChangedNotification', { state: 'stale', timeStamp: '2026-10-14T12:00:01Z' });
+    send('vowStateChangedNotification', { state: 'equal', timeStamp: '2026-10-14T14:00:02+02:00' });
+    send('vowReturnRequested', { state: 'stale final', timeStamp: '2026-10-14T12:00:01Z' });
+    tick();
+    expect(returned.calls.mostRecent().args[0].state).toBe('equal');
+    expect(TestBed.inject(MatDialog).openDialogs.length).toBe(0);
+  }));
+
+  it('rejects wrong sources and sessions without accepting their state or closing', fakeAsync(() => {
+    spyOn(console, 'warn');
+    const { send, returned } = runningWidget('initial');
+    send('vowStateChangedNotification', { state: 'wrong source' }, window);
+    send('vowReturnRequested', { state: 'wrong source' }, window);
+    send('vowStateChangedNotification', { state: 'wrong session', sessionId: 'other' });
+    send('vowReturnRequested', { state: 'wrong session', sessionId: 'other' });
+    expect(TestBed.inject(MatDialog).openDialogs.length).toBe(1);
+    send('vowReturnRequested');
+    tick();
+    expect(returned.calls.mostRecent().args[0].state).toBe('initial');
+  }));
+
+  it('rejects malformed timestamps and payloads while keeping the widget open', fakeAsync(() => {
+    spyOn(console, 'warn');
+    const { send, returned } = runningWidget('initial');
+    for (const timeStamp of ['invalid', '2026-02-30T12:00:00Z', '2026-10-14', '2026-10-14T24:00:00Z']) {
+      send('vowStateChangedNotification', { state: 'invalid', timeStamp });
+      send('vowReturnRequested', { state: 'invalid', timeStamp });
+    }
+    send('vowReturnRequested', { saveState: 'false' });
+    send('vowReturnRequested', { state: null });
+    expect(TestBed.inject(MatDialog).openDialogs.length).toBe(1);
+    expect(returned).not.toHaveBeenCalled();
+    send('vowReturnRequested');
+    tick();
+    expect(returned.calls.mostRecent().args[0].state).toBe('initial');
+  }));
+
+  it('suppresses late returns after cancellation or a forced transition', fakeAsync(() => {
+    const { send, returned } = runningWidget();
+    MockTestControllerService.state$.next('PAUSED');
+    send('vowReturnRequested', { state: 'late' });
+    tick();
+    expect(returned).not.toHaveBeenCalled();
+    expect(TestBed.inject(MatDialog).openDialogs.length).toBe(0);
+  }));
+
+  it('completes a real browser ready, state, and return exchange back to the player', done => {
+    const player = component['iFrameItemplayer']?.contentWindow;
+    if (!player) throw new Error('Missing player');
+    const listener = (event: MessageEvent): void => {
+      if (event.data?.type?.startsWith('vow')) MockMainDataService.postMessage$.next(event);
+    };
+    const playerListener = (event: MessageEvent): void => {
+      if (event.data?.type !== 'vopWidgetReturn') return;
+      window.removeEventListener('message', listener);
+      player.removeEventListener('message', playerListener);
+      expect(event.data).toEqual({ type: 'vopWidgetReturn', sessionId: 'u1', state: 'final browser state' });
+      done();
+    };
+    window.addEventListener('message', listener);
+    player.addEventListener('message', playerListener);
+    openWidget();
+    const html = `<script>
+      window.addEventListener('message', event => {
+        if (event.data.type !== 'vowStartCommand') return;
+        const sessionId = event.data.sessionId;
+        const timeStamp = new Date().toISOString();
+        parent.postMessage({type: 'vowStateChangedNotification', sessionId, timeStamp, state: 'interim'}, '*');
+        parent.postMessage({type: 'vowReturnRequested', sessionId, timeStamp, state: 'final browser state'}, '*');
+      });
+      parent.postMessage({type: 'vowReadyNotification', metadata: ${JSON.stringify(JSON.stringify(metadata))}}, '*');
+    </script>`;
+    http.expectOne('/api/file/test-group/ws_1/Resource/periodic.html').flush(html);
+  });
 
 });

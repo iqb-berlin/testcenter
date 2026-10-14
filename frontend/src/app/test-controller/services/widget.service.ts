@@ -1,7 +1,7 @@
 import { Injectable, OnDestroy, signal } from '@angular/core';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
-import { merge, Subscription } from 'rxjs';
-import { distinctUntilChanged, first } from 'rxjs/operators';
+import { combineLatest, merge, Subscription, timer } from 'rxjs';
+import { distinctUntilChanged, first, tap } from 'rxjs/operators';
 import { MainDataService } from '@shared/shared.module';
 import {
   WidgetDialogComponent, WidgetDialogData, WidgetDialogStatus
@@ -9,6 +9,8 @@ import {
 import { isLoadingFileLoaded } from '../interfaces/test-controller.interfaces';
 import { BackendService } from './backend.service';
 import { TestControllerService } from './test-controller.service';
+import { widgetName, widgetParameters, WidgetStartCommand } from '../util/widget-start.util';
+import { widgetEvent } from '../util/widget-event.util';
 
 interface WidgetRequest {
   call: unknown;
@@ -79,15 +81,102 @@ export class WidgetService implements OnDestroy {
         playerIframe.focus();
       }
     });
-    activeDialog.download.add(this.backend.getResource(this.tcs.workspaceId, resourcePath)
-      .pipe(first(isLoadingFileLoaded)).subscribe({
-        next: file => {
-          console.log('Widget HTML downloaded:', { resourcePath, htmlLength: file.content.length });
-          status.set('loaded');
+    activeDialog.download.add(combineLatest([
+      this.backend.getResource(this.tcs.workspaceId, resourcePath).pipe(
+        first(isLoadingFileLoaded),
+        tap(file => console.log('Widget HTML downloaded:', { resourcePath, htmlLength: file.content.length }))
+      ),
+      ref.afterOpened()
+    ]).pipe(first()).subscribe({
+        next: ([file]) => {
+          let iframe: HTMLIFrameElement | undefined;
+          const startup = new Subscription();
+          activeDialog.download.add(startup);
+          const fail = (error: unknown): void => {
+            console.error('Widget startup failed:', resourcePath, error);
+            startup.unsubscribe();
+            iframe?.remove();
+            status.set('startup-error');
+          };
+          try {
+            const parameters = widgetParameters(
+              call !== null && typeof call === 'object' && 'parameters' in call ? call.parameters : undefined
+            );
+            const sharedParameters = widgetParameters(this.tcs.sharedParameters);
+            const state = call !== null && typeof call === 'object' && 'state' in call ? call.state : undefined;
+            if (state !== undefined && typeof state !== 'string') throw new Error('Invalid widget state');
+            status.set('starting');
+            iframe = ref.componentInstance.createIframe(`Widget ${widgetType}`);
+            const widgetWindow = iframe.contentWindow;
+            if (!widgetWindow) throw new Error('Widget iframe has no window');
+            const playerWindow = playerIframe?.contentWindow;
+            const playerSession = call !== null && typeof call === 'object' && 'sessionId' in call ?
+              call.sessionId : undefined;
+            const callId = call !== null && typeof call === 'object' && 'callId' in call ? call.callId : undefined;
+            if (!playerWindow || playerWindow !== source || typeof playerSession !== 'string' || !playerSession ||
+                (callId !== undefined && typeof callId !== 'string')) throw new Error('Invalid widget requester');
+            let session: { kind: 'waiting' } | {
+              kind: 'running'; id: string; latestTimestamp: number; state: string | undefined;
+            } | { kind: 'finished' } = { kind: 'waiting' };
+            const timeout = timer(15000).subscribe(() => fail(new Error('Widget ready timeout')));
+            startup.add(timeout);
+            startup.add(this.mds.postMessage$.subscribe(event => {
+              const message: unknown = event.data;
+              if (event.source !== widgetWindow || message === null || typeof message !== 'object' ||
+                  !('type' in message) || session.kind === 'finished') return;
+              if (message.type === 'vowReadyNotification') {
+                if (session.kind !== 'waiting') return;
+                try {
+                  const name = widgetName('metadata' in message ? message.metadata : undefined, String(widgetType));
+                  const command: WidgetStartCommand = {
+                    type: 'vowStartCommand', sessionId: Array.from(crypto.getRandomValues(new Uint8Array(16)),
+                      byte => byte.toString(16).padStart(2, '0')).join(''), parameters, sharedParameters,
+                    ...(state !== undefined ? { state } : {})
+                  };
+                  session = { kind: 'running', id: command.sessionId, latestTimestamp: -Infinity, state };
+                  timeout.unsubscribe();
+                  if (iframe) iframe.title = name;
+                  ref.componentInstance.setName(name);
+                  widgetWindow.postMessage(command, '*');
+                  status.set('running');
+                } catch (error) { fail(error); }
+                return;
+              }
+              if (session.kind !== 'running' ||
+                  (message.type !== 'vowStateChangedNotification' && message.type !== 'vowReturnRequested')) return;
+              let update;
+              try { update = widgetEvent(message); } catch (error) {
+                console.warn('Widget message rejected:', resourcePath, error);
+                return;
+              }
+              if (update.sessionId !== session.id) {
+                console.warn('Widget message has wrong session:', resourcePath, update.sessionId);
+                return;
+              }
+              if (update.timeStamp >= session.latestTimestamp) {
+                session.latestTimestamp = update.timeStamp;
+                if (update.state !== undefined) session.state = update.state;
+              }
+              if (update.type === 'vowReturnRequested') {
+                const finalState = session.state;
+                session = { kind: 'finished' };
+                const canReturn = update.saveState && activeDialog.restoreFocus && playerIframe.isConnected &&
+                  playerIframe.contentWindow === playerWindow && this.tcs.currentUnitSequenceId === unitSequenceId;
+                ref.close();
+                if (canReturn) playerWindow.postMessage({
+                  type: 'vopWidgetReturn', sessionId: playerSession,
+                  ...(callId !== undefined ? { callId } : {}),
+                  ...(finalState !== undefined ? { state: finalState } : {})
+                }, '*');
+              }
+            }));
+            // The listener and timeout exist before any widget script executes.
+            iframe.srcdoc = file.content;
+          } catch (error) { fail(error); }
         },
         error: error => {
           console.error('Widget HTML download failed:', resourcePath, error);
-          status.set('error');
+          status.set('download-error');
         }
       }));
   }
