@@ -23,6 +23,7 @@ import { NavigationState } from '../../interfaces/test-controller.interfaces';
 import { getTestData } from '../../test/test-data';
 import { VeronaAPIService } from '../../services/verona-api.service';
 import { MessageService } from '../../../shared/services/message.service';
+import { AppError } from '../../../app.interfaces';
 
 const bookletConfig = new BookletConfig();
 bookletConfig.setFromKeyValuePairs({
@@ -42,6 +43,8 @@ bookletConfig.setFromKeyValuePairs({
 const MockTestControllerService = {
   bookletConfig,
   workspaceId: 1,
+  testMode: { saveResponses: true },
+  testId: 'routing-regression',
   currentUnitSequenceId: 1,
   currentUnitSequenceId$: new BehaviorSubject(1),
   state$: new BehaviorSubject('RUNNING'),
@@ -474,6 +477,47 @@ describe('UnithostComponent', () => {
       source: outgoingWindow, data: { type: 'vopWidgetCall', sessionId: 'u1', widgetType: 'PERIODIC_TABLE' }
     }));
     expect(TestBed.inject(MatDialog).openDialogs.length).toBe(0);
+  });
+
+  it('saves final state while the outgoing iframe is detached and the next player is still loading', async () => {
+    const outgoing = component['iFrameItemplayer'];
+    const source = outgoing?.contentWindow;
+    if (!outgoing || !source) throw new Error('Missing outgoing player');
+    outgoing.remove();
+    expect(outgoing.contentWindow).toBeNull();
+    await component['handleIncomingMessage'](new MessageEvent('message', {
+      source,
+      data: { type: 'vopStateChangedNotification', sessionId: 'u1', unitState: { dataParts: { final: 'saved' } } }
+    }));
+    expect(MockTestControllerService.AddToUnitStateDataPartsBuffer).toHaveBeenCalledOnceWith(
+      getTestData().Units.u1.sequenceId, { final: 'saved' }, ''
+    );
+    await component['handleIncomingMessage'](new MessageEvent('message', {
+      source: window,
+      data: { type: 'vopStateChangedNotification', sessionId: 'u1', unitState: { dataParts: { final: 'untrusted' } } }
+    }));
+    expect(MockTestControllerService.AddToUnitStateDataPartsBuffer).toHaveBeenCalledTimes(1);
+  });
+
+  it('logs startup errors without a session against the current unit and raises the player error', async () => {
+    const message = 'Player failed before accepting the start command';
+    const handling = component['handleIncomingMessage'](new MessageEvent('message', {
+      source: component['iFrameItemplayer']?.contentWindow,
+      data: { type: 'vopRuntimeErrorNotification', sessionId: '', code: 'runtime-error', message }
+    }));
+    const unit = MockTestControllerService.currentUnit;
+    const request = http.expectOne(`/api/test/routing-regression/unit/${unit.alias}/log`);
+    expect(request.request.body).toEqual({
+      originalUnitId: unit.id,
+      logEntries: [{ key: 'Runtime Error: runtime-error', content: message, timeStamp: jasmine.any(Number) }]
+    });
+    request.flush(null);
+    await expectAsync(handling).toBeRejectedWith(jasmine.any(AppError));
+    await component['handleIncomingMessage'](new MessageEvent('message', {
+      source: window,
+      data: { type: 'vopRuntimeErrorNotification', sessionId: '', code: 'runtime-error', message }
+    }));
+    http.expectNone(`/api/test/routing-regression/unit/${unit.alias}/log`);
   });
 
   it('executes downloaded HTML and completes the real browser ready/start exchange', done => {

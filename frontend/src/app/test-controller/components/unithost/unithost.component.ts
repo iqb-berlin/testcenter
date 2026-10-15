@@ -101,8 +101,10 @@ export class UnithostComponent implements OnInit, OnDestroy {
     const latePlayerState = msgType === 'vopStateChangedNotification' && source !== null &&
       this.playerSessions.get(source) === msgData.sessionId &&
       Object.hasOwn(this.tcs.unitAliasMap, msgData.sessionId);
-    if (!currentPlayer || (source !== currentPlayer && !latePlayerState)) return;
-    const dontNeedSessionId = ['vopReadyNotification', 'vopWindowFocusChangedNotification'];
+    if (!latePlayerState && (!currentPlayer || source !== currentPlayer)) return;
+    const dontNeedSessionId = [
+      'vopReadyNotification', 'vopWindowFocusChangedNotification', 'vopRuntimeErrorNotification'
+    ];
     if ((!dontNeedSessionId.includes(msgType)) && (!(msgData.sessionId in this.tcs.unitAliasMap))) {
       console.warn('wrong player session id: ', msgData.sessionId, msgData, this.tcs.unitAliasMap);
       return;
