@@ -1,6 +1,6 @@
 # Booklet: Konfiguration
 
-**You can find more detailed information about the testfiles [here](https://iqb-berlin.github.io/tba-info/study-run/preparation/test-files/).**
+**Detaillierte Informationen zu den Testdateien sind [hier](https://iqb-berlin.github.io/tba-info/study-run/preparation/test-files/) zu finden.**
 
 Die Konfiguration erfolgt im Feld: `<BookletConfig>`.
 
