@@ -32,7 +32,8 @@ describe('WidgetSession lifecycle', () => {
 
   function createSession(): void {
     session = new WidgetSession({
-      call: { type: 'vopWidgetCall', sessionId: 'unit-1', widgetType: 'PERIODIC_TABLE', parameters: [] },
+      model: 'PERIODIC_TABLE',
+      parameters: [],
       window: widgetWindow,
       messages,
       state: undefined,

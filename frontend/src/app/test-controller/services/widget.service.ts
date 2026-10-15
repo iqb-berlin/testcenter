@@ -6,7 +6,7 @@ import { MainDataService } from '@shared/shared.module';
 import { WidgetDialogComponent, WidgetDialogData } from '../components/widget-dialog/widget-dialog.component';
 import { WidgetSession } from '../classes/widget-session.class';
 import { isLoadingFileLoaded } from '../interfaces/test-controller.interfaces';
-import { WidgetCall } from '../interfaces/widget.interfaces';
+import { WidgetCall, WidgetParameter } from '../interfaces/widget.interfaces';
 import { BackendService } from './backend.service';
 import { TestControllerService } from './test-controller.service';
 import { parseWidgetCall, widgetParameters } from '../util/widget-start.util';
@@ -15,6 +15,14 @@ interface WidgetRequest {
   call: unknown;
   source: MessageEventSource | null;
   playerIframe: HTMLIFrameElement | null;
+}
+
+export interface HostWidgetRequest {
+  resourcePath: string;
+  model: string;
+  parameters: WidgetParameter[];
+  trigger: HTMLElement;
+  state?: string;
 }
 
 interface ActiveWidgetDialog {
@@ -62,7 +70,8 @@ export class WidgetService implements OnDestroy {
       parsedCall = parseWidgetCall(call);
     } catch (error) {
       console.error('Invalid widget call:', error);
-      this.openDialog('Widget', playerIframe, playerWindow).ref.componentInstance.showStartupError();
+      const activeDialog = this.openDialog('Widget', playerIframe, () => playerIframe.contentWindow === playerWindow);
+      activeDialog.ref.componentInstance.showStartupError();
       return;
     }
     const resourcePath = this.tcs.getWidgetResourcePath(parsedCall.widgetType);
@@ -72,7 +81,35 @@ export class WidgetService implements OnDestroy {
     }
     console.log('vopWidgetCall resolved:', resourcePath, call);
     const unitSequenceId = this.tcs.currentUnitSequenceId;
-    const activeDialog = this.openDialog(`Widget ${parsedCall.widgetType}`, playerIframe, playerWindow);
+    this.launch({
+      resourcePath,
+      model: parsedCall.widgetType,
+      parameters: parsedCall.parameters,
+      trigger: playerIframe,
+      ...(parsedCall.state !== undefined ? { state: parsedCall.state } : {})
+    }, () => playerIframe.contentWindow === playerWindow, (state, saveState, activeDialog) => {
+      if (saveState && activeDialog.restoreFocus && playerIframe.isConnected &&
+        playerIframe.contentWindow === playerWindow && this.tcs.currentUnitSequenceId === unitSequenceId) {
+        playerWindow.postMessage({
+          type: 'vopWidgetReturn', sessionId: parsedCall.sessionId,
+          ...(parsedCall.callId !== undefined ? { callId: parsedCall.callId } : {}),
+          ...(state !== undefined ? { state } : {})
+        }, '*');
+      }
+    });
+  }
+
+  openHost(request: HostWidgetRequest): void {
+    if (this.activeDialog || this.dialog.openDialogs.length) return;
+    this.launch(request);
+  }
+
+  private launch(
+    { resourcePath, model, parameters, trigger, state }: HostWidgetRequest,
+    canRestoreFocus: () => boolean = () => true,
+    onReturn?: (state: string | undefined, saveState: boolean, dialog: ActiveWidgetDialog) => void
+  ): void {
+    const activeDialog = this.openDialog(`Widget ${model}`, trigger, canRestoreFocus);
     const view = activeDialog.ref.componentInstance;
     activeDialog.subscriptions.add(combineLatest([
       this.backend.getResource(this.tcs.workspaceId, resourcePath).pipe(
@@ -87,23 +124,18 @@ export class WidgetService implements OnDestroy {
           const sharedParameters = widgetParameters(this.tcs.sharedParameters);
           view.start(file.content, (widgetWindow) => {
             const widgetSession = new WidgetSession({
-              call: parsedCall,
+              model,
+              parameters,
               window: widgetWindow,
               messages: this.mds.postMessage$,
               sharedParameters,
-              state: parsedCall.state ?? this.states.get(resourcePath),
+              state: state ?? this.states.get(resourcePath),
               onReady: name => view.showRunning(name),
               onState: state => this.states.set(resourcePath, state),
               onSharedParameters: parameters => this.tcs.addSharedParameters(parameters),
               onReturn: (state, saveState) => {
-                const canReturn = saveState && activeDialog.restoreFocus && playerIframe.isConnected &&
-                  playerIframe.contentWindow === playerWindow && this.tcs.currentUnitSequenceId === unitSequenceId;
                 activeDialog.ref.close();
-                if (canReturn) playerWindow.postMessage({
-                  type: 'vopWidgetReturn', sessionId: parsedCall.sessionId,
-                  ...(parsedCall.callId !== undefined ? { callId: parsedCall.callId } : {}),
-                  ...(state !== undefined ? { state } : {})
-                }, '*');
+                onReturn?.(state, saveState, activeDialog);
               },
               onError: (error) => {
                 console.error('Widget startup failed:', resourcePath, error);
@@ -138,7 +170,9 @@ export class WidgetService implements OnDestroy {
     this.subscriptions.unsubscribe();
   }
 
-  private openDialog(name: string, playerIframe: HTMLIFrameElement, playerWindow: Window): ActiveWidgetDialog {
+  private openDialog(
+    name: string, trigger: HTMLElement, canRestoreFocus: () => boolean = () => true
+  ): ActiveWidgetDialog {
     const unitSequenceId = this.tcs.currentUnitSequenceId;
     const ref = this.dialog.open<WidgetDialogComponent, WidgetDialogData>(WidgetDialogComponent, {
       data: { name },
@@ -159,9 +193,9 @@ export class WidgetService implements OnDestroy {
     ref.beforeClosed().subscribe(() => activeDialog.subscriptions.unsubscribe());
     ref.afterClosed().subscribe(() => {
       if (this.activeDialog === activeDialog) this.activeDialog = undefined;
-      if (activeDialog.restoreFocus && playerIframe.isConnected && playerIframe.contentWindow === playerWindow &&
+      if (activeDialog.restoreFocus && trigger.isConnected && canRestoreFocus() &&
         this.tcs.currentUnitSequenceId === unitSequenceId && !this.dialog.openDialogs.length) {
-        playerIframe.focus();
+        trigger.focus();
       }
     });
     return activeDialog;

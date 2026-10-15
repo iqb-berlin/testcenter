@@ -1,6 +1,7 @@
 # next
 
 ## Neue Funktionen
+- Der Widget-Laufzeit steht ein Host-Aufruf ohne Player-Anfrage zur Verfügung. Er nutzt dasselbe modale Fenster und denselben Zustandszwischenspeicher; beim Schließen kehrt der Fokus zur auslösenden Schaltfläche zurück. Dies bereitet den Testcenter-eigenen Taschenrechner vor, dessen Schaltfläche noch nicht eingeblendet wird.
 - Widgets können gemeinsame Parameter über Zustandsmeldungen und beim Schließen aktualisieren. Gültige Änderungen werden über die bestehende Testzustands-Speicherung gesichert und dem Player mitgeteilt. Leere Werte werden berücksichtigt; ältere Meldungen überschreiben keine neueren Werte. Widget-Zustände selbst bleiben ausschließlich im Arbeitsspeicher.
 - Widget-Zustände bleiben während eines Testlaufs im Arbeitsspeicher erhalten, auch bei Unit-Wechsel, Pause und Abbruch des Widget-Fensters. Ohne expliziten Aufrufzustand wird der letzte Zustand derselben Widget-Ressource wiederhergestellt; ein expliziter Zustand hat Vorrang, auch eine leere Zeichenfolge. Beim Neuladen oder Verlassen des Testlaufs wird der Zwischenspeicher geleert. Widget-Zustände werden nicht in der Datenbank gespeichert.
 - Der Testcontroller berücksichtigt laufende Widget-Zustandsmeldungen und gibt beim Schließen den letzten Zustand an den aufrufenden Player zurück, einschließlich leerer Zustände. `saveState: false` schließt ohne Rückgabe. Ältere Zustandsmeldungen werden ignoriert; gleiche Zeitstempel werden in Empfangsreihenfolge verarbeitet. Eine gültige Rückgabeanforderung schließt auch mit einem älteren Zeitstempel.

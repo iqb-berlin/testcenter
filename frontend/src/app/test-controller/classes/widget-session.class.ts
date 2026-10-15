@@ -1,10 +1,11 @@
 import { Observable, Subscription, timer } from 'rxjs';
-import { WidgetCall, WidgetParameter, WidgetStartCommand } from '../interfaces/widget.interfaces';
+import { WidgetParameter, WidgetStartCommand } from '../interfaces/widget.interfaces';
 import { widgetEvent } from '../util/widget-event.util';
 import { widgetName } from '../util/widget-start.util';
 
 interface WidgetSessionOptions {
-  call: WidgetCall;
+  model: string;
+  parameters: WidgetParameter[];
   window: Window;
   messages: Observable<MessageEvent>;
   sharedParameters: WidgetParameter[];
@@ -54,11 +55,11 @@ export class WidgetSession {
     try {
       update = widgetEvent(message);
     } catch (error) {
-      console.warn('Widget message rejected:', this.options.call.widgetType, error);
+      console.warn('Widget message rejected:', this.options.model, error);
       return;
     }
     if (update.sessionId !== session.id) {
-      console.warn('Widget message has wrong session:', this.options.call.widgetType, update.sessionId);
+      console.warn('Widget message has wrong session:', this.options.model, update.sessionId);
       return;
     }
     if (update.timeStamp >= session.latestTimestamp) {
@@ -77,12 +78,12 @@ export class WidgetSession {
 
   private start(metadata: unknown): void {
     try {
-      const name = widgetName(metadata, this.options.call.widgetType);
+      const name = widgetName(metadata, this.options.model);
       const command: WidgetStartCommand = {
         type: 'vowStartCommand',
         sessionId: Array.from(crypto.getRandomValues(new Uint8Array(16)),
                               byte => byte.toString(16).padStart(2, '0')).join(''),
-        parameters: this.options.call.parameters,
+        parameters: this.options.parameters,
         sharedParameters: this.options.sharedParameters,
         ...(this.options.state !== undefined ? { state: this.options.state } : {})
       };
