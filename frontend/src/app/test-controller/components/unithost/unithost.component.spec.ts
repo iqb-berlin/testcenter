@@ -5,9 +5,9 @@ import { ActivatedRoute, Params } from '@angular/router';
 import { BehaviorSubject, of, Subject } from 'rxjs';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
-import { Component, inject, signal } from '@angular/core';
+import { ApplicationRef, Component, inject } from '@angular/core';
 import { WidgetService } from '../../services/widget.service';
-import { WidgetDialogComponent, WidgetDialogStatus } from '../widget-dialog/widget-dialog.component';
+import { WidgetDialogComponent } from '../widget-dialog/widget-dialog.component';
 import { HttpEventType, provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { CommonModule } from '@angular/common';
@@ -251,12 +251,18 @@ describe('UnithostComponent', () => {
     fixture.detectChanges();
   }
 
+  function dialogName(): string | null | undefined {
+    TestBed.inject(ApplicationRef).tick();
+    const nameId = document.querySelector('[role="dialog"]')?.getAttribute('aria-labelledby');
+    return nameId ? document.getElementById(nameId)?.textContent?.trim() : undefined;
+  }
+
   it('shows a named loading modal, traps focus, and blocks Escape and backdrop dismissal', fakeAsync(() => {
     openWidget();
     tick();
     const dialog = TestBed.inject(MatDialog);
     const container = document.querySelector<HTMLElement>('[role="dialog"]');
-    expect(container?.getAttribute('aria-label')).toBe('Widget PERIODIC_TABLE');
+    expect(dialogName()).toBe('Widget PERIODIC_TABLE');
     expect(container?.getAttribute('aria-modal')).toBe('true');
     expect(document.activeElement).toBe(container);
     expect(container?.textContent).toContain('Widget wird geladen');
@@ -344,7 +350,7 @@ describe('UnithostComponent', () => {
     const request = http.expectOne('/api/file/test-group/ws_1/Resource/periodic.html');
     const dialog = TestBed.inject(MatDialog);
     dialog.open(WidgetDialogComponent, {
-      data: { status: signal<WidgetDialogStatus>('running') }
+      data: { name: 'System dialog' }
     });
     fixture.detectChanges();
     tick();
@@ -361,9 +367,13 @@ describe('UnithostComponent', () => {
     const otherOwner = TestBed.createComponent(WidgetServiceOwnerComponent);
     expect(owner.componentInstance.widgets).not.toBe(otherOwner.componentInstance.widgets);
     expect(owner.componentInstance.widgets).not.toBe(TestBed.inject(WidgetService));
+    const player = document.createElement('iframe');
+    document.body.appendChild(player);
     MockTestControllerService.getWidgetResourcePath.and.returnValue('Resource/periodic.html');
     owner.componentInstance.widgets.open({
-      call: { widgetType: 'PERIODIC_TABLE' }, source: component['iFrameItemplayer']?.contentWindow ?? null, playerIframe: null
+      call: { type: 'vopWidgetCall', sessionId: 'u1', widgetType: 'PERIODIC_TABLE' },
+      source: player.contentWindow,
+      playerIframe: player
     });
     const request = http.expectOne('/api/file/test-group/ws_1/Resource/periodic.html');
     owner.destroy();
@@ -371,6 +381,7 @@ describe('UnithostComponent', () => {
     expect(request.cancelled).toBeTrue();
     expect(TestBed.inject(MatDialog).openDialogs.length).toBe(0);
     otherOwner.destroy();
+    player.remove();
   }));
 
   const metadata = {
@@ -415,7 +426,7 @@ describe('UnithostComponent', () => {
     expect(command.state).toBe('');
     expect(command.callId).toBeUndefined();
     expect(iframe.title).toBe('Periodensystem');
-    expect(document.querySelector('[role="dialog"]')?.getAttribute('aria-label')).toBe('Periodensystem');
+    expect(dialogName()).toBe('Periodensystem');
     expect(TestBed.inject(VeronaAPIService).postMessageTarget).toBe(playerWindow);
     const playerMessage = spyOn(playerWindow!, 'postMessage');
     TestBed.inject(VeronaAPIService).sendPageNav('u1', '#next');
@@ -519,6 +530,20 @@ describe('UnithostComponent', () => {
     }));
     http.expectNone(`/api/test/routing-regression/unit/${unit.alias}/log`);
   });
+
+  it('rejects invalid widget calls before resolving or downloading resources', fakeAsync(() => {
+    spyOn(console, 'error');
+    MockTestControllerService.getWidgetResourcePath.and.returnValue('Resource/periodic.html');
+    MockMainDataService.postMessage$.next(new MessageEvent('message', {
+      source: component['iFrameItemplayer']?.contentWindow,
+      data: { type: 'vopWidgetCall', sessionId: 'u1', widgetType: 'PERIODIC_TABLE', state: 42 }
+    }));
+    tick();
+    expect(MockTestControllerService.getWidgetResourcePath).not.toHaveBeenCalled();
+    http.expectNone('/api/file/test-group/ws_1/Resource/periodic.html');
+    expect(TestBed.inject(MatDialog).openDialogs[0].componentInstance.status()).toBe('startup-error');
+    expect(document.querySelector('[role="dialog"] iframe')).toBeNull();
+  }));
 
   it('executes downloaded HTML and completes the real browser ready/start exchange', done => {
     MockTestControllerService.getWidgetResourcePath.and.returnValue('Resource/periodic.html');

@@ -1,4 +1,4 @@
-import { Component, ElementRef, Inject, Signal } from '@angular/core';
+import { Component, ElementRef, Inject, OnDestroy, ViewChild, signal } from '@angular/core';
 import { MatDialogModule, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -6,13 +6,14 @@ import { MatIconModule } from '@angular/material/icon';
 export type WidgetDialogStatus = 'loading' | 'starting' | 'running' | 'download-error' | 'startup-error';
 
 export interface WidgetDialogData {
-  status: Signal<WidgetDialogStatus>;
+  name: string;
 }
 
 @Component({
   selector: 'tc-widget-dialog',
   imports: [MatDialogModule, MatButtonModule, MatIconModule],
   template: `
+    <h2 class="cdk-visually-hidden" mat-dialog-title>{{ name() }}</h2>
     <button class="close" aria-label="Widget schließen" mat-icon-button
             mat-dialog-close>
       <mat-icon>close</mat-icon>
@@ -29,7 +30,7 @@ export interface WidgetDialogData {
         }
       }
     </div>
-    <div class="frame-host"></div>
+    <div #frameHost class="frame-host"></div>
   `,
   styles: [`
     :host { display: flex; flex-direction: column; position: relative; height: 100%; background: white; }
@@ -38,24 +39,51 @@ export interface WidgetDialogData {
     .status:has(p) { margin: auto; padding: 60px 20px; text-align: center; }
   `]
 })
-export class WidgetDialogComponent {
-  readonly status: WidgetDialogData['status'];
+export class WidgetDialogComponent implements OnDestroy {
+  @ViewChild('frameHost', { static: true }) private frameHost!: ElementRef<HTMLElement>;
+  readonly status = signal<WidgetDialogStatus>('loading');
+  readonly name = signal('Widget');
+  private iframe: HTMLIFrameElement | undefined;
 
-  constructor(@Inject(MAT_DIALOG_DATA) data: WidgetDialogData,
-              private readonly element: ElementRef<HTMLElement>) {
-    this.status = data.status;
+  constructor(@Inject(MAT_DIALOG_DATA) data: WidgetDialogData) {
+    this.name.set(data.name);
   }
 
-  setName(name: string): void {
-    this.element.nativeElement.closest('[role="dialog"]')?.setAttribute('aria-label', name);
-  }
-
-  createIframe(title: string): HTMLIFrameElement {
+  start(html: string, initialize: (widgetWindow: Window) => void): void {
+    this.status.set('starting');
     const iframe = document.createElement('iframe');
-    iframe.title = title;
+    this.iframe = iframe;
+    iframe.title = this.name();
     iframe.style.cssText = 'width:100%;height:100%;border:0;';
-    this.element.nativeElement.querySelector('.frame-host')?.appendChild(iframe);
-    return iframe;
+    this.frameHost.nativeElement.appendChild(iframe);
+    const widgetWindow = iframe.contentWindow;
+    if (!widgetWindow) throw new Error('Widget iframe has no window');
+    // Install the protocol listener before executing any widget script.
+    initialize(widgetWindow);
+    iframe.srcdoc = html;
   }
 
+  showRunning(name: string): void {
+    this.name.set(name);
+    if (this.iframe) this.iframe.title = name;
+    this.status.set('running');
+  }
+
+  showStartupError(): void {
+    this.removeIframe();
+    this.status.set('startup-error');
+  }
+
+  showDownloadError(): void {
+    this.status.set('download-error');
+  }
+
+  ngOnDestroy(): void {
+    this.removeIframe();
+  }
+
+  private removeIframe(): void {
+    this.iframe?.remove();
+    this.iframe = undefined;
+  }
 }
