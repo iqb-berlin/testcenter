@@ -24,19 +24,16 @@ export default defineConfig({
         text: 'Administration',
         items: [
           { text: 'Installation and Update', link: '/pages/installation-prod' },
-          { text: 'Booklet-Konfiguration', link: '/pages/booklet-config' },
-          { text: 'Modus der Testdurchführung', link: '/pages/test-mode' },
-          { text: 'Textersetzungen', link: '/pages/custom-texts' },
-          { text: 'Gruppenmonitor Statusmeldungen', link: '/pages/test-session-super-states' },
-          { text: 'Log-Events', link: '/pages/logging' }
+          { text: 'Configuration', link: '/pages/config-prod' },
         ]
       },
       {
         text: 'Development',
         items: [
           { text: 'Installation', link: '/pages/installation-dev' },
-          { text: "Developer's Guide", link: '/pages/developer-guide' },
-          { text: 'Contributing Guide', link: 'https://github.com/iqb-berlin/testcenter/blob/master/docs/CONTRIBUTING.md' }
+          { text: "Guidelines", link: '/pages/developer-guide' },
+          { text: 'Contribution Guide', link: '/pages/contributing' },
+          { text: 'Conventions', link: '/pages/style-guide' }
         ]
       },
       {
@@ -47,7 +44,16 @@ export default defineConfig({
           // not a VitePress page: _self makes the browser load it instead of the client-side router
           { text: 'HTTP API of the backend', link: '/api/index.html', target: '_self' }
         ]
-      }
+      },
+      {
+        text: 'Study/Survey Management',
+        items: [
+          { text: 'Booklet-Configuration', link: '/pages/booklet-config' },
+          { text: 'Test-Mode', link: '/pages/test-mode' },
+          { text: 'Custom-Text', link: '/pages/custom-texts' },
+          { text: 'Log-Events', link: '/pages/logging' }
+        ]
+      },
     ]
   }
 });
