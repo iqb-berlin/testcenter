@@ -1,4 +1,4 @@
-# Style Guide
+# Conventions
 
 Formatting rules are integrated into tooling. It is expected that these have been run and are satisfied. Basics like indentation and line endings come from `.editorconfig`, which your editor applies for you.
 

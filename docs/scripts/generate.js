@@ -117,6 +117,24 @@ const generators = {
   'test-session-super-states.md': testSessionSuperStates
 };
 
+// Copy CONTRIBUTING.md from docs root to generated directory
+const contribSource = new URL('../CONTRIBUTING.md', import.meta.url);
+const contribDest = new URL('contributing.md', generatedDir);
+try {
+  fs.copyFileSync(contribSource, contribDest);
+} catch (err) {
+  console.error('Warning: Could not copy CONTRIBUTING.md to generated directory:', err.message);
+}
+
+// Copy style-guide.md from docs root to generated directory
+const styleGuideSource = new URL('../style-guide.md', import.meta.url);
+const styleGuideDest = new URL('style-guide.md', generatedDir);
+try {
+  fs.copyFileSync(styleGuideSource, styleGuideDest);
+} catch (err) {
+  console.error('Warning: Could not copy style-guide.md to generated directory:', err.message);
+}
+
 fs.mkdirSync(generatedDir, { recursive: true });
 Object.entries(generators)
   .forEach(([fileName, generate]) => {
