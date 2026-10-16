@@ -552,3 +552,76 @@ Reproduction: `/tmp/check-calculator-020.py`. Browser harnesses and DOM output a
 `/tmp/calculator-020-{simple,scientific-journal,state,evaluate-80,evaluate-400}.{html,dom}`.
 The compact observation report is `/tmp/calculator-020-results.json`. These checks
 exercise the actual artifact; they are not a replacement for the host runtime tests.
+
+### Peek window for the latest calculation
+
+Added on 2026-10-16. The user selected one peek window whose image is replaced by
+the next result, retained across calculator-enabled units.
+
+`WidgetService.openCalculator()` reads the latest accepted state after ordinary
+modal closure, including the host close button. `WidgetSession` remains unaware
+of calculator journals and retains its existing timestamp and final-state rules.
+The close callback runs only after modal teardown. Forced closure does not create
+or update a peek. The existing accepted-state cache is unchanged.
+
+`calculatorResult()` parses the state at the calculator boundary. Only the final
+journal entry is used. Its `asImage` must be a PNG or JPEG Base64 data URL;
+`asLatex` supplies the alternative text when present. Malformed state, missing
+images, remote URLs, and other image formats are ignored. The existing peek is
+retained when no usable new image is supplied. The uploaded 0.2.0 calculator
+already returns this format.
+
+`CalculatorPeekComponent` owns expansion and dragging. It renders within the
+controller, with a fixed viewport boundary, a draggable title bar, and no backdrop
+or focus trap. Pointer events outside the window reach the unit. Closing minimizes
+to a fixed taskbar button without a remove action. A new result expands the peek;
+ordinary hide/show transitions preserve its minimized state and drag position.
+Browser resize resets the position to keep it reachable.
+The title bar captures the pointer during a drag so mouse events continue reaching
+the host when the pointer crosses the player iframe.
+
+The component remains mounted while temporarily unavailable. Its visibility uses
+the same running, loaded-unit, and calculator-configuration gate as the header
+button, and it hides during modal dialogs. The result signal belongs to the
+controller-scoped widget service. Run reset, authentication changes, and service
+destruction clear it. There is no persistent storage and no player-widget return
+change.
+
+The controller browser fixture exercises final-only state, host close, stale final
+state, result replacement, minimize/reopen focus, dragging, resize, enabled and
+disabled units, pause, loading, forced close, and run reset. Parser checks cover
+invalid states and unsupported image sources.
+
+Verification: 314 browser checks passed; eight existing group-monitor checks remain
+skipped. The production build passed with the existing CommonJS warnings. The six
+focused production/test files pass ESLint. Existing lint findings in the legacy
+controller component do not touch the changed line. `git diff --check` passed.
+
+A temporary browser harness also ran the actual supplied
+`iqb-widget-calc-0.2.0.html` through `WidgetService`, its modal, and the real
+ready/start/state/return messages. It calculated `1+2=3`, displayed the returned
+400-pixel PNG, accepted typed input in a separate unit iframe while the peek was
+expanded, dragged across that iframe, minimized and reopened at the dragged
+position, and kept the peek and taskbar within a 360-by-640 viewport. Screenshots
+were inspected at both viewport sizes. No browser exceptions occurred.
+
+Logs: `/tmp/calculator-peek-full-tests.log`, `/tmp/calculator-peek-build.log`,
+`/tmp/calculator-peek-lint.log`, and `/tmp/calculator-peek-legacy-lint.json`.
+The temporary browser check is `/tmp/verify-calculator-peek.py`; its compiled
+harness, screenshots, and `report.json` are in
+`/tmp/testcenter-calculator-peek-preview/`. These files are local verification
+artifacts, not bundled calculator resources or deployment changes.
+
+Commands from `frontend`:
+
+```bash
+PATH=/home/oem/.nvm/versions/node/v22.17.1/bin:$PATH \
+  ./node_modules/.bin/ng test --watch=false \
+  --include='src/app/test-controller/**/*.spec.ts' \
+  --include='src/app/shared/services/booklet-parser.service.spec.ts' \
+  --include='src/app/group-monitor/**/*.spec.ts'
+
+PATH=/home/oem/.nvm/versions/node/v22.17.1/bin:$PATH \
+  ./node_modules/.bin/ng build --configuration=production \
+  --output-path=/tmp/testcenter-calculator-peek-build
+```

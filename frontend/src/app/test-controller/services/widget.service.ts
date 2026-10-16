@@ -1,4 +1,4 @@
-import { Injectable, OnDestroy } from '@angular/core';
+import { Injectable, OnDestroy, signal } from '@angular/core';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { combineLatest, merge, Subscription } from 'rxjs';
 import { distinctUntilChanged, first, tap } from 'rxjs/operators';
@@ -10,6 +10,7 @@ import { WidgetCall, WidgetParameter } from '../interfaces/widget.interfaces';
 import { BackendService } from './backend.service';
 import { TestControllerService } from './test-controller.service';
 import { parseWidgetCall, widgetParameters } from '../util/widget-start.util';
+import { CalculatorResult, calculatorResult } from '../util/calculator-result.util';
 
 interface WidgetRequest {
   call: unknown;
@@ -38,6 +39,8 @@ export class WidgetService implements OnDestroy {
   private readonly subscriptions = new Subscription();
   private readonly states = new Map<string, string>();
   private activeDialog: ActiveWidgetDialog | undefined;
+  private readonly lastCalculatorResult = signal<CalculatorResult | undefined>(undefined);
+  readonly calculatorResult = this.lastCalculatorResult.asReadonly();
 
   constructor(private readonly tcs: TestControllerService,
               private readonly mds: MainDataService,
@@ -46,12 +49,14 @@ export class WidgetService implements OnDestroy {
     this.subscriptions.add(this.tcs.runReset$.subscribe(() => {
       this.close();
       this.states.clear();
+      this.lastCalculatorResult.set(undefined);
     }));
     this.subscriptions.add(merge(
       this.tcs.currentUnitSequenceId$.pipe(distinctUntilChanged()),
       this.tcs.state$.pipe(distinctUntilChanged()),
       this.mds.authData$
     ).subscribe(() => this.close()));
+    this.subscriptions.add(this.mds.authData$.subscribe(() => this.lastCalculatorResult.set(undefined)));
     this.subscriptions.add(this.dialog.afterOpened.subscribe((ref) => {
       if (ref !== this.activeDialog?.ref) this.close();
     }));
@@ -89,14 +94,17 @@ export class WidgetService implements OnDestroy {
       parameters: parsedCall.parameters,
       trigger: playerIframe,
       ...(parsedCall.state !== undefined ? { state: parsedCall.state } : {})
-    }, () => playerIframe.contentWindow === playerWindow, (state, saveState, activeDialog) => {
-      if (saveState && activeDialog.restoreFocus && playerIframe.isConnected &&
-        playerIframe.contentWindow === playerWindow && this.tcs.currentUnitSequenceId === unitSequenceId) {
-        playerWindow.postMessage({
-          type: 'vopWidgetReturn', sessionId: parsedCall.sessionId,
-          ...(parsedCall.callId !== undefined ? { callId: parsedCall.callId } : {}),
-          ...(state !== undefined ? { state } : {})
-        }, '*');
+    }, {
+      canRestoreFocus: () => playerIframe.contentWindow === playerWindow,
+      onReturn: (state, saveState, activeDialog) => {
+        if (saveState && activeDialog.restoreFocus && playerIframe.isConnected &&
+          playerIframe.contentWindow === playerWindow && this.tcs.currentUnitSequenceId === unitSequenceId) {
+          playerWindow.postMessage({
+            type: 'vopWidgetReturn', sessionId: parsedCall.sessionId,
+            ...(parsedCall.callId !== undefined ? { callId: parsedCall.callId } : {}),
+            ...(state !== undefined ? { state } : {})
+          }, '*');
+        }
       }
     });
   }
@@ -113,15 +121,27 @@ export class WidgetService implements OnDestroy {
       this.openDialog('Taschenrechner', request.trigger).ref.componentInstance.showMissingCalculator();
       return;
     }
-    this.openHost({ ...request, resourcePath, model: 'CALCULATOR' });
+    this.launch({ ...request, resourcePath, model: 'CALCULATOR' }, {
+      onClosed: (state) => {
+        const result = calculatorResult(state);
+        if (result) this.lastCalculatorResult.set(result);
+      }
+    });
   }
 
   private launch(
     { resourcePath, model, parameters, trigger, state }: HostWidgetRequest,
-    canRestoreFocus: () => boolean = () => true,
-    onReturn?: (state: string | undefined, saveState: boolean, dialog: ActiveWidgetDialog) => void
+    { canRestoreFocus = () => true, onReturn, onClosed }: {
+      canRestoreFocus?: () => boolean;
+      onReturn?: (state: string | undefined, saveState: boolean, dialog: ActiveWidgetDialog) => void;
+      onClosed?: (state: string) => void;
+    } = {}
   ): void {
     const activeDialog = this.openDialog(`Widget ${model}`, trigger, canRestoreFocus);
+    let acceptedState: string | undefined;
+    activeDialog.ref.afterClosed().subscribe(() => {
+      if (activeDialog.restoreFocus && acceptedState !== undefined) onClosed?.(acceptedState);
+    });
     const view = activeDialog.ref.componentInstance;
     activeDialog.subscriptions.add(combineLatest([
       this.backend.getResource(this.tcs.workspaceId, resourcePath).pipe(
@@ -143,7 +163,10 @@ export class WidgetService implements OnDestroy {
               sharedParameters,
               state: state ?? this.states.get(resourcePath),
               onReady: name => view.showRunning(name),
-              onState: state => this.states.set(resourcePath, state),
+              onState: (state) => {
+                acceptedState = state;
+                this.states.set(resourcePath, state);
+              },
               onSharedParameters: parameters => this.tcs.addSharedParameters(parameters),
               onReturn: (state, saveState) => {
                 activeDialog.ref.close();
@@ -179,6 +202,7 @@ export class WidgetService implements OnDestroy {
   ngOnDestroy(): void {
     this.close();
     this.states.clear();
+    this.lastCalculatorResult.set(undefined);
     this.subscriptions.unsubscribe();
   }
 

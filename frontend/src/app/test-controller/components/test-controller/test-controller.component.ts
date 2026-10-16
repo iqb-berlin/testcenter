@@ -85,7 +85,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
               public pageService: PageService,
               private apiService: VeronaAPIService,
               private messageService: MessageService,
-              private widgets: WidgetService,
+              public widgets: WidgetService,
               @Inject('IS_PRODUCTION_MODE') public isProductionMode: boolean) { }
 
   // Whether there is currently nothing ready to show to the testee yet: either the test itself is

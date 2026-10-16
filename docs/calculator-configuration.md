@@ -124,3 +124,30 @@ gewöhnlichen Schließen kehrt der Fokus zur Schaltfläche zurück. Bei einem
 Unit-Wechsel oder einer Pause schließt das Fenster ohne Fokus-Rückgabe an die
 verlassene Ansicht. Die vorhandenen Laufzeitregeln für Widget-Zustände bleiben
 bestehen.
+
+## Ergebnisfenster für die letzte Rechnung
+
+Beim gewöhnlichen Schließen des Taschenrechners erscheint ein kleines
+Ergebnisfenster, wenn der letzte Journaleintrag im akzeptierten Zustand ein
+`asImage` enthält. Unterstützt werden PNG- und JPEG-Bilder als Base64-Daten-URL.
+Das Fenster zeigt das vom Modul gelieferte Bild mit Formel und Ergebnis. Es
+blockiert keine Eingaben in der Unit und lässt sich an seiner Titelleiste mit der
+Maus verschieben.
+
+Die Schließen-Schaltfläche minimiert das Ergebnisfenster. Eine feste Schaltfläche
+„Letzte Rechnung“ bleibt am unteren rechten Bildschirmrand sichtbar und öffnet es
+wieder. Diese Schaltfläche hat keine Funktion zum Entfernen. Ein neues Ergebnis
+ersetzt das vorherige Bild und öffnet das Ergebnisfenster erneut. Ohne neues
+verwendbares Bild bleibt das bisherige Ergebnis erhalten.
+
+Das Ergebnis bleibt innerhalb des Testlaufs über Unit-Wechsel hinweg erhalten.
+Fenster und Schaltfläche sind nur sichtbar, wenn die aktuelle Unit geladen ist,
+der Test läuft und der Taschenrechner freigegeben ist. Während eines modalen
+Dialogs sind sie ebenfalls verborgen. Wird die Freigabe wieder wirksam, erscheint
+die vorherige Darstellung, auch wenn sie minimiert war.
+
+Ein erzwungenes Schließen, etwa beim Unit-Wechsel oder bei einer Pause, öffnet
+kein neues Ergebnisfenster. Bereits angezeigte Ergebnisse bleiben im Speicher.
+Beim Zurücksetzen, Abmelden oder Verlassen des Testlaufs werden sie gelöscht.
+Nach einer Änderung der Fenstergröße wird die Position zurückgesetzt, damit das
+Ergebnisfenster erreichbar bleibt.

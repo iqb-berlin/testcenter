@@ -1,6 +1,7 @@
 # next
 
 ## Neue Funktionen
+- Nach dem Schließen des Taschenrechners zeigt ein verschiebbares Ergebnisfenster die letzte Rechnung als Bild, sofern das Modul ein Bild zurückgibt. Das Fenster blockiert die Unit nicht. Beim Schließen bleibt eine Schaltfläche zum erneuten Öffnen sichtbar. Neue Ergebnisse ersetzen das vorherige Bild; bei freigegebenem Taschenrechner bleibt es über Unit-Wechsel hinweg verfügbar.
 - Die Taschenrechner-Schaltfläche im Kopfbereich zeigt ein Rechnersymbol. Der Tooltip und die Beschriftung für Screenreader lauten weiterhin „Taschenrechner“.
 - Im Kopfbereich neben dem Menü für Neuladen und Vollbild steht ein Taschenrechner bereit, wenn das aktuelle Testlet ihn mit `<Calculator show="yes">` freigibt. Vererbte Einstellungen werden berücksichtigt. Der Aufruf übergibt `MODE`, `JOURNAL_LINES`, `MAX_IMAGE_WIDTH_PX` und `JOURNAL` als Zeichenfolgen. Bereits akzeptierte Rechnerzustände bleiben beim erneuten Öffnen und über Unit-Wechsel hinweg erhalten.
 - Taschenrechner werden als hochgeladene Workspace-Widgets unter den Modellnamen `CALCULATOR` und `CALC` unterstützt. `CALCULATOR` hat Vorrang; fehlt dafür eine Datei, wird `CALC` verwendet. Innerhalb eines Modells gilt weiterhin die vorläufige Auswahl der letzten Datei. Fehlt ein Taschenrechner, erklärt das Fenster die nötige Bereitstellung.

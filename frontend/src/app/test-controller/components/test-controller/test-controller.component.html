@@ -114,3 +114,8 @@
   </mat-sidenav-content>
 
 </mat-sidenav-container>
+
+@if (widgets.calculatorResult(); as result) {
+  <tc-calculator-peek [hidden]="!calculatorConfiguration || dialog.openDialogs.length > 0"
+                      [result]="result"></tc-calculator-peek>
+}
