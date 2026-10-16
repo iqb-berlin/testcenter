@@ -1,6 +1,7 @@
 # next
 
 ## Neue Funktionen
+- Taschenrechner werden als hochgeladene Workspace-Widgets unter den Modellnamen `CALCULATOR` und `CALC` unterstützt. `CALCULATOR` hat Vorrang; fehlt dafür eine Datei, wird `CALC` verwendet. Innerhalb eines Modells gilt weiterhin die vorläufige Auswahl der letzten Datei. Fehlt ein Taschenrechner, erklärt das Fenster die nötige Bereitstellung. Die Schaltfläche und die Anbindung der Booklet-Einstellungen folgen später.
 - Taschenrechner-Einstellungen in `<Calculator show="yes|no">` werden für Testlets eingelesen und vollständig an Nachfahren vererbt. Eigene Deklarationen ersetzen die geerbten Einstellungen; `show="no"` blendet den Taschenrechner für den Teilbaum aus. Ungültige Einstellungen und Journal-Daten führen zu einem XML-Fehler. Die Taschenrechner-Schaltfläche folgt später; die dafür nötige Booklet-XSD-Erweiterung ist noch nicht veröffentlicht.
 - Der Widget-Laufzeit steht ein Host-Aufruf ohne Player-Anfrage zur Verfügung. Er nutzt dasselbe modale Fenster und denselben Zustandszwischenspeicher; beim Schließen kehrt der Fokus zur auslösenden Schaltfläche zurück. Dies bereitet den Testcenter-eigenen Taschenrechner vor, dessen Schaltfläche noch nicht eingeblendet wird.
 - Widgets können gemeinsame Parameter über Zustandsmeldungen und beim Schließen aktualisieren. Gültige Änderungen werden über die bestehende Testzustands-Speicherung gesichert und dem Player mitgeteilt. Leere Werte werden berücksichtigt; ältere Meldungen überschreiben keine neueren Werte. Widget-Zustände selbst bleiben ausschließlich im Arbeitsspeicher.

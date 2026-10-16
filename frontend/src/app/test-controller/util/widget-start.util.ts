@@ -1,5 +1,6 @@
 import { valid } from 'semver';
 import { WidgetCall, WidgetParameter } from '../interfaces/widget.interfaces';
+import { widgetModelCandidates } from './widget-model.util';
 
 export function parseWidgetCall(data: unknown): WidgetCall {
   if (data === null || typeof data !== 'object' ||
@@ -41,7 +42,7 @@ export function widgetName(serialized: unknown, model: string): string {
   const data: unknown = JSON.parse(serialized);
   if (data === null || typeof data !== 'object' ||
     !('type' in data) || data.type !== 'WIDGET' ||
-    !('model' in data) || data.model !== model ||
+    !('model' in data) || typeof data.model !== 'string' || !widgetModelCandidates(model).includes(data.model) ||
     !('id' in data) || typeof data.id !== 'string' || !/^[A-Za-z][A-Za-z0-9_-]*$/.test(data.id) ||
     !('version' in data) || typeof data.version !== 'string' || !valid(data.version) ||
     !('specVersion' in data) || data.specVersion !== '1.0' ||

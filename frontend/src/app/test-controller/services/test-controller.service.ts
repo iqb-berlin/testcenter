@@ -7,6 +7,7 @@ import {
   Subscription, timer
 } from 'rxjs';
 import { Injectable } from '@angular/core';
+import { widgetModelCandidates } from '../util/widget-model.util';
 import { PRIMARY_OUTLET, Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { CodingSchemeFactory } from '@iqb/responses';
@@ -345,9 +346,13 @@ export class TestControllerService {
   }
 
   getWidgetResourcePath(model: string): string | undefined {
-    const paths = Object.prototype.hasOwnProperty.call(this.widgets, model) ? this.widgets[model] : undefined;
-    // Temporary policy: the backend orders candidates by modification time, then filename.
-    return paths?.[paths.length - 1];
+    for (const candidate of widgetModelCandidates(model)) {
+      const paths = Object.prototype.hasOwnProperty.call(this.widgets, candidate) ? this.widgets[candidate] : undefined;
+      // Temporary policy: the backend orders candidates by modification time, then filename.
+      const path = paths?.[paths.length - 1];
+      if (path !== undefined) return path;
+    }
+    return undefined;
   }
 
   AddToUnitStateDataPartsBuffer(unitSequenceId: number, dataParts: KeyValuePairString, unitStateDataType: string): void {

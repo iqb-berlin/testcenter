@@ -3,7 +3,8 @@ import { MatDialogModule, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 
-export type WidgetDialogStatus = 'loading' | 'starting' | 'running' | 'download-error' | 'startup-error';
+export type WidgetDialogStatus = 'loading' | 'starting' | 'running' | 'download-error' | 'startup-error' |
+  'missing-calculator';
 
 export interface WidgetDialogData {
   name: string;
@@ -27,6 +28,10 @@ export interface WidgetDialogData {
         }
         @case ('download-error') {
           <p>Das Widget konnte nicht geladen werden. Bitte schließen Sie das Fenster.</p>
+        }
+        @case ('missing-calculator') {
+          <p>Kein Taschenrechner verfügbar. Bitte informieren Sie die Testleitung.</p>
+          <p>Im Arbeitsbereich muss ein Widget mit dem Modell CALCULATOR oder CALC hochgeladen werden.</p>
         }
       }
     </div>
@@ -76,6 +81,10 @@ export class WidgetDialogComponent implements OnDestroy {
 
   showDownloadError(): void {
     this.status.set('download-error');
+  }
+
+  showMissingCalculator(): void {
+    this.status.set('missing-calculator');
   }
 
   ngOnDestroy(): void {

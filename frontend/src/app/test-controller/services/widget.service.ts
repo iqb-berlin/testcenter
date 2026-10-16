@@ -25,6 +25,8 @@ export interface HostWidgetRequest {
   state?: string;
 }
 
+export type CalculatorWidgetRequest = Pick<HostWidgetRequest, 'parameters' | 'trigger' | 'state'>;
+
 interface ActiveWidgetDialog {
   ref: MatDialogRef<WidgetDialogComponent>;
   subscriptions: Subscription;
@@ -102,6 +104,16 @@ export class WidgetService implements OnDestroy {
   openHost(request: HostWidgetRequest): void {
     if (this.activeDialog || this.dialog.openDialogs.length) return;
     this.launch(request);
+  }
+
+  openCalculator(request: CalculatorWidgetRequest): void {
+    if (this.activeDialog || this.dialog.openDialogs.length) return;
+    const resourcePath = this.tcs.getWidgetResourcePath('CALCULATOR');
+    if (resourcePath === undefined) {
+      this.openDialog('Taschenrechner', request.trigger).ref.componentInstance.showMissingCalculator();
+      return;
+    }
+    this.openHost({ ...request, resourcePath, model: 'CALCULATOR' });
   }
 
   private launch(
