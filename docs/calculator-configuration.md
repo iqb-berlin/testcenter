@@ -2,9 +2,11 @@
 
 Der Booklet-Parser unterstützt die folgende Konfiguration. Die benötigte
 Booklet-XSD-Erweiterung ist noch nicht veröffentlicht. Uploads mit aktiver
-Schema-Prüfung akzeptieren die Deklaration deshalb noch nicht. Die
-Taschenrechner-Schaltfläche und die Übergabe der Booklet-Einstellungen folgen in
-späteren Schritten. Das Rechnermodul wird als Workspace-Ressource bereitgestellt.
+Schema-Prüfung akzeptieren die Deklaration deshalb noch nicht. Bei einer laufenden
+und geladenen Unit mit `show="yes"` erscheint die Schaltfläche **Taschenrechner**
+im Kopfbereich neben dem Menü für Neuladen und Vollbild. Sie ist auch verfügbar,
+wenn die Schaltflächen für Neuladen und Vollbild ausgeblendet sind. Das Rechnermodul
+wird als Workspace-Ressource bereitgestellt.
 
 ## Rechnermodul bereitstellen
 
@@ -92,3 +94,32 @@ Die ausgewertete Konfiguration liegt auf dem jeweiligen Testlet. Testcontroller
 und Gruppen-Monitor verwenden dafür denselben Parser. Im Testcontroller ist sie
 über `unit.parent.calculator` verfügbar. Der Parser ändert keine Widget-Zustände
 und speichert das Journal nicht als Testantwort.
+
+
+## Parameter und Zustand beim Öffnen
+
+Jeder Aufruf übergibt alle vier Parameter als Zeichenfolgen:
+
+| Booklet-Einstellung | Widget-Parameter |
+| --- | --- |
+| `mode` | `MODE` |
+| `journalLines` | `JOURNAL_LINES` |
+| `maxImageWidthPx` | `MAX_IMAGE_WIDTH_PX` |
+| `<Journal>` | `JOURNAL` |
+
+Das konfigurierte Journal wird bei jedem Start als `JOURNAL` übergeben. Bereits
+akzeptierte Widget-Zustände werden unabhängig davon über das Feld `state`
+wiederhergestellt, auch wenn der gespeicherte Zustand eine leere Zeichenfolge ist.
+Testcenter ersetzt den gespeicherten Zustand nicht durch das konfigurierte Journal.
+Das Modul entscheidet, wie es seine Parameter und seinen Startzustand verarbeitet.
+
+Die Parameter werden auch dann übergeben, wenn eine hochgeladene Modulversion
+`MODE` oder `JOURNAL` noch nicht auswertet. Testcenter passt das Modul nicht an und
+verwendet keine Ersatzdarstellung für diese Parameter.
+
+Während des Ladens, einer Pause und nach Testende ist die Schaltfläche verborgen.
+Vor dem Öffnen werden die aktuelle Unit und ihre Freigabe erneut geprüft. Beim
+gewöhnlichen Schließen kehrt der Fokus zur Schaltfläche zurück. Bei einem
+Unit-Wechsel oder einer Pause schließt das Fenster ohne Fokus-Rückgabe an die
+verlassene Ansicht. Die vorhandenen Laufzeitregeln für Widget-Zustände bleiben
+bestehen.

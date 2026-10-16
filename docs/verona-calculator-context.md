@@ -84,8 +84,8 @@ Other recommendations remain proposals. Record each answer before the affected i
 | Module identity | **Approved:** `CALCULATOR` and `CALC` are aliases. | Prefer `CALCULATOR`, then `CALC`; accept either in ready metadata. Other models remain exact. |
 | XML contract | **Approved:** one optional `<Calculator show="yes|no" mode="SIMPLE|SCIENTIFIC" journalLines="0" maxImageWidthPx="200">` per `<Testlet>`, required `show` accepting only `yes` or `no`, optional `<Journal>` containing the JSON array; omitted configuration settings use specification defaults. | Hidden when no declaration applies. Schema extension is implemented locally for proposed release 18.1; publication is pending. |
 | Nested testlets | **Approved:** nearest complete declaration. | All descendants inherit the nearest complete declaration automatically. A child declaration replaces it entirely, including `show="no"` to disable availability; settings are not merged. |
-| Journal initialization | Configured `JOURNAL` versus retained state? | Preserve run-memory restoration; authored journal is initial content, subject to widget startup verification. |
-| Button and unavailable module | Placement and missing-module behavior? | Testcontroller toolbar; distinguish configured visibility from module availability and provide an actionable failure. |
+| Journal initialization | **Approved:** always send authored `JOURNAL` as a parameter; restore accepted state separately. | Do not seed or replace cached state to compensate for module limitations. The module interprets parameters and state. |
+| Button and unavailable module | **Approved:** direct header button beside the reload/fullscreen menu. | Visibility follows effective `show="yes"` while the current unit is ready and the test is running. Missing uploads open the existing actionable error. |
 
 ### Approved visibility and inheritance contract
 
@@ -197,7 +197,8 @@ delivery path and missing or incompatible implementations produce clear errors.
 
 ### Iteration 4: connect configuration to the calculator button
 
-Prerequisites: runtime, booklet, delivery, and button decisions.
+Implemented on 2026-10-16 with header placement and parameter handling approved
+by the user. Verification is recorded below.
 
 - Derive visibility from the current unit's effective testlet configuration.
 - Convert configuration into the widget's string-valued parameter array.
@@ -428,10 +429,9 @@ Browser evidence is in `/tmp/calculator-artifact-{simple,scientific-journal,rest
 and the matching `.dom` files. These are manual compatibility checks of the
 supplied artifact, not dependencies of the automated test suite.
 
-Next: connect effective testlet configuration to the calculator button, choose
-button placement and the authored-journal initialization rule. Preserve retained
-run-memory state when doing so. Any selected calculator artifact must support the
-requested modes, or its limitations need an explicit product decision.
+At this snapshot, the header button and parameter handling were the next step.
+The user subsequently approved passing all parameters despite the supplied
+module limitations; iteration 4 below records that implementation.
 
 
 Iteration 3 verification: 279 tests passed in Chromium, including 32 new delivery,
@@ -458,3 +458,61 @@ PATH=/home/oem/.nvm/versions/node/v22.17.1/bin:$PATH \
   ./node_modules/.bin/ng build --configuration=production \
   --output-path=/tmp/testcenter-calculator-delivery-build
 ```
+
+
+### Iteration 4, header button and parameter integration
+
+Implemented on 2026-10-16. The preceding work was committed first as `c532b178a`,
+as requested. Header integration is a subsequent working-tree change.
+
+The user selected the same header that contains the reload/fullscreen controls.
+The calculator is a directly visible text button beside their overflow menu,
+independent of whether reload or fullscreen is enabled. It appears for the current
+unit's effective `show="yes"` configuration while the test is RUNNING and the unit
+is ready. Hidden, absent, loading, paused, and terminated configurations cannot
+launch it. Eligibility is checked again when the button is activated.
+
+`TestControllerComponent.openCalculator()` reads the current effective
+configuration and passes `MODE`, `JOURNAL_LINES`, `MAX_IMAGE_WIDTH_PX`, and `JOURNAL`
+as string-valued parameters to `WidgetService.openCalculator()`. Authored journal
+text is preserved and sent on every launch. The call omits explicit `state`, so
+accepted state remains restorable by resource path, including an empty string.
+No state is seeded, replaced, or reset to compensate for unsupported parameters.
+This follows the user's instruction to pass MODE and JOURNAL even when the current
+calculator does not consume them.
+
+The click handler takes the event's native `currentTarget`, not a Material button
+component reference. This preserves the existing runtime's native-element focus
+restoration and connected-element checks.
+
+The component fixture now loads the actual TestController module, parses nested
+booklet examples, and runs the real WidgetService/BackendService/modal/session
+with Angular HTTP testing. Eleven header checks cover placement, independent
+reload/fullscreen settings, inheritance, disabled and missing declarations,
+configured/default parameters in start commands, empty retained state, focus
+restoration, missing module feedback, repeated clicks, and forced closure.
+
+Verification: all 289 controller, shared-calculator-parser, and group-monitor
+checks passed in Chromium. Eight existing group-monitor tests remain skipped.
+The production build passed with the existing CommonJS warnings. The rewritten
+component spec passes ESLint; lint findings in the existing production component
+are on unchanged lines. `git diff --check` passed. No backend, XSD, compatibility,
+or environment settings changed. The schema release remains on hold.
+
+Commands from `frontend`:
+
+```bash
+PATH=/home/oem/.nvm/versions/node/v22.17.1/bin:$PATH \
+  ./node_modules/.bin/ng test --watch=false \
+  --include='src/app/test-controller/**/*.spec.ts' \
+  --include='src/app/shared/services/booklet-parser.service.spec.ts' \
+  --include='src/app/group-monitor/**/*.spec.ts'
+
+PATH=/home/oem/.nvm/versions/node/v22.17.1/bin:$PATH \
+  ./node_modules/.bin/ng build --configuration=production \
+  --output-path=/tmp/testcenter-calculator-header-build
+```
+
+Logs: `/tmp/calculator-header-tests.log`, `/tmp/calculator-header-full-tests.log`,
+`/tmp/calculator-header-build.log`, `/tmp/calculator-header-test-lint.log`, and
+`/tmp/calculator-header-legacy-lint.json`.

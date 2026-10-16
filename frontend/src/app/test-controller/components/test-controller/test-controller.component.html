@@ -64,6 +64,12 @@
         </button>
       }
 
+      @if (calculatorConfiguration) {
+        <button matButton data-cy="calculator" (click)="openCalculator($event)">
+          Taschenrechner
+        </button>
+      }
+
       @if (!(tcs.booklet?.config?.toolbar_show_fullscreen_button === 'FALSE' &&
              tcs.booklet?.config?.toolbar_show_reload_button === 'FALSE')) {
         <button matIconButton class="menu-button" [matMenuTriggerFor]="menu">

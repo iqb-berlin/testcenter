@@ -27,6 +27,7 @@ import { PageService } from '../../services/page.service';
 import { VeronaAPIService } from '../../services/verona-api.service';
 import { MessageService } from '@shared/services/message.service';
 import { WidgetService } from '../../services/widget.service';
+import { CalculatorConfiguration } from 'testcenter-common/interfaces/calculator.interfaces';
 
 @Component({
   templateUrl: './test-controller.component.html',
@@ -84,6 +85,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
               public pageService: PageService,
               private apiService: VeronaAPIService,
               private messageService: MessageService,
+              private widgets: WidgetService,
               @Inject('IS_PRODUCTION_MODE') public isProductionMode: boolean) { }
 
   // Whether there is currently nothing ready to show to the testee yet: either the test itself is
@@ -216,6 +218,28 @@ export class TestControllerComponent implements OnInit, OnDestroy {
           isBackwardAllowed: !this.pageService.isFirstPage()
         };
       });
+    });
+  }
+
+  get calculatorConfiguration(): CalculatorConfiguration | undefined {
+    if (this.tcs.state$.getValue() !== 'RUNNING' || !this.tcs.unitContentReady$.getValue()) return undefined;
+    const configuration = this.tcs.currentUnit?.parent.calculator;
+    return configuration?.show === 'yes' ? configuration : undefined;
+  }
+
+  openCalculator(event: Event): void {
+    const trigger = event.currentTarget;
+    if (!(trigger instanceof HTMLElement)) return;
+    const configuration = this.calculatorConfiguration;
+    if (!configuration) return;
+    this.widgets.openCalculator({
+      trigger,
+      parameters: [
+        { key: 'MODE', value: configuration.mode },
+        { key: 'JOURNAL_LINES', value: String(configuration.journalLines) },
+        { key: 'MAX_IMAGE_WIDTH_PX', value: String(configuration.maxImageWidthPx) },
+        { key: 'JOURNAL', value: configuration.journal }
+      ]
     });
   }
 
