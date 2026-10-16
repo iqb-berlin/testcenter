@@ -161,7 +161,7 @@ describe('TestControllerComponent calculator header', () => {
     expect(component).toBeTruthy();
     expect(button().closest('[data-cy="unit-screenheader"]')).not.toBeNull();
     expect(button().closest('mat-menu')).toBeNull();
-    expect(button().textContent).toContain('Taschenrechner');
+    expect(button().getAttribute('aria-label')).toBe('Taschenrechner');
   });
 
   it('keeps the calculator available when reload and fullscreen are hidden', () => {

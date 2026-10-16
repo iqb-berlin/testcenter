@@ -3,10 +3,11 @@
 Der Booklet-Parser unterstützt die folgende Konfiguration. Die benötigte
 Booklet-XSD-Erweiterung ist noch nicht veröffentlicht. Uploads mit aktiver
 Schema-Prüfung akzeptieren die Deklaration deshalb noch nicht. Bei einer laufenden
-und geladenen Unit mit `show="yes"` erscheint die Schaltfläche **Taschenrechner**
-im Kopfbereich neben dem Menü für Neuladen und Vollbild. Sie ist auch verfügbar,
-wenn die Schaltflächen für Neuladen und Vollbild ausgeblendet sind. Das Rechnermodul
-wird als Workspace-Ressource bereitgestellt.
+und geladenen Unit mit `show="yes"` erscheint ein Taschenrechner-Symbol
+im Kopfbereich neben dem Menü für Neuladen und Vollbild. Der Tooltip und die
+Beschriftung für Screenreader lauten „Taschenrechner“. Die Schaltfläche ist auch
+verfügbar, wenn die Schaltflächen für Neuladen und Vollbild ausgeblendet sind.
+Das Rechnermodul wird als Workspace-Ressource bereitgestellt.
 
 ## Rechnermodul bereitstellen
 

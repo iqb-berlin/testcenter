@@ -65,8 +65,9 @@
       }
 
       @if (calculatorConfiguration) {
-        <button matButton data-cy="calculator" (click)="openCalculator($event)">
-          Taschenrechner
+        <button aria-label="Taschenrechner" data-cy="calculator" matIconButton
+                matTooltip="Taschenrechner" (click)="openCalculator($event)">
+          <mat-icon svgIcon="calculate"></mat-icon>
         </button>
       }
 

@@ -1,6 +1,7 @@
 # next
 
 ## Neue Funktionen
+- Die Taschenrechner-Schaltfläche im Kopfbereich zeigt ein Rechnersymbol. Der Tooltip und die Beschriftung für Screenreader lauten weiterhin „Taschenrechner“.
 - Im Kopfbereich neben dem Menü für Neuladen und Vollbild steht ein Taschenrechner bereit, wenn das aktuelle Testlet ihn mit `<Calculator show="yes">` freigibt. Vererbte Einstellungen werden berücksichtigt. Der Aufruf übergibt `MODE`, `JOURNAL_LINES`, `MAX_IMAGE_WIDTH_PX` und `JOURNAL` als Zeichenfolgen. Bereits akzeptierte Rechnerzustände bleiben beim erneuten Öffnen und über Unit-Wechsel hinweg erhalten.
 - Taschenrechner werden als hochgeladene Workspace-Widgets unter den Modellnamen `CALCULATOR` und `CALC` unterstützt. `CALCULATOR` hat Vorrang; fehlt dafür eine Datei, wird `CALC` verwendet. Innerhalb eines Modells gilt weiterhin die vorläufige Auswahl der letzten Datei. Fehlt ein Taschenrechner, erklärt das Fenster die nötige Bereitstellung.
 - Taschenrechner-Einstellungen in `<Calculator show="yes|no">` werden für Testlets eingelesen und vollständig an Nachfahren vererbt. Eigene Deklarationen ersetzen die geerbten Einstellungen; `show="no"` blendet den Taschenrechner für den Teilbaum aus. Ungültige Einstellungen und Journal-Daten führen zu einem XML-Fehler. Die dafür nötige Booklet-XSD-Erweiterung ist noch nicht veröffentlicht.
@@ -17,6 +18,7 @@
 - Der Kurztitel einer Unit (Attribut `labelshort` im Booklet) lässt sich während des Tests anzeigen: im Kopfbereich über `header_content` = `UNIT_LABEL_SHORT`, auf der Navigationsleiste über `navbar_unit_label` = `LABEL_SHORT` und auf der Werkzeugleiste über den neuen Booklet-Parameter `toolbar_unit_label` = `LABEL_SHORT`. Fehlt der Kurztitel, wird der Titel der Unit angezeigt. `toolbar_unit_label` ersetzt `toolbar_show_unit_title`, das weiterhin ausgewertet wird, aber als veraltet gilt. Bisher wurde `labelshort` nur im Gruppen-Monitor angezeigt.
 
 ## Fehlerbehebungen
+- Das Widget-Fenster zeigt keinen leeren weißen Kopfbereich mehr über dem Widget-Inhalt. Der Dialogname bleibt für Screenreader verfügbar.
 - Die Schließen-Schaltfläche im Widget-Fenster zeigt ein Kreuz statt des Textes „close“.
 - Ungültige Widget-Aufrufe werden vor dem Download geprüft und im Widget-Fenster als Fehler angezeigt.
 - Letzte Antworten eines Players werden auch beim Wechsel in einen noch ladenden Block gespeichert. Player-Fehler vor dem Start werden auch ohne Sitzungskennung protokolliert und angezeigt.

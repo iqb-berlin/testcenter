@@ -39,6 +39,7 @@ export interface WidgetDialogData {
   `,
   styles: [`
     :host { display: flex; flex-direction: column; position: relative; height: 100%; background: white; }
+    .cdk-visually-hidden { position: absolute; margin: -1px; padding: 0; }
     .close { position: absolute; top: 10px; right: 10px; }
     .frame-host { flex: 1; min-height: 0; }
     .status:has(p) { margin: auto; padding: 60px 20px; text-align: center; }
