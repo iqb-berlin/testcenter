@@ -17,6 +17,7 @@
 - Der Kurztitel einer Unit (Attribut `labelshort` im Booklet) lässt sich während des Tests anzeigen: im Kopfbereich über `header_content` = `UNIT_LABEL_SHORT`, auf der Navigationsleiste über `navbar_unit_label` = `LABEL_SHORT` und auf der Werkzeugleiste über den neuen Booklet-Parameter `toolbar_unit_label` = `LABEL_SHORT`. Fehlt der Kurztitel, wird der Titel der Unit angezeigt. `toolbar_unit_label` ersetzt `toolbar_show_unit_title`, das weiterhin ausgewertet wird, aber als veraltet gilt. Bisher wurde `labelshort` nur im Gruppen-Monitor angezeigt.
 
 ## Fehlerbehebungen
+- Die Schließen-Schaltfläche im Widget-Fenster zeigt ein Kreuz statt des Textes „close“.
 - Ungültige Widget-Aufrufe werden vor dem Download geprüft und im Widget-Fenster als Fehler angezeigt.
 - Letzte Antworten eines Players werden auch beim Wechsel in einen noch ladenden Block gespeichert. Player-Fehler vor dem Start werden auch ohne Sitzungskennung protokolliert und angezeigt.
 - Geänderte gemeinsame Parameter werden auch bei bereits vorhandenen Schlüsseln gespeichert und an den Player weitergegeben. Leere Zeichenfolgen können bisherige Werte ersetzen.

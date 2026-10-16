@@ -3,6 +3,7 @@ import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testin
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatIconTestingModule } from '@angular/material/icon/testing';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { BehaviorSubject, Subject } from 'rxjs';
 import { MainDataService } from '@shared/shared.module';
@@ -64,7 +65,7 @@ describe('Uploaded calculator launch', () => {
       getAuthData: () => ({ groupToken: 'calculator-group' })
     };
     TestBed.configureTestingModule({
-      imports: [CalculatorHostComponent],
+      imports: [CalculatorHostComponent, MatIconTestingModule],
       providers: [
         provideNoopAnimations(), provideHttpClient(), provideHttpClientTesting(), BackendService,
         { provide: TestControllerService, useValue: tcs },

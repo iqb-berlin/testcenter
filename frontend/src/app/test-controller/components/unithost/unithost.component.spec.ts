@@ -4,6 +4,7 @@ import {
 import { ActivatedRoute, Params } from '@angular/router';
 import { BehaviorSubject, of, Subject } from 'rxjs';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatIconTestingModule } from '@angular/material/icon/testing';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { ApplicationRef, Component, inject } from '@angular/core';
 import { WidgetService } from '../../services/widget.service';
@@ -97,7 +98,8 @@ describe('UnithostComponent', () => {
         CommonModule,
         MatSnackBarModule,
         MatDividerModule,
-        MatDialogModule
+        MatDialogModule,
+        MatIconTestingModule
       ],
       providers: [
         provideNoopAnimations(),
