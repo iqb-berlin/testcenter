@@ -516,3 +516,39 @@ PATH=/home/oem/.nvm/versions/node/v22.17.1/bin:$PATH \
 Logs: `/tmp/calculator-header-tests.log`, `/tmp/calculator-header-full-tests.log`,
 `/tmp/calculator-header-build.log`, `/tmp/calculator-header-test-lint.log`, and
 `/tmp/calculator-header-legacy-lint.json`.
+
+
+### Calculator artifact 0.2.0 compatibility check
+
+On 2026-10-16 the user supplied `iqb-widget-calc-0.2.0.html`. The artifact was
+inspected and exercised without modification in Chromium. No production code,
+resource selection, or environment setting changed for this check.
+
+The embedded metadata still declares model `CALCULATOR`, module version `1.0.0`,
+Widget interface `1.0`, and metadata version `3.1`, despite the filename's `0.2.0`.
+These values are accepted by the existing host validation.
+
+Five browser scenarios verified:
+
+- Ready/start handshake and a final `vowReturnRequested` in all scenarios.
+- Explicit `state` restored the journal entry `456=456`; state notification and
+  final return preserved that entry.
+- Clicking `1`, `+`, `2`, and `=` produced `1+2=3` in both state and final return.
+  With `MAX_IMAGE_WIDTH_PX` set to 80 and 400, the returned PNG images had widths
+  of 80 and 400 pixels respectively, both with height 56.
+- SIMPLE and SCIENTIFIC runs displayed the same controls. The artifact has no
+  `MODE` code reference.
+- A standalone `JOURNAL` parameter did not initialize entries. Only
+  `JOURNAL_LINES` appears in the artifact's code; authored journal content still
+  requires widget-side parameter support. Testcenter continues sending MODE and
+  JOURNAL unchanged, as already authorized.
+
+The source now renders calculation images through an SVG renderer and converts
+them to PNG. The host still receives the documented string fields and needs no
+change. Uploading the new file uses the existing workspace-resource delivery
+mechanism. A local file alone does not replace an uploaded workspace resource.
+
+Reproduction: `/tmp/check-calculator-020.py`. Browser harnesses and DOM output are
+`/tmp/calculator-020-{simple,scientific-journal,state,evaluate-80,evaluate-400}.{html,dom}`.
+The compact observation report is `/tmp/calculator-020-results.json`. These checks
+exercise the actual artifact; they are not a replacement for the host runtime tests.
