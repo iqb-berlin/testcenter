@@ -17,6 +17,9 @@
 /data
 /data-*
 
+# backup sets created by the prod Make targets
+/backup
+
 # backend-dependencies
 /backend/vendor
 
