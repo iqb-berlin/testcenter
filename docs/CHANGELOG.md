@@ -11,6 +11,7 @@
   - `login_logoutDialogConfirmButtonLabel`: Schalter „Abmelden“ in der Dialogbox zum Abmelden
   - `login_starterGreeting`: Begrüßung auf der Starter-Seite („Schön, dass du da bist!“)
   - `login_starterPrompt`: Aufforderung unter der Begrüßung („Komm, wir legen los. Wähle einen Teil aus.“)
+- Die Bibliotheken für automatische Kodierung sind auf Responses 5.4.0 und Coding-Scheme 3.5.0 aktualisiert. Damit werden die optionalen Partial-Credit-Einstellungen neuer Kodierschemata unterstützt.
 
 ## Fehlerbehebungen
 - Ist der Brute-Force-Schutz (`BRUTE_FORCE_PROTECTION`) für eine Anmeldeart eingeschaltet, die Seite aber nicht über HTTPS aufgerufen, zeigt die Anmeldeseite einen entsprechenden Hinweis und sperrt die betroffene Anmeldung. Bisher blieb der Anmelde-Knopf nach dem ersten Versuch dauerhaft deaktiviert, weil Browser die für den Schutz nötige Verschlüsselungsfunktion nur über HTTPS bereitstellen.
