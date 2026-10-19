@@ -41,7 +41,7 @@ class SystemConfig {
    * @param array<string, array<string, mixed>> $config section name => key => value
    * @throws Exception if a section and key name no configuration property
    */
-  private static function apply(array $config): void {
+  public static function apply(array $config): void {
     foreach ($config as $sectionName => $section) {
       foreach ($section as $key => $value) {
         $propertyKey = "{$sectionName}_$key";
@@ -74,14 +74,23 @@ class SystemConfig {
     }
   }
 
+  /**
+   * @return array<string, string> key => value of the `database` section
+   */
+  public static function readDatabaseEnvironment(): array {
+    return [
+      'name' => self::stringEnv('DB_DATABASE'),
+      'host' => self::stringEnv('DB_HOST'),
+      'port' => self::stringEnv('DB_PORT'),
+      'user' => self::stringEnv('DB_USER'),
+      'password' => self::stringEnv('DB_PASSWORD')
+    ];
+  }
+
   public static function readEnvironment(): void {
     $config = [];
 
-    $config['database']['name'] = self::stringEnv('DB_DATABASE');
-    $config['database']['host'] = self::stringEnv('DB_HOST');
-    $config['database']['port'] = self::stringEnv('DB_PORT');
-    $config['database']['user'] = self::stringEnv('DB_USER');
-    $config['database']['password'] = self::stringEnv('DB_PASSWORD');
+    $config['database'] = self::readDatabaseEnvironment();
 
     $config['password']['salt'] = self::stringEnv('PASSWORD_SALT');
     $config['password']['min_length'] = (int) self::stringEnv('PASSWORD_MIN_LENGTH');
