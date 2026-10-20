@@ -51,18 +51,19 @@ class SysChecksFolder extends Workspace {
    * @return SysCheckReportFile[]
    */
   public function collectSysCheckReports(?array $filterCheckIds = null): array {
-    $reportFolderName = $this->getSysCheckReportsPath();
-    $reportDir = opendir($reportFolderName);
+    $directory = $this->storageDirectory->createSubdirectory('SysCheck', 'reports');
     $reports = [];
 
-    while (($reportFileName = readdir($reportDir)) !== false) {
-      $reportFilePath = $reportFolderName . '/' . $reportFileName;
-
-      if (!is_file($reportFilePath) or !(strtoupper(substr($reportFileName, -5)) == '.JSON')) {
+    foreach (Storage::getDriver()->listFiles($directory) as $reportFileName => $fileInfo) {
+      if (strtoupper(substr($reportFileName, -5)) != '.JSON') {
         continue;
       }
 
-      $report = new SysCheckReportFile($reportFilePath);
+      $report = new SysCheckReportFile(
+        $reportFileName,
+        Storage::getDriver()->get($directory->createFilePath($reportFileName)),
+        $fileInfo->modificationTime
+      );
 
       if (($filterCheckIds === null) or (in_array($report->getCheckId(), $filterCheckIds))) {
         $reports[] = $report;
