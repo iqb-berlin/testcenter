@@ -4,6 +4,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { CdkDrag, CdkDragHandle } from '@angular/cdk/drag-drop';
 import { DialogResizeDirective } from './dialog-resize.directive';
+import { WidgetFrameSizer } from './widget-frame-sizer.class';
 
 export type WidgetDialogStatus = 'loading' | 'starting' | 'running' | 'download-error' | 'startup-error' |
   'missing-calculator';
@@ -62,7 +63,7 @@ export interface WidgetDialogData {
       padding: 0; border: 0; border-radius: 4px; cursor: nwse-resize; touch-action: none;
       color: var(--mat-sys-on-surface); background: var(--mat-sys-surface-container);
     }
-    .frame-host { flex: 1; min-height: 0; }
+    .frame-host { flex: 1; min-width: 0; min-height: 0; position: relative; overflow: hidden; }
     .status:has(p) { margin: auto; padding: 60px 20px; text-align: center; }
   `]
 })
@@ -71,6 +72,7 @@ export class WidgetDialogComponent implements OnDestroy {
   readonly status = signal<WidgetDialogStatus>('loading');
   readonly name = signal('Widget');
   private iframe: HTMLIFrameElement | undefined;
+  private frameSizer: WidgetFrameSizer | undefined;
   @ViewChild(CdkDrag, { static: true }) private drag!: CdkDrag;
 
   constructor(@Inject(MAT_DIALOG_DATA) data: WidgetDialogData) {
@@ -92,7 +94,7 @@ export class WidgetDialogComponent implements OnDestroy {
     const iframe = document.createElement('iframe');
     this.iframe = iframe;
     iframe.title = this.name();
-    iframe.style.cssText = 'display:block;width:100%;height:100%;border:0;';
+    iframe.style.cssText = 'position:absolute;display:block;border:0;transform-origin:top left;';
     if (colorScheme) {
       // Apply the theme before the iframe can paint its default colors.
       const doc = new DOMParser().parseFromString(html, 'text/html');
@@ -102,6 +104,7 @@ export class WidgetDialogComponent implements OnDestroy {
       html = `${doctype}\n${doc.documentElement.outerHTML}`;
     }
     this.frameHost.nativeElement.appendChild(iframe);
+    this.frameSizer = new WidgetFrameSizer(iframe, this.frameHost.nativeElement);
     const widgetWindow = iframe.contentWindow;
     if (!widgetWindow) throw new Error('Widget iframe has no window');
     // Install the protocol listener before executing any widget script.
@@ -133,6 +136,8 @@ export class WidgetDialogComponent implements OnDestroy {
   }
 
   private removeIframe(): void {
+    this.frameSizer?.destroy();
+    this.frameSizer = undefined;
     this.iframe?.remove();
     this.iframe = undefined;
   }

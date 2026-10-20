@@ -56,6 +56,138 @@ describe('Widget window interactions', () => {
     mouse(document, 'mouseup', x + dx, y + dy);
   }
 
+  async function nextLayout(): Promise<void> {
+    // ResizeObserver schedules fitting in the next frame; inspect the resulting layout afterwards.
+    for (let frame = 0; frame < 3; frame++) {
+      await new Promise<void>(resolve => requestAnimationFrame(() => resolve()));
+    }
+  }
+
+  async function loadWidget(contentWidth = 1024, contentHeight = 600): Promise<HTMLIFrameElement> {
+    ref.componentInstance.start(`<!doctype html><html><head><style>
+      html, body { margin: 0; width: 100%; height: 100%; }
+      main { width: ${contentWidth}px; height: ${contentHeight}px; background: green; }
+    </style></head><body><main>Widget</main></body></html>`, () => {});
+    const iframe = target('iframe') as HTMLIFrameElement;
+    await new Promise<void>(resolve => iframe.addEventListener('load', () => resolve(), { once: true }));
+    ref.componentInstance.showRunning('Test widget');
+    ref.componentRef?.changeDetectorRef.detectChanges();
+    await nextLayout();
+    return iframe;
+  }
+
+  function expectFitted(iframe: HTMLIFrameElement, contentWidth = 1024, contentHeight = 600): void {
+    const host = target('.frame-host');
+    const frameBounds = iframe.getBoundingClientRect();
+    const hostBounds = host.getBoundingClientRect();
+    expect(frameBounds.width).toBeLessThanOrEqual(host.clientWidth + 0.5);
+    expect(frameBounds.height).toBeLessThanOrEqual(host.clientHeight + 0.5);
+    expect(frameBounds.width / frameBounds.height).toBeCloseTo(contentWidth / contentHeight);
+    expect(frameBounds.left).toBeCloseTo(hostBounds.left, 0);
+    expect(frameBounds.top).toBeCloseTo(hostBounds.top, 0);
+    expect(host.scrollWidth).toBe(host.clientWidth);
+    expect(host.scrollHeight).toBe(host.clientHeight);
+    const doc = iframe.contentDocument;
+    if (!doc) throw new Error('Widget document is missing');
+    expect(doc.documentElement.clientWidth).toBe(contentWidth);
+    expect(doc.documentElement.clientHeight).toBe(contentHeight);
+    expect(doc.documentElement.scrollWidth).toBe(doc.documentElement.clientWidth);
+    expect(doc.documentElement.scrollHeight).toBe(doc.documentElement.clientHeight);
+    const transform = new DOMMatrixReadOnly(iframe.style.transform);
+    expect(transform.a).toBeCloseTo(transform.d);
+    expect(transform.a).toBeLessThanOrEqual(1);
+  }
+
+  it('fits the full widget in portrait and landscape windows after resizing', async () => {
+    const iframe = await loadWidget();
+    expectFitted(iframe);
+    expect(iframe.getBoundingClientRect().width).toBeCloseTo(target('.frame-host').clientWidth, 0);
+    expect(iframe.contentDocument?.documentElement.clientWidth).toBe(1024);
+    ref.updateSize('700px', '240px');
+    await nextLayout();
+    expectFitted(iframe);
+    expect(iframe.getBoundingClientRect().height).toBeCloseTo(target('.frame-host').clientHeight, 0);
+    expect(iframe.contentDocument?.documentElement.clientHeight).toBe(600);
+    ref.updateSize('320px', '400px');
+    await nextLayout();
+    expectFitted(iframe);
+    expect(iframe.contentDocument?.documentElement.clientWidth).toBe(1024);
+  });
+
+  it('uses the full modal content area beyond 1024 by 600 pixels', async () => {
+    spyOnProperty(window, 'innerWidth', 'get').and.returnValue(1600);
+    spyOnProperty(window, 'innerHeight', 'get').and.returnValue(1000);
+    const pane = target('tc-widget-dialog').closest<HTMLElement>('.cdk-overlay-pane');
+    if (!pane) throw new Error('Dialog pane is missing');
+    ref.updateSize('1280px', '800px');
+    pane.style.maxWidth = 'none';
+    pane.style.maxHeight = 'none';
+    pane.style.minWidth = '1280px';
+    pane.style.minHeight = '800px';
+    const iframe = await loadWidget();
+    const host = target('.frame-host');
+    expectFitted(iframe, host.clientWidth, host.clientHeight);
+    expect(new DOMMatrixReadOnly(iframe.style.transform).a).toBe(1);
+    expect(iframe.getBoundingClientRect().width).toBe(host.clientWidth);
+    expect(iframe.getBoundingClientRect().height).toBe(host.clientHeight);
+    expect(iframe.getBoundingClientRect().width).toBeGreaterThan(1024);
+    expect(iframe.getBoundingClientRect().height).toBeGreaterThan(600);
+  });
+
+  it('fits content that is wider and taller than the starting viewport', async () => {
+    const iframe = await loadWidget(1400, 1100);
+    expectFitted(iframe, 1400, 1100);
+    const content = iframe.contentDocument?.querySelector('main');
+    expect(content?.getBoundingClientRect().bottom).toBe(1100);
+    expect(iframe.getBoundingClientRect().height).toBeCloseTo(target('.frame-host').clientHeight, 0);
+  });
+
+  it('remeasures growing content and restores its scale when the content shrinks', async () => {
+    const iframe = await loadWidget();
+    const content = iframe.contentDocument?.querySelector('main');
+    if (!content) throw new Error('Widget content is missing');
+    content.style.height = '1200px';
+    await nextLayout();
+    expectFitted(iframe, 1024, 1200);
+    content.style.height = '600px';
+    await nextLayout();
+    expectFitted(iframe);
+    // Our own layout changes must settle rather than trigger repeated measurements.
+    const changed = jasmine.createSpy('iframe style changed');
+    const observer = new MutationObserver(changed);
+    observer.observe(iframe, { attributes: true, attributeFilter: ['style'] });
+    await nextLayout();
+    await nextLayout();
+    observer.disconnect();
+    expect(changed).not.toHaveBeenCalled();
+  });
+
+  it('includes minimum-size content clipped by a nested widget container', async () => {
+    const iframe = await loadWidget();
+    const doc = iframe.contentDocument;
+    if (!doc) throw new Error('Widget document is missing');
+    doc.body.innerHTML = '<div style="position:relative;height:100%;overflow:hidden">' +
+      '<main style="width:100%;height:100%;min-height:720px">Editor controls</main>' +
+      '<aside style="visibility:hidden;position:absolute;left:100%;width:2000px;height:1800px">' +
+      'Closed element picker</aside></div>';
+    await nextLayout();
+    expectFitted(iframe, target('.frame-host').clientWidth, 720);
+    expect(doc.querySelector('main')?.getBoundingClientRect().height).toBe(720);
+  });
+
+  it('stops observing the frame when startup fails or the dialog closes', async () => {
+    await loadWidget();
+    const disconnect = spyOn(ResizeObserver.prototype, 'disconnect').and.callThrough();
+    ref.componentInstance.showStartupError();
+    expect(disconnect).toHaveBeenCalledTimes(2);
+    expect(target('.frame-host').querySelector('iframe')).toBeNull();
+    await loadWidget();
+    disconnect.calls.reset();
+    ref.close();
+    await nextLayout();
+    expect(disconnect).toHaveBeenCalledTimes(2);
+  });
+
   it('moves by the title bar and stops moving after release', () => {
     const title = target('h2');
     const capture = spyOn(title, 'setPointerCapture');
