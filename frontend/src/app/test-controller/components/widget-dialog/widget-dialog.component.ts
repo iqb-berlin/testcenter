@@ -1,5 +1,5 @@
-import { Component, ElementRef, Inject, OnDestroy, ViewChild, signal } from '@angular/core';
-import { MatDialogModule, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { Component, ElementRef, Inject, OnDestroy, ViewChild, inject, signal } from '@angular/core';
+import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { CdkDrag, CdkDragHandle } from '@angular/cdk/drag-drop';
@@ -22,8 +22,19 @@ export interface WidgetDialogData {
 
 @Component({
   selector: 'tc-widget-dialog',
+  host: { '[class.preparing]': '!layoutReady()' },
   imports: [MatDialogModule, MatButtonModule, MatIconModule, CdkDrag, CdkDragHandle, DialogResizeDirective],
   template: `
+    @if (!layoutReady()) {
+      <div class="preparation">
+        <p role="status" aria-live="polite">
+          {{ status() === 'loading' ? 'Widget wird geladen …' : 'Widget wird gestartet …' }}
+        </p>
+        <button aria-label="Widget schließen" mat-icon-button mat-dialog-close="user_called">
+          <mat-icon svgIcon="close"></mat-icon>
+        </button>
+      </div>
+    }
     <header cdkDrag #drag="cdkDrag" cdkDragRootElement=".cdk-overlay-pane"
             cdkDragBoundary=".cdk-overlay-container">
       <h2 mat-dialog-title cdkDragHandle
@@ -54,8 +65,20 @@ export interface WidgetDialogData {
   `,
   styles: [`
     :host { display: flex; flex-direction: column; position: relative; height: 100%; background: white; }
+    :host(.preparing) { background: transparent; }
+    :host(.preparing) header, :host(.preparing) .frame-host, :host(.preparing) .resize { visibility: hidden; }
+    :host(.preparing) .status { display: none; }
+    .preparation {
+      position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+      display: flex; align-items: center; gap: 16px; padding: 16px 24px;
+      max-width: 90%; box-sizing: border-box; background: white; border-radius: 12px;
+    }
+    .preparation p { margin: 0; }
     header { display: flex; align-items: center; flex-shrink: 0; }
-    h2 { flex: 1; margin: 0; padding: 8px 16px; cursor: move; touch-action: none; user-select: none; }
+    h2 {
+      flex: 1; min-width: 0; margin: 0; padding: 8px 16px; cursor: move;
+      overflow-wrap: anywhere; touch-action: none; user-select: none;
+    }
     h2::before { display: none; }
     header button { margin-right: 8px; }
     .resize {
@@ -71,8 +94,10 @@ export class WidgetDialogComponent implements OnDestroy {
   @ViewChild('frameHost', { static: true }) private frameHost!: ElementRef<HTMLElement>;
   readonly status = signal<WidgetDialogStatus>('loading');
   readonly name = signal('Widget');
+  readonly layoutReady = signal(false);
   private iframe: HTMLIFrameElement | undefined;
   private frameSizer: WidgetFrameSizer | undefined;
+  private readonly dialogRef = inject(MatDialogRef<WidgetDialogComponent>);
   @ViewChild(CdkDrag, { static: true }) private drag!: CdkDrag;
 
   constructor(@Inject(MAT_DIALOG_DATA) data: WidgetDialogData) {
@@ -104,7 +129,13 @@ export class WidgetDialogComponent implements OnDestroy {
       html = `${doctype}\n${doc.documentElement.outerHTML}`;
     }
     this.frameHost.nativeElement.appendChild(iframe);
-    this.frameSizer = new WidgetFrameSizer(iframe, this.frameHost.nativeElement);
+    this.frameSizer = new WidgetFrameSizer(iframe, this.frameHost.nativeElement, (width) => {
+      const fittedWidth = Math.min(window.innerWidth * 0.95, Math.max(320, Math.ceil(width)));
+      if (this.frameHost.nativeElement.clientWidth !== Math.round(fittedWidth)) {
+        this.dialogRef.updateSize(`${fittedWidth}px`, `${this.windowBounds.height}px`);
+      }
+      return Math.round(fittedWidth);
+    }, () => this.showLayout());
     const widgetWindow = iframe.contentWindow;
     if (!widgetWindow) throw new Error('Widget iframe has no window');
     // Install the protocol listener before executing any widget script.
@@ -116,23 +147,31 @@ export class WidgetDialogComponent implements OnDestroy {
     this.name.set(name);
     if (this.iframe) this.iframe.title = name;
     this.status.set('running');
+    this.frameSizer?.start();
   }
 
   showStartupError(): void {
     this.removeIframe();
     this.status.set('startup-error');
+    this.showLayout();
   }
 
   showDownloadError(): void {
     this.status.set('download-error');
+    this.showLayout();
   }
 
   showMissingCalculator(): void {
     this.status.set('missing-calculator');
+    this.showLayout();
   }
 
   ngOnDestroy(): void {
     this.removeIframe();
+  }
+
+  private showLayout(): void {
+    this.layoutReady.set(true);
   }
 
   private removeIframe(): void {

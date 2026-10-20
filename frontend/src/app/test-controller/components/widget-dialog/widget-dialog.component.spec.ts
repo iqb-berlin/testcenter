@@ -98,6 +98,62 @@ describe('Widget window interactions', () => {
     expect(transform.a).toBeLessThanOrEqual(1);
   }
 
+  it('shows only the loading card until the running widget has a stable fitted size', async () => {
+    expect(getComputedStyle(target('.frame-host')).visibility).toBe('hidden');
+    expect(getComputedStyle(target('.preparation')).visibility).toBe('visible');
+    expect(getComputedStyle(target('.mat-mdc-dialog-surface')).backgroundColor).toBe('rgba(0, 0, 0, 0)');
+    ref.componentInstance.start('<html><body style="margin:0"><main ' +
+      'style="width:300px;height:600px">Widget</main></body></html>', () => {});
+    const iframe = target('iframe') as HTMLIFrameElement;
+    await new Promise<void>(resolve => iframe.addEventListener('load', () => resolve(), { once: true }));
+    await nextLayout();
+    expect(ref.componentInstance.layoutReady()).toBeFalse();
+    expect(ref.componentInstance.windowBounds.width).toBe(400);
+    ref.componentInstance.showRunning('Test widget');
+    ref.componentRef?.changeDetectorRef.detectChanges();
+    expect(ref.componentInstance.layoutReady()).toBeFalse();
+    await nextLayout();
+    ref.componentRef?.changeDetectorRef.detectChanges();
+    expect(ref.componentInstance.layoutReady()).toBeTrue();
+    expect(ref.componentInstance.windowBounds.width).toBe(320);
+    expect(getComputedStyle(target('.frame-host')).visibility).toBe('visible');
+    expect(document.querySelector('.widget-dialog .preparation')).toBeNull();
+    expect(getComputedStyle(target('.mat-mdc-dialog-surface')).backgroundColor).toBe('rgb(255, 255, 255)');
+  });
+
+  it('waits for widget fonts before revealing the fitted modal', async () => {
+    ref.componentInstance.start('<html><body>Widget</body></html>', () => {});
+    const pending = target('iframe') as HTMLIFrameElement;
+    await new Promise<void>(resolve => pending.addEventListener('load', () => resolve(), { once: true }));
+    const fonts = pending.contentDocument?.fonts;
+    if (!fonts) throw new Error('Widget fonts are missing');
+    const status = spyOnProperty(fonts, 'status', 'get').and.returnValue('loading');
+    ref.componentInstance.showRunning('Test widget');
+    ref.componentRef?.changeDetectorRef.detectChanges();
+    await nextLayout();
+    expect(ref.componentInstance.layoutReady()).toBeFalse();
+    status.and.returnValue('loaded');
+    fonts.dispatchEvent(new Event('loadingdone'));
+    await nextLayout();
+    expect(ref.componentInstance.layoutReady()).toBeTrue();
+  });
+
+  for (const failure of ['showDownloadError', 'showStartupError', 'showMissingCalculator'] as const) {
+    it(`reveals ${failure} without waiting for widget layout`, () => {
+      ref.componentInstance[failure]();
+      ref.componentRef?.changeDetectorRef.detectChanges();
+      expect(ref.componentInstance.layoutReady()).toBeTrue();
+      expect(getComputedStyle(target('.status')).display).not.toBe('none');
+      expect(document.querySelector('.widget-dialog .preparation')).toBeNull();
+    });
+  }
+
+  it('allows closing the loading card before the widget starts', async () => {
+    target('.preparation button').click();
+    await nextLayout();
+    expect(document.querySelector('.widget-dialog')).toBeNull();
+  });
+
   it('fits the full widget in portrait and landscape windows after resizing', async () => {
     const iframe = await loadWidget();
     expectFitted(iframe);
@@ -117,21 +173,32 @@ describe('Widget window interactions', () => {
   it('uses the full modal content area beyond 1024 by 600 pixels', async () => {
     spyOnProperty(window, 'innerWidth', 'get').and.returnValue(1600);
     spyOnProperty(window, 'innerHeight', 'get').and.returnValue(1000);
+    ref.close();
+    await nextLayout();
+    ref = dialog.open(WidgetDialogComponent, {
+      data: { name: 'Test widget' }, width: '1280px', height: '800px',
+      maxWidth: '1600px', maxHeight: '1000px', panelClass: 'widget-dialog'
+    });
+    await nextLayout();
     const pane = target('tc-widget-dialog').closest<HTMLElement>('.cdk-overlay-pane');
     if (!pane) throw new Error('Dialog pane is missing');
-    ref.updateSize('1280px', '800px');
-    pane.style.maxWidth = 'none';
-    pane.style.maxHeight = 'none';
-    pane.style.minWidth = '1280px';
-    pane.style.minHeight = '800px';
-    const iframe = await loadWidget();
+    pane.style.flexShrink = '0';
+    const iframe = await loadWidget(1500, 1000);
     const host = target('.frame-host');
-    expectFitted(iframe, host.clientWidth, host.clientHeight);
-    expect(new DOMMatrixReadOnly(iframe.style.transform).a).toBe(1);
-    expect(iframe.getBoundingClientRect().width).toBe(host.clientWidth);
-    expect(iframe.getBoundingClientRect().height).toBe(host.clientHeight);
+    expectFitted(iframe, 1500, 1000);
+    expect(iframe.getBoundingClientRect().width).toBeCloseTo(host.clientWidth, 0);
+    expect(iframe.getBoundingClientRect().height).toBeCloseTo(host.clientHeight, 0);
     expect(iframe.getBoundingClientRect().width).toBeGreaterThan(1024);
     expect(iframe.getBoundingClientRect().height).toBeGreaterThan(600);
+  });
+
+  it('fits the modal width to the scaled width of a narrow widget', async () => {
+    ref.updateSize('700px', '500px');
+    const iframe = await loadWidget(550, 600);
+    expectFitted(iframe, 550, 600);
+    const contentWidth = iframe.getBoundingClientRect().width;
+    expect(ref.componentInstance.windowBounds.width).toBeLessThanOrEqual(Math.ceil(contentWidth) + 1);
+    expect(ref.componentInstance.windowBounds.width).toBeLessThan(550);
   });
 
   it('fits content that is wider and taller than the starting viewport', async () => {
@@ -144,6 +211,7 @@ describe('Widget window interactions', () => {
 
   it('remeasures growing content and restores its scale when the content shrinks', async () => {
     const iframe = await loadWidget();
+    const originalWidth = ref.componentInstance.windowBounds.width;
     const content = iframe.contentDocument?.querySelector('main');
     if (!content) throw new Error('Widget content is missing');
     content.style.height = '1200px';
@@ -152,6 +220,7 @@ describe('Widget window interactions', () => {
     content.style.height = '600px';
     await nextLayout();
     expectFitted(iframe);
+    expect(ref.componentInstance.windowBounds.width).toBe(originalWidth);
     // Our own layout changes must settle rather than trigger repeated measurements.
     const changed = jasmine.createSpy('iframe style changed');
     const observer = new MutationObserver(changed);
@@ -164,14 +233,16 @@ describe('Widget window interactions', () => {
 
   it('includes minimum-size content clipped by a nested widget container', async () => {
     const iframe = await loadWidget();
+    const availableWidth = target('.frame-host').clientWidth;
     const doc = iframe.contentDocument;
     if (!doc) throw new Error('Widget document is missing');
     doc.body.innerHTML = '<div style="position:relative;height:100%;overflow:hidden">' +
-      '<main style="width:100%;height:100%;min-height:720px">Editor controls</main>' +
+      '<main style="position:relative;width:100%;height:100%;min-height:720px">' +
+      '<button style="position:absolute;right:0;bottom:0">Editor control</button></main>' +
       '<aside style="visibility:hidden;position:absolute;left:100%;width:2000px;height:1800px">' +
       'Closed element picker</aside></div>';
     await nextLayout();
-    expectFitted(iframe, target('.frame-host').clientWidth, 720);
+    expectFitted(iframe, availableWidth, 720);
     expect(doc.querySelector('main')?.getBoundingClientRect().height).toBe(720);
   });
 

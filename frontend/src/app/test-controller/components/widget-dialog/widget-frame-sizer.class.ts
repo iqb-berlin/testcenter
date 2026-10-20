@@ -5,8 +5,18 @@ export class WidgetFrameSizer {
   private document: Document | null = null;
   private animationFrame: number | undefined;
   private lastLayout = '';
+  private availableWidth = 0;
+  private fittedWidth: number | undefined;
+  private running = false;
+  private initialLayout = '';
+  private initialFitComplete = false;
 
-  constructor(private readonly iframe: HTMLIFrameElement, private readonly host: HTMLElement) {
+  constructor(
+    private readonly iframe: HTMLIFrameElement,
+    private readonly host: HTMLElement,
+    private readonly fitWindowWidth: (width: number) => number,
+    private readonly onInitialFit: () => void
+  ) {
     this.hostObserver = new ResizeObserver(this.scheduleFit);
     this.contentObserver = new ResizeObserver(() => {
       // Expanding the iframe also resizes the document. Ignore our own completed layout.
@@ -16,6 +26,11 @@ export class WidgetFrameSizer {
     this.iframe.addEventListener('load', this.documentLoaded);
     this.hostObserver.observe(host);
     this.fit();
+  }
+
+  start(): void {
+    this.running = true;
+    this.scheduleFit();
   }
 
   destroy(): void {
@@ -38,6 +53,10 @@ export class WidgetFrameSizer {
     });
     this.document.addEventListener('load', this.scheduleFit, true);
     this.document.fonts.addEventListener('loadingdone', this.scheduleFit);
+    const loadedDocument = this.document;
+    void loadedDocument.fonts.ready.then(() => {
+      if (this.document === loadedDocument) this.scheduleFit();
+    });
     this.fit();
   };
 
@@ -50,19 +69,55 @@ export class WidgetFrameSizer {
   };
 
   private fit(): void {
-    const width = this.host.clientWidth;
+    const currentWidth = this.host.clientWidth;
     const height = this.host.clientHeight;
-    if (!width || !height) return;
+    if (!currentWidth || !height) return;
+    // Retain the user's width limit while our automatic fit narrows the window.
+    // Content can then grow again when a panel opens or more height is available.
+    if (currentWidth !== this.fittedWidth) this.availableWidth = currentWidth;
+    const width = this.availableWidth;
 
     // Always measure at the modal's current size, so content can shrink again
     // after closing an expanded panel without accumulating previous measurements.
     this.iframe.style.width = `${width}px`;
     this.iframe.style.height = `${height}px`;
-    const [contentWidth, contentHeight] = this.measureContent(width, height);
+    if (!this.running || !this.document) return;
+    const naturalWidth = this.measureNaturalWidth();
+    const layoutWidth = naturalWidth || width;
+    this.iframe.style.width = `${layoutWidth}px`;
+    const [contentWidth, contentHeight] = this.measureContent(layoutWidth, height);
     this.iframe.style.width = `${contentWidth}px`;
     this.iframe.style.height = `${contentHeight}px`;
-    this.iframe.style.transform = `scale(${Math.min(1, width / contentWidth, height / contentHeight)})`;
+    const scale = Math.min(1, width / contentWidth, height / contentHeight);
+    this.iframe.style.transform = `scale(${scale})`;
+    this.fittedWidth = this.fitWindowWidth(contentWidth * scale);
     this.lastLayout = this.layoutSignature();
+    // Ignore temporary width probes, whose final layout was measured above.
+    this.mutationObserver.takeRecords();
+    if (!this.initialFitComplete) {
+      const layout = [this.lastLayout, this.host.clientWidth, this.host.clientHeight,
+        this.iframe.style.transform].join(',');
+      if (this.document.fonts.status === 'loaded' && layout === this.initialLayout) {
+        this.initialFitComplete = true;
+        this.onInitialFit();
+      } else {
+        this.initialLayout = layout;
+        if (this.document.fonts.status === 'loaded') this.scheduleFit();
+      }
+    }
+  }
+
+  private measureNaturalWidth(): number {
+    if (!this.document?.body) return 0;
+    const elements = [this.document.documentElement, this.document.body];
+    const widths = elements.map(element => [element.style.getPropertyValue('width'),
+      element.style.getPropertyPriority('width')]);
+    for (const element of elements) element.style.setProperty('width', 'max-content', 'important');
+    const width = Math.ceil(this.document.documentElement.getBoundingClientRect().width);
+    elements.forEach((element, index) => element.style.setProperty('width', widths[index][0], widths[index][1]));
+    // Canvas layouts with only positioned children have no intrinsic width and
+    // continue using the available window width.
+    return width;
   }
 
   private measureContent(width: number, height: number): [number, number] {

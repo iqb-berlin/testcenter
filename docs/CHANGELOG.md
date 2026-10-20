@@ -1,6 +1,7 @@
 # next
 
 ## Neue Funktionen
+- Die Breite des Widget-Fensters passt sich an die proportional skalierte Inhaltsbreite an. Bei schmalen Widgets wie dem Taschenrechner entfällt unnötiger Leerraum rechts. Widgets ohne eigene Inhaltsbreite nutzen weiterhin den verfügbaren Platz; die Titelleiste kann bei schmalen Fenstern umbrechen.
 - Testcenter misst die vollständige Größe sichtbarer Widget-Inhalte und verkleinert die gesamte Darstellung bei Bedarf proportional auf den verfügbaren Platz unterhalb der Titelleiste im Widget-Fenster. Eine feste Größenobergrenze gibt es nicht. Auch feste Maße und Mindestgrößen in verschachtelten Containern, etwa beim Taschenrechner und Molekül-Editor, werden berücksichtigt. Ausgeblendete Bereiche vergrößern die Darstellung nicht. Die Anpassung erfolgt auch beim Ändern der Fenstergröße und des Widget-Inhalts sowie nach dem Laden von Bildern und Schriftarten. Scrollbereiche innerhalb eines Widgets können weiterhin bestehen.
 - Widget-Fenster lassen sich an der Titelleiste verschieben und am Griff unten rechts in der Größe ändern (auch mit den Pfeiltasten bei fokussiertem Griff). Beim erneuten Öffnen werden die letzte Größe und Position während des Testlaufs pro Widget-Typ wiederhergestellt. Alle Widgets desselben Typs teilen sich Größe und Position über Units und Blöcke hinweg, unabhängig von Aufruf-ID und auslösender Schaltfläche. Verschieben und Größenänderung sind auch während des Ladens und bei Fehlermeldungen möglich. Das Fenster bleibt im sichtbaren Bereich; beim Neuladen oder Verlassen des Testlaufs werden die gespeicherten Fenstermaße gelöscht.
 - Taschenrechner-Journale bleiben während eines Testlaufs pro Unit erhalten. Beim Wechsel zu einer anderen Unit wird deren eigenes Journal verwendet; beim Zurückkehren wird das bisherige Journal wiederhergestellt. Beim Neuladen oder Verlassen des Testlaufs werden die Journale gelöscht.
@@ -24,6 +25,7 @@
 - Der Kurztitel einer Unit (Attribut `labelshort` im Booklet) lässt sich während des Tests anzeigen: im Kopfbereich über `header_content` = `UNIT_LABEL_SHORT`, auf der Navigationsleiste über `navbar_unit_label` = `LABEL_SHORT` und auf der Werkzeugleiste über den neuen Booklet-Parameter `toolbar_unit_label` = `LABEL_SHORT`. Fehlt der Kurztitel, wird der Titel der Unit angezeigt. `toolbar_unit_label` ersetzt `toolbar_show_unit_title`, das weiterhin ausgewertet wird, aber als veraltet gilt. Bisher wurde `labelshort` nur im Gruppen-Monitor angezeigt.
 
 ## Fehlerbehebungen
+- Widget-Fenster zeigen während des Ladens und der ersten Größenanpassung eine kompakte Ladeanzeige mit Schließen-Schaltfläche. Der vollständige Dialog erscheint erst, wenn Inhalt, Schriftarten und Fenstermaße bereit sind; das Aufblitzen des zunächst großen Fensters entfällt. Fehlermeldungen bleiben sichtbar.
 - Beim Öffnen des Taschenrechners erscheint das helle Farbschema bereits beim ersten Rendern; ein kurzes Aufblitzen des dunklen Farbschemas entfällt.
 - Das Widget-Fenster zeigt keinen leeren weißen Kopfbereich mehr über dem Widget-Inhalt. Der Dialogname bleibt für Screenreader verfügbar.
 - Die Schließen-Schaltfläche im Widget-Fenster zeigt ein Kreuz statt des Textes „close“.
