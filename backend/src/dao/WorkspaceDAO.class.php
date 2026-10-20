@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 class WorkspaceDAO extends DAO {
   private int $workspaceId;
-  private string $workspacePath;
+  private StorageDirectory $workspaceDirectory;
 
-  public function __construct(int $workspaceId, string $workspacePath) {
+  public function __construct(int $workspaceId) {
     parent::__construct();
     $this->workspaceId = $workspaceId;
-    $this->workspacePath = $workspacePath;
+    $this->workspaceDirectory = Workspace::getStorageDirectoryOf($workspaceId);
   }
 
   public function getWorkspaceId(): int
@@ -489,7 +489,7 @@ class WorkspaceDAO extends DAO {
   private function resultRow2File(array $row, array $relations): ?File {
     return File::get(
       new FileData(
-        "$this->workspacePath/{$row['type']}/{$row['name']}",
+        $this->workspaceDirectory->createSubdirectory($row['type'])->createFilePath($row['name']),
         $row['type'],
         $row['id'],
         $row['label'],
@@ -695,7 +695,9 @@ class WorkspaceDAO extends DAO {
     
     foreach ($testtakersFiles as $fileInfo) {
       try {
-        $testtakersFile = new XMLFileTesttakers("$this->workspacePath/Testtakers/{$fileInfo['name']}");
+        $testtakersFile = new XMLFileTesttakers(
+          $this->workspaceDirectory->createSubdirectory('Testtakers')->createFilePath($fileInfo['name'])
+        );
         if ($testtakersFile->isValid()) {
           $fileLogins = $testtakersFile->getAllLogins();
           foreach ($fileLogins as $login) {

@@ -6,6 +6,7 @@ declare(strict_types=1);
 class Workspace {
   protected int $workspaceId = 0;
   protected string $workspacePath = '';
+  protected StorageDirectory $storageDirectory;
   public WorkspaceDAO $workspaceDAO;
 
   // dont' change order, it's the order of possible dependencies
@@ -55,10 +56,15 @@ class Workspace {
     return $result;
   }
 
+  static function getStorageDirectoryOf(int $workspaceId): StorageDirectory {
+    return StorageDirectory::root()->createSubdirectory("ws_$workspaceId");
+  }
+
   function __construct(int $workspaceId) {
     $this->workspaceId = $workspaceId;
     $this->workspacePath = $this->getOrCreateWorkspacePath();
-    $this->workspaceDAO = new WorkspaceDAO($this->workspaceId, $this->workspacePath);
+    $this->storageDirectory = self::getStorageDirectoryOf($workspaceId);
+    $this->workspaceDAO = new WorkspaceDAO($this->workspaceId);
   }
 
   protected function getOrCreateWorkspacePath(): string {
@@ -96,6 +102,10 @@ class Workspace {
 
   public function getWorkspacePath(): string {
     return $this->workspacePath;
+  }
+
+  public function getStorageDirectory(): StorageDirectory {
+    return $this->storageDirectory;
   }
 
   /**
@@ -218,7 +228,7 @@ class Workspace {
     $pathsPerType = array_fill_keys(Workspace::subFolders, []);
 
     foreach ($relativeFilePaths as $relativeFilePath) {
-      $pathsPerType[File::determineType($this->workspacePath . '/' . $relativeFilePath)][] = $relativeFilePath;
+      $pathsPerType[File::determineType($this->createStoragePath($relativeFilePath))][] = $relativeFilePath;
     }
 
     $pathsPerType = [
@@ -239,7 +249,7 @@ class Workspace {
         // these files are all not valid from the start
         if ($type === 'xml') {
           foreach ($filePaths as $path) {
-            $file = File::get($this->workspacePath . '/' . $path);
+            $file = File::get($this->createStoragePath($path));
             $filesAfterSorting[$path] = ['type' => $file->getType(), ...$file->getValidationReport()];
           }
           continue;
@@ -269,7 +279,7 @@ class Workspace {
     $this->loadFilesIntoCache($workspaceCache, $highestTypeAmongFiles);
 
     foreach ($localFilePaths as $localFilePath) {
-      $file = File::get($this->workspacePath . '/' . $localFilePath);
+      $file = File::get($this->createStoragePath($localFilePath));
       $workspaceCache->addFile($file->getType(), $file, true);
       $filesPerType[$localFilePath] = $file;
     }
@@ -290,9 +300,12 @@ class Workspace {
     }
 
     $targetFilePath = $targetFolder . '/' . basename($localFilePath);
+    $targetStoragePath = $this->storageDirectory
+      ->createSubdirectory($file->getType())
+      ->createFilePath(basename($localFilePath));
 
     if (file_exists($targetFilePath)) {
-      $oldFile = File::get($targetFilePath, $file->getType());
+      $oldFile = File::get($targetStoragePath, $file->getType());
 
       if ($oldFile->getId() !== $file->getId()) {
         $file->report(
@@ -336,7 +349,7 @@ class Workspace {
       return false;
     }
 
-    $file->readFileMeta($targetFilePath);
+    $file->readFileMeta($targetStoragePath);
 
     return true;
   }
@@ -356,7 +369,7 @@ class Workspace {
       throw new Exception("Could not create directory for extracted files: `$extractionPath`");
     }
 
-    ZIP::extract($filePath, $extractionPath);
+    ZIP::extract(file_get_contents($filePath), $extractionPath);
 
     return Folder::getContentsFlat($extractionPath, $extractionFolder);
   }
@@ -378,6 +391,10 @@ class Workspace {
     }
   }
 
+  private function createStoragePath(string $relativePath): StoragePath {
+    return StoragePath::fromString($this->storageDirectory . $relativePath);
+  }
+
   public function getFileById(string $type, string $fileId): File {
     if ($file = $this->workspaceDAO->getFileById($fileId, $type)) {
       if ($file->isValid()) {
@@ -389,7 +406,7 @@ class Workspace {
   }
 
   public function getFileByName(string $type, string $fileName): File {
-    $file = File::get("$this->workspacePath/$type/$fileName", $type);
+    $file = File::get($this->storageDirectory->createSubdirectory($type)->createFilePath($fileName), $type);
 
     if ($file->isValid()) {
       return $file;
@@ -520,7 +537,7 @@ class Workspace {
       /** @var File $file */
       foreach ($fileSet as $file) {
 
-        if (!isset($filesInFolder[$file->getPath()])) {
+        if (!isset($filesInFolder[(string) $file->getPath()])) {
           $this->workspaceDAO->deleteFile($file);
           if (is_a($file, XMLFileTesttakers::class)) {
             $deletedLogins += $this->workspaceDAO->deleteLoginSource($file->getName());

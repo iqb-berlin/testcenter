@@ -8,7 +8,7 @@ class File extends FileData {
   protected string $name = '';
   protected ?string $content = null;
 
-  static function get(string|FileData $init, string $type = null): File {
+  static function get(StoragePath|FileData $init, string $type = null): File {
     if (!$type and !is_a($init, FileData::class)) {
       $type = File::determineType($init);
     }
@@ -24,17 +24,18 @@ class File extends FileData {
     };
   }
 
-  /** For use in testing classes */
+  /** A file that is not in storage, created from its content. */
   static function fromString(string $fileContent, string $fileName = 'virtual_file'): static {
-    $file = new static(new FileData($fileName));
+    $file = new static(new FileData());
+    $file->name = basename($fileName);
     $file->content = $fileContent;
     $file->validate();
     return $file;
   }
 
   // TODO unit-test
-  public static function determineType(string $path): string {
-    if (strtoupper(substr($path, -4)) == '.XML') {
+  public static function determineType(StoragePath $path): string {
+    if (strtoupper(substr($path->name, -4)) == '.XML') {
       $asGenericXmlFile = new XMLFile($path);
       if (!in_array($asGenericXmlFile->rootTagName, XMLFile::knownRootTags)) {
         return 'xml';
@@ -45,7 +46,7 @@ class File extends FileData {
     }
   }
 
-  public function __construct(string|FileData $init) {
+  public function __construct(StoragePath|FileData $init) {
     if (is_a($init, FileData::class)) {
       $this->path = $init->path;
       $this->type = $init->type;
@@ -56,7 +57,7 @@ class File extends FileData {
       $this->relations = $init->relations;
       $this->modificationTime = $init->modificationTime;
       $this->size = $init->size;
-      $this->name = basename($init->path);
+      $this->name = $init->path?->name ?? '';
       $this->contextData = $init->contextData;
       $this->veronaModuleType = $init->veronaModuleType;
       $this->veronaModuleId = $init->veronaModuleId;
@@ -70,32 +71,35 @@ class File extends FileData {
 
     parent::__construct();
 
-    $this->readFileMeta($init);
+    $exists = $this->readFileMeta($init);
     $this->id = strtoupper($this->getName());
 
-    $this->load();
-  }
-
-  public function readFileMeta(string $path): void { // TODO can this be private / merged with load?
-
-    $this->path = $path;
-
-    if (!file_exists($path)) {
-      $this->size = 0;
-      $this->name = basename($path);
-      $this->modificationTime = 1;
-      $this->report('error', "File does not exist: `" . dirname($path) . '/'. basename($path) . "`");
-
-    } else {
-      $this->size = filesize($path);
-      $this->name = basename($path);
-      $this->modificationTime = FileTime::modification($path);
+    if ($exists) {
+      $this->load();
     }
   }
 
+  /** @return bool whether the file exists */
+  public function readFileMeta(StoragePath $path): bool { // TODO can this be private / merged with load?
+    $this->path = $path;
+    $this->name = $path->name;
+    $fileInfo = Storage::getDriver()->getFileInfo($path);
+
+    if (!$fileInfo) {
+      $this->size = 0;
+      $this->modificationTime = 1;
+      $this->report('error', "File does not exist: `$path`");
+      return false;
+    }
+
+    $this->size = $fileInfo->size;
+    $this->modificationTime = $fileInfo->modificationTime;
+    return true;
+  }
+
   protected function load(): void {
-    if (($this->content === null) and $this->path and file_exists($this->path)) {
-      $this->content = file_get_contents($this->path);
+    if (($this->content === null) and $this->path) {
+      $this->content = Storage::getDriver()->get($this->path);
       $this->validate();
     }
   }

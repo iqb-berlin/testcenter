@@ -21,7 +21,6 @@ class WorkspaceCacheTest extends TestCase {
   function setUp(): void {
     require_once "test/unit/mock-classes/ExternalFileMock.php";
     require_once "test/unit/mock-classes/PasswordMock.php";
-    require_once "test/unit/mock-classes/ZIPMock.php";
 
     $workspaceDaoMock = Mockery::mock('overload:' . WorkspaceDAO::class);
     $workspaceDaoMock->allows([
@@ -117,7 +116,7 @@ class WorkspaceCacheTest extends TestCase {
         'warning' => ['Resource is never used']
       ],
       'Resource/sample_resource_package.itcr.zip' => [
-        'info' => ['Contains 0 files.']
+        'info' => ['Contains 1 files.']
       ],
       'Resource/SAMPLE_UNITCONTENTS.HTM' => [],
       "Resource/coding-scheme.vocs.json" => [],

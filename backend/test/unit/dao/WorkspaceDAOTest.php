@@ -18,7 +18,7 @@ class WorkspaceDAOTest extends TestCase {
     require_once "test/unit/TestDB.class.php";
 
     TestDB::setUp();
-    $this->dbc = new WorkspaceDAO(1, '/data_dir/ws_1');
+    $this->dbc = new WorkspaceDAO(1);
     $this->dbc->runFile(ROOT_DIR . '/backend/test/unit/testdata.sql');
   }
 
