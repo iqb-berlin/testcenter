@@ -55,12 +55,20 @@ export class WidgetDialogComponent implements OnDestroy {
     this.name.set(data.name);
   }
 
-  start(html: string, initialize: (widgetWindow: Window) => void): void {
+  start(html: string, initialize: (widgetWindow: Window) => void, colorScheme?: 'light' | 'dark'): void {
     this.status.set('starting');
     const iframe = document.createElement('iframe');
     this.iframe = iframe;
     iframe.title = this.name();
     iframe.style.cssText = 'width:100%;height:100%;border:0;';
+    if (colorScheme) {
+      // Apply the theme before the iframe can paint its default colors.
+      const doc = new DOMParser().parseFromString(html, 'text/html');
+      doc.documentElement.style.colorScheme = colorScheme;
+      doc.body.style.colorScheme = colorScheme;
+      const doctype = doc.doctype ? new XMLSerializer().serializeToString(doc.doctype) : '';
+      html = `${doctype}\n${doc.documentElement.outerHTML}`;
+    }
     this.frameHost.nativeElement.appendChild(iframe);
     const widgetWindow = iframe.contentWindow;
     if (!widgetWindow) throw new Error('Widget iframe has no window');

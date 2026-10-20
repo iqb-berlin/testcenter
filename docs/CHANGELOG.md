@@ -1,6 +1,7 @@
 # next
 
 ## Neue Funktionen
+- Der Taschenrechner wird immer mit hellem Farbschema geöffnet.
 - Taschenrechner protokollieren das erfolgreiche Öffnen, Zustandsmeldungen mit der neuesten Rechnung (`asLatex` des letzten Journaleintrags) und das Schließen in den Unit-Logs. Zustandsmeldungen enthalten nur `sessionId` und `asLatex`. Der Schließgrund unterscheidet `widget_return` (Widget), `user_called` (Nutzereingabe) und `host_triggered` (Testcenter); eine empfangene Widget-Rückgabe wird ebenfalls festgehalten. Bilder und ältere Journaleinträge werden nicht mitprotokolliert. Die Einträge bleiben der beim Öffnen aktiven Unit zugeordnet und entstehen nur in Testmodi mit Antwortspeicherung.
 - Nach dem Schließen des Taschenrechners zeigt ein verschiebbares Ergebnisfenster die letzte Rechnung als Bild, sofern das Modul ein Bild zurückgibt. Das Fenster blockiert die Unit nicht. Beim Schließen bleibt eine Schaltfläche zum erneuten Öffnen sichtbar. Neue Ergebnisse ersetzen das vorherige Bild; bei freigegebenem Taschenrechner bleibt es über Unit-Wechsel hinweg verfügbar.
 - Die Taschenrechner-Schaltfläche im Kopfbereich zeigt ein Rechnersymbol. Der Tooltip und die Beschriftung für Screenreader lauten weiterhin „Taschenrechner“.
@@ -20,6 +21,7 @@
 - Der Kurztitel einer Unit (Attribut `labelshort` im Booklet) lässt sich während des Tests anzeigen: im Kopfbereich über `header_content` = `UNIT_LABEL_SHORT`, auf der Navigationsleiste über `navbar_unit_label` = `LABEL_SHORT` und auf der Werkzeugleiste über den neuen Booklet-Parameter `toolbar_unit_label` = `LABEL_SHORT`. Fehlt der Kurztitel, wird der Titel der Unit angezeigt. `toolbar_unit_label` ersetzt `toolbar_show_unit_title`, das weiterhin ausgewertet wird, aber als veraltet gilt. Bisher wurde `labelshort` nur im Gruppen-Monitor angezeigt.
 
 ## Fehlerbehebungen
+- Beim Öffnen des Taschenrechners erscheint das helle Farbschema bereits beim ersten Rendern; ein kurzes Aufblitzen des dunklen Farbschemas entfällt.
 - Das Widget-Fenster zeigt keinen leeren weißen Kopfbereich mehr über dem Widget-Inhalt. Der Dialogname bleibt für Screenreader verfügbar.
 - Die Schließen-Schaltfläche im Widget-Fenster zeigt ein Kreuz statt des Textes „close“.
 - Ungültige Widget-Aufrufe werden vor dem Download geprüft und im Widget-Fenster als Fehler angezeigt.

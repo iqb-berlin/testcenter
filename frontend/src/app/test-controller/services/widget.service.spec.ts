@@ -259,6 +259,36 @@ describe('Uploaded calculator launch', () => {
     }));
   }
 
+  it('applies the calculator light theme before widget scripts run and the iframe finishes loading', async () => {
+    let observe!: (event: MessageEvent) => void;
+    const rendered = new Promise<MessageEvent>((resolve) => {
+      observe = (event) => {
+        if (event.source === document.querySelector<HTMLIFrameElement>('[role="dialog"] iframe')?.contentWindow &&
+          event.data?.type === 'calculatorFirstRender') resolve(event);
+      };
+    });
+    window.addEventListener('message', observe);
+    try {
+      open();
+      http.expectOne('/api/file/calculator-group/ws_1/Resource/calculator.html').flush(`<!doctype html>
+        <html><head><style>
+          html { --surface: light-dark(white, black); }
+          body { color-scheme: dark; background-color: var(--surface); }
+        </style></head><body><script>
+          parent.postMessage({type: 'calculatorFirstRender',
+            scheme: getComputedStyle(document.body).colorScheme,
+            background: getComputedStyle(document.body).backgroundColor,
+            readyState: document.readyState}, '*');
+        </script></body></html>`);
+      const event = await rendered;
+      expect(event.data.scheme).toBe('light');
+      expect(event.data.background).toBe('rgb(255, 255, 255)');
+      expect(event.data.readyState).toBe('loading');
+    } finally {
+      window.removeEventListener('message', observe);
+    }
+  });
+
   it('executes srcdoc and restores accepted state on a second browser handshake', async () => {
     const commands: unknown[] = [];
     const listener = (event: MessageEvent): void => {

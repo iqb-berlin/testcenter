@@ -207,7 +207,7 @@ export class WidgetService implements OnDestroy {
             });
             session = widgetSession;
             activeDialog.subscriptions.add(() => widgetSession.close());
-          });
+          }, model === 'CALCULATOR' || model === 'CALC' ? 'light' : undefined);
         } catch (error) {
           session?.close();
           console.error('Widget startup failed:', resourcePath, error);
