@@ -17,19 +17,9 @@ class SysCheckReportFile {
     private $fileName = '';
     private $title = '--';
 
-    function __construct($reportFilePath) {
+    function __construct(string $fileName, string $content, int $modificationTime) {
 
-        if (!is_file($reportFilePath) or !(strtoupper(substr($reportFilePath, -5)) == '.JSON')) {
-            throw new HttpError("No SysCheck-Report File: $reportFilePath", 500);
-        }
-
-        $file = file_get_contents($reportFilePath);
-
-        if ($file === false) {
-            throw new HttpError("Could not read File: $reportFilePath", 500);
-        }
-
-        $this->report = JSON::decode($file, true);
+        $this->report = JSON::decode($content, true);
 
         if (isset($this->report['checkId']) and $this->report['checkId']) {
             $this->checkId = $this->report['checkId'];
@@ -43,11 +33,11 @@ class SysCheckReportFile {
             $this->title = $this->report['title'];
         }
 
-        $this->fileName = basename($reportFilePath);
+        $this->fileName = $fileName;
 
-        $this->addEntry('fileData', 'date', 'DatumTS', (string) FileTime::modification($reportFilePath));
-        $this->addEntry('fileData', 'datestr', 'Datum', TimeStamp::toDisplayFormat(FileTime::modification($reportFilePath)));
-        $this->addEntry('fileData', 'filename', 'FileName', basename($reportFilePath));
+        $this->addEntry('fileData', 'date', 'DatumTS', (string) $modificationTime);
+        $this->addEntry('fileData', 'datestr', 'Datum', TimeStamp::toDisplayFormat($modificationTime));
+        $this->addEntry('fileData', 'filename', 'FileName', $fileName);
     }
 
 

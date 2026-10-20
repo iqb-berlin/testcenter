@@ -16,7 +16,10 @@ class Workspace {
     $workspaces = [];
     $class = get_called_class();
 
-    foreach (Folder::glob(DATA_DIR, 'ws_*') as $workspaceDir) {
+    foreach (Storage::getDriver()->listSubdirectories(StorageDirectory::root()) as $workspaceDir) {
+      if (!fnmatch('ws_*', $workspaceDir)) {
+        continue;
+      }
       $workspaceFolderNameParts = explode('_', $workspaceDir);
       $workspaceId = (int) array_pop($workspaceFolderNameParts);
       if (!$workspaceId) {
@@ -427,7 +430,8 @@ class Workspace {
 
   public function countFiles(string $type): int {
     $pattern = ($type == 'Resource') ? "*.*" : "*.[xX][mM][lL]";
-    return count(Folder::glob($this->getOrCreateSubFolderPath($type), $pattern));
+    $fileNames = array_keys(Storage::getDriver()->listFiles($this->storageDirectory->createSubdirectory($type)));
+    return count(array_filter($fileNames, fn(string $fileName): bool => fnmatch($pattern, $fileName)));
   }
 
   public function delete(): void {
