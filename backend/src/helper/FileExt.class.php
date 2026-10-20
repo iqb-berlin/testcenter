@@ -91,13 +91,8 @@ class FileExt {
     "7z" => "application/x-7z-compressed"
   ];
 
-  static function getMimeType($filePath): string {
-    if (!file_exists($filePath)) {
-      return "";
-    }
-
-//    echo "\n#############" . pathinfo($filePath, PATHINFO_EXTENSION) . '##########';
-    return FileExt::knownTypes[strtolower(pathinfo($filePath, PATHINFO_EXTENSION))] ?? 'application/octet-stream';
+  static function getMimeType(string $fileName): string {
+    return FileExt::knownTypes[strtolower(pathinfo($fileName, PATHINFO_EXTENSION))] ?? 'application/octet-stream';
   }
 
   static function get($filePath, int $maxDots = 0): string {

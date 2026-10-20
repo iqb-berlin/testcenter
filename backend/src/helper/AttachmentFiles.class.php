@@ -55,10 +55,7 @@ class AttachmentFiles {
       self::testDAO()->deleteAttachmentDataPart($attachment->attachmentId);
     }
 
-    $filePath = self::getAttachmentFilePath($workspaceId, $attachmentFileId, $attachment);
-    if (file_exists($filePath)) {
-      unlink($filePath);
-    }
+    Storage::getDriver()->delete(self::getAttachmentFilePath($workspaceId, $attachmentFileId, $attachment));
   }
 
   protected static function testDAO(): TestDAO {
@@ -69,15 +66,17 @@ class AttachmentFiles {
     return self::$_testDAO;
   }
 
-  public static function getAttachmentFilePath(int $workspaceId, string $attachmentFileId, Attachment $attachment): string {
+  public static function getAttachmentFilePath(int $workspaceId, string $attachmentFileId, Attachment $attachment): StoragePath {
     list($dataType, $fileName) = explode(':', $attachmentFileId);
     if (!in_array($attachmentFileId, $attachment->attachmentFileIds)) {
       throw new HttpError("AttachmentId `$attachmentFileId` not found in attachment `$attachment->attachmentId`", 404);
     }
 
-    $filePath = DATA_DIR . "/ws_$workspaceId/UnitAttachments/$fileName";
+    $filePath = Workspace::getStorageDirectoryOf($workspaceId)
+      ->createSubdirectory('UnitAttachments')
+      ->createFilePath($fileName);
 
-    if (!file_exists($filePath)) {
+    if (!Storage::getDriver()->getFileInfo($filePath)) {
       throw new HttpError("File not found:`$attachment->attachmentId`", 404);
     }
 
