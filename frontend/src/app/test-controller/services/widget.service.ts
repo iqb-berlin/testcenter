@@ -44,6 +44,10 @@ export class WidgetService implements OnDestroy {
   private readonly lastCalculatorResult = signal<CalculatorResult | undefined>(undefined);
   readonly calculatorResult = this.lastCalculatorResult.asReadonly();
 
+  dismissCalculatorResult(): void {
+    this.lastCalculatorResult.set(undefined);
+  }
+
   constructor(private readonly tcs: TestControllerService,
               private readonly mds: MainDataService,
               private readonly backend: BackendService,
@@ -58,7 +62,10 @@ export class WidgetService implements OnDestroy {
       this.tcs.state$.pipe(distinctUntilChanged()),
       this.mds.authData$
     ).subscribe(() => this.close()));
-    this.subscriptions.add(this.mds.authData$.subscribe(() => this.lastCalculatorResult.set(undefined)));
+    this.subscriptions.add(merge(
+      this.tcs.currentUnitSequenceId$.pipe(distinctUntilChanged()),
+      this.mds.authData$
+    ).subscribe(() => this.dismissCalculatorResult()));
     this.subscriptions.add(this.dialog.afterOpened.subscribe((ref) => {
       if (ref !== this.activeDialog?.ref) this.close();
     }));

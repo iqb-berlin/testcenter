@@ -200,21 +200,20 @@ describe('TestControllerComponent calculator header', () => {
     close();
   }));
 
-  it('minimizes to a persistent taskbar button and restores the same result on click', fakeAsync(() => {
+  it('closes the result entirely without leaving a taskbar button', fakeAsync(() => {
     returnResult();
     element<HTMLButtonElement>('[aria-label="Ergebnisfenster schließen"]').click();
-    const taskbar = element<HTMLButtonElement>('[data-cy="calculator-peek-taskbar"]');
-    expect(element('[data-cy="calculator-peek"]').hidden).toBeTrue();
-    expect(taskbar.hidden).toBeFalse();
-    expect(document.activeElement).toBe(taskbar);
-    expect(taskbar.querySelector('[aria-label*="schließen"]')).toBeNull();
-    taskbar.click();
-    expect(element('[data-cy="calculator-peek"]').hidden).toBeFalse();
-    expect(taskbar.hidden).toBeTrue();
-    expect(document.activeElement).toBe(element('[aria-label="Ergebnisfenster schließen"]'));
+    fixture.detectChanges();
+    expect(host().querySelector('tc-calculator-peek')).toBeNull();
+    expect(host().querySelector('[data-cy="calculator-peek-taskbar"]')).toBeNull();
+    expect(fixture.debugElement.injector.get(WidgetService).calculatorResult()).toBeUndefined();
+    selectUnit(2);
+    expect(host().querySelector('tc-calculator-peek')).toBeNull();
+    sendState(start(), '[{"asLatex":"no image","asImage":null}]');
+    expect(host().querySelector('tc-calculator-peek')).toBeNull();
   }));
 
-  it('replaces and reopens a minimized peek with the newest result only', fakeAsync(() => {
+  it('shows a new peek with the newest result after closing the previous one', fakeAsync(() => {
     returnResult();
     element<HTMLButtonElement>('[aria-label="Ergebnisfenster schließen"]').click();
     const widget = start();
@@ -241,17 +240,23 @@ describe('TestControllerComponent calculator header', () => {
     expect(element<HTMLImageElement>('[data-cy="calculator-peek"] img').alt).toBe('newest');
   }));
 
-  it('retains the peek across enabled units and hides it while unavailable or paused', fakeAsync(() => {
+  it('closes the peek on unit navigation without restoring it on return', fakeAsync(() => {
     returnResult();
-    element<HTMLButtonElement>('[aria-label="Ergebnisfenster schließen"]').click();
-    const peek = element('tc-calculator-peek');
     selectUnit(2);
-    expect(peek.hidden).toBeFalse();
-    expect(element('[data-cy="calculator-peek-taskbar"]').hidden).toBeFalse();
+    expect(host().querySelector('tc-calculator-peek')).toBeNull();
+    selectUnit(1);
+    expect(host().querySelector('tc-calculator-peek')).toBeNull();
+    returnResult();
+    expect(element('[data-cy="calculator-peek"]').hidden).toBeFalse();
     selectUnit(3);
-    expect(peek.hidden).toBeTrue();
+    expect(host().querySelector('tc-calculator-peek')).toBeNull();
     selectUnit(4);
-    expect(peek.hidden).toBeFalse();
+    expect(host().querySelector('tc-calculator-peek')).toBeNull();
+  }));
+
+  it('hides the peek while paused or waiting for unit content', fakeAsync(() => {
+    returnResult();
+    const peek = element('tc-calculator-peek');
     controller.state$.next('PAUSED');
     fixture.detectChanges();
     expect(peek.hidden).toBeTrue();
@@ -262,7 +267,6 @@ describe('TestControllerComponent calculator header', () => {
     controller.unitContentReady$.next(true);
     fixture.detectChanges();
     expect(peek.hidden).toBeFalse();
-    expect(element('[data-cy="calculator-peek-taskbar"]').hidden).toBeFalse();
   }));
 
   it('does not create a peek on a forced close and clears it on run reset', fakeAsync(() => {
@@ -311,12 +315,10 @@ describe('TestControllerComponent calculator header', () => {
     expect(peek.getBoundingClientRect().left).toBeCloseTo(initial.left, 0);
   }));
 
-  it('retains an existing minimized result when a later close has no usable image', fakeAsync(() => {
+  it('retains an existing result when a later close has no usable image', fakeAsync(() => {
     returnResult();
-    element<HTMLButtonElement>('[aria-label="Ergebnisfenster schließen"]').click();
     sendState(start(), '[{"asLatex":"no image","asImage":null}]');
     expect(element<HTMLImageElement>('[data-cy="calculator-peek"] img').alt).toBe('1+2=3');
-    expect(element('[data-cy="calculator-peek-taskbar"]').hidden).toBeFalse();
   }));
 
   it('hides the previous peek during a modal and clears it on authentication change', fakeAsync(() => {
