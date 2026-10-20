@@ -6,8 +6,12 @@ class SysChecksFolder extends Workspace {
   public function findAvailableSysChecks(): array {
     $sysChecks = [];
 
-    foreach (Folder::glob($this->getOrCreateSubFolderPath('SysCheck'), "*.[xX][mM][lL]") as $fullFilePath) {
-      $xFile = new XMLFileSysCheck($fullFilePath);
+    $directory = $this->storageDirectory->createSubdirectory('SysCheck');
+    foreach (array_keys(Storage::getDriver()->listFiles($directory)) as $fileName) {
+      if (!fnmatch("*.[xX][mM][lL]", $fileName)) {
+        continue;
+      }
+      $xFile = new XMLFileSysCheck($directory->createFilePath($fileName));
 
       if ($xFile->isValid()) {
         $sysChecks[] = $xFile;

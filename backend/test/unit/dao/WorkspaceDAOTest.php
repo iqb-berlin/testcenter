@@ -19,7 +19,7 @@ class WorkspaceDAOTest extends TestCase {
     require_once "test/unit/TestDB.class.php";
 
     TestDB::setUp();
-    $this->dbc = new WorkspaceDAO(1, '/data_dir/ws_1');
+    $this->dbc = new WorkspaceDAO(1);
     $this->dbc->runFile(ROOT_DIR . '/backend/test/unit/testdata.sql');
   }
 
@@ -100,7 +100,7 @@ class WorkspaceDAOTest extends TestCase {
 
   public function test_storeAndRestoreVeronaModel(): void {
     $this->dbc->storeFile(new ResourceFile(new FileData(
-      path: '/data_dir/ws_1/Resource/periodic-system-select-widget-1.1.html',
+      path: StoragePath::fromString('ws_1/Resource/periodic-system-select-widget-1.1.html'),
       type: 'Resource',
       id: 'PERIODIC-SYSTEM-SELECT-WIDGET-1.1',
       veronaModuleType: 'widget',
@@ -117,7 +117,7 @@ class WorkspaceDAOTest extends TestCase {
   public function test_getWidgets(): void {
     $storeWidget = function (string $name, string $model, int $major, int $minor, array $errors = []): void {
       $this->dbc->storeFile(new ResourceFile(new FileData(
-        path: "/data_dir/ws_1/Resource/$name",
+        path: StoragePath::fromString("ws_1/Resource/$name"),
         type: 'Resource',
         id: strtoupper($name),
         label: "Label of $name",
@@ -134,7 +134,7 @@ class WorkspaceDAOTest extends TestCase {
     $storeWidget('periodic-2.0.html', 'PERIODIC_TABLE', 2, 0, ['an error']);
     $storeWidget('molecules-1.0.html', 'MOLECULE_EDITOR', 1, 0);
     $this->dbc->storeFile(new ResourceFile(new FileData(
-      path: '/data_dir/ws_1/Resource/iqb-player-aspect-3.1.html',
+      path: StoragePath::fromString('ws_1/Resource/iqb-player-aspect-3.1.html'),
       type: 'Resource',
       id: 'IQB-PLAYER-ASPECT-3.1',
       veronaModuleType: 'player',

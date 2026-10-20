@@ -54,7 +54,7 @@ abstract class Controller {
 
   protected static function workspaceDAO(int $workspaceId): WorkspaceDAO {
     if (!self::$_workspaceDAO) {
-      self::$_workspaceDAO = new WorkspaceDAO($workspaceId, '');
+      self::$_workspaceDAO = new WorkspaceDAO($workspaceId);
     }
 
     return self::$_workspaceDAO;
