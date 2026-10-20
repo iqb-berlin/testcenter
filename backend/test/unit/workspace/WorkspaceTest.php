@@ -869,6 +869,35 @@ class WorkspaceTest extends TestCase {
     );
   }
 
+  function test_getWorkspaceHash_ignoresFilesTheRescanDoesNotRead(): void {
+    $workspace = new Workspace(1);
+    $hash = $workspace->getWorkspaceHash();
+
+    file_put_contents(DATA_DIR . '/ws_1/.lock', '.');
+    file_put_contents(DATA_DIR . '/ws_1/SysCheck/reports/report_new.json', '{}');
+    Folder::createPath(DATA_DIR . '/ws_1/Resource/package');
+    file_put_contents(DATA_DIR . '/ws_1/Resource/package/index.html', 'x');
+    Folder::createPath(DATA_DIR . '/ws_1/UnitAttachments');
+    file_put_contents(DATA_DIR . '/ws_1/UnitAttachments/scan.png', 'x');
+
+    $this->assertSame($hash, $workspace->getWorkspaceHash());
+  }
+
+  function test_getWorkspaceHash_changesWithTheFilesTheRescanReads(): void {
+    $workspace = new Workspace(1);
+    $hash = $workspace->getWorkspaceHash();
+
+    file_put_contents(DATA_DIR . '/ws_1/Unit/NEW_UNIT.XML', '<Unit/>');
+    $hashWithNewFile = $workspace->getWorkspaceHash();
+    $this->assertNotSame($hash, $hashWithNewFile);
+
+    file_put_contents(DATA_DIR . '/ws_1/Unit/NEW_UNIT.XML', '<Unit></Unit>');
+    $this->assertNotSame($hashWithNewFile, $workspace->getWorkspaceHash());
+
+    rename(DATA_DIR . '/ws_1/Unit/NEW_UNIT.XML', DATA_DIR . '/ws_1/Booklet/NEW_UNIT.XML');
+    $this->assertNotSame($hashWithNewFile, $workspace->getWorkspaceHash());
+  }
+
   function test_getFilePath(): void {
     $workspace = new Workspace(1);
 

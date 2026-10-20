@@ -36,29 +36,6 @@ class Workspace {
     return $currentHash !== $originalHash;
   }
 
-  private static function getHashOfAllFiles(string $dir): array {
-    $result = [];
-
-    $files = scandir($dir);
-
-    foreach ($files as $file) {
-      if ($file != '.' && $file != '..') {
-        $path = $dir . '/' . $file;
-        if (is_dir($path)) {
-          $result = array_merge($result, self::getHashOfAllFiles($path));
-        } else {
-          $result[] = [
-            'filename' => $file,
-            'filemtime' => filemtime($path),
-            'filesize' => filesize($path)
-          ];
-        }
-      }
-    }
-
-    return $result;
-  }
-
   static function getStorageDirectoryOf(int $workspaceId): StorageDirectory {
     return StorageDirectory::root()->createSubdirectory("ws_$workspaceId");
   }
@@ -433,9 +410,21 @@ class Workspace {
   }
 
   public function countFiles(string $type): int {
+    return count($this->listFilesOfType($type));
+  }
+
+  /**
+   * The files a rescan reads: those directly in the type's directory whose names fit the type.
+   *
+   * @return array<string, FileInfo>
+   */
+  public function listFilesOfType(string $type): array {
     $pattern = ($type == 'Resource') ? "*.*" : "*.[xX][mM][lL]";
-    $fileNames = array_keys(Storage::getDriver()->listFiles($this->storageDirectory->createSubdirectory($type)));
-    return count(array_filter($fileNames, fn(string $fileName): bool => fnmatch($pattern, $fileName)));
+    return array_filter(
+      Storage::getDriver()->listFiles($this->storageDirectory->createSubdirectory($type)),
+      fn(string $fileName): bool => fnmatch($pattern, $fileName),
+      ARRAY_FILTER_USE_KEY
+    );
   }
 
   public function delete(): void {
@@ -637,8 +626,15 @@ class Workspace {
     return $resourceListStructured;
   }
 
+  /** Changes whenever a file the rescan reads is added, removed or modified – and only then. */
   public function getWorkspaceHash(): string {
-    return hash('XXH3', serialize(self::getHashOfAllFiles($this->getWorkspacePath())));
+    $files = [];
+    foreach (self::subFolders as $type) {
+      foreach ($this->listFilesOfType($type) as $fileName => $fileInfo) {
+        $files[] = ["$type/$fileName", $fileInfo->size, $fileInfo->modificationTime];
+      }
+    }
+    return hash('XXH3', serialize($files));
   }
 
   public function setWorkspaceHash(): void {
