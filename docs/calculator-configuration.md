@@ -114,6 +114,13 @@ wiederhergestellt, auch wenn der gespeicherte Zustand eine leere Zeichenfolge is
 Testcenter ersetzt den gespeicherten Zustand nicht durch das konfigurierte Journal.
 Das Modul entscheidet, wie es seine Parameter und seinen Startzustand verarbeitet.
 
+Testcenter hält den Rechnerzustand pro Unit und Widget-Ressource im Arbeitsspeicher.
+Units mit derselben Rechnerkonfiguration haben jeweils ein eigenes Journal. Beim
+Zurückkehren zu einer Unit wird deren bisheriger Zustand wiederhergestellt, auch
+wenn dieselbe Unit-Datei an anderer Stelle im Testheft erneut verwendet wird.
+Eine Pause erhält die Zustände. Beim Neuladen oder Verlassen des Testlaufs werden
+sie gelöscht; Testcenter speichert die Journale nicht in der Datenbank.
+
 Die Parameter werden auch dann übergeben, wenn eine hochgeladene Modulversion
 `MODE` oder `JOURNAL` noch nicht auswertet. Testcenter passt das Modul nicht an und
 verwendet keine Ersatzdarstellung für diese Parameter.

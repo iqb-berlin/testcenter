@@ -147,8 +147,12 @@ export class WidgetService implements OnDestroy {
     } = {}
   ): void {
     const testId = this.tcs.testId;
+    const stateKey = model === 'CALCULATOR' || model === 'CALC' ?
+      JSON.stringify([resourcePath, this.tcs.currentUnitSequenceId]) :
+      resourcePath;
     const logUnit = (model === 'CALCULATOR' || model === 'CALC') && this.tcs.testMode.saveResponses ?
-      this.tcs.currentUnit : null;
+      this.tcs.currentUnit :
+      null;
     let sessionId: string | undefined;
     let returnReceived = false;
     const log = (key: string, content: Record<string, unknown> = {}, timeStamp = Date.now()): void => {
@@ -184,7 +188,7 @@ export class WidgetService implements OnDestroy {
               window: widgetWindow,
               messages: this.mds.postMessage$,
               sharedParameters,
-              state: state ?? this.states.get(resourcePath),
+              state: state ?? this.states.get(stateKey),
               onReady: (name, id) => {
                 view.showRunning(name);
                 sessionId = id;
@@ -192,7 +196,7 @@ export class WidgetService implements OnDestroy {
               },
               onState: (state) => {
                 acceptedState = state;
-                this.states.set(resourcePath, state);
+                this.states.set(stateKey, state);
               },
               onStateChanged: (state, timeStamp) => {
                 if (!logUnit) return;

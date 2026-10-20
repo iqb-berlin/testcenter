@@ -143,7 +143,7 @@ describe('TestControllerComponent calculator header', () => {
     fixture.detectChanges();
   }
 
-  function start() {
+  function start(model = 'CALCULATOR') {
     const trigger = button();
     trigger.click();
     fixture.detectChanges();
@@ -152,7 +152,9 @@ describe('TestControllerComponent calculator header', () => {
     const source = document.querySelector<HTMLIFrameElement>('[role="dialog"] iframe')?.contentWindow;
     if (!source) throw new Error('Missing calculator window');
     const post = spyOn(source, 'postMessage');
-    messages.next(new MessageEvent('message', { source, data: { type: 'vowReadyNotification', metadata } }));
+    messages.next(new MessageEvent('message', { source, data: {
+      type: 'vowReadyNotification', metadata: JSON.stringify({ ...JSON.parse(metadata), model })
+    } }));
     const command: unknown = post.calls.mostRecent().args[0];
     return { source, post, command, trigger };
   }
@@ -372,29 +374,56 @@ describe('TestControllerComponent calculator header', () => {
     close();
   }));
 
-  it('restores retained state while continuing to pass the configured journal parameter', fakeAsync(() => {
-    const first = start();
-    if (first.command === null || typeof first.command !== 'object' || !('sessionId' in first.command)) {
-      throw new Error('Missing widget start');
+  for (const model of ['CALCULATOR', 'CALC']) {
+    for (const state of ['', '[{"asLatex":"2+2=4","asImage":""}]']) {
+      it(`isolates and restores ${model} journals per unit, including state ${JSON.stringify(state)}`, fakeAsync(() => {
+        controller.widgets = { [model]: ['Resource/calculator.html'] };
+        // Repeated unit files still have distinct occurrences and journals.
+        controller.units[2] = { ...controller.units[2], id: controller.units[1].id };
+        const first = start(model);
+        sendState(first, state, 'vowStateChangedNotification');
+        const focus = spyOn(first.trigger, 'focus').and.callThrough();
+        close();
+        expect(focus).toHaveBeenCalled();
+        expect(document.activeElement).toBe(first.trigger);
+
+        selectUnit(2);
+        const second = start(model);
+        expect(second.command).not.toEqual(jasmine.objectContaining({ state: jasmine.anything() }));
+        expect(second.command).toEqual(jasmine.objectContaining({
+          parameters: jasmine.arrayContaining([{ key: 'JOURNAL', value: journal }])
+        }));
+        sendState(second, journal);
+
+        selectUnit(1);
+        expect(start(model).command).toEqual(jasmine.objectContaining({
+          state, parameters: jasmine.arrayContaining([{ key: 'JOURNAL', value: journal }])
+        }));
+        close();
+        selectUnit(2);
+        expect(start(model).command).toEqual(jasmine.objectContaining({ state: journal }));
+        close();
+      }));
     }
-    messages.next(new MessageEvent('message', { source: first.source, data: {
-      type: 'vowStateChangedNotification', sessionId: first.command.sessionId,
-      timeStamp: '2026-10-16T12:00:00Z', state: ''
-    } }));
-    const trigger = first.trigger;
-    expect(trigger.isConnected).toBeTrue();
-    expect(button()).toBe(trigger);
-    expect(controller.currentUnitSequenceId).toBe(1);
-    const focus = spyOn(trigger, 'focus').and.callThrough();
+  }
+
+  it('retains unit journals through pause and clears all of them on run reset', fakeAsync(() => {
+    sendState(start(), journal, 'vowStateChangedNotification');
+    controller.state$.next('PAUSED');
+    tick();
+    controller.state$.next('RUNNING');
+    fixture.detectChanges();
+    expect(start().command).toEqual(jasmine.objectContaining({ state: journal }));
     close();
-    expect(dialog.openDialogs.length).toBe(0);
-    expect(focus).toHaveBeenCalled();
-    expect(document.activeElement).toBe(trigger);
     selectUnit(2);
-    expect(start().command).toEqual(jasmine.objectContaining({
-      state: '', parameters: jasmine.arrayContaining([{ key: 'JOURNAL', value: journal }])
-    }));
-    close();
+    sendState(start(), journal);
+
+    controller.runReset$.next();
+    for (const sequenceId of [1, 2]) {
+      selectUnit(sequenceId);
+      expect(start().command).not.toEqual(jasmine.objectContaining({ state: jasmine.anything() }));
+      close();
+    }
   }));
 
   for (const status of ['PAUSED', 'TERMINATED', 'ERROR'] as const) {
