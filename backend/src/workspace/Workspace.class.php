@@ -113,16 +113,19 @@ class Workspace {
 
   /**
    * The only sanctioned way to turn request input (type, file name) into a workspace
-   * file path. Returns null if the type is unknown or the path escapes its sub-folder.
+   * file path. Returns null if the type is unknown or the name is no valid path inside
+   * the type's directory. Whether the file exists is not checked.
    */
-  public function getFilePath(string $type, string $fileName): ?string {
+  public function getFilePath(string $type, string $fileName): ?StoragePath {
     if (!in_array($type, self::subFolders)) {
       return null;
     }
 
-    $path = Folder::getContainedRealPath($this->workspacePath . '/' . $type, $fileName);
-
-    return ($path !== null and is_file($path)) ? $path : null;
+    try {
+      return StoragePath::fromString($this->storageDirectory->createSubdirectory($type) . $fileName);
+    } catch (InvalidArgumentException) {
+      return null;
+    }
   }
 
   public function deleteFiles(array $filesToDelete): FileDeletionReport {
@@ -629,8 +632,7 @@ class Workspace {
     $resourceListStructured = [];
     foreach ($resourceList as $item) {
       $resourceListStructured[$item['id']][$item['relationship_type']][] = "{$item['type']}/{$item['name']}";
-      $path = "/ws_$this->workspaceId/{$item['type']}/{$item['name']}";
-      CacheService::storeFile($path);
+      CacheService::storeFile($this->storageDirectory->createSubdirectory($item['type'])->createFilePath($item['name']));
     }
     return $resourceListStructured;
   }

@@ -869,6 +869,24 @@ class WorkspaceTest extends TestCase {
     );
   }
 
+  function test_getFilePath(): void {
+    $workspace = new Workspace(1);
+
+    $this->assertSame(
+      'ws_1/Resource/package/js/app.js',
+      (string) $workspace->getFilePath('Resource', 'package/js/app.js')
+    );
+  }
+
+  function test_getFilePath_rejectsUnknownTypeAndPathsLeavingTheTypeDirectory(): void {
+    $workspace = new Workspace(1);
+
+    $this->assertNull($workspace->getFilePath('UnitAttachments', 'x.png'));
+    $this->assertNull($workspace->getFilePath('Resource', '../Testtakers/SAMPLE_TESTTAKERS.XML'));
+    $this->assertNull($workspace->getFilePath('Resource', '../../ws_2/Resource/x.html'));
+    $this->assertNull($workspace->getFilePath('Resource', '/etc/passwd'));
+  }
+
   function test_getFileById_validXmlFile(): void {
     $this->workspaceDaoMock
       ->expects('getFileById')

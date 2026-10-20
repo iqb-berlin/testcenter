@@ -18,9 +18,9 @@ class AttachmentController extends Controller {
       $attachment
     );
 
-    $response->write(file_get_contents($filePath));
+    $response->write(Storage::getDriver()->get($filePath));
 
-    return $response->withHeader('Content-Type', FileExt::getMimeType($filePath));
+    return $response->withHeader('Content-Type', FileExt::getMimeType($filePath->name));
   }
 
   public static function getList(Request $request, Response $response): Response {
