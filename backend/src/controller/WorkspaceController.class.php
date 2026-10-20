@@ -126,7 +126,7 @@ class WorkspaceController extends Controller {
     $filename = (string) $request->getAttribute('filename', '');
 
     $filePath = (new Workspace($workspaceId))->getFilePath($fileType, $filename);
-    if ($filePath === null) {
+    if (!$filePath) {
       throw new HttpNotFoundException($request, "File not found: $fileType/$filename");
     }
 
