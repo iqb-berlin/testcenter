@@ -6,12 +6,13 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatIconTestingModule } from '@angular/material/icon/testing';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { BehaviorSubject, Subject } from 'rxjs';
-import { MainDataService } from '@shared/shared.module';
+import { MainDataService, TestMode } from '@shared/shared.module';
 import { BackendService } from './backend.service';
 import { TestControllerService } from './test-controller.service';
 import { WidgetService } from './widget.service';
 import { TestControllerState } from '../interfaces/test-controller.interfaces';
 import { WidgetDialogComponent } from '../components/widget-dialog/widget-dialog.component';
+import { getTestData } from '../test/test-data';
 
 @Component({
   imports: [MatDialogModule],
@@ -39,7 +40,7 @@ describe('Uploaded calculator launch', () => {
   let reset: Subject<void>;
   let tcs: Pick<TestControllerService, 'workspaceId' | 'widgets' | 'getWidgetResourcePath' |
     'currentUnitSequenceId' | 'currentUnitSequenceId$' | 'state$' | 'runReset$' |
-    'sharedParameters' | 'addSharedParameters'>;
+    'sharedParameters' | 'addSharedParameters' | 'testId' | 'testMode' | 'currentUnit'>;
   let mds: {
     postMessage$: Subject<MessageEvent>;
     authData$: Subject<void>;
@@ -51,6 +52,8 @@ describe('Uploaded calculator launch', () => {
     messages = new Subject<MessageEvent>();
     reset = new Subject<void>();
     tcs = {
+      testId: 'calculator-run', testMode: new TestMode(),
+      currentUnit: { ...getTestData().Units.u1, alias: 'MATH_01' },
       workspaceId: 1, widgets: { CALCULATOR: ['Resource/calculator.html'] },
       // Use the real workspace resolver, not a second implementation in the test setup.
       getWidgetResourcePath(model: string) {
@@ -294,5 +297,147 @@ describe('Uploaded calculator launch', () => {
     } finally {
       window.removeEventListener('message', listener);
     }
+  });
+
+  describe('persisted unit logs', () => {
+    beforeEach(() => { tcs.testMode.saveResponses = true; });
+
+    function startCalculator(state?: string) {
+      fixture.componentInstance.widgets.openCalculator({ trigger, parameters: [], state });
+      fixture.detectChanges();
+      http.expectOne('/api/file/calculator-group/ws_1/Resource/calculator.html').flush('<html></html>');
+      const widget = ready();
+      const command: unknown = widget.post.calls.mostRecent().args[0];
+      if (command === null || typeof command !== 'object' ||
+        !('sessionId' in command) || typeof command.sessionId !== 'string') throw new Error('Missing session');
+      const { sessionId } = command;
+      return {
+        sessionId,
+        send(data: Record<string, unknown>, source = widget.source): void {
+          messages.next(new MessageEvent('message', { source, data: {
+            type: 'vowStateChangedNotification', sessionId, timeStamp: '2026-10-20T10:00:00Z', ...data
+          } }));
+        }
+      };
+    }
+
+    function expectLog(key: string, content: Record<string, unknown>, timeStamp: unknown = jasmine.any(Number)): void {
+      const request = http.expectOne('/api/test/calculator-run/unit/MATH_01/log');
+      expect(request.request.method).toBe('PUT');
+      expect(request.request.body).toEqual({
+        originalUnitId: getTestData().Units.u1.id,
+        logEntries: [{ key, content, timeStamp }]
+      });
+      request.flush(null);
+    }
+
+    it('logs opening, only the newest formula, and user closure without a widget return', fakeAsync(() => {
+      const widget = startCalculator();
+      expectLog('CALCULATOR_OPENED', { sessionId: widget.sessionId });
+      widget.send({ state: JSON.stringify([
+        { asLatex: '1+1=2', asImage: 'old image' }, { asLatex: '9=9', asImage: 'data:image/png;base64,large' }
+      ]) });
+      expectLog('CALCULATOR_STATE_CHANGED', {
+        sessionId: widget.sessionId, asLatex: '9=9'
+      }, Date.parse('2026-10-20T10:00:00Z'));
+      cancel();
+      expectLog('CALCULATOR_CLOSED', { sessionId: widget.sessionId, reason: 'user_called', returnReceived: false });
+      widget.send({ state: '[{"asLatex":"late"}]' });
+      http.expectNone(request => request.url.endsWith('/log'));
+    }));
+
+    it('logs a widget return once without treating restored or final state as a new result', fakeAsync(() => {
+      const widget = startCalculator('[{"asLatex":"restored"}]');
+      expectLog('CALCULATOR_OPENED', { sessionId: widget.sessionId });
+      widget.send({ type: 'vowReturnRequested', state: '[{"asLatex":"final"}]', saveState: false });
+      widget.send({ type: 'vowReturnRequested' });
+      tick();
+      expectLog('CALCULATOR_CLOSED', { sessionId: widget.sessionId, reason: 'widget_return', returnReceived: true });
+      http.expectNone(request => request.url.endsWith('/log'));
+    }));
+
+    it('rejects untrusted, stale and malformed updates and never falls back to an older journal entry', fakeAsync(() => {
+      spyOn(console, 'warn');
+      const widget = startCalculator();
+      expectLog('CALCULATOR_OPENED', { sessionId: widget.sessionId });
+      widget.send({ state: '[{"asLatex":"accepted"}]' });
+      expectLog('CALCULATOR_STATE_CHANGED', {
+        sessionId: widget.sessionId, asLatex: 'accepted'
+      });
+      widget.send({ state: '[{"asLatex":"wrong source"}]' }, window);
+      widget.send({ sessionId: 'wrong', state: '[{"asLatex":"wrong session"}]' });
+      widget.send({ timeStamp: 'invalid', state: '[{"asLatex":"invalid timestamp"}]' });
+      widget.send({ timeStamp: '2026-10-20T09:59:59Z', state: '[{"asLatex":"stale"}]' });
+      for (const state of ['invalid', '{}', '[]', '[null]', '[{"asLatex":"old"},{}]']) {
+        widget.send({ state });
+      }
+      widget.send({ sharedParameters: [] });
+      http.expectNone(request => request.url.endsWith('/log'));
+      cancel();
+      expectLog('CALCULATOR_CLOSED', { sessionId: widget.sessionId, reason: 'user_called', returnReceived: false });
+    }));
+
+    for (const scenario of ['unit_change', 'pause', 'run_reset', 'close_all'] as const) {
+      it(`logs host closure against the opening unit and test for ${scenario}`, fakeAsync(() => {
+        const widget = startCalculator();
+        expectLog('CALCULATOR_OPENED', { sessionId: widget.sessionId });
+        if (scenario === 'unit_change') {
+          Object.assign(tcs, { currentUnit: getTestData().Units.u2, testId: 'other-run' });
+          tcs.currentUnitSequenceId$.next(2);
+        } else if (scenario === 'pause') {
+          tcs.state$.next('PAUSED');
+        } else if (scenario === 'run_reset') {
+          reset.next();
+        } else {
+          dialog.closeAll();
+        }
+        tick();
+        expectLog('CALCULATOR_CLOSED', {
+          sessionId: widget.sessionId, reason: 'host_triggered', returnReceived: false
+        });
+        expect(dialog.openDialogs.length).toBe(0);
+      }));
+    }
+
+    it('logs CALC requests from a player using the calculator events', fakeAsync(() => {
+      const player = document.createElement('iframe');
+      trigger.parentElement?.appendChild(player);
+      const source = player.contentWindow;
+      if (!source) throw new Error('Missing player window');
+      fixture.componentInstance.widgets.open({
+        call: { type: 'vopWidgetCall', sessionId: 'player-session', widgetType: 'CALC' },
+        source, playerIframe: player
+      });
+      fixture.detectChanges();
+      http.expectOne('/api/file/calculator-group/ws_1/Resource/calculator.html').flush('<html></html>');
+      const widget = ready();
+      const command: unknown = widget.post.calls.mostRecent().args[0];
+      if (command === null || typeof command !== 'object' || !('sessionId' in command)) throw new Error('Missing session');
+      expectLog('CALCULATOR_OPENED', { sessionId: command.sessionId });
+      cancel();
+      expectLog('CALCULATOR_CLOSED', { sessionId: command.sessionId, reason: 'user_called', returnReceived: false });
+      player.remove();
+    }));
+
+    it('does not log when response saving is disabled or no unit is active', fakeAsync(() => {
+      tcs.testMode.saveResponses = false;
+      startCalculator().send({ state: '[{"asLatex":"not saved"}]' });
+      cancel();
+      tcs.testMode.saveResponses = true;
+      Object.assign(tcs, { currentUnit: null });
+      startCalculator().send({ state: '[{"asLatex":"no unit"}]' });
+      cancel();
+      http.expectNone(request => request.url.endsWith('/log'));
+    }));
+
+    it('does not log an opening or closure if the calculator never starts', fakeAsync(() => {
+      spyOn(console, 'error');
+      open();
+      http.expectOne('/api/file/calculator-group/ws_1/Resource/calculator.html')
+        .flush('missing', { status: 404, statusText: 'Not found' });
+      tick();
+      cancel();
+      http.expectNone(request => request.url.endsWith('/log'));
+    }));
   });
 });

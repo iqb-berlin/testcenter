@@ -3,8 +3,7 @@ export interface CalculatorResult {
   formula: string;
 }
 
-/** Read only the newest journal entry. Widget state remains opaque to the runtime. */
-export function calculatorResult(state: string): CalculatorResult | undefined {
+function latestCalculatorEntry(state: string): object | undefined {
   let journal: unknown;
   try {
     journal = JSON.parse(state);
@@ -13,8 +12,19 @@ export function calculatorResult(state: string): CalculatorResult | undefined {
   }
   if (!Array.isArray(journal)) return undefined;
   const entry: unknown = journal.at(-1);
-  if (entry === null || typeof entry !== 'object' || !('asImage' in entry) ||
-    typeof entry.asImage !== 'string') return undefined;
+  return entry !== null && typeof entry === 'object' ? entry : undefined;
+}
+
+/** Read only the newest calculation, independently of its optional image. */
+export function calculatorFormula(state: string): string | undefined {
+  const entry = latestCalculatorEntry(state);
+  return entry && 'asLatex' in entry && typeof entry.asLatex === 'string' ? entry.asLatex : undefined;
+}
+
+/** Read only the newest journal entry for the result window. */
+export function calculatorResult(state: string): CalculatorResult | undefined {
+  const entry = latestCalculatorEntry(state);
+  if (!entry || !('asImage' in entry) || typeof entry.asImage !== 'string') return undefined;
 
   const image = entry.asImage;
   // Accept embedded raster images only, never remote URLs or active image formats.

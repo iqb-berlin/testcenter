@@ -151,45 +151,38 @@ describe('UnithostComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should log the resolved widget file and original call', () => {
-    const log = spyOn(console, 'log');
-    const warn = spyOn(console, 'warn');
+  it('should download the resolved widget file and start the widget', fakeAsync(() => {
     MockTestControllerService.getWidgetResourcePath.and.returnValue('Resource/periodic.html');
     const call = { type: 'vopWidgetCall', sessionId: 'u1', callId: 'button-1', widgetType: 'PERIODIC_TABLE' };
 
     MockMainDataService.postMessage$.next(new MessageEvent('message', { data: call, source: component['iFrameItemplayer']?.contentWindow ?? null }));
 
     expect(MockTestControllerService.getWidgetResourcePath).toHaveBeenCalledOnceWith('PERIODIC_TABLE');
-    expect(log).toHaveBeenCalledOnceWith('vopWidgetCall resolved:', 'Resource/periodic.html', call);
-    fixture.detectChanges();
-    expect(warn).not.toHaveBeenCalled();
-
     fixture.detectChanges();
     const request = http.expectOne('/api/file/test-group/ws_1/Resource/periodic.html');
     expect(request.request.responseType).toBe('text');
     request.event({ type: HttpEventType.DownloadProgress, loaded: 5, total: 20 });
-    expect(log).toHaveBeenCalledTimes(1);
+    expect(TestBed.inject(MatDialog).openDialogs[0].componentInstance.status()).toBe('loading');
     const html = '<html>widget</html>';
     request.flush(html);
-    expect(log).toHaveBeenCalledWith('Widget HTML downloaded:', {
-      resourcePath: 'Resource/periodic.html', htmlLength: html.length
-    });
-  });
+    tick();
+    expect(TestBed.inject(MatDialog).openDialogs[0].componentInstance.status()).toBe('starting');
+    TestBed.inject(MatDialog).closeAll();
+    tick();
+  }));
 
-  it('should log a missing widget without starting a download', () => {
-    const log = spyOn(console, 'log');
-    const warn = spyOn(console, 'warn');
+  it('should ignore a missing widget without starting a download', () => {
     const call = { type: 'vopWidgetCall', sessionId: 'u1', widgetType: 'UNKNOWN' };
 
     MockMainDataService.postMessage$.next(new MessageEvent('message', { data: call, source: component['iFrameItemplayer']?.contentWindow ?? null }));
 
-    expect(log).toHaveBeenCalledOnceWith('No uploaded widget found for vopWidgetCall:', call);
-    expect(warn).not.toHaveBeenCalled();
+    expect(MockTestControllerService.getWidgetResourcePath).toHaveBeenCalledOnceWith('UNKNOWN');
+    http.expectNone(request => request.url.includes('/file/'));
+    expect(TestBed.inject(MatDialog).openDialogs.length).toBe(0);
   });
 
-  it('should report a widget download failure without logging success', () => {
-    const log = spyOn(console, 'log');
-    const error = spyOn(console, 'error');
+  it('should display a widget download failure', () => {
+    spyOn(console, 'error');
     MockTestControllerService.getWidgetResourcePath.and.returnValue('Resource/missing.html');
     MockMainDataService.postMessage$.next(new MessageEvent('message', {
       data: { type: 'vopWidgetCall', sessionId: 'u1', widgetType: 'PERIODIC_TABLE' }, source: component['iFrameItemplayer']?.contentWindow ?? null
@@ -199,12 +192,10 @@ describe('UnithostComponent', () => {
     http.expectOne('/api/file/test-group/ws_1/Resource/missing.html').flush('Not found', {
       status: 404, statusText: 'Not Found'
     });
-    expect(error).toHaveBeenCalledOnceWith('Widget HTML download failed:', 'Resource/missing.html', jasmine.anything());
-    expect(log).toHaveBeenCalledTimes(1);
+    expect(TestBed.inject(MatDialog).openDialogs[0].componentInstance.status()).toBe('download-error');
   });
 
   it('should download through the file server when configured', () => {
-    const log = spyOn(console, 'log');
     MockMainDataService.appConfig.fileServiceUri = 'configured';
     MockTestControllerService.getWidgetResourcePath.and.returnValue('Resource/periodic.html');
     MockMainDataService.postMessage$.next(new MessageEvent('message', {
@@ -213,14 +204,10 @@ describe('UnithostComponent', () => {
 
     fixture.detectChanges();
     http.expectOne('/files/file/test-group/ws_1/Resource/periodic.html').flush('<html>widget</html>');
-    expect(log).toHaveBeenCalledWith('Widget HTML downloaded:', {
-      resourcePath: 'Resource/periodic.html', htmlLength: '<html>widget</html>'.length
-    });
   });
 
   it('should report an empty HTML response as a download failure', () => {
-    const log = spyOn(console, 'log');
-    const error = spyOn(console, 'error');
+    spyOn(console, 'error');
     MockTestControllerService.getWidgetResourcePath.and.returnValue('Resource/empty.html');
     MockMainDataService.postMessage$.next(new MessageEvent('message', {
       data: { type: 'vopWidgetCall', sessionId: 'u1', widgetType: 'PERIODIC_TABLE' }, source: component['iFrameItemplayer']?.contentWindow ?? null
@@ -228,12 +215,10 @@ describe('UnithostComponent', () => {
 
     fixture.detectChanges();
     http.expectOne('/api/file/test-group/ws_1/Resource/empty.html').flush('');
-    expect(error).toHaveBeenCalledOnceWith('Widget HTML download failed:', 'Resource/empty.html', jasmine.any(Error));
-    expect(log).toHaveBeenCalledTimes(1);
+    expect(TestBed.inject(MatDialog).openDialogs[0].componentInstance.status()).toBe('download-error');
   });
 
   it('should cancel pending downloads when the unit host is destroyed', () => {
-    const log = spyOn(console, 'log');
     MockTestControllerService.getWidgetResourcePath.and.returnValue('Resource/periodic.html');
     MockMainDataService.postMessage$.next(new MessageEvent('message', {
       data: { type: 'vopWidgetCall', sessionId: 'u1', widgetType: 'PERIODIC_TABLE' }, source: component['iFrameItemplayer']?.contentWindow ?? null
@@ -243,7 +228,6 @@ describe('UnithostComponent', () => {
 
     fixture.destroy();
     expect(request.cancelled).toBeTrue();
-    expect(log).toHaveBeenCalledTimes(1);
   });
   function openWidget(source = component['iFrameItemplayer']?.contentWindow): void {
     MockTestControllerService.getWidgetResourcePath.and.returnValue('Resource/periodic.html');

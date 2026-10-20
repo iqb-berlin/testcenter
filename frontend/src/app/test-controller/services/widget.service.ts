@@ -10,7 +10,7 @@ import { WidgetCall, WidgetParameter } from '../interfaces/widget.interfaces';
 import { BackendService } from './backend.service';
 import { TestControllerService } from './test-controller.service';
 import { parseWidgetCall, widgetParameters } from '../util/widget-start.util';
-import { CalculatorResult, calculatorResult } from '../util/calculator-result.util';
+import { CalculatorResult, calculatorFormula, calculatorResult } from '../util/calculator-result.util';
 
 interface WidgetRequest {
   call: unknown;
@@ -28,8 +28,10 @@ export interface HostWidgetRequest {
 
 export type CalculatorWidgetRequest = Pick<HostWidgetRequest, 'parameters' | 'trigger' | 'state'>;
 
+type WidgetCloseReason = 'widget_return' | 'user_called' | 'host_triggered';
+
 interface ActiveWidgetDialog {
-  ref: MatDialogRef<WidgetDialogComponent>;
+  ref: MatDialogRef<WidgetDialogComponent, WidgetCloseReason>;
   subscriptions: Subscription;
   restoreFocus: boolean;
 }
@@ -137,8 +139,22 @@ export class WidgetService implements OnDestroy {
       onClosed?: (state: string) => void;
     } = {}
   ): void {
+    const testId = this.tcs.testId;
+    const logUnit = (model === 'CALCULATOR' || model === 'CALC') && this.tcs.testMode.saveResponses ?
+      this.tcs.currentUnit : null;
+    let sessionId: string | undefined;
+    let returnReceived = false;
+    const log = (key: string, content: Record<string, unknown> = {}, timeStamp = Date.now()): void => {
+      if (!logUnit || sessionId === undefined) return;
+      this.backend.addUnitLog(testId, logUnit.alias, logUnit.id, [{
+        key, timeStamp, content: { sessionId, ...content }
+      }]);
+    };
     const activeDialog = this.openDialog(`Widget ${model}`, trigger, canRestoreFocus);
     let acceptedState: string | undefined;
+    activeDialog.ref.beforeClosed().subscribe((reason) => {
+      log('CALCULATOR_CLOSED', { reason: reason ?? 'host_triggered', returnReceived });
+    });
     activeDialog.ref.afterClosed().subscribe(() => {
       if (activeDialog.restoreFocus && acceptedState !== undefined) onClosed?.(acceptedState);
     });
@@ -162,14 +178,26 @@ export class WidgetService implements OnDestroy {
               messages: this.mds.postMessage$,
               sharedParameters,
               state: state ?? this.states.get(resourcePath),
-              onReady: name => view.showRunning(name),
+              onReady: (name, id) => {
+                view.showRunning(name);
+                sessionId = id;
+                log('CALCULATOR_OPENED');
+              },
               onState: (state) => {
                 acceptedState = state;
                 this.states.set(resourcePath, state);
               },
+              onStateChanged: (state, timeStamp) => {
+                if (!logUnit) return;
+                const asLatex = calculatorFormula(state);
+                if (asLatex !== undefined) {
+                  log('CALCULATOR_STATE_CHANGED', { asLatex }, timeStamp);
+                }
+              },
               onSharedParameters: parameters => this.tcs.addSharedParameters(parameters),
               onReturn: (state, saveState) => {
-                activeDialog.ref.close();
+                returnReceived = true;
+                activeDialog.ref.close('widget_return');
                 onReturn?.(state, saveState, activeDialog);
               },
               onError: (error) => {
@@ -196,7 +224,7 @@ export class WidgetService implements OnDestroy {
   close(): void {
     if (!this.activeDialog) return;
     this.activeDialog.restoreFocus = false;
-    this.activeDialog.ref.close();
+    this.activeDialog.ref.close('host_triggered');
   }
 
   ngOnDestroy(): void {
@@ -210,7 +238,7 @@ export class WidgetService implements OnDestroy {
     name: string, trigger: HTMLElement, canRestoreFocus: () => boolean = () => true
   ): ActiveWidgetDialog {
     const unitSequenceId = this.tcs.currentUnitSequenceId;
-    const ref = this.dialog.open<WidgetDialogComponent, WidgetDialogData>(WidgetDialogComponent, {
+    const ref = this.dialog.open<WidgetDialogComponent, WidgetDialogData, WidgetCloseReason>(WidgetDialogComponent, {
       data: { name },
       ariaModal: true,
       autoFocus: 'dialog',
@@ -224,7 +252,9 @@ export class WidgetService implements OnDestroy {
       panelClass: 'widget-dialog',
       exitAnimationDuration: 0
     });
-    const activeDialog = { ref, subscriptions: new Subscription(), restoreFocus: true };
+    const activeDialog: ActiveWidgetDialog = {
+      ref, subscriptions: new Subscription(), restoreFocus: true
+    };
     this.activeDialog = activeDialog;
     ref.beforeClosed().subscribe(() => activeDialog.subscriptions.unsubscribe());
     ref.afterClosed().subscribe(() => {

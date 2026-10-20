@@ -16,7 +16,7 @@ export interface WidgetDialogData {
   template: `
     <h2 class="cdk-visually-hidden" mat-dialog-title>{{ name() }}</h2>
     <button class="close" aria-label="Widget schließen" mat-icon-button
-            mat-dialog-close>
+            mat-dialog-close="user_called">
       <mat-icon svgIcon="close"></mat-icon>
     </button>
     <div class="status" aria-live="polite" role="status">

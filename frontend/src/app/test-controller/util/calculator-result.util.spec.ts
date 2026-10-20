@@ -1,4 +1,18 @@
-import { calculatorResult } from './calculator-result.util';
+import { calculatorFormula, calculatorResult } from './calculator-result.util';
+
+describe('calculatorFormula', () => {
+  it('reads only the last formula without requiring an image', () => {
+    expect(calculatorFormula('[{"asLatex":"old","asImage":"old"},{"asLatex":"9=9"}]')).toBe('9=9');
+    expect(calculatorFormula('[{"asLatex":""}]')).toBe('');
+  });
+
+  for (const state of ['', 'invalid', 'null', '{}', '[]', '[null]', '[1]',
+    '[{"asLatex":"old"},{}]', '[{"asLatex":"old"},{"asLatex":null}]', '[{"asLatex":9}]']) {
+    it(`ignores invalid or missing last formula in ${state}`, () => {
+      expect(calculatorFormula(state)).toBeUndefined();
+    });
+  }
+});
 
 describe('calculatorResult', () => {
   const image = 'data:image/png;base64,iVBORw0KGgo=';

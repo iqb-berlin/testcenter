@@ -86,7 +86,7 @@ export class BackendService {
     testId: string,
     unitName: string,
     originalUnitId: string,
-    logEntries: StateReportEntry<string>[]
+    logEntries: StateReportEntry<string, unknown>[]
   ): Subscription {
     return this.http.put<void>(`${this.backendUrl}test/${testId}/unit/${unitName}/log`, {
       logEntries,

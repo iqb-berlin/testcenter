@@ -10,8 +10,9 @@ interface WidgetSessionOptions {
   messages: Observable<MessageEvent>;
   sharedParameters: WidgetParameter[];
   state: string | undefined;
-  onReady: (name: string) => void;
+  onReady: (name: string, sessionId: string) => void;
   onState: (state: string) => void;
+  onStateChanged?: (state: string, timeStamp: number) => void;
   onSharedParameters: (parameters: WidgetParameter[]) => void;
   onReturn: (state: string | undefined, saveState: boolean) => void;
   onError: (error: unknown) => void;
@@ -67,6 +68,9 @@ export class WidgetSession {
       if (update.state !== undefined) {
         session.state = update.state;
         this.options.onState(update.state);
+        if (update.type === 'vowStateChangedNotification') {
+          this.options.onStateChanged?.(update.state, update.timeStamp);
+        }
       }
       if (update.sharedParameters !== undefined) this.options.onSharedParameters(update.sharedParameters);
     }
@@ -91,7 +95,7 @@ export class WidgetSession {
       this.timeout.unsubscribe();
       this.options.window.postMessage(command, '*');
       if (this.options.state !== undefined) this.options.onState(this.options.state);
-      this.options.onReady(name);
+      this.options.onReady(name, command.sessionId);
     } catch (error) { this.fail(error); }
   }
 }
