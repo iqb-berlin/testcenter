@@ -35,7 +35,7 @@ class XMLFilesBookletTest extends TestCase {
   }
 
   function test_getAllUnitIds() {
-    $xmlFile = new XMLFileBookletExposed(DATA_DIR . '/ws_1/Booklet/SAMPLE_BOOKLET.XML');
+    $xmlFile = new XMLFileBookletExposed(StoragePath::fromString('ws_1/Booklet/SAMPLE_BOOKLET.XML'));
 
     $expected = ['UNIT.SAMPLE', 'UNIT.SAMPLE-2', 'UNIT.SAMPLE'];
 

@@ -20,11 +20,13 @@ class WorkspaceCache {
   public function loadFiles(): void {
     foreach (Workspace::subFolders as $type) {
       $pattern = ($type == 'Resource') ? "*.*" : "*.[xX][mM][lL]";
-      $filePaths = Folder::glob($this->workspace->getOrCreateSubFolderPath($type), $pattern, true);
+      $directory = $this->workspace->getStorageDirectory()->createSubdirectory($type);
+      $fileNames = array_keys(Storage::getDriver()->listFiles($directory));
 
-      foreach ($filePaths as $filePath) {
-        $file = File::get($filePath, $type);
-        $this->addFile($type, $file);
+      foreach (array_reverse($fileNames) as $fileName) {
+        if (fnmatch($pattern, $fileName)) {
+          $this->addFile($type, File::get($directory->createFilePath($fileName), $type));
+        }
       }
     }
   }
@@ -60,7 +62,7 @@ class WorkspaceCache {
 
     foreach ($this->cachedFiles as $fileSet) {
       foreach ($fileSet as /** @var File */ $file) {
-        $files[$file->getPath()] = $file;
+        $files[(string) $file->getPath()] = $file;
       }
     }
 

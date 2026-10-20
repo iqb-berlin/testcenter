@@ -12,7 +12,7 @@ class ResourceFile extends File {
 
     $this->id = strtoupper($this->name);
 
-    if (FileExt::has($this->getPath(), 'HTML')) {
+    if (FileExt::has($this->getName(), 'HTML')) {
       $this->readVeronaMetaData();
       $this->id = strtoupper($this->getVeronaModuleId() . '-' . $this->versionMayor . '.' . $this->versionMinor);
     }
@@ -23,7 +23,7 @@ class ResourceFile extends File {
   }
 
   public function isPackage(): bool {
-    return FileExt::has($this->getPath(), 'ITCR.ZIP');
+    return FileExt::has($this->getName(), 'ITCR.ZIP');
   }
 
   // player is not it's own class, because player and other resources are stored in the same dir
@@ -49,7 +49,7 @@ class ResourceFile extends File {
         $this->versionMinor,
         $this->versionPatch,
         $this->versionLabel,
-        ) = array_values(Version::guessFromFileName(basename($this->getPath())));
+        ) = array_values(Version::guessFromFileName($this->getName()));
 
       $this->report('warning', 'Metadata missing. Version guessed from Filename.');
     }
@@ -236,7 +236,7 @@ class ResourceFile extends File {
 
   public function validatePackage(): void {
     try {
-      $meta = ZIP::readMeta($this->getPath());
+      $meta = ZIP::readMeta($this->getContent());
 
       $this->description = $meta['comment'] ?? '';
 
@@ -247,13 +247,11 @@ class ResourceFile extends File {
     }
   }
 
-  private function getPackageContentPath(): string {
-    return dirname($this->getPath()) . '/' . basename($this->getName(), '.itcr.zip');
+  private function getPackageDirectory(): StorageDirectory {
+    return $this->getPath()->directory->createSubdirectory(basename($this->getName(), '.itcr.zip'));
   }
 
   public function installPackage(): void {
-    $contentsDirName = $this->getPackageContentPath();
-
     try {
       $this->uninstallPackage();
 
@@ -262,24 +260,31 @@ class ResourceFile extends File {
       return;
     }
 
+    $extractionPath = sys_get_temp_dir() . '/' . uniqid('package-', true);
     try {
-      ZIP::extract($this->getPath(), $contentsDirName);
+      if (!mkdir($extractionPath)) {
+        throw new Exception("Could not create `$extractionPath`.");
+      }
+      ZIP::extract($this->getContent(), $extractionPath);
+
+      $packageDirectory = $this->getPackageDirectory();
+      foreach (Folder::getContentsFlat($extractionPath) as $relativePath) {
+        Storage::getDriver()->put(
+          StoragePath::fromString($packageDirectory . $relativePath),
+          "$extractionPath/$relativePath"
+        );
+      }
 
     } catch (Exception $e) {
       $this->report('error', "Could not extract package: {$e->getMessage()}");
-      return;
+
+    } finally {
+      Folder::deleteContentsRecursive($extractionPath);
+      @rmdir($extractionPath);
     }
   }
 
   public function uninstallPackage(): void {
-    $contentsDirName = $this->getPackageContentPath();
-    if (file_exists($contentsDirName)) {
-      if (is_dir($contentsDirName)) {
-        Folder::deleteContentsRecursive($contentsDirName);
-        rmdir($contentsDirName);
-      } else {
-        unlink($contentsDirName);
-      }
-    }
+    Storage::getDriver()->deleteDirectory($this->getPackageDirectory());
   }
 }

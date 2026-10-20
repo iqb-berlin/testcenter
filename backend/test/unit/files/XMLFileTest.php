@@ -40,11 +40,11 @@ class XMLFileTest extends TestCase {
   }
 
   function test_loadFromFile() {
-    $xf = new XMLFile(DATA_DIR . '/ws_1/Booklet/SAMPLE_BOOKLET.XML');
+    $xf = new XMLFile(StoragePath::fromString('ws_1/Booklet/SAMPLE_BOOKLET.XML'));
 
     $this->assertEquals('SAMPLE_BOOKLET.XML', $xf->getName());
     $this->assertEquals('BOOKLET.SAMPLE-1', $xf->getId());
-    $this->assertEquals('vfs://root/data/ws_1/Booklet/SAMPLE_BOOKLET.XML', $xf->getPath());
+    $this->assertEquals('ws_1/Booklet/SAMPLE_BOOKLET.XML', (string) $xf->getPath());
     $this->assertEquals('Sample booklet', $xf->getLabel());
     $this->assertEquals(filesize(DATA_DIR . '/ws_1/Booklet/SAMPLE_BOOKLET.XML'), $xf->getSize());
     $this->assertEquals('Booklet', $xf->getRootTagName());
@@ -53,26 +53,26 @@ class XMLFileTest extends TestCase {
   }
 
   function test_loadFromNotExisting() {
-    $xf = new XMLFile(DATA_DIR . '/ws_1/Booklet/not-existing.XML');
+    $xf = new XMLFile(StoragePath::fromString('ws_1/Booklet/not-existing.XML'));
 
     $this->assertEquals('not-existing.XML', $xf->getName());
     $this->assertEquals('NOT-EXISTING.XML', $xf->getId());
-    $this->assertEquals('vfs://root/data/ws_1/Booklet/not-existing.XML', $xf->getPath());
+    $this->assertEquals('ws_1/Booklet/not-existing.XML', (string) $xf->getPath());
     $this->assertEquals('', $xf->getLabel());
     $this->assertEquals(0, $xf->getSize());
     $this->assertEquals('', $xf->getRootTagName());
     $this->assertEquals('', $xf->getDescription());
-    $this->assertEquals('File does not exist: `vfs://root/data/ws_1/Booklet/not-existing.XML`', $this->getErrorString($xf));
+    $this->assertEquals('File does not exist: `ws_1/Booklet/not-existing.XML`', $this->getErrorString($xf));
   }
 
   function test_loadFromArbitrary() {
     file_put_contents(DATA_DIR . "/ws_1/arbitrary.xml", '<a><Metadata><Id>ARBITRARY.XML</Id></Metadata><b>c</b>d</a>');
 
-    $xf = new XMLFile(DATA_DIR . '/ws_1/arbitrary.xml');
+    $xf = new XMLFile(StoragePath::fromString('ws_1/arbitrary.xml'));
 
     $this->assertEquals('arbitrary.xml', $xf->getName());
     $this->assertEquals('ARBITRARY.XML', $xf->getId());
-    $this->assertEquals('vfs://root/data/ws_1/arbitrary.xml', $xf->getPath());
+    $this->assertEquals('ws_1/arbitrary.xml', (string) $xf->getPath());
     $this->assertEquals('', $xf->getLabel());
     $this->assertEquals(59, $xf->getSize());
     $this->assertEquals('a', $xf->getRootTagName());
@@ -80,11 +80,11 @@ class XMLFileTest extends TestCase {
   }
 
   function test_loadFromBogus() {
-    $xf = new XMLFile(DATA_DIR . '/ws_1/Testtakers/testtakers-broken.xml');
+    $xf = new XMLFile(StoragePath::fromString('ws_1/Testtakers/testtakers-broken.xml'));
 
     $this->assertEquals('testtakers-broken.xml', $xf->getName());
     $this->assertEquals('TESTTAKERS-BROKEN.XML', $xf->getId());
-    $this->assertEquals('vfs://root/data/ws_1/Testtakers/testtakers-broken.xml', $xf->getPath());
+    $this->assertEquals('ws_1/Testtakers/testtakers-broken.xml', (string) $xf->getPath());
     $this->assertEquals('', $xf->getLabel());
     $this->assertEquals(filesize(DATA_DIR . '/ws_1/Testtakers/testtakers-broken.xml'), $xf->getSize());
     $this->assertEquals('', $xf->getRootTagName());
@@ -93,11 +93,11 @@ class XMLFileTest extends TestCase {
   }
 
   function test_loadFromValid() {
-    $xf = new XMLFile(DATA_DIR . '/ws_1/Booklet/SAMPLE_BOOKLET.XML');
+    $xf = new XMLFile(StoragePath::fromString('ws_1/Booklet/SAMPLE_BOOKLET.XML'));
 
     $this->assertEquals('SAMPLE_BOOKLET.XML', $xf->getName());
     $this->assertEquals('BOOKLET.SAMPLE-1', $xf->getId());
-    $this->assertEquals('vfs://root/data/ws_1/Booklet/SAMPLE_BOOKLET.XML', $xf->getPath());
+    $this->assertEquals('ws_1/Booklet/SAMPLE_BOOKLET.XML', (string) $xf->getPath());
     $this->assertEquals('Sample booklet', $xf->getLabel());
     $this->assertEquals(filesize(DATA_DIR . '/ws_1/Booklet/SAMPLE_BOOKLET.XML'), $xf->getSize());
     $this->assertEquals('Booklet', $xf->getRootTagName());
@@ -106,11 +106,11 @@ class XMLFileTest extends TestCase {
   }
 
   function test_loadFromBogusAndValidate() {
-    $xf = new XMLFile(DATA_DIR . '/ws_1/Testtakers/testtakers-broken.xml');
+    $xf = new XMLFile(StoragePath::fromString('ws_1/Testtakers/testtakers-broken.xml'));
 
     $this->assertEquals('testtakers-broken.xml', $xf->getName());
     $this->assertEquals('TESTTAKERS-BROKEN.XML', $xf->getId());
-    $this->assertEquals('vfs://root/data/ws_1/Testtakers/testtakers-broken.xml', $xf->getPath());
+    $this->assertEquals('ws_1/Testtakers/testtakers-broken.xml', (string) $xf->getPath());
     $this->assertEquals('', $xf->getLabel());
     $this->assertEquals(filesize(DATA_DIR . '/ws_1/Testtakers/testtakers-broken.xml'), $xf->getSize());
     $this->assertEquals('', $xf->getRootTagName());
@@ -127,11 +127,11 @@ class XMLFileTest extends TestCase {
       . '<Invalid></Invalid>'
       . '</Booklet>'
     );
-    $xf = new XMLFile(DATA_DIR . '/ws_1/invalid.xml');
+    $xf = new XMLFile(StoragePath::fromString('ws_1/invalid.xml'));
 
     $this->assertEquals('invalid.xml', $xf->getName());
     $this->assertEquals('C', $xf->getId());
-    $this->assertEquals('vfs://root/data/ws_1/invalid.xml', $xf->getPath());
+    $this->assertEquals('ws_1/invalid.xml', (string) $xf->getPath());
     $this->assertEquals('d', $xf->getLabel());
     $this->assertEquals(225, $xf->getSize());
     $this->assertEquals('Booklet', $xf->getRootTagName());
@@ -139,7 +139,7 @@ class XMLFileTest extends TestCase {
     $this->assertEquals("Error [1871] in line 2: Element 'Invalid': This element is not expected. Expected is one of ( CustomTexts, BookletConfig, States, Units ).", $this->getErrorString($xf));
   }
 
-  private function writeBookletWithSchema(string $schemaUrl): string {
+  private function writeBookletWithSchema(string $schemaUrl): StoragePath {
     $path = DATA_DIR . "/ws_1/booklet-schema.xml";
     file_put_contents(
       $path,
@@ -148,7 +148,7 @@ class XMLFileTest extends TestCase {
       . '<Metadata><Id>c</Id><Label>d</Label></Metadata>'
       . '</Booklet>'
     );
-    return $path;
+    return StoragePath::fromString('ws_1/booklet-schema.xml');
   }
 
   function test_schemaVersionNewerThanSupported() {
@@ -182,7 +182,7 @@ class XMLFileTest extends TestCase {
   function test_schemaMissingWithoutValidation() {
     SystemConfig::$xmlSchema_validation = false;
     file_put_contents(DATA_DIR . "/ws_1/no-schema.xml", '<Booklet><Metadata><Id>c</Id><Label>d</Label></Metadata></Booklet>');
-    $xf = new XMLFile(DATA_DIR . "/ws_1/no-schema.xml");
+    $xf = new XMLFile(StoragePath::fromString('ws_1/no-schema.xml'));
 
     $this->assertEquals(
       'File has no link to XSD-schema. Expected a schema URL like '
@@ -213,7 +213,7 @@ class XMLFileTest extends TestCase {
       . '<Invalid></Invalid>'
       . '</Booklet>'
     );
-    $xf = new XMLFile(DATA_DIR . '/ws_1/invalid.xml');
+    $xf = new XMLFile(StoragePath::fromString('ws_1/invalid.xml'));
 
     $this->assertArrayNotHasKey('error', $xf->getValidationReport());
   }
