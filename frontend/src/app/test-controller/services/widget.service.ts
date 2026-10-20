@@ -3,13 +3,16 @@ import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { combineLatest, merge, Subscription } from 'rxjs';
 import { distinctUntilChanged, first, tap } from 'rxjs/operators';
 import { MainDataService } from '@shared/shared.module';
-import { WidgetDialogComponent, WidgetDialogData } from '../components/widget-dialog/widget-dialog.component';
+import {
+  WidgetDialogComponent, WidgetDialogData, WidgetWindowBounds
+} from '../components/widget-dialog/widget-dialog.component';
 import { WidgetSession } from '../classes/widget-session.class';
 import { isLoadingFileLoaded } from '../interfaces/test-controller.interfaces';
 import { WidgetCall, WidgetParameter } from '../interfaces/widget.interfaces';
 import { BackendService } from './backend.service';
 import { TestControllerService } from './test-controller.service';
 import { parseWidgetCall, widgetParameters } from '../util/widget-start.util';
+import { widgetModelCandidates } from '../util/widget-model.util';
 import { CalculatorResult, calculatorFormula, calculatorResult } from '../util/calculator-result.util';
 
 interface WidgetRequest {
@@ -40,6 +43,7 @@ interface ActiveWidgetDialog {
 export class WidgetService implements OnDestroy {
   private readonly subscriptions = new Subscription();
   private readonly states = new Map<string, string>();
+  private readonly windowBounds = new Map<string, WidgetWindowBounds>();
   private activeDialog: ActiveWidgetDialog | undefined;
   private readonly lastCalculatorResult = signal<CalculatorResult | undefined>(undefined);
   readonly calculatorResult = this.lastCalculatorResult.asReadonly();
@@ -55,6 +59,7 @@ export class WidgetService implements OnDestroy {
     this.subscriptions.add(this.tcs.runReset$.subscribe(() => {
       this.close();
       this.states.clear();
+      this.windowBounds.clear();
       this.lastCalculatorResult.set(undefined);
     }));
     this.subscriptions.add(merge(
@@ -161,7 +166,8 @@ export class WidgetService implements OnDestroy {
         key, timeStamp, content: { sessionId, ...content }
       }]);
     };
-    const activeDialog = this.openDialog(`Widget ${model}`, trigger, canRestoreFocus);
+    const boundsKey = widgetModelCandidates(model)[0];
+    const activeDialog = this.openDialog(`Widget ${model}`, trigger, canRestoreFocus, boundsKey);
     let acceptedState: string | undefined;
     activeDialog.ref.beforeClosed().subscribe((reason) => {
       log('CALCULATOR_CLOSED', { reason: reason ?? 'host_triggered', returnReceived });
@@ -241,14 +247,24 @@ export class WidgetService implements OnDestroy {
   ngOnDestroy(): void {
     this.close();
     this.states.clear();
+    this.windowBounds.clear();
     this.lastCalculatorResult.set(undefined);
     this.subscriptions.unsubscribe();
   }
 
   private openDialog(
-    name: string, trigger: HTMLElement, canRestoreFocus: () => boolean = () => true
+    name: string, trigger: HTMLElement, canRestoreFocus: () => boolean = () => true, boundsKey?: string
   ): ActiveWidgetDialog {
     const unitSequenceId = this.tcs.currentUnitSequenceId;
+    const bounds = boundsKey === undefined ? undefined : this.windowBounds.get(boundsKey);
+    const width = bounds ? Math.min(bounds.width, window.innerWidth * 0.95) : undefined;
+    const height = bounds ? Math.min(bounds.height, window.innerHeight * 0.95) : undefined;
+    const position = bounds && width !== undefined && height !== undefined ?
+      {
+        left: `${Math.max(0, Math.min(bounds.left, window.innerWidth - width))}px`,
+        top: `${Math.max(0, Math.min(bounds.top, window.innerHeight - height))}px`
+      } :
+      undefined;
     const ref = this.dialog.open<WidgetDialogComponent, WidgetDialogData, WidgetCloseReason>(WidgetDialogComponent, {
       data: { name },
       ariaModal: true,
@@ -256,8 +272,9 @@ export class WidgetService implements OnDestroy {
       delayFocusTrap: false,
       restoreFocus: false,
       disableClose: true,
-      width: '95vw',
-      height: '95vh',
+      width: width === undefined ? '95vw' : `${width}px`,
+      height: height === undefined ? '95vh' : `${height}px`,
+      position,
       maxWidth: '95vw',
       maxHeight: '95vh',
       panelClass: 'widget-dialog',
@@ -267,7 +284,10 @@ export class WidgetService implements OnDestroy {
       ref, subscriptions: new Subscription(), restoreFocus: true
     };
     this.activeDialog = activeDialog;
-    ref.beforeClosed().subscribe(() => activeDialog.subscriptions.unsubscribe());
+    ref.beforeClosed().subscribe(() => {
+      if (boundsKey !== undefined) this.windowBounds.set(boundsKey, ref.componentInstance.windowBounds);
+      activeDialog.subscriptions.unsubscribe();
+    });
     ref.afterClosed().subscribe(() => {
       if (this.activeDialog === activeDialog) this.activeDialog = undefined;
       if (activeDialog.restoreFocus && trigger.isConnected && canRestoreFocus() &&

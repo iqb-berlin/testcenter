@@ -121,6 +121,133 @@ describe('Uploaded calculator launch', () => {
     return { source, post };
   }
 
+  function shrinkWindow(): void {
+    const handle = document.querySelector<HTMLButtonElement>('.widget-dialog .resize');
+    if (!handle) throw new Error('Missing resize handle');
+    for (let i = 0; i < 12; i++) {
+      handle.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowLeft', bubbles: true }));
+      handle.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowUp', bubbles: true }));
+    }
+  }
+
+  function expectBounds(expected: { width: number; height: number; left: number; top: number }): void {
+    const actual = view().windowBounds;
+    expect(actual.width).toBeCloseTo(expected.width, 0);
+    expect(actual.height).toBeCloseTo(expected.height, 0);
+    expect(actual.left).toBeCloseTo(expected.left, 0);
+    expect(actual.top).toBeCloseTo(expected.top, 0);
+  }
+
+  it('restores the size and position of a widget type until the test run resets', fakeAsync(() => {
+    open();
+    http.expectOne('/api/file/calculator-group/ws_1/Resource/calculator.html').flush('<html></html>');
+    ready();
+    const original = view().windowBounds;
+    shrinkWindow();
+    dialog.openDialogs[0].updatePosition({ left: '12px', top: '16px' });
+    const resized = view().windowBounds;
+    expect(resized.width).toBeLessThan(original.width);
+    expect(resized.height).toBeLessThan(original.height);
+    cancel();
+    open();
+    http.expectOne('/api/file/calculator-group/ws_1/Resource/calculator.html').flush('<html></html>');
+    ready();
+    expectBounds(resized);
+    // A reset while the window is open must also discard the bounds saved by closing it.
+    reset.next();
+    tick();
+    open();
+    http.expectOne('/api/file/calculator-group/ws_1/Resource/calculator.html').flush('<html></html>');
+    ready();
+    expectBounds(original);
+    cancel();
+  }));
+
+  it('shares bounds across player calls and Units while separating widget types', fakeAsync(() => {
+    tcs.widgets.PERIODIC_TABLE = ['Resource/periodic.html'];
+    tcs.widgets.MOLECULE_EDITOR = ['Resource/molecule.html'];
+    const player = document.createElement('iframe');
+    trigger.parentElement?.appendChild(player);
+    const source = player.contentWindow;
+    if (!source) throw new Error('Missing player window');
+    const launch = (widgetType = 'PERIODIC_TABLE'): void => {
+      fixture.componentInstance.widgets.open({
+        call: { type: 'vopWidgetCall', sessionId: 'player-session', callId: crypto.randomUUID(), widgetType },
+        source, playerIframe: player
+      });
+      fixture.detectChanges();
+      const resource = widgetType === 'PERIODIC_TABLE' ? 'periodic' : 'molecule';
+      http.expectOne(`/api/file/calculator-group/ws_1/Resource/${resource}.html`).flush('<html></html>');
+      ready(widgetType);
+    };
+    launch();
+    const original = view().windowBounds;
+    shrinkWindow();
+    dialog.openDialogs[0].updatePosition({ left: '12px', top: '16px' });
+    const resized = view().windowBounds;
+    cancel();
+    launch();
+    expectBounds(resized);
+    cancel();
+    launch('MOLECULE_EDITOR');
+    expectBounds(original);
+    cancel();
+    launch();
+    tcs.currentUnitSequenceId = 2;
+    tcs.currentUnitSequenceId$.next(2);
+    tick();
+    expect(dialog.openDialogs.length).toBe(0);
+    launch();
+    expectBounds(resized);
+    shrinkWindow();
+    dialog.openDialogs[0].updatePosition({ left: '20px', top: '24px' });
+    const updated = view().windowBounds;
+    cancel();
+    tcs.currentUnitSequenceId = 1;
+    tcs.currentUnitSequenceId$.next(1);
+    launch();
+    expectBounds(updated);
+    cancel();
+
+    // Host launches of the same type share bounds even with another button and resource.
+    const otherTrigger = document.createElement('button');
+    trigger.parentElement?.appendChild(otherTrigger);
+    fixture.componentInstance.widgets.openHost({
+      model: 'PERIODIC_TABLE', resourcePath: 'Resource/other-periodic.html', parameters: [], trigger: otherTrigger
+    });
+    fixture.detectChanges();
+    http.expectOne('/api/file/calculator-group/ws_1/Resource/other-periodic.html').flush('<html></html>');
+    ready('PERIODIC_TABLE');
+    expectBounds(updated);
+    cancel();
+    otherTrigger.remove();
+    player.remove();
+  }));
+
+  it('shares calculator bounds across Units between host launches and the CALC player alias', fakeAsync(() => {
+    open();
+    http.expectOne('/api/file/calculator-group/ws_1/Resource/calculator.html').flush('<html></html>');
+    ready();
+    shrinkWindow();
+    dialog.openDialogs[0].updatePosition({ left: '12px', top: '16px' });
+    const resized = view().windowBounds;
+    cancel();
+    tcs.currentUnitSequenceId = 2;
+    tcs.currentUnitSequenceId$.next(2);
+    const player = document.createElement('iframe');
+    trigger.parentElement?.appendChild(player);
+    fixture.componentInstance.widgets.open({
+      call: { type: 'vopWidgetCall', sessionId: 'player-session', callId: crypto.randomUUID(), widgetType: 'CALC' },
+      source: player.contentWindow, playerIframe: player
+    });
+    fixture.detectChanges();
+    http.expectOne('/api/file/calculator-group/ws_1/Resource/calculator.html').flush('<html></html>');
+    ready();
+    expectBounds(resized);
+    cancel();
+    player.remove();
+  }));
+
   it('downloads the preferred uploaded resource through the authenticated path without a player', fakeAsync(() => {
     tcs.widgets = { CALC: ['Resource/calc.html'], CALCULATOR: ['Resource/old.html', 'Resource/calculator.html'] };
     open();

@@ -2,9 +2,18 @@ import { Component, ElementRef, Inject, OnDestroy, ViewChild, signal } from '@an
 import { MatDialogModule, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { CdkDrag, CdkDragHandle } from '@angular/cdk/drag-drop';
+import { DialogResizeDirective } from './dialog-resize.directive';
 
 export type WidgetDialogStatus = 'loading' | 'starting' | 'running' | 'download-error' | 'startup-error' |
   'missing-calculator';
+
+export interface WidgetWindowBounds {
+  width: number;
+  height: number;
+  left: number;
+  top: number;
+}
 
 export interface WidgetDialogData {
   name: string;
@@ -12,13 +21,16 @@ export interface WidgetDialogData {
 
 @Component({
   selector: 'tc-widget-dialog',
-  imports: [MatDialogModule, MatButtonModule, MatIconModule],
+  imports: [MatDialogModule, MatButtonModule, MatIconModule, CdkDrag, CdkDragHandle, DialogResizeDirective],
   template: `
-    <h2 class="cdk-visually-hidden" mat-dialog-title>{{ name() }}</h2>
-    <button class="close" aria-label="Widget schließen" mat-icon-button
-            mat-dialog-close="user_called">
-      <mat-icon svgIcon="close"></mat-icon>
-    </button>
+    <header cdkDrag #drag="cdkDrag" cdkDragRootElement=".cdk-overlay-pane"
+            cdkDragBoundary=".cdk-overlay-container">
+      <h2 mat-dialog-title cdkDragHandle
+          (pointerdown)="capturePointer($event)">{{ name() }}</h2>
+      <button aria-label="Widget schließen" mat-icon-button mat-dialog-close="user_called">
+        <mat-icon svgIcon="close"></mat-icon>
+      </button>
+    </header>
     <div class="status" aria-live="polite" role="status">
       @switch (status()) {
         @case ('loading') { <p>Widget wird geladen …</p> }
@@ -36,11 +48,20 @@ export interface WidgetDialogData {
       }
     </div>
     <div #frameHost class="frame-host"></div>
+    <button class="resize" aria-label="Widget-Größe ändern" title="Widget-Größe ändern"
+            [tcDialogResize]="drag">◢</button>
   `,
   styles: [`
     :host { display: flex; flex-direction: column; position: relative; height: 100%; background: white; }
-    .cdk-visually-hidden { position: absolute; margin: -1px; padding: 0; }
-    .close { position: absolute; top: 10px; right: 10px; }
+    header { display: flex; align-items: center; flex-shrink: 0; }
+    h2 { flex: 1; margin: 0; padding: 8px 16px; cursor: move; touch-action: none; user-select: none; }
+    h2::before { display: none; }
+    header button { margin-right: 8px; }
+    .resize {
+      position: absolute; right: 0; bottom: 0; width: 24px; height: 24px;
+      padding: 0; border: 0; border-radius: 4px; cursor: nwse-resize; touch-action: none;
+      color: var(--mat-sys-on-surface); background: var(--mat-sys-surface-container);
+    }
     .frame-host { flex: 1; min-height: 0; }
     .status:has(p) { margin: auto; padding: 60px 20px; text-align: center; }
   `]
@@ -50,9 +71,20 @@ export class WidgetDialogComponent implements OnDestroy {
   readonly status = signal<WidgetDialogStatus>('loading');
   readonly name = signal('Widget');
   private iframe: HTMLIFrameElement | undefined;
+  @ViewChild(CdkDrag, { static: true }) private drag!: CdkDrag;
 
   constructor(@Inject(MAT_DIALOG_DATA) data: WidgetDialogData) {
     this.name.set(data.name);
+  }
+
+  get windowBounds(): WidgetWindowBounds {
+    const { width, height, left, top } = this.drag.getRootElement().getBoundingClientRect();
+    return { width, height, left, top };
+  }
+
+  capturePointer(event: PointerEvent): void {
+    // Keep drag events in the host document when crossing the widget iframe.
+    if (event.currentTarget instanceof HTMLElement) event.currentTarget.setPointerCapture(event.pointerId);
   }
 
   start(html: string, initialize: (widgetWindow: Window) => void, colorScheme?: 'light' | 'dark'): void {
@@ -60,7 +92,7 @@ export class WidgetDialogComponent implements OnDestroy {
     const iframe = document.createElement('iframe');
     this.iframe = iframe;
     iframe.title = this.name();
-    iframe.style.cssText = 'width:100%;height:100%;border:0;';
+    iframe.style.cssText = 'display:block;width:100%;height:100%;border:0;';
     if (colorScheme) {
       // Apply the theme before the iframe can paint its default colors.
       const doc = new DOMParser().parseFromString(html, 'text/html');
