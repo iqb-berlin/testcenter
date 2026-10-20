@@ -19,14 +19,11 @@ class WorkspaceCache {
 
   public function loadFiles(): void {
     foreach (Workspace::subFolders as $type) {
-      $pattern = ($type == 'Resource') ? "*.*" : "*.[xX][mM][lL]";
       $directory = $this->workspace->getStorageDirectory()->createSubdirectory($type);
-      $fileNames = array_keys(Storage::getDriver()->listFiles($directory));
+      $fileNames = array_keys($this->workspace->listFilesOfType($type));
 
       foreach (array_reverse($fileNames) as $fileName) {
-        if (fnmatch($pattern, $fileName)) {
-          $this->addFile($type, File::get($directory->createFilePath($fileName), $type));
-        }
+        $this->addFile($type, File::get($directory->createFilePath($fileName), $type));
       }
     }
   }
