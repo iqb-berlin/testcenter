@@ -567,6 +567,6 @@ CREATE TRIGGER unit_reviews_reviewtime_bu
 -- patches.d empty it is the release this schema belongs to. Changes from the unreleased
 -- `scripts/database/next.sql` are folded in as well, but raise this stamp only at release.
 INSERT INTO meta ("metaKey", value, category)
-VALUES ('dbSchemaVersion', '19.0.0', NULL);
+VALUES ('dbSchemaVersion', '18.3.0', NULL);
 
 COMMIT;
