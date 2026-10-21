@@ -47,6 +47,11 @@ class CacheService {
   }
 
   public static function storeFile(string $filePath): void {
+    // On the object-store path the file-server redirects to a presigned URL and
+    // never reads from this cache, so warming it would only waste Redis memory.
+    if (Storage::isObjectStore()) {
+      return;
+    }
     if (!SystemConfig::$cacheServer_includeFiles) {
       return;
     }
