@@ -10,6 +10,7 @@
 - API: Berichte (`GET /workspace/{ws_id}/report/{type}`) ohne den optionalen Parameter `dataIds` umfassen alle Gruppen bzw. alle System-Checks des Arbeitsbereichs. Bisher brachen Log-, Antwort- und Review-Berichte mit einem SQL-Fehler ab, und der System-Check-Bericht war leer. (#1614)
 
 ## Technisches
+- Die Bibliotheken für automatische Kodierung sind auf Responses 5.4.0 und Coding-Scheme 3.5.0 aktualisiert. Damit werden die optionalen Partial-Credit-Einstellungen neuer Kodierschemata unterstützt.
 - Der Brute-Force-Schutz (`BRUTE_FORCE_PROTECTION` in `.env.prod-template`) ist bei Neuinstallationen via docker-compose ausgeschaltet.
 
 # 19.0.0
