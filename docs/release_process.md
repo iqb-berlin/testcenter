@@ -15,8 +15,13 @@ The pipeline runs on GitLab and decides by the tag:
 ## 1. Prepare
 
 - `make create-interfaces` and commit the result (usually a refreshed browser list in `definitions/browsers.json`).
-- Rename `scripts/database/patches.d/next.sql` and `scripts/migration/next.sh` after the release, e.g. `19.1.0.sql`
-  and `19.1.0.sh`. Never add a pre-release suffix like `-rc1` to these file names.
+- If `scripts/database/next.sql` exists, turn it into the release's patch, e.g. for 19.1.0:
+  1. Move it to `scripts/database/patches.d/19.1.0.sql`, so the patch run applies it to existing installations.
+  2. Raise the version `scripts/database/full.sql` stamps into `meta.dbSchemaVersion` to `19.1.0`. `full.sql`
+     already contains the change, and a lower stamp would make a fresh installation apply it a second time.
+  3. Raise `DBSchema::REQUIRED_VERSION` to `19.1.0`. The backend refuses to start unless it matches the stamp.
+- Rename `scripts/migration/next.sh` after the release, e.g. `19.1.0.sh`.
+- Never add a pre-release suffix like `-rc1` to these file names.
 - Make sure `docs/CHANGELOG.md` is up to date and its top heading is the release, e.g. `# 19.1.0`.
 - For a new minor version, add it at the top of `docs/site/public/versions.json`. Remove versions whose docs are no
   longer offered.

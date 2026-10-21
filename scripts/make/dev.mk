@@ -4,7 +4,7 @@ TC_BASE_DIR := $(shell git rev-parse --show-toplevel)
 
 ## prevents collisions of make target names with possible file names
 .PHONY: init dev-registry-login dev-registry-logout build up down start stop logs composer-install composer-update\
-	composer-refresh-autoload init-backend create-interfaces
+	composer-refresh-autoload init-backend create-interfaces apply-next-db-patch
 
 # Initialized the Application. Run this right after checking out the Repo.
 init:
@@ -90,6 +90,20 @@ connect-db:
 			--file docker-compose.yml\
 			--file docker-compose.dev.yml\
 		exec db psql --username=$(DB_USER) --dbname=$(DB_DATABASE)
+
+# Applies the unreleased schema patch `scripts/database/next.sql` to the dev database. The patch run
+# of `init-backend` only knows versioned patches, so this is a manual step. It does not touch
+# meta.dbSchemaVersion: once the patch is released under its version number, recreate the dev
+# database instead of upgrading it.
+apply-next-db-patch:
+	cd $(TC_BASE_DIR) &&\
+	docker compose\
+			--env-file .env.dev\
+			--file docker-compose.yml\
+			--file docker-compose.dev.yml\
+		exec --no-TTY db psql --username=$(DB_USER) --dbname=$(DB_DATABASE)\
+				--set ON_ERROR_STOP=1 --single-transaction\
+			< scripts/database/next.sql
 
 composer-install:
 	docker run --rm --interactive --tty\

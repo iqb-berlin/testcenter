@@ -2,9 +2,13 @@
 - Base database-related changes only on the table shape in `scripts/database/full.sql`; current database contents are unavailable.
 - `full.sql` is hand-maintained, not dumped from a running database. Its comments record the decisions that are not
   visible in the DDL itself (collations, the constant `file_type` column, the `reviewtime` triggers); read them
-  before you change the schema. When you add a patch to `patches.d/`, apply the same change to
-  `full.sql` as well, and raise both the version that `full.sql` writes into `meta.dbSchemaVersion` and
-  `DBSchema::REQUIRED_VERSION` to that patch's version. A fresh installation runs `full.sql` and then every patch
+  before you change the schema. A schema change for the upcoming release goes into `scripts/database/next.sql`;
+  apply the same change to `full.sql` as well, but leave the version that `full.sql` writes into
+  `meta.dbSchemaVersion` and `DBSchema::REQUIRED_VERSION` alone. At release, `next.sql` moves to `patches.d/`
+  under the release's version and both are raised to it (see `docs/release_process.md`).
+  `installPatches()` never runs `next.sql`; apply it to the dev database with `make apply-next-db-patch`. After the
+  release, recreate the dev database: it already has the change but not the stamp, so the released patch would run
+  a second time. A fresh installation runs `full.sql` and then every patch
   newer than that stamp, and the test database runs `full.sql` alone - so if the two drift apart, either a patch is
   applied a second time or the tests run against a different schema than production. `DBSchemaTest` fails if the
   stamp and the constant disagree.
@@ -15,7 +19,8 @@
   Patch *file names* stay in the application's version space - that is what lets `installPatches()` skip patches
   belonging to a later release.
 - when modifying the number of rows of any sql table within the sampledata, make sure to adapt calls to 'expect_table_to_have_rows' in all scripts in backend/test/initialization/tests/general
-- Migrations: SQL patches go in `scripts/database/patches.d/`. Seeds go in `backend/test/unit/testdata.sql` (INSERT statements only).
+- Migrations: unreleased SQL changes go in `scripts/database/next.sql`, released patches in
+  `scripts/database/patches.d/`. Seeds go in `backend/test/unit/testdata.sql` (INSERT statements only).
 - Collation: columns marked `COLLATE german2_ci` use a non-deterministic ICU collation, which gives them the
   case-insensitive comparison they had in MySQL. PostgreSQL refuses `LIKE`, `ILIKE`, `~` and every other pattern
   match on such a column ("nondeterministic collations are not supported for LIKE"). No query does this today.

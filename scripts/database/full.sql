@@ -563,7 +563,8 @@ CREATE TRIGGER unit_reviews_reviewtime_bu
 -- =====================================================================
 -- Marks how far this file already carries the schema, so that initialize.php does not replay
 -- patches it contains. Must name the newest patch in patches.d that is folded in here; with
--- patches.d empty it is the release this schema belongs to.
+-- patches.d empty it is the release this schema belongs to. Changes from the unreleased
+-- `scripts/database/next.sql` are folded in as well, but raise this stamp only at release.
 INSERT INTO meta ("metaKey", value, category)
 VALUES ('dbSchemaVersion', '18.3.0', NULL);
 

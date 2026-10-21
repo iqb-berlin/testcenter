@@ -4,8 +4,8 @@ This document collects bespoke workflows and checklists that are required before
 
 ## Database changes
 
-- When creating a new table in `scripts/patches.d`, add it to the tables array in `backend/src/dao/DAO.class.php`. Keep referenced tables before tables that use them as foreign keys.
-- When creating a SQL patch in `scripts/patches.d`, update `backend/test/unit/testdata.sql` with any fields that have seed-worthy data. It contains `INSERT` statements only, not table definitions.
+- When creating a new table in `scripts/database/next.sql`, add it to the tables array in `backend/src/dao/DAO.class.php`. Keep referenced tables before tables that use them as foreign keys.
+- When creating a SQL patch in `scripts/database/next.sql`, update `backend/test/unit/testdata.sql` with any fields that have seed-worthy data. It contains `INSERT` statements only, not table definitions.
 
 ## API changes
 
