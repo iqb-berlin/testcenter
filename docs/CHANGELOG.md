@@ -1,3 +1,8 @@
+# 19.0.1
+
+## Fehlerbehebungen
+- PHP-Version auf 8.3.36 aktualisiert
+
 # 19.0.0
 
 ## Umstieg von MySQL auf PostgreSQL
