@@ -1,3 +1,8 @@
+# 18.3.1
+
+## Fehlerbehebungen
+- PHP-Version auf 8.3.36 aktualisiert
+
 # 18.3.0
 
 ## Änderungen
