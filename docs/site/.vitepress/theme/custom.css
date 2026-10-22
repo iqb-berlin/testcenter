@@ -4,6 +4,18 @@
   --vp-layout-max-width: 100vw;
 }
 
+/* Outline-Sidebar: */
+.VPDoc .aside-container {
+  width: 400px;
+  right: 0;
+  left: auto;
+}
+
+.VPDoc .aside,
+.VPDoc .aside-content {
+  max-width: 380px;
+}
+
 /* The outline column is narrow (224px): long headings, e.g. booklet parameter names, wrap instead of
    being cut off. Padding and line height keep single-line entries at their original height of 32px. */
 .VPDocAsideOutline .VPDocOutlineItem .outline-link {
@@ -14,14 +26,16 @@
   overflow-wrap: anywhere;
 }
 
-/* Text column next to the outline: wider than VitePress' default of 688px, matching the 784px VitePress
-   uses on pages without an outline. The selector is one class more specific than VitePress' own rule
-   (`.VPDoc.has-aside .content-container[data-v-…]`), so it wins regardless of stylesheet order. */
-.Layout .VPContent .VPDoc.has-aside .content-container {
-  max-width: 784px;
+/*Sites with pageClass: wide-page */
+
+/* 1. Always hide the outline sidebar when in wide-page mode (independent of the left sidebar) */
+.Layout.wide-page .VPContent .VPDoc .aside {
+  display: none;
 }
 
-/* Pages with wide tables set `pageClass: wide-page` in their frontmatter. */
-.Layout.wide-page .VPContent .VPDoc.has-aside .content-container {
+/* 2. Container set to 1200px for wide tables (applies regardless of the left sidebar) */
+.Layout.wide-page .VPContent .VPDoc .container,
+.Layout.wide-page .VPContent .VPDoc .content,
+.Layout.wide-page .VPContent .VPDoc .content-container {
   max-width: 1200px;
 }

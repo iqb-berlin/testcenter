@@ -1,4 +1,13 @@
+---
+sidebar: false
+next: false
+prev: false
+pageClass: wide-page
+---
+
 # Gruppenmonitor Statusmeldungen
+
+**Detaillierte Informationen zum Gruppenmonitor sind [hier](https://iqb-berlin.github.io/tba-info/study-run/run/groupmon/) zu finden.**
 
 Dies sind die verschiedenen Zustände laufender Tests, die im Gruppenmonitor angezeigt werden können.
 

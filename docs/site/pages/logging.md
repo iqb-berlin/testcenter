@@ -1,4 +1,8 @@
-# Dokumentation der Log-Events (Testcenter)
+---
+pageClass: wide-page
+---
+
+# Log-Events
 
 Diese Datei dokumentiert alle Log-Events, die vom Testcenter angelegt werden.
 

@@ -86,6 +86,19 @@ const customTexts = () => {
     .join('\n');
 };
 
+const compatibility = () => {
+  const definition = readDefinition('compatibility.json');
+  const versions = definition['xml-schema-versions'];
+  let output = '| Komponente | Repository | Min. Version | Max. Version |\n';
+  output += '| :--- | :--- | :---: | :---: |\n';
+  output += Object.entries(versions)
+    .map(([component, { repo, min, max }]) =>
+      `| ${component} | ${repo} | ${min} | ${max} |\n`
+    )
+    .join('');
+  return output;
+};
+
 // colors of the classes in frontend/src/app/group-monitor/test-session/test-session.component.css
 const SUPER_STATE_COLORS = {
   danger: '#821123',
@@ -114,8 +127,27 @@ const generators = {
   'booklet-config.md': bookletConfig,
   'test-mode.md': testMode,
   'custom-texts.md': customTexts,
-  'test-session-super-states.md': testSessionSuperStates
+  'test-session-super-states.md': testSessionSuperStates,
+  'compatibility.md': compatibility
 };
+
+// Copy CONTRIBUTING.md from docs root to generated directory
+const contribSource = new URL('../CONTRIBUTING.md', import.meta.url);
+const contribDest = new URL('contributing.md', generatedDir);
+try {
+  fs.copyFileSync(contribSource, contribDest);
+} catch (err) {
+  console.error('Warning: Could not copy CONTRIBUTING.md to generated directory:', err.message);
+}
+
+// Copy style-guide.md from docs root to generated directory
+const styleGuideSource = new URL('../style-guide.md', import.meta.url);
+const styleGuideDest = new URL('style-guide.md', generatedDir);
+try {
+  fs.copyFileSync(styleGuideSource, styleGuideDest);
+} catch (err) {
+  console.error('Warning: Could not copy style-guide.md to generated directory:', err.message);
+}
 
 fs.mkdirSync(generatedDir, { recursive: true });
 Object.entries(generators)
