@@ -1717,7 +1717,6 @@ build-backend-prod:
   needs: []
   rules:
     - !reference [ .pre-release_rules, rules ]
-    - !reference [ .master_commit_rules, rules ]
   variables:
     BACKEND_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-backend"
   before_script:
