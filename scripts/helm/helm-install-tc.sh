@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-declare TESTCENTER_VERSION="18.1.1"
+declare TESTCENTER_VERSION="18.1.2"
 declare TESTCENTER_CHART_VERSION="2.9.0"
 declare TRAEFIK_VERSION="v3.6.0"
 declare TRAEFIK_CHART_VERSION="37.3.0"
