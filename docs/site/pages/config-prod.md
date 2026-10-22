@@ -5,12 +5,14 @@ Check after every update of the testcenter version, whether new configurations h
 `.env.prod-template` file, and consider adding them to your `.env.prod` file.
 
 ## TLS
+
 TLS Certificates can be managed manually or via a ACME provider like "Let's Encrypt" or "Sectigo".
 If you choose to use an ACME provider, the install process will ask for all necessary configuration data and fill in the `.env` file and create additional config files.
 If managed manually, the TLS certificate must be named `certificate.pem` and TLS Private Key must be named `private_key.pem` and both need to be placed in the folder _/secrets/traefik/certs_.
 If no certificates are configured, self-signed certificates are generated and used. This may cause a browser warning.
 
 ## Database
+
 The database runs as a container inside the application's own network and is not published to the host. It is
 configured by three settings in `.env.prod`:
 
@@ -41,6 +43,7 @@ Afterwards set the same value in `.env.prod` and restart the application with `m
 task. It works no matter what `DB_PASSWORD` says, because connections from inside the container need no password.
 
 ## Cache service
+
 The cache service is a Redis container (`cache-server`) inside the application's own network. It serves three purposes:
 
 - The file server checks every download of test resources against the group tokens the backend stores there.

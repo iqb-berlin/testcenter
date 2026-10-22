@@ -30,9 +30,11 @@ Clone this repository
 
 `make init`
 
-> :warning: This creates configuration files with values meant for
+::: warning Warning
+This creates configuration files with values meant for
 development purposes only. For any production setup be sure to customize the files.
 Most importantly use your own passwords!
+:::
 
 The important configuration files are:
 
@@ -61,6 +63,10 @@ Optional service: Only build a specified service, e.g. `service=backend`
 
 Ramp the application up (i.e. creates and starts all application containers).
 Optional service: Only ramp up a specified service, e.g. `service=backend`
+
+::: info Note
+Stop local webserver before, to free port 80
+:::
 
 **Note: Stop local webserver before, to free port 80**
 
