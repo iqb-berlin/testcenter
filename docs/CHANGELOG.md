@@ -13,6 +13,9 @@
   - `login_starterPrompt`: Aufforderung unter der Begrüßung („Komm, wir legen los. Wähle einen Teil aus.“)
 - Die Bibliotheken für automatische Kodierung sind auf Responses 5.4.0 und Coding-Scheme 3.5.0 aktualisiert. Damit werden die optionalen Partial-Credit-Einstellungen neuer Kodierschemata unterstützt.
 
+## Änderungen
+- Der Bestätigungsknopf im Bereich "Dateien" eines Workspace befindet sich nun oben und nicht mehr potentiell weit unten, nach der Liste der hochgeladenen Dateien.
+
 ## Fehlerbehebungen
 - Ist der Brute-Force-Schutz (`BRUTE_FORCE_PROTECTION`) für eine Anmeldeart eingeschaltet, die Seite aber nicht über HTTPS aufgerufen, zeigt die Anmeldeseite einen entsprechenden Hinweis und sperrt die betroffene Anmeldung. Bisher blieb der Anmelde-Knopf nach dem ersten Versuch dauerhaft deaktiviert, weil Browser die für den Schutz nötige Verschlüsselungsfunktion nur über HTTPS bereitstellen.
 - Bei der Anmeldung mit Kennwort, als Administrator:in und mit Code bleibt die Anmeldeschaltfläche während der gesamten ALTCHA-Prüfung deaktiviert, bis der Server die Prüfung abgeschlossen hat. Mehrfaches Absenden während der Prüfung wird verhindert.
