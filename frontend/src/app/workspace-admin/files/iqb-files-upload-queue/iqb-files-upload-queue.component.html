@@ -3,6 +3,11 @@
     <mat-card-title>Upload-Report</mat-card-title>
   </mat-card-header>
 
+  <mat-card-actions>
+    <button
+      *ngIf="!disableClearButton" (click)="removeAll()" mat-raised-button data-cy="close-upload-report">Ok</button>
+  </mat-card-actions>
+
   <mat-card-content data-cy="upload-report">
     <tc-files-upload
       [files]="files"
@@ -14,8 +19,4 @@
     </tc-files-upload>
   </mat-card-content>
 
-  <mat-card-actions>
-    <button
-      *ngIf="!disableClearButton" (click)="removeAll()" mat-raised-button data-cy="close-upload-report">Ok</button>
-  </mat-card-actions>
 </mat-card>
