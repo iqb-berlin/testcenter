@@ -34,7 +34,7 @@ final class ReportTest extends TestCase {
    */
   public static function setUpBeforeClass(): void {
     if (!defined('DATA_DIR')) {
-      vfsStream::setup('root', 0777);
+      vfsStream::setup('root', 0o777);
       define('DATA_DIR', vfsStream::url('root/data'));
     }
   }

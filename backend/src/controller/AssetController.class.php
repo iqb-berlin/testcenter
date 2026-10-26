@@ -40,7 +40,7 @@ class AssetController extends Controller {
 
     $uploadDir = AssetStorage::getDir();
     if (!is_dir($uploadDir)) {
-      mkdir($uploadDir, 0755, true);
+      mkdir($uploadDir, 0o755, true);
     }
     $file->moveTo($uploadDir . DIRECTORY_SEPARATOR . $storedName);
 

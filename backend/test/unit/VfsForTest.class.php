@@ -78,7 +78,7 @@ class VfsForTest {
   }
 
   static function setUp(bool $includeBogusMaterial = false): vfsStreamDirectory {
-    $vfs = vfsStream::setup('root', 0777);
+    $vfs = vfsStream::setup('root', 0o777);
 
     $initializer = new WorkspaceInitializer();
     $initializer->importSampleFiles(1);

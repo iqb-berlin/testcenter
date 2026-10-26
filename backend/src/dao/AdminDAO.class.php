@@ -55,7 +55,7 @@ class AdminDAO extends DAO {
     }
 
     // obfuscate the time taken even more
-    usleep(rand(000000, 100000));
+    usleep(rand(0, 100000));
     return $return;
   }
 

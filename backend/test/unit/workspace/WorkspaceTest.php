@@ -107,7 +107,7 @@ class WorkspaceTest extends TestCase {
   function test_deleteFiles() {
     /** @var $voDataDir \org\bovigo\vfs\vfsStreamContent */
     $voDataDir = $this->vfs->getChild('data')->getChild('ws_1')->getChild('SysCheck');
-    $voDataDir->chmod(0444);
+    $voDataDir->chmod(0o444);
     file_put_contents(DATA_DIR . '/ws_1/Resource/somePlayer.HTML', 'player content');
 
     $this->workspaceDaoMock

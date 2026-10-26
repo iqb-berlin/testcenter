@@ -104,7 +104,7 @@ class FolderTest extends TestCase {
   //   $tmpBase/ws-evil/      (prefix-sibling of the base)
   private function makeTempTree(): string {
     $this->tmpBase = sys_get_temp_dir() . '/tc_folder_test_' . uniqid('', true);
-    mkdir("$this->tmpBase/ws", 0777, true);
+    mkdir("$this->tmpBase/ws", 0o777, true);
     file_put_contents("$this->tmpBase/ws/file.txt", 'contained');
     file_put_contents("$this->tmpBase/secret.txt", 'secret');
     return "$this->tmpBase/ws";
