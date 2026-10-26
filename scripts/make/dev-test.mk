@@ -5,14 +5,15 @@ args ?= --help
 # environment variable also reaches the child processes PHPUnit and amphp start
 UNIT_TEST_PHP_INI := --env PHP_INI_SCAN_DIR=:/var/www/testcenter/backend/test/unit/php-ini
 
-# runs in the dev backend container, where vendor/ is complete - mago needs it to know the dependencies' types
+# runs in the dev backend container, where vendor/ is complete - mago needs it to know the dependencies' types;
+# runs as the host user, so that fixes and formatting can write the bind-mounted sources
 test-backend-static-analysis:
 	cd $(TC_BASE_DIR) &&\
 	docker compose\
 			--env-file .env.dev\
 			--file docker-compose.yml\
 			--file docker-compose.dev.yml\
-		run --rm --no-deps --entrypoint "" backend\
+		run --rm --no-deps --entrypoint "" --user $(shell id -u):$(shell id -g) backend\
 			mago $(args)
 
 test-backend-unit:
