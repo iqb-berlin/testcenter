@@ -31,15 +31,15 @@ class FolderTest extends TestCase {
   function test_glob() {
     $realGlobResult = glob(__DIR__ . '/*');
     $globResult = Folder::glob(__DIR__, '*');
-    $this->assertEquals($realGlobResult, $globResult);
+    static::assertEquals($realGlobResult, $globResult);
 
     $realGlobResult = glob(__DIR__ . '/*.php');
     $globResult = Folder::glob(__DIR__, '*.php');
-    $this->assertEquals($realGlobResult, $globResult);
+    static::assertEquals($realGlobResult, $globResult);
 
     $realGlobResult = glob(__DIR__ . '/*.*');
     $globResult = Folder::glob(__DIR__, '*.*');
-    $this->assertEquals($realGlobResult, $globResult);
+    static::assertEquals($realGlobResult, $globResult);
   }
 
   function test_getContentsRecursive() {
@@ -74,7 +74,7 @@ class FolderTest extends TestCase {
         ]
       ]
     ];
-    $this->assertEquals($expected, $result);
+    static::assertEquals($expected, $result);
   }
 
   function test_getContentsFlat() {
@@ -95,7 +95,7 @@ class FolderTest extends TestCase {
       "ws_1/Resource/verona-player-simple-6.0.html",
       "ws_1/Resource/coding-scheme.vocs.json"
     ];
-    $this->assertEquals($expected, $result);
+    static::assertEquals($expected, $result);
   }
 
   // realpath needs a real filesystem, so these use a temp tree rather than vfsStream:
@@ -127,35 +127,35 @@ class FolderTest extends TestCase {
 
   function test_getContainedRealPath_returnsPathForContainedFile() {
     $base = $this->makeTempTree();
-    $this->assertEquals(realpath("$base/file.txt"), Folder::getContainedRealPath($base, 'file.txt'));
+    static::assertEquals(realpath("$base/file.txt"), Folder::getContainedRealPath($base, 'file.txt'));
   }
 
   function test_getContainedRealPath_rejectsTraversalOutsideBase() {
     $base = $this->makeTempTree();
-    $this->assertNull(Folder::getContainedRealPath($base, '../secret.txt'));
+    static::assertNull(Folder::getContainedRealPath($base, '../secret.txt'));
   }
 
   function test_getContainedRealPath_rejectsDeepTraversal() {
     $base = $this->makeTempTree();
-    $this->assertNull(Folder::getContainedRealPath($base, '../../../../../../etc/passwd'));
+    static::assertNull(Folder::getContainedRealPath($base, '../../../../../../etc/passwd'));
   }
 
   function test_getContainedRealPath_rejectsSymlinkEscape() {
     $base = $this->makeTempTree();
     symlink("$this->tmpBase/secret.txt", "$base/link.txt");
-    $this->assertNull(Folder::getContainedRealPath($base, 'link.txt'));
+    static::assertNull(Folder::getContainedRealPath($base, 'link.txt'));
   }
 
   function test_getContainedRealPath_rejectsPrefixSiblingDir() {
     $base = $this->makeTempTree();
     mkdir("$this->tmpBase/ws-evil");
     file_put_contents("$this->tmpBase/ws-evil/x.txt", 'evil');
-    $this->assertNull(Folder::getContainedRealPath($base, '../ws-evil/x.txt'));
+    static::assertNull(Folder::getContainedRealPath($base, '../ws-evil/x.txt'));
   }
 
   function test_getContainedRealPath_returnsNullForMissingFile() {
     $base = $this->makeTempTree();
-    $this->assertNull(Folder::getContainedRealPath($base, 'does-not-exist.txt'));
+    static::assertNull(Folder::getContainedRealPath($base, 'does-not-exist.txt'));
   }
 
   function test_deleteContentsRecursive() {
@@ -175,6 +175,6 @@ class FolderTest extends TestCase {
       "ws_1/Resource/verona-player-simple-6.0.html",
       "ws_1/Resource/coding-scheme.vocs.json"
     ];
-    $this->assertEquals($expected, $result);
+    static::assertEquals($expected, $result);
   }
 }

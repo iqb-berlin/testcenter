@@ -185,7 +185,7 @@ class SessionDAOTest extends TestCase {
       '[admins]'
     );
     $result = $this->dbc->getToken('admin_token', ['admin']);
-    $this->assertEquals($expectation, $result);
+    static::assertEquals($expectation, $result);
   }
 
   function test_getToken_person() {
@@ -198,7 +198,7 @@ class SessionDAOTest extends TestCase {
       'sample_group'
     );
     $result = $this->dbc->getToken('person-token', ['person']);
-    $this->assertEquals($expectation, $result);
+    static::assertEquals($expectation, $result);
   }
 
   function test_getToken_login() {
@@ -211,7 +211,7 @@ class SessionDAOTest extends TestCase {
       'sample_group'
     );
     $result = $this->dbc->getToken('nice_token', ['login']);
-    $this->assertEquals($expectation, $result);
+    static::assertEquals($expectation, $result);
   }
 
   function test_getToken_wrongToken() {
@@ -250,7 +250,7 @@ class SessionDAOTest extends TestCase {
       )
     );
 
-    $this->assertEquals($result, $expected);
+    static::assertEquals($result, $expected);
   }
 
   function test_getLoginSessionByToken_expired() {
@@ -275,15 +275,15 @@ class SessionDAOTest extends TestCase {
 
   function test_getPersonSession_correctCode() {
     $result = $this->dbc->createOrUpdatePersonSession($this->testDataLoginSessions[3], 'xxx');
-    $this->assertSame(1, $result->getPerson()->getId());
-    $this->assertSame(
+    static::assertSame(1, $result->getPerson()->getId());
+    static::assertSame(
       'static:person:sample_group_sample_user_xxx',
       $result->getPerson()->getToken(),
       'token got updated'
     );
-    $this->assertSame('xxx', $result->getPerson()->getCode());
-    $this->assertSame(1893574800, $result->getPerson()->getValidTo());
-    $this->assertEquals($this->testDataLoginSessions[3], $result->getLoginSession());
+    static::assertSame('xxx', $result->getPerson()->getCode());
+    static::assertSame(1893574800, $result->getPerson()->getValidTo());
+    static::assertEquals($this->testDataLoginSessions[3], $result->getLoginSession());
   }
 
   function test_getLoginSessionByToken_wrongCode() {
@@ -294,11 +294,11 @@ class SessionDAOTest extends TestCase {
   function test_createOrUpdatePersonSession_correctCode() {
     $result = $this->dbc->createOrUpdatePersonSession($this->testLoginSession, 'existing_code');
 
-    $this->assertEquals(6, $result->getPerson()->getId());
-    $this->assertEquals('static:person:sample_group_some_user_existing_code', $result->getPerson()->getToken());
-    $this->assertEquals('existing_code', $result->getPerson()->getCode());
-    $this->assertEquals(1893495600, $result->getPerson()->getValidTo());
-    $this->assertEquals(6, $this->countTableRows('person_sessions'));
+    static::assertEquals(6, $result->getPerson()->getId());
+    static::assertEquals('static:person:sample_group_some_user_existing_code', $result->getPerson()->getToken());
+    static::assertEquals('existing_code', $result->getPerson()->getCode());
+    static::assertEquals(1893495600, $result->getPerson()->getValidTo());
+    static::assertEquals(6, $this->countTableRows('person_sessions'));
   }
 
   function test_createOrUpdatePersonSession_wrongCode() {
@@ -310,9 +310,9 @@ class SessionDAOTest extends TestCase {
   function test_createOrUpdatePersonSession_codeCaseInsensitive() {
     $result = $this->dbc->createOrUpdatePersonSession($this->testLoginSession, 'EXISTING_CODE');
 
-    $this->assertEquals(6, $result->getPerson()->getId());
+    static::assertEquals(6, $result->getPerson()->getId());
     // the code is stored/returned as typed - only the comparison is case-insensitive
-    $this->assertEquals('EXISTING_CODE', $result->getPerson()->getCode());
+    static::assertEquals('EXISTING_CODE', $result->getPerson()->getCode());
   }
 
   function test_createOrUpdatePersonSession_expiredLogin() {
@@ -380,22 +380,22 @@ class SessionDAOTest extends TestCase {
 
     $result = $this->dbc->createOrUpdatePersonSession($testLoginSession, 'existing_code');
 
-    $this->assertEquals(6, $result->getPerson()->getId());
-    $this->assertEquals('static:person:sample_group_some_user_existing_code', $result->getPerson()->getToken());
-    $this->assertEquals('existing_code', $result->getPerson()->getCode());
-    $this->assertEquals(1577877000, $result->getPerson()->getValidTo()); // 1577877000 = 1/1/2020 12:10 GMT+1
-    $this->assertEquals($testLoginSession, $result->getLoginSession());
-    $this->assertEquals(6, $this->countTableRows('person_sessions'));
+    static::assertEquals(6, $result->getPerson()->getId());
+    static::assertEquals('static:person:sample_group_some_user_existing_code', $result->getPerson()->getToken());
+    static::assertEquals('existing_code', $result->getPerson()->getCode());
+    static::assertEquals(1577877000, $result->getPerson()->getValidTo()); // 1577877000 = 1/1/2020 12:10 GMT+1
+    static::assertEquals($testLoginSession, $result->getLoginSession());
+    static::assertEquals(6, $this->countTableRows('person_sessions'));
   }
 
   function test_createOrUpdatePersonSession_restart() {
     $result1 = $this->dbc->createOrUpdatePersonSession($this->testLoginSession, 'existing_code');
     $result2 = $this->dbc->createOrUpdatePersonSession($this->testLoginSession, 'existing_code');
-    $this->assertEquals(6, $result1->getPerson()->getId());
-    $this->assertEquals('existing_code/h5ki-bd-', $result1->getPerson()->getNameSuffix());
-    $this->assertEquals(7, $result2->getPerson()->getId());
-    $this->assertEquals('existing_code/va4dg-jc', $result2->getPerson()->getNameSuffix());
-    $this->assertEquals(7, $this->countTableRows('person_sessions'));
+    static::assertEquals(6, $result1->getPerson()->getId());
+    static::assertEquals('existing_code/h5ki-bd-', $result1->getPerson()->getNameSuffix());
+    static::assertEquals(7, $result2->getPerson()->getId());
+    static::assertEquals('existing_code/va4dg-jc', $result2->getPerson()->getNameSuffix());
+    static::assertEquals(7, $this->countTableRows('person_sessions'));
   }
 
   function test_createOrUpdatePersonSession_retriesPostgresSuffixCollision() {
@@ -416,13 +416,13 @@ class SessionDAOTest extends TestCase {
     $result = $this->dbc->createOrUpdatePersonSession($this->testLoginSession, 'existing_code');
 
     // The failed insert consumes an identity value in PostgreSQL, so assert the behavior rather than a brittle id.
-    $this->assertEquals('existing_code/va4dg-jc', $result->getPerson()->getNameSuffix());
-    $this->assertEquals(7, $this->countTableRows('person_sessions'));
+    static::assertEquals('existing_code/va4dg-jc', $result->getPerson()->getNameSuffix());
+    static::assertEquals(7, $this->countTableRows('person_sessions'));
   }
 
   function test_getPersonSessionByToken_correctToken() {
     $result = $this->dbc->getPersonSessionByToken('person-token');
-    $this->assertEquals($this->testPersonSession, $result);
+    static::assertEquals($this->testPersonSession, $result);
   }
 
   function test_getPersonSessionByToken_wrongToken() {
@@ -451,7 +451,7 @@ class SessionDAOTest extends TestCase {
       'logins.workspace_id' => 1
     ]);
 
-    $this->assertEquals($this->testDataLoginSessions, $result);
+    static::assertEquals($this->testDataLoginSessions, $result);
   }
 
   function test_getLoginSessions_notExistingGroup() {
@@ -460,7 +460,7 @@ class SessionDAOTest extends TestCase {
       'logins.workspace_id' => 1
     ]);
 
-    $this->assertEquals([], $result);
+    static::assertEquals([], $result);
   }
 
   function test_createLoginSession() {
@@ -484,13 +484,13 @@ class SessionDAOTest extends TestCase {
 
     $result = $this->dbc->createLoginSession($anotherLogin);
 
-    $this->assertEquals($expectation, $result);
-    $this->assertEquals(8, $this->countTableRows('login_sessions'));
+    static::assertEquals($expectation, $result);
+    static::assertEquals(8, $this->countTableRows('login_sessions'));
 
     $resultAfter2ndLogin = $this->dbc->createLoginSession($anotherLogin);
 
-    $this->assertEquals($expectation, $resultAfter2ndLogin);
-    $this->assertEquals(8, $this->countTableRows('login_sessions'));
+    static::assertEquals($expectation, $resultAfter2ndLogin);
+    static::assertEquals(8, $this->countTableRows('login_sessions'));
 
     $anotherLogin = new Login(
       "yet_another_one",
@@ -511,8 +511,8 @@ class SessionDAOTest extends TestCase {
     );
 
     $result = $this->dbc->createLoginSession($anotherLogin);
-    $this->assertEquals($expectation, $result);
-    $this->assertEquals(9, $this->countTableRows('login_sessions'));
+    static::assertEquals($expectation, $result);
+    static::assertEquals(9, $this->countTableRows('login_sessions'));
   }
 
   public function test_createLoginSession_groupIdChanged(): void {
@@ -571,14 +571,14 @@ class SessionDAOTest extends TestCase {
     );
 
     $sessions = $this->dbc->getLoginSessions();
-    $this->assertCount(1, $sessions);
-    $this->assertEquals('test', $sessions[0]->getLogin()->getName());
-    $this->assertEquals('new_id', $sessions[0]->getLogin()->getGroupName());
+    static::assertCount(1, $sessions);
+    static::assertEquals('test', $sessions[0]->getLogin()->getName());
+    static::assertEquals('new_id', $sessions[0]->getLogin()->getGroupName());
   }
 
   public function test_getLogin_okay(): void {
     $result = $this->dbc->getLogin("test", "pw_hash");
-    $this->assertEquals($this->testDataLoginSessions[0]->getLogin(), $result);
+    static::assertEquals($this->testDataLoginSessions[0]->getLogin(), $result);
   }
 
   public function test_getLogin_expired(): void {
@@ -588,22 +588,22 @@ class SessionDAOTest extends TestCase {
 
   public function test_getLogin_wrongPassword(): void {
     $loginSession = $this->dbc->getLogin("test", "wrong");
-    $this->assertEquals(FailedLogin::wrongPassword, $loginSession);
+    static::assertEquals(FailedLogin::wrongPassword, $loginSession);
   }
 
   public function test_getLogin_missingPassword(): void {
     $loginSession = $this->dbc->getLogin("test", "");
-    $this->assertEquals(FailedLogin::wrongPassword, $loginSession);
+    static::assertEquals(FailedLogin::wrongPassword, $loginSession);
   }
 
   public function test_getLogin_missingPasswordProtected(): void {
     $loginSession = $this->dbc->getLogin("monitor", "wrong");
-    $this->assertEquals(FailedLogin::wrongPasswordLockableLogin, $loginSession);
+    static::assertEquals(FailedLogin::wrongPasswordLockableLogin, $loginSession);
   }
 
   public function test_getLogin_missingUser(): void {
     $loginSession = $this->dbc->getLogin("i am void", "");
-    $this->assertEquals(FailedLogin::usernameNotFound, $loginSession);
+    static::assertEquals(FailedLogin::usernameNotFound, $loginSession);
   }
 
   public function test_getLogin_futureUser(): void {
@@ -615,13 +615,13 @@ class SessionDAOTest extends TestCase {
     $this->insertPasswordlessLogin('no-pw', 'run-hot-return');
     $this->insertPasswordlessLogin('no-pw-sys-check', 'sys-check-login');
 
-    $this->assertInstanceOf(Login::class, $this->dbc->getLogin("no-pw", ""));
+    static::assertInstanceOf(Login::class, $this->dbc->getLogin("no-pw", ""));
 
     SystemConfig::$login_requirePassword = true;
 
-    $this->assertEquals(FailedLogin::wrongPassword, $this->dbc->getLogin("no-pw", ""));
-    $this->assertInstanceOf(Login::class, $this->dbc->getLogin("no-pw-sys-check", ""));
-    $this->assertInstanceOf(Login::class, $this->dbc->getLogin("test", "pw_hash"));
+    static::assertEquals(FailedLogin::wrongPassword, $this->dbc->getLogin("no-pw", ""));
+    static::assertInstanceOf(Login::class, $this->dbc->getLogin("no-pw-sys-check", ""));
+    static::assertInstanceOf(Login::class, $this->dbc->getLogin("test", "pw_hash"));
   }
 
   private function insertPasswordlessLogin(string $name, string $mode): void {
@@ -639,7 +639,7 @@ class SessionDAOTest extends TestCase {
       'label' => 'Sample Booklet Label'
     ];
     $result = $this->dbc->getTestStatus('person-token', 'BOOKLET.SAMPLE-1');
-    $this->assertEquals($expectation, $result);
+    static::assertEquals($expectation, $result);
 
     $expectation = [
       'running' => false,
@@ -647,7 +647,7 @@ class SessionDAOTest extends TestCase {
       'label' => "Booklet without test"
     ];
     $result = $this->dbc->getTestStatus('person-token', 'BOOKLET.NO.TEST');
-    $this->assertEquals($expectation, $result);
+    static::assertEquals($expectation, $result);
   }
 
   public function test_getTestStatus_missingTest(): void {
@@ -657,10 +657,10 @@ class SessionDAOTest extends TestCase {
 
   public function test_personHasBooklet(): void {
     $result = $this->dbc->personHasBooklet('person-token', 'BOOKLET.SAMPLE-1');
-    $this->assertTrue($result);
+    static::assertTrue($result);
 
     $result = $this->dbc->personHasBooklet('person-of-future-login-token', 'BOOKLET.SAMPLE-1');
-    $this->assertFalse($result);
+    static::assertFalse($result);
   }
 
   // codes_to_booklets is keyed by the code as configured ("xxx"); a person who logged in with a
@@ -669,15 +669,15 @@ class SessionDAOTest extends TestCase {
     $personSession = $this->dbc->createOrUpdatePersonSession($this->testDataLoginSessions[3], 'XXX');
 
     $result = $this->dbc->personHasBooklet($personSession->getPerson()->getToken(), 'BOOKLET.SAMPLE-1');
-    $this->assertTrue($result);
+    static::assertTrue($result);
   }
 
   public function test_ownsTest() {
     $result = $this->dbc->ownsTest('person-token', "1");
-    $this->assertTrue($result);
+    static::assertTrue($result);
 
     $result = $this->dbc->ownsTest('person-of-future-login-token', "1");
-    $this->assertFalse($result);
+    static::assertFalse($result);
   }
 
   public function test_getOrCreateGroupToken(): void {
@@ -687,7 +687,7 @@ class SessionDAOTest extends TestCase {
       $this->testLoginSession->getLogin()->getGroupLabel()
     );
     $expectation = 'group-token';
-    $this->assertEquals($expectation, $groupToken);
+    static::assertEquals($expectation, $groupToken);
   }
 
   // @TODO: code coverage does not work with xdebug 3.4.2 and php 8.3.12
@@ -697,7 +697,7 @@ class SessionDAOTest extends TestCase {
     $t1 = $worker->submit(new CreateGroupTokenTask($this->testLoginSession->getLogin(), 1));
     $t2 = $worker->submit(new CreateGroupTokenTask($this->testLoginSession->getLogin(), 2));
 
-    $this->assertEquals($t1->await(), $t2->await());
+    static::assertEquals($t1->await(), $t2->await());
   }
 
   private function countTableRows(string $tableName): int {

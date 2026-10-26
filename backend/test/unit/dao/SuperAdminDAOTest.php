@@ -30,7 +30,7 @@ class SuperAdminDAOTest extends TestCase {
         "latest_modification_ts" => "2023-01-16 09:00:00"
       )
     );
-    $this->assertEquals($expectation, $result);
+    static::assertEquals($expectation, $result);
   }
 
   public function test_getUsers() {
@@ -50,7 +50,7 @@ class SuperAdminDAOTest extends TestCase {
       )
     );
 
-    $this->assertEquals($expectation, $result);
+    static::assertEquals($expectation, $result);
   }
 
   public function test_getUserByName() {
@@ -62,7 +62,7 @@ class SuperAdminDAOTest extends TestCase {
       "isSuperadmin" => false
     );
 
-    $this->assertEquals($expectation, $result);
+    static::assertEquals($expectation, $result);
   }
 
   public function test_getWorkspacesByUser() {
@@ -75,7 +75,7 @@ class SuperAdminDAOTest extends TestCase {
         "role" => "RW"
       )
     );
-    $this->assertEquals($expectation, $result);
+    static::assertEquals($expectation, $result);
 
     $result = $this->dbc->getWorkspacesByUser(2);
     $expectation = array(
@@ -86,7 +86,7 @@ class SuperAdminDAOTest extends TestCase {
         "role" => ""
       )
     );
-    $this->assertEquals($expectation, $result);
+    static::assertEquals($expectation, $result);
   }
 
   public function test_getMapWorkspaceToRoleByUser() {
@@ -94,15 +94,15 @@ class SuperAdminDAOTest extends TestCase {
     $expectation = array(
       "1" => "RW"
     );
-    $this->assertEquals($expectation, $result);
+    static::assertEquals($expectation, $result);
 
     $result = $this->dbc->getMapWorkspaceToRoleByUser(2);
     $expectation = array();
-    $this->assertEquals($expectation, $result);
+    static::assertEquals($expectation, $result);
 
     $result = $this->dbc->getMapWorkspaceToRoleByUser(33);
     $expectation = array();
-    $this->assertEquals($expectation, $result);
+    static::assertEquals($expectation, $result);
   }
 
   public function test_setWorkspaceRightsByUser() {
@@ -114,17 +114,17 @@ class SuperAdminDAOTest extends TestCase {
     $expectation = array(
       1 => 'XX'
     );
-    $this->assertEquals($expectation, $result);
+    static::assertEquals($expectation, $result);
   }
 
   public function test_setPassword() {
     $this->dbc->setPassword(1, "new_password");
 
     $result = $this->dbc->checkPassword(1, "wrong_password");
-    $this->assertNotNull(false, $result);
+    static::assertNotNull(false, $result);
 
     $result = $this->dbc->checkPassword(1, "new_password");
-    $this->assertNotNull(true, $result);
+    static::assertNotNull(true, $result);
   }
 
   public function test_addUser() {
@@ -135,10 +135,10 @@ class SuperAdminDAOTest extends TestCase {
       "email" => null,
       "isSuperadmin" => false
     ];
-    $this->assertEquals($expectation, $result);
+    static::assertEquals($expectation, $result);
 
     $result2 = $this->dbc->getUserByName("a_third_user");
-    $this->assertEquals($expectation, $result2);
+    static::assertEquals($expectation, $result2);
 
     $this->expectException('HttpError');
     $this->dbc->createUser("a_third_user", "again");
@@ -148,15 +148,15 @@ class SuperAdminDAOTest extends TestCase {
     $this->dbc->setWorkspaceName(1, 'new_name');
     $result = $this->dbc->_('select name from workspaces where id = 1')['name'];
     $expectation = 'new_name';
-    $this->assertEquals($expectation, $result);
+    static::assertEquals($expectation, $result);
 
     $this->dbc->createWorkspace('another_workspace');
 
     try {
       $this->dbc->setWorkspaceName(1, 'another_workspace');
-      $this->fail("Exception expected.");
+      static::fail("Exception expected.");
     } catch (HttpError $exception) {
-      $this->assertEquals(409, $exception->getCode());
+      static::assertEquals(409, $exception->getCode());
     }
 
     $this->expectException('HttpError');
@@ -166,7 +166,7 @@ class SuperAdminDAOTest extends TestCase {
   public function test_deleteWorkspaces() {
     $this->dbc->deleteWorkspaces(array(1));
     $result = $this->dbc->getWorkspaces();
-    $this->assertEquals(array(), $result);
+    static::assertEquals(array(), $result);
   }
 
   public function test_getUsersByWorkspace() {
@@ -185,7 +185,7 @@ class SuperAdminDAOTest extends TestCase {
         'role' => 'RW'
       )
     );
-    $this->assertEquals($expectation, $result);
+    static::assertEquals($expectation, $result);
   }
 
   public function test_getWorkspaceRolesPerUser() {
@@ -193,11 +193,11 @@ class SuperAdminDAOTest extends TestCase {
     $expectation = array(
       1 => 'RW'
     );
-    $this->assertEquals($expectation, $result);
+    static::assertEquals($expectation, $result);
 
     $result = $this->dbc->getMapWorkspaceToRoleByUser(33);
     $expectation = array();
-    $this->assertEquals($expectation, $result);
+    static::assertEquals($expectation, $result);
   }
 
   public function test_setUserRightsForWorkspace() {
@@ -211,7 +211,7 @@ class SuperAdminDAOTest extends TestCase {
       1 => 'RO',
       2 => 'MO'
     );
-    $this->assertEquals($expectation, $result);
+    static::assertEquals($expectation, $result);
   }
 
   public function test_setSuperAdminStatus() {
@@ -224,7 +224,7 @@ class SuperAdminDAOTest extends TestCase {
       "email" => null,
       "isSuperadmin" => true
     );
-    $this->assertEquals($expectation, $result);
+    static::assertEquals($expectation, $result);
 
     $this->dbc->setSuperAdminStatus(2, false);
 
@@ -235,7 +235,7 @@ class SuperAdminDAOTest extends TestCase {
       "email" => null,
       "isSuperadmin" => false
     );
-    $this->assertEquals($expectation, $result);
+    static::assertEquals($expectation, $result);
   }
 
   public function test_createWorkspace() {
@@ -244,13 +244,13 @@ class SuperAdminDAOTest extends TestCase {
       "name" => 'new_workspace'
     ];
     $result = $this->dbc->createWorkspace('new_workspace');
-    $this->assertEquals($expectation, $result);
+    static::assertEquals($expectation, $result);
 
     try {
       $this->dbc->createWorkspace('new_workspace');
-      $this->fail("Exception expected.");
+      static::fail("Exception expected.");
     } catch (HttpError $exception) {
-      $this->assertEquals($exception->getCode(), 409);
+      static::assertEquals($exception->getCode(), 409);
     }
 
     $result = $this->dbc->getWorkspaces();
@@ -267,7 +267,7 @@ class SuperAdminDAOTest extends TestCase {
       ],
 
     ];
-    $this->assertEquals($expectation, $result);
+    static::assertEquals($expectation, $result);
   }
 
   public function test_getOrCreateWorkspace() {
@@ -276,13 +276,13 @@ class SuperAdminDAOTest extends TestCase {
       "id" => 1,
       "name" => "example_workspace"
     ];
-    $this->assertEquals($expectation, $result);
+    static::assertEquals($expectation, $result);
 
     $result = $this->dbc->getOrCreateWorkspace("new_workspace");
     $expectation = [
       "id" => 2,
       "name" => "new_workspace"
     ];
-    $this->assertEquals($expectation, $result);
+    static::assertEquals($expectation, $result);
   }
 }

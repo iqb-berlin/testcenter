@@ -27,7 +27,7 @@ class ServerTest extends TestCase {
       "SCRIPT_NAME" => "/a-sub-folder/another-sub-folder/index.php",
       "PHP_SELF" => "/a-sub-folder/another-sub-folder/index.php",
     ]);
-    $this->assertEquals($expected, $actual);
+    static::assertEquals($expected, $actual);
   }
 
   function test_getUrlWithRedirect() {
@@ -60,7 +60,7 @@ class ServerTest extends TestCase {
       "SCRIPT_NAME" => "/index.php",
       "PHP_SELF" => "/index.php",
     ]);
-    $this->assertEquals($expected, $actual);
+    static::assertEquals($expected, $actual);
   }
 
   function test_getUrlWithHTTPS() {
@@ -88,6 +88,6 @@ class ServerTest extends TestCase {
       "REQUEST_URI" => "/index.php",
       "SCRIPT_NAME" => "/index.php"
     ]);
-    $this->assertEquals($expected, $actual);
+    static::assertEquals($expected, $actual);
   }
 }

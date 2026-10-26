@@ -28,10 +28,10 @@ class HandleCorsPreflightTest extends TestCase {
     $middleware = new HandleCorsPreflight(new ResponseFactory());
     $response = $middleware($this->request('OPTIONS'), $handler);
 
-    $this->assertEquals(200, $response->getStatusCode());
-    $this->assertEquals('', (string) $response->getBody());
+    static::assertEquals(200, $response->getStatusCode());
+    static::assertEquals('', (string) $response->getBody());
     // the rest of the application - and with it the router - must not see a preflight request
-    $this->assertFalse($handler->wasCalled);
+    static::assertFalse($handler->wasCalled);
   }
 
   public function test_passesEveryOtherMethodOn() {
@@ -50,8 +50,8 @@ class HandleCorsPreflightTest extends TestCase {
       $handler->wasCalled = false;
       $response = $middleware($this->request($method), $handler);
 
-      $this->assertTrue($handler->wasCalled, "$method was not passed on");
-      $this->assertEquals(204, $response->getStatusCode(), "$method did not get the handler's response");
+      static::assertTrue($handler->wasCalled, "$method was not passed on");
+      static::assertEquals(204, $response->getStatusCode(), "$method did not get the handler's response");
     }
   }
 }

@@ -90,18 +90,18 @@ class WorkspaceTest extends TestCase {
   function test___construct() {
     $workspaceDirectories = scandir(vfsStream::url('root/data'));
     $expectation = array('.', '..', 'ws_1');
-    $this->assertEquals($expectation, $workspaceDirectories);
+    static::assertEquals($expectation, $workspaceDirectories);
 
     $workspace1Directories = scandir(vfsStream::url('root/data/ws_1'));
     $expectation = array('.', '..', 'Booklet', 'Resource', 'SysCheck', 'Testtakers', 'Unit');
-    $this->assertEquals($expectation, $workspace1Directories);
+    static::assertEquals($expectation, $workspace1Directories);
   }
 
   function test_getWorkspacePath() {
     $workspace = new Workspace(1);
     $result = $workspace->getWorkspacePath();
     $expectation = 'vfs://root/data/ws_1';
-    $this->assertEquals($expectation, $result);
+    static::assertEquals($expectation, $result);
   }
 
   function test_deleteFiles() {
@@ -141,7 +141,7 @@ class WorkspaceTest extends TestCase {
       not_allowed: ['SysCheck/SAMPLE_SYSCHECK.XML'],
       was_used: ['Resource/verona-player-simple-6.0.html']
     );
-    $this->assertEquals($expectation, $result);
+    static::assertEquals($expectation, $result);
 
     $resourcesLeft = scandir('vfs://root/data/ws_1/Resource');
     $resourcesLeftExpected = [
@@ -152,7 +152,7 @@ class WorkspaceTest extends TestCase {
       'sample_resource_package.itcr.zip',
       'verona-player-simple-6.0.html'
     ];
-    $this->assertEquals($resourcesLeftExpected, $resourcesLeft);
+    static::assertEquals($resourcesLeftExpected, $resourcesLeft);
   }
 
   function test_deleteFiles_rejectIfDependencies() {
@@ -180,7 +180,7 @@ class WorkspaceTest extends TestCase {
       not_allowed: [],
       was_used: ['Resource/verona-player-simple-6.0.html']
     );
-    $this->assertEquals($expectation, $result, 'reject deleting, if file was used');
+    static::assertEquals($expectation, $result, 'reject deleting, if file was used');
   }
 
   function test_deleteFiles_rejectIfDependenciesTogetherWithOthers() {
@@ -236,7 +236,7 @@ class WorkspaceTest extends TestCase {
         'Resource/verona-player-simple-6.0.html',
       ]
     );
-    $this->assertEquals($expectation, $result, 'reject deleting, if file was used');
+    static::assertEquals($expectation, $result, 'reject deleting, if file was used');
   }
 
   function test_countFilesOfAllSubFolders() {
@@ -251,7 +251,7 @@ class WorkspaceTest extends TestCase {
     ];
 
     $result = $workspace->countFilesOfAllSubFolders();
-    $this->assertEquals($expectation, $result);
+    static::assertEquals($expectation, $result);
   }
 
   function test_importUncategorizedFiles_singleFile_first_success() {
@@ -276,9 +276,9 @@ class WorkspaceTest extends TestCase {
     $workspace = new Workspace(1);
     $result = $workspace->importUncategorizedFiles(['valid.xml', 'P.HTML']);
 
-    $this->assertArrayNotHasKey('error', $result["valid.xml"], 'valid file has no errors');
-    $this->assertTrue(file_exists(DATA_DIR . '/ws_1/Unit/valid.xml'), 'valid file is imported');
-    $this->assertFalse(file_exists(DATA_DIR . '/ws_1/valid.xml'), 'cleanup after import');
+    static::assertArrayNotHasKey('error', $result["valid.xml"], 'valid file has no errors');
+    static::assertTrue(file_exists(DATA_DIR . '/ws_1/Unit/valid.xml'), 'valid file is imported');
+    static::assertFalse(file_exists(DATA_DIR . '/ws_1/valid.xml'), 'cleanup after import');
   }
 
   function test_importUncategorizedFiles_singleFile_second_fail_invalidfile() {
@@ -296,13 +296,13 @@ class WorkspaceTest extends TestCase {
     $workspace = new Workspace(1);
     $result = $workspace->importUncategorizedFiles(['invalid.xml']);
 
-    $this->assertGreaterThan(
+    static::assertGreaterThan(
       0,
       count($result["invalid.xml"]['error']),
       'invalid file has error report'
     );
-    $this->assertFalse(file_exists(DATA_DIR . '/ws_1/Unit/invalid.xml'), 'invalid file is rejected');
-    $this->assertFalse(file_exists(DATA_DIR . '/ws_1/invalid.xml'), 'cleanup after import');
+    static::assertFalse(file_exists(DATA_DIR . '/ws_1/Unit/invalid.xml'), 'invalid file is rejected');
+    static::assertFalse(file_exists(DATA_DIR . '/ws_1/invalid.xml'), 'cleanup after import');
   }
 
   function test_importUncategorizedFiles_singleFile_third_fail_duplicate() {
@@ -330,21 +330,21 @@ class WorkspaceTest extends TestCase {
     $workspace = new Workspace(1);
     $result = $workspace->importUncategorizedFiles(['valid3.xml']);
 
-    $this->assertFalse(
+    static::assertFalse(
       file_exists(DATA_DIR . '/ws_1/Unit/valid3.xml'),
       'reject on duplicate id if file names are not the same'
     );
-    $this->assertStringContainsString(
+    static::assertStringContainsString(
       '1st valid file',
       file_get_contents(DATA_DIR . '/ws_1/Unit/valid.xml'),
       "don't overwrite on duplicate id if file names are not the same"
     );
-    $this->assertGreaterThan(
+    static::assertGreaterThan(
       0,
       count($result["valid3.xml"]['error']),
       'return warning on duplicate id if file names are not the same'
     );
-    $this->assertFalse(file_exists(DATA_DIR . '/ws_1/valid3.xml'), 'cleanup after import');
+    static::assertFalse(file_exists(DATA_DIR . '/ws_1/valid3.xml'), 'cleanup after import');
   }
 
   function test_importUncategorizedFiles_singleFile_second_success() {
@@ -378,17 +378,17 @@ class WorkspaceTest extends TestCase {
     $workspace = new Workspace(1);
     $result = $workspace->importUncategorizedFiles(['valid.xml']);
 
-    $this->assertStringContainsString(
+    static::assertStringContainsString(
       '2nd valid file',
       file_get_contents(DATA_DIR . '/ws_1/Unit/valid.xml'),
       'allow overwriting if filename and id is the same'
     );
-    $this->assertGreaterThan(
+    static::assertGreaterThan(
       0,
       count($result["valid.xml"]['warning']),
       'return warning if filename and id is the same'
     );
-    $this->assertFalse(file_exists(DATA_DIR . '/ws_1/valid.xml'), 'cleanup after import');
+    static::assertFalse(file_exists(DATA_DIR . '/ws_1/valid.xml'), 'cleanup after import');
   }
 
   function test_importUncategorizedFiles_multipleFilesWithDependencies() {
@@ -449,17 +449,17 @@ class WorkspaceTest extends TestCase {
     );
     $errors = $this->getErrorsFromValidationResult($result);
 
-    $this->assertCount(0, $errors); // todo wie ruft man mock archive dateien auf, um Files daraus zu bauen
+    static::assertCount(0, $errors); // todo wie ruft man mock archive dateien auf, um Files daraus zu bauen
 
-    $this->assertFalse(file_exists(DATA_DIR . '/ws_1/valid_testtakers.xml'), 'clean after importing');
-    $this->assertFalse(file_exists(DATA_DIR . '/ws_1/valid_booklet.xml'), 'clean after importing');
-    $this->assertFalse(file_exists(DATA_DIR . '/ws_1/P.html'), 'clean after importing');
-    $this->assertFalse(file_exists(DATA_DIR . '/ws_1/valid_unit.xml'), 'clean after importing');
+    static::assertFalse(file_exists(DATA_DIR . '/ws_1/valid_testtakers.xml'), 'clean after importing');
+    static::assertFalse(file_exists(DATA_DIR . '/ws_1/valid_booklet.xml'), 'clean after importing');
+    static::assertFalse(file_exists(DATA_DIR . '/ws_1/P.html'), 'clean after importing');
+    static::assertFalse(file_exists(DATA_DIR . '/ws_1/valid_unit.xml'), 'clean after importing');
 
-    $this->assertTrue(file_exists(DATA_DIR . '/ws_1/Unit/valid_unit.xml'), 'import valid unit');
-    $this->assertTrue(file_exists(DATA_DIR . '/ws_1/Booklet/valid_booklet.xml'), 'import valid booklet');
-    $this->assertTrue(file_exists(DATA_DIR . '/ws_1/Resource/P.html'), 'import resource');
-    $this->assertTrue(file_exists(DATA_DIR . '/ws_1/Testtakers/valid_testtakers.xml'), 'import testtakers');
+    static::assertTrue(file_exists(DATA_DIR . '/ws_1/Unit/valid_unit.xml'), 'import valid unit');
+    static::assertTrue(file_exists(DATA_DIR . '/ws_1/Booklet/valid_booklet.xml'), 'import valid booklet');
+    static::assertTrue(file_exists(DATA_DIR . '/ws_1/Resource/P.html'), 'import resource');
+    static::assertTrue(file_exists(DATA_DIR . '/ws_1/Testtakers/valid_testtakers.xml'), 'import testtakers');
   }
 
   function test_importUncategorizedFiles_multipleFilesWithMissingDependencies() {
@@ -513,15 +513,15 @@ class WorkspaceTest extends TestCase {
     $result = $workspace->importUncategorizedFiles(["valid_testtakers.xml", "valid_booklet.xml", "valid_unit.xml"]);
     $errors = $this->getErrorsFromValidationResult($result);
 
-    $this->assertCount(3, $errors);
+    static::assertCount(3, $errors);
 
-    $this->assertFalse(file_exists(DATA_DIR . '/ws_1/valid_testtakers.xml'), 'clean after importing');
-    $this->assertFalse(file_exists(DATA_DIR . '/ws_1/valid_booklet.xml'), 'clean after importing');
-    $this->assertFalse(file_exists(DATA_DIR . '/ws_1/valid_unit.xml'), 'clean after importing');
+    static::assertFalse(file_exists(DATA_DIR . '/ws_1/valid_testtakers.xml'), 'clean after importing');
+    static::assertFalse(file_exists(DATA_DIR . '/ws_1/valid_booklet.xml'), 'clean after importing');
+    static::assertFalse(file_exists(DATA_DIR . '/ws_1/valid_unit.xml'), 'clean after importing');
 
-    $this->assertFalse(file_exists(DATA_DIR . '/ws_1/Unit/valid_unit.xml'), 'import valid unit');
-    $this->assertFalse(file_exists(DATA_DIR . '/ws_1/Booklet/valid_booklet.xml'), 'import valid booklet');
-    $this->assertFalse(file_exists(DATA_DIR . '/ws_1/Testtakers/valid_testtakers.xml'), 'import testtakers');
+    static::assertFalse(file_exists(DATA_DIR . '/ws_1/Unit/valid_unit.xml'), 'import valid unit');
+    static::assertFalse(file_exists(DATA_DIR . '/ws_1/Booklet/valid_booklet.xml'), 'import valid booklet');
+    static::assertFalse(file_exists(DATA_DIR . '/ws_1/Testtakers/valid_testtakers.xml'), 'import testtakers');
   }
 
   function test_importUncategorizedFiles_zipWithValidFilesWithDependencies() {
@@ -581,15 +581,15 @@ class WorkspaceTest extends TestCase {
     $result = $workspace->importUncategorizedFiles(["archive.zip"]);
     $errors = $this->getErrorsFromValidationResult($result);
 
-    $this->assertCount(0, $errors);
+    static::assertCount(0, $errors);
 
-    $this->assertFalse(file_exists(DATA_DIR . '/ws_1/archive.zip_Extract'), 'clean after importing');
-    $this->assertFalse(file_exists(DATA_DIR . '/ws_1/archive.zip'), 'clean after importing');
+    static::assertFalse(file_exists(DATA_DIR . '/ws_1/archive.zip_Extract'), 'clean after importing');
+    static::assertFalse(file_exists(DATA_DIR . '/ws_1/archive.zip'), 'clean after importing');
 
-    $this->assertTrue(file_exists(DATA_DIR . '/ws_1/Unit/valid_unit.xml'), 'import valid unit from ZIP');
-    $this->assertTrue(file_exists(DATA_DIR . '/ws_1/Booklet/valid_booklet.xml'), 'import valid booklet from ZIP');
-    $this->assertTrue(file_exists(DATA_DIR . '/ws_1/Resource/P.html'), 'import resource from ZIP');
-    $this->assertTrue(file_exists(DATA_DIR . '/ws_1/Testtakers/valid_testtakers.xml'), 'import testtakers from ZIP');
+    static::assertTrue(file_exists(DATA_DIR . '/ws_1/Unit/valid_unit.xml'), 'import valid unit from ZIP');
+    static::assertTrue(file_exists(DATA_DIR . '/ws_1/Booklet/valid_booklet.xml'), 'import valid booklet from ZIP');
+    static::assertTrue(file_exists(DATA_DIR . '/ws_1/Resource/P.html'), 'import resource from ZIP');
+    static::assertTrue(file_exists(DATA_DIR . '/ws_1/Testtakers/valid_testtakers.xml'), 'import testtakers from ZIP');
   }
 
   function test_importUncategorizedFiles_zip_rejectInvalidUnitAndDependantFiles() {
@@ -630,23 +630,23 @@ class WorkspaceTest extends TestCase {
     $result = $workspace->importUncategorizedFiles(["archive.zip"]);
     $errors = $this->getErrorsFromValidationResult($result);
 
-    $this->assertCount(3, $errors);
+    static::assertCount(3, $errors);
 
-    $this->assertFalse(file_exists(DATA_DIR . '/ws_1/archive.zip_Extract'), 'clean after importing');
-    $this->assertFalse(file_exists(DATA_DIR . '/ws_1/archive.zip'), 'clean after importing');
-    $this->assertFalse(
+    static::assertFalse(file_exists(DATA_DIR . '/ws_1/archive.zip_Extract'), 'clean after importing');
+    static::assertFalse(file_exists(DATA_DIR . '/ws_1/archive.zip'), 'clean after importing');
+    static::assertFalse(
       file_exists($workspace->getWorkspacePath() . '/Unit/valid_unit.xml'),
       'don\'t import invalid Unit from ZIP'
     );
-    $this->assertFalse(
+    static::assertFalse(
       file_exists($workspace->getWorkspacePath() . '/Booklet/valid_booklet.xml'),
       'don\'t import Booklet dependant of invalid unit from ZIP'
     );
-    $this->assertTrue(
+    static::assertTrue(
       file_exists($workspace->getWorkspacePath() . '/Resource/P.html'),
       'import resource from ZIP'
     );
-    $this->assertFalse(
+    static::assertFalse(
       file_exists($workspace->getWorkspacePath() . '/Testtakers/valid_testtakers.xml'),
       'don\'t import Testtakers dependant of invalid unit from ZIP'
     );
@@ -681,22 +681,22 @@ class WorkspaceTest extends TestCase {
     $result = $workspace->importUncategorizedFiles(["archive.zip"]);
     $errors = $this->getErrorsFromValidationResult($result);
 
-    $this->assertCount(2, $errors);
+    static::assertCount(2, $errors);
 
-    $this->assertFalse(file_exists(DATA_DIR . '/ws_1/archive.zip_Extract'), 'clean after importing');
-    $this->assertTrue(
+    static::assertFalse(file_exists(DATA_DIR . '/ws_1/archive.zip_Extract'), 'clean after importing');
+    static::assertTrue(
       file_exists(DATA_DIR . '/ws_1/Unit/valid_unit.xml'),
       'import valid Unit from ZIP'
     );
-    $this->assertFalse(
+    static::assertFalse(
       file_exists(DATA_DIR . '/ws_1/Booklet/valid_booklet.xml'),
       'don\'t import Booklet dependant of invalid unit from ZIP'
     );
-    $this->assertTrue(
+    static::assertTrue(
       file_exists(DATA_DIR . '/ws_1/Resource/P.html'),
       'import resource from ZIP'
     );
-    $this->assertFalse(
+    static::assertFalse(
       file_exists(DATA_DIR . '/ws_1/Testtakers/valid_testtakers.xml'),
       'don\'t import Testtakers dependant of invalid unit from ZIP'
     );
@@ -724,10 +724,10 @@ class WorkspaceTest extends TestCase {
     $result = $workspace->importUncategorizedFiles(["archive.zip"]);
     $errors = $this->getErrorsFromValidationResult($result);
 
-    $this->assertCount(1, $errors);
+    static::assertCount(1, $errors);
 
-    $this->assertFalse(file_exists(DATA_DIR . '/ws_1/archive.zip_Extract'), 'clean after importing');
-    $this->assertFalse(
+    static::assertFalse(file_exists(DATA_DIR . '/ws_1/archive.zip_Extract'), 'clean after importing');
+    static::assertFalse(
       file_exists(DATA_DIR . '/ws_1/Unit/valid_unit.xml'),
       'reject file from ZIP on duplicate ID'
     );
@@ -799,26 +799,26 @@ class WorkspaceTest extends TestCase {
 
     $result = $workspace->importUncategorizedFiles(["archive.zip"]);
     $errors = $this->getErrorsFromValidationResult($result);
-    $this->assertCount(1, $errors);
+    static::assertCount(1, $errors);
 
-    $this->assertFalse(file_exists(DATA_DIR . '/ws_1/archive.zip_Extract'), 'clean after importing');
-    $this->assertFalse(
+    static::assertFalse(file_exists(DATA_DIR . '/ws_1/archive.zip_Extract'), 'clean after importing');
+    static::assertFalse(
       file_exists($workspace->getWorkspacePath() . '/Unit/invalid_unit.xml'),
       'don\'t import invalid Unit from ZIP'
     );
-    $this->assertTrue(
+    static::assertTrue(
       file_exists($workspace->getWorkspacePath() . '/Unit/valid_unit.xml'),
       'import valid Unit from ZIP'
     );
-    $this->assertTrue(
+    static::assertTrue(
       file_exists($workspace->getWorkspacePath() . '/Booklet/valid_booklet.xml'),
       'import Booklet dependant of invalid unit from ZIP'
     );
-    $this->assertTrue(
+    static::assertTrue(
       file_exists($workspace->getWorkspacePath() . '/Resource/P.html'),
       'import resource from ZIP'
     );
-    $this->assertTrue(
+    static::assertTrue(
       file_exists($workspace->getWorkspacePath() . '/Testtakers/valid_testtakers.xml'),
       'import Testtakers dependant of invalid unit from ZIP'
     );
@@ -857,9 +857,9 @@ class WorkspaceTest extends TestCase {
     file_put_contents(DATA_DIR . '/ws_1/testtakers.xml', self::dangerousTesttakers);
 
     $result = $workspace->importUncategorizedFiles(['testtakers.xml']);
-    $this->assertArrayNotHasKey('error', $result["testtakers.xml"], 'valid file has no errors');
-    $this->assertTrue(file_exists(DATA_DIR . '/ws_1/Testtakers/testtakers.xml'), 'valid file is imported');
-    $this->assertFalse(file_exists(DATA_DIR . '/ws_1/testtakers.xml'), 'cleanup after import');
+    static::assertArrayNotHasKey('error', $result["testtakers.xml"], 'valid file has no errors');
+    static::assertTrue(file_exists(DATA_DIR . '/ws_1/Testtakers/testtakers.xml'), 'valid file is imported');
+    static::assertFalse(file_exists(DATA_DIR . '/ws_1/testtakers.xml'), 'cleanup after import');
   }
 
   private function getErrorsFromValidationResult($result): array {
@@ -881,8 +881,8 @@ class WorkspaceTest extends TestCase {
 
     $result = $workspace->getFileById('SysCheck', 'SYSCHECK.SAMPLE');
 
-    $this->assertEquals('XMLFileSysCheck', get_class($result));
-    $this->assertEquals('vfs://root/data/ws_1/SysCheck/SAMPLE_SYSCHECK.XML', $result->getPath());
+    static::assertEquals('XMLFileSysCheck', get_class($result));
+    static::assertEquals('vfs://root/data/ws_1/SysCheck/SAMPLE_SYSCHECK.XML', $result->getPath());
   }
 
   function test_getFileById_notExistingXmlFile(): void {

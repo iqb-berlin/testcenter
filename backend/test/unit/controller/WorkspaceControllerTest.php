@@ -158,10 +158,10 @@ final class WorkspaceControllerTest extends TestCase {
     $response = $this->callSlimFramework($path, $mediaType, $reportType);
 
     // Assert
-    parent::assertSame(200, $response->getStatusCode());
-    parent::assertSame(1, sizeof($response->getHeader('Content-type')));
-    parent::assertStringStartsWith($mediaType, $response->getHeader('Content-type')[0]);
-    parent::assertEmpty($response->getBody()->getContents());
+    static::assertSame(200, $response->getStatusCode());
+    static::assertSame(1, sizeof($response->getHeader('Content-type')));
+    static::assertStringStartsWith($mediaType, $response->getHeader('Content-type')[0]);
+    static::assertEmpty($response->getBody()->getContents());
   }
 
   function test_GetReportWithLogAndJSONAndEmptyDataIds(): void {
@@ -217,7 +217,7 @@ final class WorkspaceControllerTest extends TestCase {
     $response = $this->callSlimFramework($path, 'application/json', $reportType);
 
     // Assert
-    parent::assertSame(200, $response->getStatusCode());
+    static::assertSame(200, $response->getStatusCode());
   }
 
   function test_GetReportWithLogAndCSVAndNoneReportGeneration(): void {
@@ -241,10 +241,10 @@ final class WorkspaceControllerTest extends TestCase {
     $response = $this->callSlimFramework($path, $mediaType, $reportType);
 
     // Assert
-    parent::assertSame(200, $response->getStatusCode());
-    parent::assertSame(1, sizeof($response->getHeader('Content-type')));
-    parent::assertStringStartsWith($mediaType, $response->getHeader('Content-type')[0]);
-    parent::assertEmpty($response->getBody()->getContents());
+    static::assertSame(200, $response->getStatusCode());
+    static::assertSame(1, sizeof($response->getHeader('Content-type')));
+    static::assertStringStartsWith($mediaType, $response->getHeader('Content-type')[0]);
+    static::assertEmpty($response->getBody()->getContents());
   }
 
   function test_GetReport_LogAndJSONAndNoneReportGeneration(): void {
@@ -294,9 +294,9 @@ final class WorkspaceControllerTest extends TestCase {
     $response = $this->callSlimFramework($path, $mediaType, $reportType);
 
     // Assert
-    parent::assertSame(200, $response->getStatusCode());
-    parent::assertSame(["text/csv;charset=UTF-8"], $response->getHeader('Content-type'));
-    parent::assertEquals(self::CSV_REPORT_DATA_SAMPLE, $response->getBody()->getContents());
+    static::assertSame(200, $response->getStatusCode());
+    static::assertSame(["text/csv;charset=UTF-8"], $response->getHeader('Content-type'));
+    static::assertEquals(self::CSV_REPORT_DATA_SAMPLE, $response->getBody()->getContents());
   }
 
   function test_GetReport_LogAndJSON(): void {
@@ -322,9 +322,9 @@ final class WorkspaceControllerTest extends TestCase {
     $response = $this->callSlimFramework($path, $mediaType, $reportType);
 
     // Assert
-    parent::assertSame(200, $response->getStatusCode());
-    parent::assertSame($expectedContentTypes, $response->getHeader('Content-type'));
-    parent::assertEquals(json_encode(self::JSON_REPORT_DATA_SAMPLE), $response->getBody()->getContents());
+    static::assertSame(200, $response->getStatusCode());
+    static::assertSame($expectedContentTypes, $response->getHeader('Content-type'));
+    static::assertEquals(json_encode(self::JSON_REPORT_DATA_SAMPLE), $response->getBody()->getContents());
   }
 
   function test_GetReport_ResponseAndCSV(): void {
@@ -422,8 +422,8 @@ final class WorkspaceControllerTest extends TestCase {
 
     $response->getBody()->rewind();
 
-    $this->assertEquals(207, $response->getStatusCode());
-    $this->assertEquals(json_encode($deletionReport), $response->getBody()->getContents());
+    static::assertEquals(207, $response->getStatusCode());
+    static::assertEquals(json_encode($deletionReport), $response->getBody()->getContents());
   }
 
   function test_postFile() {
@@ -493,8 +493,8 @@ final class WorkspaceControllerTest extends TestCase {
 
     $response->getBody()->rewind();
 
-    $this->assertEquals(207, $response->getStatusCode());
-    $this->assertEquals(
+    static::assertEquals(207, $response->getStatusCode());
+    static::assertEquals(
       '{"Booklet.xml":[],"Unit2.xml":{"error":["Error [5] in line 70: Extra content at the end of the document"]},"Testtakers.xml":[]}',
       $response->getBody()->getContents()
     );

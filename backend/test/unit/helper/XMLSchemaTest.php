@@ -36,7 +36,7 @@ class XMLSchemaTest extends TestCase {
 
   function test_parseSchemaUrl_validUrls(): void {
     $result = XMLSchema::parseSchemaUrl($this->testUrls['valid_booklet']);
-    $this->assertEquals([
+    static::assertEquals([
       'isExternal' => true,
       'repo' => 'testcenter-booklet-xml',
       'type' => 'Booklet',
@@ -46,7 +46,7 @@ class XMLSchemaTest extends TestCase {
     ], $result);
 
     $result = XMLSchema::parseSchemaUrl($this->testUrls['valid_unit']);
-    $this->assertEquals([
+    static::assertEquals([
       'isExternal' => true,
       'repo' => 'unit-xml',
       'type' => 'Unit',
@@ -58,39 +58,39 @@ class XMLSchemaTest extends TestCase {
 
   function test_parseSchemaUrl_emptyUrl(): void {
     $result = XMLSchema::parseSchemaUrl($this->testUrls['empty']);
-    $this->assertNull($result);
+    static::assertNull($result);
   }
 
   function test_parseSchemaUrl_invalidOldGithubUrl(): void {
     $result = XMLSchema::parseSchemaUrl($this->testUrls['invalid_old_github']);
-    $this->assertNull($result);
+    static::assertNull($result);
   }
 
   function test_parseSchemaUrl_unknownRepo(): void {
     $result = XMLSchema::parseSchemaUrl($this->testUrls['valid_unknown_repo']);
-    $this->assertNull($result);
+    static::assertNull($result);
   }
 
   function test_parseSchemaUrl_invalidNoVersion(): void {
     $result = XMLSchema::parseSchemaUrl($this->testUrls['invalid_no_version']);
-    $this->assertNull($result);
+    static::assertNull($result);
   }
 
   function test_parseSchemaUrl_invalidWrongDomain(): void {
     $result = XMLSchema::parseSchemaUrl($this->testUrls['invalid_wrong_domain']);
-    $this->assertNull($result);
+    static::assertNull($result);
   }
 
   function test_schemaCache(): void {
     $result = XMLSchema::getSchemaFilePath(
       XMLSchema::parseSchemaUrl($this->testUrls['valid_booklet'])
     );
-    $this->assertEquals(
+    static::assertEquals(
       "vfs://root/data/.schemas/testcenter-booklet-xml/18.0/testcenter-booklet-xml.xsd",
       $result
     );
 
-    $this->assertStringStartsWith(
+    static::assertStringStartsWith(
       "<?xml version=\"1.0\" encoding=\"utf-8\"?>",
       file_get_contents($result)
     );
@@ -100,11 +100,11 @@ class XMLSchemaTest extends TestCase {
     $result = XMLSchema::getSchemaFilePath(
       XMLSchema::parseSchemaUrl($this->testUrls['valid_unknown_repo'])
     );
-    $this->assertNull($result);
+    static::assertNull($result);
   }
 
   function test_getSchemaFilePath_null(): void {
     $result = XMLSchema::getSchemaFilePath(null);
-    $this->assertNull($result);
+    static::assertNull($result);
   }
 }

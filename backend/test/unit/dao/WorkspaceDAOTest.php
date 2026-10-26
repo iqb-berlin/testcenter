@@ -40,7 +40,7 @@ class WorkspaceDAOTest extends TestCase {
   public function test_getWorkspaceName(): void {
     $result = $this->dbc->getWorkspaceName(1);
     $expectation = 'example_workspace';
-    $this->assertEquals($expectation, $result);
+    static::assertEquals($expectation, $result);
   }
 
   // TODO make a test for adding
@@ -92,7 +92,7 @@ class WorkspaceDAOTest extends TestCase {
         'context_data' => 'a:0:{}'
       ]
     ];
-    $this->assertEquals($expectation, $files);
+    static::assertEquals($expectation, $files);
   }
 
   public function test_addLoginSource(): void {
@@ -104,6 +104,6 @@ class WorkspaceDAOTest extends TestCase {
     );
     $this->dbc->addLoginSource('unit-test', $logins);
     $insertedLogins = $this->dbc->_("select count(*) as count from logins where source='unit-test'")['count'];
-    $this->assertEquals(4, $insertedLogins);
+    static::assertEquals(4, $insertedLogins);
   }
 }

@@ -63,7 +63,7 @@ final class StateTest extends TestCase {
         'CONTROLLER' => 1731064087942
       ]
     ];
-    $this->assertEquals($expectation, $output);
+    static::assertEquals($expectation, $output);
   }
 
 
@@ -111,7 +111,7 @@ final class StateTest extends TestCase {
           'B' => 3
         ]
       ];
-    $this->assertEquals($expectation, $state);
+    static::assertEquals($expectation, $state);
 
     $secondInput = [
       [
@@ -137,6 +137,6 @@ final class StateTest extends TestCase {
       ]
     ];
     $state = array_merge($state, $state2);
-    $this->assertEquals($expectation, $state);
+    static::assertEquals($expectation, $state);
   }
 }

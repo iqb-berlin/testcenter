@@ -22,8 +22,8 @@ class DBSchemaTest extends TestCase {
       $matches
     );
 
-    $this->assertSame(1, $found, 'full.sql does not stamp meta.dbSchemaVersion.');
-    $this->assertSame(
+    static::assertSame(1, $found, 'full.sql does not stamp meta.dbSchemaVersion.');
+    static::assertSame(
       DBSchema::REQUIRED_VERSION,
       $matches[1],
       'full.sql stamps a different schema version than DBSchema::REQUIRED_VERSION.'

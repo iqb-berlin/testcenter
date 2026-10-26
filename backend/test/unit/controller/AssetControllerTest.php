@@ -38,11 +38,11 @@ final class AssetControllerTest extends TestCase {
         ResponseCreator::createEmpty(),
         ['id' => '7']
       );
-      $this->fail('No exception thrown');
+      static::fail('No exception thrown');
     } catch (HttpError $exception) {
       // the central error handler turns this into a uniform response with a body and an Error-ID header
-      $this->assertEquals(404, $exception->getCode());
-      $this->assertStringContainsString('7', $exception->getMessage());
+      static::assertEquals(404, $exception->getCode());
+      static::assertStringContainsString('7', $exception->getMessage());
     }
   }
 
@@ -52,9 +52,9 @@ final class AssetControllerTest extends TestCase {
         RequestCreator::create('POST', '/assets'),
         ResponseCreator::createEmpty()
       );
-      $this->fail('No exception thrown');
+      static::fail('No exception thrown');
     } catch (HttpError $exception) {
-      $this->assertEquals(400, $exception->getCode());
+      static::assertEquals(400, $exception->getCode());
     }
   }
 }

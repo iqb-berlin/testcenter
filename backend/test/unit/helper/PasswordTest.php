@@ -15,8 +15,8 @@ class PasswordTest extends TestCase {
 
     $hash = Password::encrypt($password, $pepper);
 
-    $this->assertEquals(substr($exampleHash, 0, 7), substr($hash, 0, 7));
-    $this->assertEquals(strlen($exampleHash), strlen($hash));
+    static::assertEquals(substr($exampleHash, 0, 7), substr($hash, 0, 7));
+    static::assertEquals(strlen($exampleHash), strlen($hash));
   }
 
   function test_encrypt_insecure() {
@@ -27,8 +27,8 @@ class PasswordTest extends TestCase {
 
     $hash = Password::encrypt($password, $salt, true);
 
-    $this->assertEquals(substr($exampleHash, 0, 7), substr($hash, 0, 7));
-    $this->assertEquals(strlen($exampleHash), strlen($hash));
+    static::assertEquals(substr($exampleHash, 0, 7), substr($hash, 0, 7));
+    static::assertEquals(strlen($exampleHash), strlen($hash));
   }
 
   function test_validate_too_short() {
@@ -55,16 +55,16 @@ class PasswordTest extends TestCase {
     $wrongHash = "Wrong_hash";
 
     $result = Password::verify($password, $hash, $pepper);
-    $this->assertTrue($result);
+    static::assertTrue($result);
 
     $result = Password::verify($wrongPassword, $hash, $pepper);
-    $this->assertFalse($result);
+    static::assertFalse($result);
 
     $result = Password::verify($password, $hash, $wrongPepper);
-    $this->assertFalse($result);
+    static::assertFalse($result);
 
     $result = Password::verify($password, $wrongHash, $pepper);
-    $this->assertFalse($result);
+    static::assertFalse($result);
   }
 
   function test_verify_legacy() {
@@ -76,16 +76,16 @@ class PasswordTest extends TestCase {
     $wrongHash = "wrong_hash";
 
     $result = Password::verify($password, $hash, $salt);
-    $this->assertTrue($result);
+    static::assertTrue($result);
 
     $result = Password::verify($wrongPassword, $hash, $salt);
-    $this->assertFalse($result);
+    static::assertFalse($result);
 
     $result = Password::verify($password, $hash, $wrongSalt);
-    $this->assertFalse($result);
+    static::assertFalse($result);
 
     $result = Password::verify($password, $wrongHash, $salt);
-    $this->assertFalse($result);
+    static::assertFalse($result);
   }
 
   function test_verify_insecure() {
@@ -97,15 +97,15 @@ class PasswordTest extends TestCase {
     $wrongHash = "Wrong_hash";
 
     $result = Password::verify($password, $hash, $pepper);
-    $this->assertTrue($result);
+    static::assertTrue($result);
 
     $result = Password::verify($wrongPassword, $hash, $pepper);
-    $this->assertFalse($result);
+    static::assertFalse($result);
 
     $result = Password::verify($password, $hash, $wrongPepper);
-    $this->assertFalse($result);
+    static::assertFalse($result);
 
     $result = Password::verify($password, $wrongHash, $pepper);
-    $this->assertFalse($result);
+    static::assertFalse($result);
   }
 }

@@ -30,8 +30,8 @@ class ErrorHandlerTest extends TestCase {
       new HttpError('Workspace with name `sample_workspace` already exists!', 409)
     );
 
-    $this->assertEquals(409, $response->getStatusCode());
-    $this->assertEquals('Workspace with name `sample_workspace` already exists!', (string) $response->getBody());
+    static::assertEquals(409, $response->getStatusCode());
+    static::assertEquals('Workspace with name `sample_workspace` already exists!', (string) $response->getBody());
   }
 
   public function test_keepsCodeAndMessageOfSlimException() {
@@ -40,35 +40,35 @@ class ErrorHandlerTest extends TestCase {
       new HttpBadRequestException($this->request, 'New workspace name missing')
     );
 
-    $this->assertEquals(400, $response->getStatusCode());
-    $this->assertEquals('New workspace name missing', (string) $response->getBody());
+    static::assertEquals(400, $response->getStatusCode());
+    static::assertEquals('New workspace name missing', (string) $response->getBody());
   }
 
   public function test_answersAnyOtherThrowableWithServerError() {
     $response = ($this->errorHandler)($this->request, new Exception('Something went wrong'));
 
-    $this->assertEquals(500, $response->getStatusCode());
-    $this->assertEquals('Internal error.', (string) $response->getBody());
+    static::assertEquals(500, $response->getStatusCode());
+    static::assertEquals('Internal error.', (string) $response->getBody());
   }
 
   public function test_hidesServerErrorMessageFromClient() {
     // 5xx messages may carry internal details (e.g. absolute paths) and must not leak
     $response = ($this->errorHandler)($this->request, new Exception('failed at /var/www/testcenter/data/ws_1'));
 
-    $this->assertStringNotContainsString('/var/www', (string) $response->getBody());
+    static::assertStringNotContainsString('/var/www', (string) $response->getBody());
   }
 
   public function test_keepsServerErrorMessageInTestMode() {
     TestEnvironment::$testMode = 'integration';
     $response = ($this->errorHandler)($this->request, new Exception('failed at /var/www/testcenter/data/ws_1'));
 
-    $this->assertEquals('failed at /var/www/testcenter/data/ws_1', (string) $response->getBody());
+    static::assertEquals('failed at /var/www/testcenter/data/ws_1', (string) $response->getBody());
   }
 
   public function test_escapesTheMessage() {
     $response = ($this->errorHandler)($this->request, new HttpError('Invalid root-tag: `<Invalid>`', 400));
 
-    $this->assertEquals('Invalid root-tag: `&lt;Invalid&gt;`', (string) $response->getBody());
+    static::assertEquals('Invalid root-tag: `&lt;Invalid&gt;`', (string) $response->getBody());
   }
 
   // this is what the api-docs promise for every error response, see docs/api/components.spec.yml
@@ -82,9 +82,9 @@ class ErrorHandlerTest extends TestCase {
     foreach ($errors as $case => $error) {
       $response = ($this->errorHandler)($this->request, $error);
 
-      $this->assertEquals('text/html', $response->getHeaderLine('Content-Type'), $case);
-      $this->assertNotEmpty($response->getHeaderLine('Error-ID'), $case);
-      $this->assertNotEmpty((string) $response->getBody(), $case);
+      static::assertEquals('text/html', $response->getHeaderLine('Content-Type'), $case);
+      static::assertNotEmpty($response->getHeaderLine('Error-ID'), $case);
+      static::assertNotEmpty((string) $response->getBody(), $case);
     }
   }
 }

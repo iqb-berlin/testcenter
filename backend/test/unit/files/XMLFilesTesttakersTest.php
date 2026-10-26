@@ -157,7 +157,7 @@ END;
       )
     );
     $result = $xmlFile->getLoginsInSameGroup('test-group-monitor', 13);
-    $this->assertEquals($expected, $result);
+    static::assertEquals($expected, $result);
   }
 
   function test_collectBookletsPerCode() {
@@ -191,7 +191,7 @@ END;
       ]
     ];
 
-    $this->assertEquals($expected, $result, 'code-using and non-code-unsing logins present');
+    static::assertEquals($expected, $result, 'code-using and non-code-unsing logins present');
 
     $xml = <<<END
 <Login name="someName" password="somePass">
@@ -212,24 +212,24 @@ END;
       ]
     ];
 
-    $this->assertEquals($expected, $result, 'no code-using booklets present');
+    static::assertEquals($expected, $result, 'no code-using booklets present');
   }
 
   function test_getCodesFromBookletElement() {
     $xml = '<Booklet codes="aaa bbb aaa">first_booklet</Booklet>';
     $expected = ['aaa', 'bbb'];
     $result = XMLFileTesttakersExposed::getCodesFromBookletElement(new SimpleXMLElement($xml));
-    $this->assertEquals($expected, $result);
+    static::assertEquals($expected, $result);
 
     $xml = '<Booklet codes="">first_booklet</Booklet>';
     $expected = [];
     $result = XMLFileTesttakersExposed::getCodesFromBookletElement(new SimpleXMLElement($xml));
-    $this->assertEquals($expected, $result);
+    static::assertEquals($expected, $result);
 
     $xml = '<Booklet>first_booklet</Booklet>';
     $expected = [];
     $result = XMLFileTesttakersExposed::getCodesFromBookletElement(new SimpleXMLElement($xml));
-    $this->assertEquals($expected, $result);
+    static::assertEquals($expected, $result);
   }
 
   function test_getGroups() {
@@ -268,7 +268,7 @@ END;
 
     $result = $xmlFile->getGroups();
 
-    $this->assertEquals($expected, $result);
+    static::assertEquals($expected, $result);
   }
 
   function test_getAssetAssignments() {
@@ -306,7 +306,7 @@ END;
       ]
     ];
 
-    $this->assertEquals($expected, $xmlFile->getAssetAssignments());
+    static::assertEquals($expected, $xmlFile->getAssetAssignments());
   }
 
   function test_getAllLogins() {
@@ -642,7 +642,7 @@ END;
 
     $result = $xmlFile->getAllLogins();
 
-    $this->assertEquals($expected, $result);
+    static::assertEquals($expected, $result);
   }
 
   function test_getAllLoginNames() {
@@ -655,7 +655,7 @@ END;
 
     $result = $xmlFile->getAllLoginNames();
 
-    $this->assertEquals($expected, $result);
+    static::assertEquals($expected, $result);
   }
 
   function test_getCustomTexts() {
@@ -668,6 +668,6 @@ END;
 
     $result = $xmlFile->getCustomTexts();
 
-    $this->assertEquals($expected, $result);
+    static::assertEquals($expected, $result);
   }
 }

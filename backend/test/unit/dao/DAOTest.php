@@ -25,15 +25,15 @@ class DAOTest extends TestCase {
   function test_getDBSchemaVersion(): void {
     $this->dbc->_("delete from meta where \"metaKey\" = 'dbSchemaVersion'");
     $result = $this->dbc->getDBSchemaVersion();
-    $this->assertEquals('0.0.0-no-entry', $result, 'No entry in meta table');
+    static::assertEquals('0.0.0-no-entry', $result, 'No entry in meta table');
 
     $this->dbc->_("insert into meta (\"metaKey\", value) values ('dbSchemaVersion', '10.0.0')");
     $result = $this->dbc->getDBSchemaVersion();
-    $this->assertEquals('10.0.0', $result, 'Version present');
+    static::assertEquals('10.0.0', $result, 'Version present');
 
     $this->dbc->_("drop table meta");
     $result = $this->dbc->getDBSchemaVersion();
-    $this->assertEquals('0.0.0-no-table', $result, 'No meta table present');
+    static::assertEquals('0.0.0-no-table', $result, 'No meta table present');
   }
 
   public function test_getMeta(): void {
@@ -44,7 +44,7 @@ class DAOTest extends TestCase {
         'keyB' => 'valueB'
       ]
     ];
-    $this->assertEquals($expectation, $result);
+    static::assertEquals($expectation, $result);
 
     $result = $this->dbc->getMeta(['cat1', 'cat2']);
     $expectation = [
@@ -57,7 +57,7 @@ class DAOTest extends TestCase {
         'keyB' => 'valueB'
       ]
     ];
-    $this->assertEquals($expectation, $result);
+    static::assertEquals($expectation, $result);
   }
 
   public function test_setMeta(): void {
@@ -68,7 +68,7 @@ class DAOTest extends TestCase {
         'aKey' => 'aValue',
       ]
     ];
-    $this->assertEquals($expectation, $result);
+    static::assertEquals($expectation, $result);
 
     $this->dbc->setMeta('new', 'aKey', 'newValue');
     $result = $this->dbc->getMeta(['new']);
@@ -77,20 +77,20 @@ class DAOTest extends TestCase {
         'aKey' => 'newValue',
       ]
     ];
-    $this->assertEquals($expectation, $result);
+    static::assertEquals($expectation, $result);
   }
 
   public function test_getTestFullState(): void {
     $result = $this->dbc->getTestFullState(['testState' => '{"A":"B"}', "locked" => true, "running" => true]);
-    $this->assertSame(["A" => "B", "status" => 'locked'], $result);
+    static::assertSame(["A" => "B", "status" => 'locked'], $result);
 
     $result = $this->dbc->getTestFullState(['testState' => '{"A":"B"}', "locked" => false, "running" => false]);
-    $this->assertSame(["A" => "B", "status" => 'pending'], $result);
+    static::assertSame(["A" => "B", "status" => 'pending'], $result);
 
     $result = $this->dbc->getTestFullState(['testState' => '{"A":"B"}', "locked" => false, "running" => true]);
-    $this->assertSame(["A" => "B", "status" => 'running'], $result);
+    static::assertSame(["A" => "B", "status" => 'running'], $result);
 
     $result = $this->dbc->getTestFullState(['testState' => '{"A":"B"}', "locked" => true, "running" => false]);
-    $this->assertSame(["A" => "B", "status" => 'locked'], $result);
+    static::assertSame(["A" => "B", "status" => 'locked'], $result);
   }
 }

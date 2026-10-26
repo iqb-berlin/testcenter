@@ -26,27 +26,27 @@ class TestDAOTest extends TestCase {
     $expected = ['CURRENT_UNIT_ID' => 'UNIT_1'];
     $result = $this->dbc->getTestState(1);
 
-    $this->assertEquals($expected, $result);
+    static::assertEquals($expected, $result);
 
     $expected = [];
     $result = $this->dbc->getTestState(3);
 
-    $this->assertEquals($expected, $result);
+    static::assertEquals($expected, $result);
   }
 
   function test_getOrCreateTest() {
     $created = $this->dbc->getOrCreateTest(2, new TestName('BOOKLET.SAMPLE-1'), 'new label');
-    $this->assertEquals('BOOKLET.SAMPLE-1', $created->name);
-    $this->assertEquals('new label', $created->label);
-    $this->assertFalse($created->locked);
+    static::assertEquals('BOOKLET.SAMPLE-1', $created->name);
+    static::assertEquals('new label', $created->label);
+    static::assertFalse($created->locked);
 
     $again = $this->dbc->getOrCreateTest(2, new TestName('BOOKLET.SAMPLE-1'), 'other label');
-    $this->assertEquals($created->id, $again->id);
-    $this->assertEquals('new label', $again->label);
+    static::assertEquals($created->id, $again->id);
+    static::assertEquals('new label', $again->label);
 
     $existing = $this->dbc->getOrCreateTest(1, new TestName('BOOKLET.SAMPLE-1'), 'other label');
-    $this->assertEquals(2, $existing->id);
-    $this->assertEquals('second test label', $existing->label);
+    static::assertEquals(2, $existing->id);
+    static::assertEquals('second test label', $existing->label);
   }
 
   function test_addTestLogs() {
@@ -76,8 +76,8 @@ class TestDAOTest extends TestCase {
       true
     );
 
-    $this->assertNotEmpty($actualLog);
-    $this->assertEquals($expectedLog, $actualLog);
+    static::assertNotEmpty($actualLog);
+    static::assertEquals($expectedLog, $actualLog);
 
     // Add a log without content
     $emptyContent = '';
@@ -93,8 +93,8 @@ class TestDAOTest extends TestCase {
       [':id' => $testId, ':logentry' => $logKey]
     );
 
-    $this->assertNotEmpty($actualLogEmptyContent);
-    $this->assertEquals($expectedLogEmptyContent, $actualLogEmptyContent);
+    static::assertNotEmpty($actualLogEmptyContent);
+    static::assertEquals($expectedLogEmptyContent, $actualLogEmptyContent);
   }
 
   function test_addTestLogs_rejectsNonTestLogElements() {
@@ -104,7 +104,7 @@ class TestDAOTest extends TestCase {
 
     try {
       $this->dbc->addTestLogs([new TestLog($testId, $logKey, 1623456789, ''), $unitLog]);
-      $this->fail('Expected InvalidArgumentException');
+      static::fail('Expected InvalidArgumentException');
     } catch (InvalidArgumentException) {
     }
 
@@ -113,21 +113,21 @@ class TestDAOTest extends TestCase {
       [':id' => $testId, ':logentry' => $logKey],
       true
     );
-    $this->assertEmpty($writtenLogs);
+    static::assertEmpty($writtenLogs);
   }
 
   function test_getUnitState() {
     $expected = ['SOME_STATE' => 'WHATEVER'];
     $result = $this->dbc->getUnitState(1, 'UNIT_1');
-    $this->assertEquals($expected, $result);
+    static::assertEquals($expected, $result);
 
     $expected = [];
     $result = $this->dbc->getUnitState(999, 'UNIT_1');
-    $this->assertEquals($expected, $result);
+    static::assertEquals($expected, $result);
 
     $expected = [];
     $result = $this->dbc->getUnitState(1, 'not_existing_unit');
-    $this->assertEquals($expected, $result);
+    static::assertEquals($expected, $result);
   }
 
   function test_updateTestState() {
@@ -151,10 +151,10 @@ class TestDAOTest extends TestCase {
     ];
 
     $result = $this->dbc->updateTestState(1, $testStatePatch);
-    $this->assertEquals($expected, $result);
+    static::assertEquals($expected, $result);
 
     $resultFromGet = $this->dbc->getTestState(1);
-    $this->assertEquals($result, $resultFromGet);
+    static::assertEquals($result, $resultFromGet);
 
     $updateState = [
       [
@@ -177,10 +177,10 @@ class TestDAOTest extends TestCase {
     ];
 
     $resultAfterUpdate = $this->dbc->updateTestState(1, $updateState);
-    $this->assertEquals($expectedAfterUpdate, $resultAfterUpdate);
+    static::assertEquals($expectedAfterUpdate, $resultAfterUpdate);
 
     $resultFromGetAfterUpdate = $this->dbc->getTestState(1);
-    $this->assertEquals($resultAfterUpdate, $resultFromGetAfterUpdate);
+    static::assertEquals($resultAfterUpdate, $resultFromGetAfterUpdate);
   }
 
   function test_updateUnitState() {
@@ -204,10 +204,10 @@ class TestDAOTest extends TestCase {
     ];
 
     $result = $this->dbc->updateUnitState(1, 'UNIT_1', $testState, 'UNIT_1');
-    $this->assertEquals($expected, $result);
+    static::assertEquals($expected, $result);
 
     $resultFromGet = $this->dbc->getUnitState(1, 'UNIT_1');
-    $this->assertEquals($result, $resultFromGet);
+    static::assertEquals($result, $resultFromGet);
 
     $updateState = [
       [
@@ -230,10 +230,10 @@ class TestDAOTest extends TestCase {
     ];
 
     $resultAfterUpdate = $this->dbc->updateUnitState(1, 'UNIT_1', $updateState, 'UNIT_1');
-    $this->assertEquals($expectedAfterUpdate, $resultAfterUpdate);
+    static::assertEquals($expectedAfterUpdate, $resultAfterUpdate);
 
     $resultFromGetAfterUpdate = $this->dbc->getUnitState(1, 'UNIT_1');
-    $this->assertEquals($resultAfterUpdate, $resultFromGetAfterUpdate);
+    static::assertEquals($resultAfterUpdate, $resultFromGetAfterUpdate);
   }
 
   function test_updateUnitState_confusedOrder() {
@@ -249,7 +249,7 @@ class TestDAOTest extends TestCase {
       'SOME_STATE' => 'WHATEVER'
     ];
     $resultAfterUpdate = $this->dbc->updateUnitState(1, 'UNIT_1', $updateState, 'UNIT_1');
-    $this->assertEquals($expectedAfterUpdate, $resultAfterUpdate);
+    static::assertEquals($expectedAfterUpdate, $resultAfterUpdate);
 
     $updateState = [
       [
@@ -259,7 +259,7 @@ class TestDAOTest extends TestCase {
       ]
     ];
     $resultAfterUpdate = $this->dbc->updateUnitState(1, 'UNIT_1', $updateState, 'UNIT_1');
-    $this->assertEquals($expectedAfterUpdate, $resultAfterUpdate);
+    static::assertEquals($expectedAfterUpdate, $resultAfterUpdate);
 
 
     $updateState = [
@@ -274,7 +274,7 @@ class TestDAOTest extends TestCase {
       'SOME_STATE' => 'WHATEVER'
     ];
     $resultAfterUpdate = $this->dbc->updateUnitState(1, 'UNIT_1', $updateState, 'UNIT_1');
-    $this->assertEquals($expectedAfterUpdate, $resultAfterUpdate);
+    static::assertEquals($expectedAfterUpdate, $resultAfterUpdate);
   }
 
   function test_getCommands() {
@@ -284,7 +284,7 @@ class TestDAOTest extends TestCase {
     ];
     $result = $this->dbc->getCommands(1, 4);
 
-    $this->assertEquals($expected, $result);
+    static::assertEquals($expected, $result);
 
     $expected = [
       new Command(2, 'COMMAND_A', 1597900000, 'param1'),
@@ -294,28 +294,28 @@ class TestDAOTest extends TestCase {
     ];
     $result = $this->dbc->getCommands(1);
 
-    $this->assertEquals($expected, $result);
+    static::assertEquals($expected, $result);
 
     $expected = [
       new Command(1, 'COMMAND_X', 1597902000)
     ];
     $result = $this->dbc->getCommands(2);
-    $this->assertEquals($expected, $result);
+    static::assertEquals($expected, $result);
 
     $expected = [];
     $result = $this->dbc->getCommands(3);
-    $this->assertEquals($expected, $result);
+    static::assertEquals($expected, $result);
 
     $expected = [];
     $result = $this->dbc->getCommands(1, 3);
-    $this->assertEquals($expected, $result);
+    static::assertEquals($expected, $result);
 
     // command 1 was sent to test 1 and test 2, so the id alone matches two rows with different timestamps
     $expected = [
       new Command(3, 'COMMAND_D', 1597904000, 'param1', 'param2')
     ];
     $result = $this->dbc->getCommands(1, 1);
-    $this->assertEquals($expected, $result);
+    static::assertEquals($expected, $result);
   }
 
   function test_getDataParts() {
@@ -327,7 +327,7 @@ class TestDAOTest extends TestCase {
       'dataType' => 'the-response-type'
     ];
     $result = $this->dbc->getDataParts(1, 'UNIT.SAMPLE');
-    $this->assertEquals($expected, $result);
+    static::assertEquals($expected, $result);
   }
 
   function test_updateDataParts() {
@@ -351,7 +351,7 @@ class TestDAOTest extends TestCase {
       'dataType' => 'the-response-type'
     ];
     $result = $this->dbc->getDataParts(1, 'UNIT.SAMPLE');
-    $this->assertEquals($expected, $result);
+    static::assertEquals($expected, $result);
 
     // Test with an empty data parts array
     $this->dbc->updateDataParts(
@@ -370,7 +370,7 @@ class TestDAOTest extends TestCase {
       'dataType' => 'the-response-type'
     ];
     $resultEmptyUpdate = $this->dbc->getDataParts(1, 'UNIT.SAMPLE');
-    $this->assertEquals($expectedEmptyUpdate, $resultEmptyUpdate);
+    static::assertEquals($expectedEmptyUpdate, $resultEmptyUpdate);
 
     // Test overwrite of existing data parts
     $this->dbc->updateDataParts(
@@ -391,7 +391,7 @@ class TestDAOTest extends TestCase {
       'dataType' => 'the-response-type' // TODO see getDataParts()
     ];
     $resultOverwrite = $this->dbc->getDataParts(1, 'UNIT.SAMPLE');
-    $this->assertEquals($expectedOverwrite, $resultOverwrite);
+    static::assertEquals($expectedOverwrite, $resultOverwrite);
   }
 
   function test_addUnitLogs() {
@@ -415,8 +415,8 @@ class TestDAOTest extends TestCase {
       [':unitName' => $unitName, ':testId' => $testId]
     );
 
-    $this->assertNotEmpty($actualLog);
-    $this->assertEquals($expectedLog, $actualLog);
+    static::assertNotEmpty($actualLog);
+    static::assertEquals($expectedLog, $actualLog);
 
     // Add a log without content
     $emptyContent = '';
@@ -432,8 +432,8 @@ class TestDAOTest extends TestCase {
       [':unitName' => $unitName, ':testId' => $testId, ':logkey' => $logKey]
     );
 
-    $this->assertNotEmpty($actualLogEmptyContent);
-    $this->assertEquals($expectedLogEmptyContent, $actualLogEmptyContent);
+    static::assertNotEmpty($actualLogEmptyContent);
+    static::assertEquals($expectedLogEmptyContent, $actualLogEmptyContent);
   }
 
   function test_addUnitLogs_rejectsNonUnitLogElements() {
@@ -444,7 +444,7 @@ class TestDAOTest extends TestCase {
 
     try {
       $this->dbc->addUnitLogs([new UnitLog($testId, $unitName, $logKey, 1623456789, ''), $testLog]);
-      $this->fail('Expected InvalidArgumentException');
+      static::fail('Expected InvalidArgumentException');
     } catch (InvalidArgumentException) {
     }
 
@@ -453,7 +453,7 @@ class TestDAOTest extends TestCase {
       [':unitName' => $unitName, ':testId' => $testId, ':logkey' => $logKey],
       true
     );
-    $this->assertEmpty($writtenLogs);
+    static::assertEmpty($writtenLogs);
   }
 
 }

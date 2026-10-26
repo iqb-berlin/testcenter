@@ -41,7 +41,7 @@ class XMLFilesBookletTest extends TestCase {
 
     $result = $xmlFile->getUnitIds();
 
-    $this->assertEquals($expected, $result);
+    static::assertEquals($expected, $result);
   }
 
   private function prepareBookletWithStates(string $states, string $restrictions): XMLFileBooklet {
@@ -122,13 +122,13 @@ EOT;
 
 
     $xmlFile = $this->prepareBookletWithConditions($validConditions);
-    $this->assertTrue($xmlFile->isValid());
+    static::assertTrue($xmlFile->isValid());
   }
 
   function test_RestrictionsSyntax_invalidConditions(): void {
     $stringForNumber = '<If><Score of="var1" from="alias" /><Is greaterThan="STRING" /></If>';
     $xmlFile = $this->prepareBookletWithConditions($stringForNumber);
-    $this->assertFalse($xmlFile->isValid());
+    static::assertFalse($xmlFile->isValid());
 
     $mixedItemTypes = '<If>
           <Median>
@@ -138,7 +138,7 @@ EOT;
           <Is greaterThan="50" />
         </If>';
     $xmlFile = $this->prepareBookletWithConditions($mixedItemTypes);
-    $this->assertFalse($xmlFile->isValid());
+    static::assertFalse($xmlFile->isValid());
   }
 
   function test_validateAssertions() : void {
@@ -154,21 +154,21 @@ EOT;
 
     $referringToUndefinedState = '<Show if="missing-state" is="option-1" />';
     $xmlFile = $this->prepareBookletWithStates($aStatesObject, $referringToUndefinedState);
-    $this->assertFalse($xmlFile->isValid());
-    $this->assertCount(3, $xmlFile->getValidationReport()['error']);
+    static::assertFalse($xmlFile->isValid());
+    static::assertCount(3, $xmlFile->getValidationReport()['error']);
 
     $referringToUndefinedOption = '<Show if="booklet-variant" is="missing-option" />';
     $xmlFile = $this->prepareBookletWithStates($aStatesObject, $referringToUndefinedOption);
-    $this->assertFalse($xmlFile->isValid());
+    static::assertFalse($xmlFile->isValid());
 
     $correctReference = '<Show if="booklet-variant" is="option-1" />';
     $xmlFile = $this->prepareBookletWithStates($aStatesObject, $correctReference);
-    $this->assertTrue($xmlFile->isValid());
+    static::assertTrue($xmlFile->isValid());
 
 
     $noReferenceAtAll = '<TimeMax minutes="5" />';
     $xmlFile = $this->prepareBookletWithStates($aStatesObject, $noReferenceAtAll);
-    $this->assertTrue($xmlFile->isValid());
+    static::assertTrue($xmlFile->isValid());
 
     $statesObjectWithNoDefault = '
       <States>
@@ -183,8 +183,8 @@ EOT;
       </States>
     ';
     $xmlFile = $this->prepareBookletWithStates($statesObjectWithNoDefault, $correctReference);
-    $this->assertFalse($xmlFile->isValid());
-    $this->assertCount(1, $xmlFile->getValidationReport()['error']);
+    static::assertFalse($xmlFile->isValid());
+    static::assertCount(1, $xmlFile->getValidationReport()['error']);
 
     $referringToUndefinedUnit = '
       <States>
@@ -206,8 +206,8 @@ EOT;
       </States>
     ';
     $xmlFile = $this->prepareBookletWithStates($referringToUndefinedUnit, $correctReference);
-    $this->assertFalse($xmlFile->isValid());
-    $this->assertCount(2, $xmlFile->getValidationReport()['error']);
+    static::assertFalse($xmlFile->isValid());
+    static::assertCount(2, $xmlFile->getValidationReport()['error']);
   }
 }
 

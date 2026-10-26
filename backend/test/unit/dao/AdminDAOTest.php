@@ -30,52 +30,52 @@ final class AdminDAOTest extends TestCase {
 
   public function test_login() {
     $token = $this->dbc->createAdminToken('super', 'user123');
-    $this->assertNotNull($token);
+    static::assertNotNull($token);
 
     $rejection = $this->dbc->createAdminToken('peter', 'peterspassword');
-    $this->assertEquals(FailedLogin::usernameNotFound, $rejection);
+    static::assertEquals(FailedLogin::usernameNotFound, $rejection);
 
     $rejection = $this->dbc->createAdminToken('super', 'peterspassword');
-    $this->assertEquals(FailedLogin::wrongPassword, $rejection);
+    static::assertEquals(FailedLogin::wrongPassword, $rejection);
   }
 
   public function test_validateToken() {
     $token = $this->dbc->createAdminToken('super', 'user123');
     $result = $this->dbc->getAdmin($token);
-    $this->assertEquals(1, $result->getId());
-    $this->assertEquals('super', $result->getName());
-    $this->assertTrue($result->isSuperadmin());
+    static::assertEquals(1, $result->getId());
+    static::assertEquals('super', $result->getName());
+    static::assertTrue($result->isSuperadmin());
   }
 
   public function test_getWorkspaces() {
     $token = $this->dbc->createAdminToken('super', 'user123');
     $result = $this->dbc->getWorkspaces($token);
     $expect = [new WorkspaceData(1, 'example_workspace', 'RW')];
-    $this->assertEquals($result, $expect);
+    static::assertEquals($result, $expect);
 
     $token = $this->dbc->createAdminToken('i_exist_but_am_not_allowed_anything', 'user123');
     $result = $this->dbc->getWorkspaces($token);
-    $this->assertEquals(array(), $result);
+    static::assertEquals(array(), $result);
   }
 
   public function test_hasAdminAccessToWorkspace() {
     $token = $this->dbc->createAdminToken('super', 'user123');
     $result = $this->dbc->hasAdminAccessToWorkspace($token, 1);
-    $this->assertEquals(true, $result);
+    static::assertEquals(true, $result);
 
     $token = $this->dbc->createAdminToken('i_exist_but_am_not_allowed_anything', 'user123');
     $result = $this->dbc->hasAdminAccessToWorkspace($token, 1);
-    $this->assertEquals(false, $result);
+    static::assertEquals(false, $result);
   }
 
   public function test_getWorkspaceRole() {
     $token = $this->dbc->createAdminToken('super', 'user123');
     $result = $this->dbc->getWorkspaceRole($token, 1);
-    $this->assertEquals("RW", $result);
+    static::assertEquals("RW", $result);
 
     $token = $this->dbc->createAdminToken('i_exist_but_am_not_allowed_anything', 'user123');
     $result = $this->dbc->getWorkspaceRole($token, 1);
-    $this->assertEquals("", $result);
+    static::assertEquals("", $result);
   }
 
   public function testGetResponseReportData(): void {
@@ -130,7 +130,7 @@ final class AdminDAOTest extends TestCase {
       ]
     ];
 
-    parent::assertSame($expectedResponseReportData, $actualResponseReportData);
+    static::assertSame($expectedResponseReportData, $actualResponseReportData);
   }
 
   function testGetLogReportData(): void {
@@ -165,7 +165,7 @@ final class AdminDAOTest extends TestCase {
       ]
     ];
 
-    parent::assertSame($expectedLogReportData, $actualLogReportData);
+    static::assertSame($expectedLogReportData, $actualLogReportData);
   }
 
   function testGetReviewReportData(): void {
@@ -212,7 +212,7 @@ final class AdminDAOTest extends TestCase {
       ]
     ];
 
-    parent::assertSame($expectedReviewReportData, $actualReviewReportData);
+    static::assertSame($expectedReviewReportData, $actualReviewReportData);
   }
 
   /**
@@ -225,7 +225,7 @@ final class AdminDAOTest extends TestCase {
       $this->dbc->$method(1, ['sample_group']),
       $this->dbc->$method(1, ['review_group'])
     );
-    parent::assertNotEmpty($allGroups);
+    static::assertNotEmpty($allGroups);
     $this->assertSameIgnoringOrder($perGroup, $allGroups);
   }
 
@@ -233,7 +233,7 @@ final class AdminDAOTest extends TestCase {
    * @dataProvider reportDataMethods
    */
   function testGetReportDataWithEmptyGroupFilterReturnsNothing(string $method): void {
-    parent::assertSame([], $this->dbc->$method(1, []));
+    static::assertSame([], $this->dbc->$method(1, []));
   }
 
   /**
@@ -250,7 +250,7 @@ final class AdminDAOTest extends TestCase {
   function test_addCommand() {
     $command = new Command(-1, 'a_keyword', 1597905000, 'first_argument', 'second_argument');
     $commandId = $this->dbc->storeCommand(1, [1], $command);
-    $this->assertEquals(5, $commandId);
+    static::assertEquals(5, $commandId);
     $expectation = [
       "id" => 5,
       "test_id" => 1,
@@ -262,7 +262,7 @@ final class AdminDAOTest extends TestCase {
       'executed' => false
     ];
     $result = $this->dbc->_("select * from test_commands where keyword='a_keyword'");
-    $this->assertEquals($expectation, $result);
+    static::assertEquals($expectation, $result);
   }
 
   function test_addCommandForSeveralTests() {
@@ -278,14 +278,14 @@ final class AdminDAOTest extends TestCase {
       [],
       true
     );
-    $this->assertEquals($expectation, $result);
+    static::assertEquals($expectation, $result);
   }
 
   function test_addCommandDrawsFreshIds() {
     $first = $this->dbc->storeCommand(1, [1], new Command(-1, 'first_keyword', 1597905000));
     $second = $this->dbc->storeCommand(1, [1], new Command(-1, 'second_keyword', 1597905000));
 
-    $this->assertNotEquals($first, $second);
+    static::assertNotEquals($first, $second);
   }
 
   function test_getTest() {
@@ -296,32 +296,32 @@ final class AdminDAOTest extends TestCase {
       'label' => 'first test label'
     ];
     $result = $this->dbc->getTest(1);
-    $this->assertEquals($expectation, $result);
+    static::assertEquals($expectation, $result);
   }
 
   function test_deleteResultData() {
     $this->dbc->deleteResultData(1, 'not_existing');
-    $this->assertGreaterThan(0, $this->countTableRows('login_sessions'));
-    $this->assertGreaterThan(0, $this->countTableRows('person_sessions'));
-    $this->assertGreaterThan(0, $this->countTableRows('tests'));
-    $this->assertGreaterThan(0, $this->countTableRows('test_logs'));
-    $this->assertGreaterThan(0, $this->countTableRows('units'));
-    $this->assertGreaterThan(0, $this->countTableRows('unit_data'));
-    $this->assertGreaterThan(0, $this->countTableRows('unit_logs'));
-    $this->assertGreaterThan(0, $this->countTableRows('unit_reviews'));
-    $this->assertGreaterThan(0, $this->countTableRows('test_reviews'));
+    static::assertGreaterThan(0, $this->countTableRows('login_sessions'));
+    static::assertGreaterThan(0, $this->countTableRows('person_sessions'));
+    static::assertGreaterThan(0, $this->countTableRows('tests'));
+    static::assertGreaterThan(0, $this->countTableRows('test_logs'));
+    static::assertGreaterThan(0, $this->countTableRows('units'));
+    static::assertGreaterThan(0, $this->countTableRows('unit_data'));
+    static::assertGreaterThan(0, $this->countTableRows('unit_logs'));
+    static::assertGreaterThan(0, $this->countTableRows('unit_reviews'));
+    static::assertGreaterThan(0, $this->countTableRows('test_reviews'));
 
     $this->dbc->deleteResultData(1, 'sample_group');
     $this->dbc->deleteResultData(1, 'review_group');
-    $this->assertEquals(0, $this->countTableRows('login_sessions'));
-    $this->assertEquals(0, $this->countTableRows('person_sessions'));
-    $this->assertEquals(0, $this->countTableRows('tests'));
-    $this->assertEquals(0, $this->countTableRows('test_logs'));
-    $this->assertEquals(0, $this->countTableRows('units'));
-    $this->assertEquals(0, $this->countTableRows('unit_data'));
-    $this->assertEquals(0, $this->countTableRows('unit_logs'));
-    $this->assertEquals(0, $this->countTableRows('unit_reviews'));
-    $this->assertEquals(0, $this->countTableRows('test_reviews'));
+    static::assertEquals(0, $this->countTableRows('login_sessions'));
+    static::assertEquals(0, $this->countTableRows('person_sessions'));
+    static::assertEquals(0, $this->countTableRows('tests'));
+    static::assertEquals(0, $this->countTableRows('test_logs'));
+    static::assertEquals(0, $this->countTableRows('units'));
+    static::assertEquals(0, $this->countTableRows('unit_data'));
+    static::assertEquals(0, $this->countTableRows('unit_logs'));
+    static::assertEquals(0, $this->countTableRows('unit_reviews'));
+    static::assertEquals(0, $this->countTableRows('test_reviews'));
   }
 
   public function test_getResultStats() {
@@ -447,30 +447,30 @@ final class AdminDAOTest extends TestCase {
     usort($resultAsArray, function ($first, $second) {
       return $first['testId'] <=> $second['testId'];
     });
-    $this->assertSame($expectation, $resultAsArray);
+    static::assertSame($expectation, $resultAsArray);
 
     $result = $this->dbc->getTestSessions(1, []); // all groups
     $resultAsArray = array_map($sessionChangeMessageArray, $result->asArray());
     usort($resultAsArray, function ($first, $second) {
       return $first['testId'] <=> $second['testId'];
     });
-    $this->assertSame($expectation, $resultAsArray);
+    static::assertSame($expectation, $resultAsArray);
 
     $result = $this->dbc->getTestSessions(1, ['unknown_group']);
     $resultAsArray = array_map($sessionChangeMessageArray, $result->asArray());
     usort($resultAsArray, function ($first, $second) {
       return $first['testId'] <=> $second['testId'];
     });
-    $this->assertSame([], $resultAsArray);
+    static::assertSame([], $resultAsArray);
   }
 
   public function test_getGroup(): void {
     $result = $this->dbc->getGroup('sample_group');
     $expectation = new Group('sample_group', 'Sample Group');
-    $this->assertEquals($expectation, $result);
+    static::assertEquals($expectation, $result);
 
     $result = $this->dbc->getGroup('gibberish');
-    $this->assertNull($result);
+    static::assertNull($result);
   }
 
   private function countTableRows(string $tableName): int {

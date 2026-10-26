@@ -15,11 +15,11 @@ class TimeStampTest extends TestCase {
   function test_now() {
     $realNow = (new DateTime())->getTimestamp();
     $result = TimeStamp::now();
-    $this->assertEquals($realNow, $result);
+    static::assertEquals($realNow, $result);
     $fakeNow = 123456789;
     SystemConfig::$debug_useStaticTime = "@$fakeNow";
     $result = TimeStamp::now();
-    $this->assertEquals($fakeNow, $result);
+    static::assertEquals($fakeNow, $result);
   }
 
   function test_checkExpiration() {
@@ -34,38 +34,38 @@ class TimeStampTest extends TestCase {
 
     try {
       TimeStamp::checkExpiration($future, $today);
-      $this->fail("Exception expected.");
+      static::fail("Exception expected.");
     } catch (HttpError $exception) {
-      $this->assertEquals($exception->getCode(), 410);
+      static::assertEquals($exception->getCode(), 410);
     }
 
     try {
       TimeStamp::checkExpiration($today, $past);
-      $this->fail("Exception expected.");
+      static::fail("Exception expected.");
     } catch (HttpError $exception) {
-      $this->assertEquals($exception->getCode(), 410);
+      static::assertEquals($exception->getCode(), 410);
     }
 
     try {
       TimeStamp::checkExpiration($future, 0);
-      $this->fail("Exception expected.");
+      static::fail("Exception expected.");
     } catch (HttpError $exception) {
-      $this->assertEquals($exception->getCode(), 401);
+      static::assertEquals($exception->getCode(), 401);
     }
 
     try {
       TimeStamp::checkExpiration(0, $past);
-      $this->fail("Exception expected.");
+      static::fail("Exception expected.");
     } catch (HttpError $exception) {
-      $this->assertEquals($exception->getCode(), 410);
+      static::assertEquals($exception->getCode(), 410);
     }
 
     SystemConfig::$debug_useStaticTime = "@$evenBefore";
     try {
       TimeStamp::checkExpiration($past, $future);
-      $this->fail("Exception expected - faked now is before past");
+      static::fail("Exception expected - faked now is before past");
     } catch (HttpError $exception) {
-      $this->assertEquals($exception->getCode(), 401);
+      static::assertEquals($exception->getCode(), 401);
     }
 
   }
@@ -79,35 +79,35 @@ class TimeStampTest extends TestCase {
     SystemConfig::$debug_useStaticTime = "@$today";
 
     $actual = TimeStamp::expirationFromNow($future, 0);
-    $this->assertEquals($future, $actual, 'expiration is 2030');
+    static::assertEquals($future, $actual, 'expiration is 2030');
 
     $actual = TimeStamp::expirationFromNow($future, 10);
-    $this->assertEquals($today + 600, $actual, 'expiration is in ten minutes');
+    static::assertEquals($today + 600, $actual, 'expiration is in ten minutes');
 
     $actual = TimeStamp::expirationFromNow($future, $aroundTwentyYears);
-    $this->assertEquals($future, $actual, 'expiration is in 20 years');
+    static::assertEquals($future, $actual, 'expiration is in 20 years');
 
     $actual = TimeStamp::expirationFromNow(0, 10);
-    $this->assertEquals($today + 600, $actual, 'expiration is in 10 minutes');
+    static::assertEquals($today + 600, $actual, 'expiration is in 10 minutes');
 
     $actual = TimeStamp::expirationFromNow(0, 0);
-    $this->assertEquals(0, $actual, 'no expiration');
+    static::assertEquals(0, $actual, 'no expiration');
 
     $actual = TimeStamp::expirationFromNow($past, 0);
-    $this->assertEquals($past, $actual, 'expired timestamp');
+    static::assertEquals($past, $actual, 'expired timestamp');
 
     SystemConfig::$debug_useStaticTime = "@$past";
     $actual = TimeStamp::expirationFromNow($today, $aroundTwentyYears);
-    $this->assertEquals(1577444400, $actual, 'was expired around 20 years after $past');
+    static::assertEquals(1577444400, $actual, 'was expired around 20 years after $past');
   }
 
   function test_fromSQLFormat() {
     // The offset is part of the value, so the moment is absolute: 10:00 UTC, not 10:00 local time.
-    $this->assertEquals(1627552800, TimeStamp::fromSQLFormat('2021-07-29 10:00:00+00'));
-    $this->assertEquals(1627545600, TimeStamp::fromSQLFormat('2021-07-29 10:00:00+02'));
-    $this->assertEquals(1627552800, TimeStamp::fromSQLFormat('2021-07-29 10:00:00.744751+00'));
-    $this->assertEquals(0, TimeStamp::fromSQLFormat(false));
-    $this->assertEquals(1627545600, TimeStamp::fromSQLFormat(1627545600));
+    static::assertEquals(1627552800, TimeStamp::fromSQLFormat('2021-07-29 10:00:00+00'));
+    static::assertEquals(1627545600, TimeStamp::fromSQLFormat('2021-07-29 10:00:00+02'));
+    static::assertEquals(1627552800, TimeStamp::fromSQLFormat('2021-07-29 10:00:00.744751+00'));
+    static::assertEquals(0, TimeStamp::fromSQLFormat(false));
+    static::assertEquals(1627545600, TimeStamp::fromSQLFormat(1627545600));
   }
 
   function test_fromSQLFormatRejectsUnreadableValue() {
@@ -116,17 +116,17 @@ class TimeStampTest extends TestCase {
   }
 
   function test_toSQLFormat() {
-    $this->assertEquals('2020-08-20 06:30:00+00:00', TimeStamp::toSQLFormat(1597905000));
-    $this->assertNull(TimeStamp::toSQLFormat(0));
+    static::assertEquals('2020-08-20 06:30:00+00:00', TimeStamp::toSQLFormat(1597905000));
+    static::assertNull(TimeStamp::toSQLFormat(0));
   }
 
   function test_sqlFormatSurvivesRoundTrip() {
-    $this->assertEquals(1597905000, TimeStamp::fromSQLFormat(TimeStamp::toSQLFormat(1597905000)));
+    static::assertEquals(1597905000, TimeStamp::fromSQLFormat(TimeStamp::toSQLFormat(1597905000)));
   }
 
   function test_toDisplayFormat() {
-    $this->assertEquals('2020-08-20 08:30:00', TimeStamp::toDisplayFormat(1597905000));
-    $this->assertNull(TimeStamp::toDisplayFormat(0));
+    static::assertEquals('2020-08-20 08:30:00', TimeStamp::toDisplayFormat(1597905000));
+    static::assertNull(TimeStamp::toDisplayFormat(0));
   }
 
 }

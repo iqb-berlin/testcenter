@@ -23,34 +23,34 @@ class XMLFileSysCheckTest extends TestCase {
     $xmlFile = new XMLFileSysCheck(DATA_DIR . '/ws_1/SysCheck/SAMPLE_SYSCHECK.XML');
     $expected = 'UNIT.SAMPLE';
     $result = $xmlFile->getUnitId();
-    $this->assertEquals($expected, $result);
+    static::assertEquals($expected, $result);
   }
 
   function test_getSaveKey() {
     $xmlFile = new XMLFileSysCheck(DATA_DIR . '/ws_1/SysCheck/SAMPLE_SYSCHECK.XML');
     $expected = 'SAVEME';
     $result = $xmlFile->getSaveKey();
-    $this->assertEquals($expected, $result);
+    static::assertEquals($expected, $result);
   }
 
   function test_hasSaveKey() {
     $xmlFile = new XMLFileSysCheck(DATA_DIR . '/ws_1/SysCheck/SAMPLE_SYSCHECK.XML');
     $result = $xmlFile->hasSaveKey();
-    $this->assertTrue($result);
+    static::assertTrue($result);
 
     $xmlFile = XMLFileSysCheck::fromString("<SysCheck><Metadata><Id>x</Id></Metadata></SysCheck>");
     $result = $xmlFile->hasSaveKey();
-    $this->assertFalse($result);
+    static::assertFalse($result);
   }
 
   function test_hasUnit() {
     $xmlFile = new XMLFileSysCheck(DATA_DIR . '/ws_1/SysCheck/SAMPLE_SYSCHECK.XML');
     $result = $xmlFile->hasUnit();
-    $this->assertTrue($result);
+    static::assertTrue($result);
 
     $xmlFile = XMLFileSysCheck::fromString("<SysCheck><Metadata><Id>x</Id></Metadata></SysCheck>");
     $result = $xmlFile->hasUnit();
-    $this->assertFalse($result);
+    static::assertFalse($result);
   }
 
   function test_getCustomTexts() {
@@ -63,13 +63,13 @@ class XMLFileSysCheckTest extends TestCase {
     $xmlFile = XMLFileSysCheck::fromString($xml);
     $result = $xmlFile->getCustomTexts();
     $expectation = [['key' => 'some', 'value' => 'thing'], ['key' => 'any', 'value' => 'way']];
-    $this->assertEquals($expectation, $result);
+    static::assertEquals($expectation, $result);
   }
 
   function test_getSkipNetwork() {
     $xmlFile = new XMLFileSysCheck(DATA_DIR . '/ws_1/SysCheck/SAMPLE_SYSCHECK.XML');
     $result = $xmlFile->getSkipNetwork();
-    $this->assertFalse($result);
+    static::assertFalse($result);
 
     $xmlFile = XMLFileSysCheck::fromString(
       "<SysCheck xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\""
@@ -79,7 +79,7 @@ class XMLFileSysCheckTest extends TestCase {
       . "</SysCheck>"
     );
     $result = $xmlFile->getSkipNetwork();
-    $this->assertTrue($result);
+    static::assertTrue($result);
 
     $xmlFile = XMLFileSysCheck::fromString(
       "<SysCheck xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\""
@@ -88,7 +88,7 @@ class XMLFileSysCheckTest extends TestCase {
       . "</SysCheck>"
     );
     $result = $xmlFile->getSkipNetwork();
-    $this->assertFalse($result);
+    static::assertFalse($result);
   }
 
   function test_getQuestions() {
@@ -116,7 +116,7 @@ class XMLFileSysCheckTest extends TestCase {
         'options' => [1, 2, 3]
       ]
     ];
-    $this->assertEquals($expectation, $result);
+    static::assertEquals($expectation, $result);
   }
 
   function test_getSpeedtestUploadParams() {
@@ -130,7 +130,7 @@ class XMLFileSysCheckTest extends TestCase {
       "maxSequenceRepetitions" => 15,
       "sequenceSizes" => ["100000", "200000", "400000", "800000"]
     ];
-    $this->assertEquals($expectation, $result);
+    static::assertEquals($expectation, $result);
   }
 }
 

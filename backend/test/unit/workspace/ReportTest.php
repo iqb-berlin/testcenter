@@ -382,10 +382,10 @@ final class ReportTest extends TestCase {
     $report = new LogReportOutput($this->workspaceId, $this->dataIds, $this->reportFormat);
 
     // Assert
-    parent::assertEquals($this->workspaceId, $report->getWorkspaceId());
-    parent::assertEquals($this->dataIds, $report->getDataIds());
-    parent::assertEquals(get_class($report), LogReportOutput::class);
-    parent::assertEquals($this->reportFormat, $report->getFormat());
+    static::assertEquals($this->workspaceId, $report->getWorkspaceId());
+    static::assertEquals($this->dataIds, $report->getDataIds());
+    static::assertEquals(get_class($report), LogReportOutput::class);
+    static::assertEquals($this->reportFormat, $report->getFormat());
   }
 
   function testGenerateLogsCSVReportWithSuccess(): void {
@@ -407,8 +407,8 @@ final class ReportTest extends TestCase {
     $generationSuccess = $report->generate();
 
     // Assert
-    $this->assertTrue($generationSuccess);
-    parent::assertSame($expectedLogsCSVReportData, $report->getCsvReportData());
+    static::assertTrue($generationSuccess);
+    static::assertSame($expectedLogsCSVReportData, $report->getCsvReportData());
   }
 
   function testGenerateLogsJsonReportWithSuccess(): void {
@@ -425,8 +425,8 @@ final class ReportTest extends TestCase {
     $generationSuccess = $report->generate();
 
     // Assert
-    $this->assertTrue($generationSuccess);
-    parent::assertEquals($expectedLogsJsonReportData, $report->getReportData());
+    static::assertTrue($generationSuccess);
+    static::assertEquals($expectedLogsJsonReportData, $report->getReportData());
   }
 
   function testGenerateLogsCSVReportWithFailure(): void {
@@ -443,7 +443,7 @@ final class ReportTest extends TestCase {
     $generationSuccess = $report->generate();
 
     // Assert
-    $this->assertFalse($generationSuccess);
+    static::assertFalse($generationSuccess);
   }
 
   function testGenerateLogsJsonReportWithFailure(): void {
@@ -468,8 +468,8 @@ final class ReportTest extends TestCase {
     $generationSuccess = $report->generate();
 
     // Assert
-    $this->assertTrue($generationSuccess);
-    parent::assertSame($expectedResponsesCSVReportData, $report->getCsvReportData());
+    static::assertTrue($generationSuccess);
+    static::assertSame($expectedResponsesCSVReportData, $report->getCsvReportData());
   }
 
   function testGenerateResponsesJsonReportWithSuccess(): void {
@@ -486,8 +486,8 @@ final class ReportTest extends TestCase {
     $generationSuccess = $report->generate();
 
     // Assert
-    $this->assertTrue($generationSuccess);
-    parent::assertEquals($expectedResponsesJsonReportData, $report->getReportData());
+    static::assertTrue($generationSuccess);
+    static::assertEquals($expectedResponsesJsonReportData, $report->getReportData());
   }
 
   function testGenerateResponsesCSVReportWithFailure(): void {
@@ -504,7 +504,7 @@ final class ReportTest extends TestCase {
     $generationSuccess = $report->generate();
 
     // Assert
-    $this->assertFalse($generationSuccess);
+    static::assertFalse($generationSuccess);
   }
 
   function testGenerateResponsesJsonReportWithFailure(): void {
@@ -543,7 +543,7 @@ final class ReportTest extends TestCase {
 
     // Assert
     $this->assertTrue($generationSuccess);
-    parent::assertSame($expectedReviewsCSVReportData, $report->getCsvReportData());
+    static::assertSame($expectedReviewsCSVReportData, $report->getCsvReportData());
   }
 
   function testGenerateDynamicReviewCSV_newVersion(): void {
@@ -578,7 +578,7 @@ final class ReportTest extends TestCase {
 
     // Assert
     $this->assertTrue($generationSuccess);
-    parent::assertSame($expectedReviewsCSVReportData, $report->getCsvReportData());
+    static::assertSame($expectedReviewsCSVReportData, $report->getCsvReportData());
   }
 
   function testGenerateReviewsJsonReportWithSuccess(): void {
@@ -602,8 +602,8 @@ final class ReportTest extends TestCase {
     $generationSuccess = $report->generate();
 
     // Assert
-    $this->assertTrue($generationSuccess);
-    parent::assertEquals($expectedReviewsJsonReportData, $report->getReportData());
+    static::assertTrue($generationSuccess);
+    static::assertEquals($expectedReviewsJsonReportData, $report->getReportData());
   }
 
   function testGenerateDynamicReviewJson_newVersion(): void {
@@ -691,7 +691,7 @@ final class ReportTest extends TestCase {
 
     // Assert
     $this->assertTrue($generationSuccess);
-    parent::assertEquals($expectedReviewsJsonReportData, $report->getReportData());
+    static::assertEquals($expectedReviewsJsonReportData, $report->getReportData());
   }
 
   function testGenerateReviewsCSVReportWithFailure(): void {
@@ -708,7 +708,7 @@ final class ReportTest extends TestCase {
     $generationSuccess = $report->generate();
 
     // Assert
-    $this->assertFalse($generationSuccess);
+    static::assertFalse($generationSuccess);
   }
 
   function testGenerateReviewsJsonReportWithFailure(): void {
@@ -718,7 +718,7 @@ final class ReportTest extends TestCase {
   function testSysCheckDigestUsesCorrectedEnvironmentLabels(): void {
     // Exercise the shared sample report so label changes cannot silently empty admin summaries.
     $report = new SysCheckReportFile(self::SYS_CHECK_SAMPLE_DATA_FILE);
-    $this->assertSame(['os' => 'Linux x86_64', 'browser' => 'Chrome 79'], $report->getDigest());
+    static::assertSame(['os' => 'Linux x86_64', 'browser' => 'Chrome 79'], $report->getDigest());
   }
 
   function testGenerateSysChecksCSVReportWithSuccess(): void {
@@ -739,8 +739,8 @@ final class ReportTest extends TestCase {
     $generationSuccess = $report->generate();
 
     // Assert
-    $this->assertTrue($generationSuccess);
-    parent::assertSame($expectedSysChecksCSVReportData, $report->getCsvReportData());
+    static::assertTrue($generationSuccess);
+    static::assertSame($expectedSysChecksCSVReportData, $report->getCsvReportData());
   }
 
   function testGenerateSysChecksJsonReportWithSuccess(): void {
@@ -774,8 +774,8 @@ final class ReportTest extends TestCase {
     $generationSuccess = $report->generate();
 
     // Assert
-    $this->assertTrue($generationSuccess);
-    parent::assertEquals($expectedSysChecksJsonReportData, $report->getReportData());
+    static::assertTrue($generationSuccess);
+    static::assertEquals($expectedSysChecksJsonReportData, $report->getReportData());
   }
 
   function testGenerateSysChecksCSVReportWithFailure(): void {
@@ -794,7 +794,7 @@ final class ReportTest extends TestCase {
     $generationSuccess = $report->generate();
 
     // Assert
-    $this->assertFalse($generationSuccess);
+    static::assertFalse($generationSuccess);
   }
 
   function testGenerateSysChecksJsonReportWithFailure(): void {

@@ -32,8 +32,8 @@ class MayReviewTest extends TestCase {
       $handler = $this->handler();
       $response = (new MayReview())($this->request($mode), $handler);
 
-      $this->assertTrue($handler->wasCalled, $mode);
-      $this->assertEquals(201, $response->getStatusCode(), $mode);
+      static::assertTrue($handler->wasCalled, $mode);
+      static::assertEquals(201, $response->getStatusCode(), $mode);
     }
   }
 
@@ -42,9 +42,9 @@ class MayReviewTest extends TestCase {
       $handler = $this->handler();
       try {
         (new MayReview())($this->request($mode), $handler);
-        $this->fail("`$mode` was let through");
+        static::fail("`$mode` was let through");
       } catch (HttpForbiddenException) {
-        $this->assertFalse($handler->wasCalled, $mode);
+        static::assertFalse($handler->wasCalled, $mode);
       }
     }
   }

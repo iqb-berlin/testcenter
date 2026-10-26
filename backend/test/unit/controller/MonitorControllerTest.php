@@ -63,12 +63,12 @@ final class MonitorControllerTest extends TestCase {
     $adminDAO
       ->expects($this->once())
       ->method('storeCommand')
-      ->with(7, [12, 14], $this->isInstanceOf(Command::class))
+      ->with(7, [12, 14], static::isInstanceOf(Command::class))
       ->willReturn(42);
 
     $response = $this->putCommand('[12,14]', $adminDAO);
 
-    $this->assertEquals(201, $response->getStatusCode());
+    static::assertEquals(201, $response->getStatusCode());
   }
 
   function test_putCommand_dropsDuplicatedTestIdsAndCastsThem(): void {
@@ -78,12 +78,12 @@ final class MonitorControllerTest extends TestCase {
     $adminDAO
       ->expects($this->once())
       ->method('storeCommand')
-      ->with(7, [12, 14], $this->isInstanceOf(Command::class))
+      ->with(7, [12, 14], static::isInstanceOf(Command::class))
       ->willReturn(42);
 
     $response = $this->putCommand('[12,"12",14]', $adminDAO);
 
-    $this->assertEquals(201, $response->getStatusCode());
+    static::assertEquals(201, $response->getStatusCode());
   }
 
   function test_putCommand_broadcastsCommandIdAndTestIdsAsJsonArray(): void {
@@ -105,8 +105,8 @@ final class MonitorControllerTest extends TestCase {
 
     // dropping the duplicate leaves a gap in the keys, and json_encode turns an array with gaps into an
     // object - which the broadcaster rejects as `no testIds given`
-    $this->assertStringContainsString('"testIds":[12,14]', $message);
-    $this->assertSame(42, json_decode($message, true)['command']['id']);
+    static::assertStringContainsString('"testIds":[12,14]', $message);
+    static::assertSame(42, json_decode($message, true)['command']['id']);
   }
 
   function test_putCommand_storesNothingForAnUnknownTest(): void {
@@ -132,6 +132,6 @@ final class MonitorControllerTest extends TestCase {
 
     $response = $this->putCommand('[]', $adminDAO);
 
-    $this->assertEquals(201, $response->getStatusCode());
+    static::assertEquals(201, $response->getStatusCode());
   }
 }

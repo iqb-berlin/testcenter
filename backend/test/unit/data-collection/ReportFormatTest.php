@@ -20,13 +20,13 @@ class ReportFormatTest extends TestCase {
     ];
 
     foreach ($expectations as $acceptHeader => $expected) {
-      $this->assertEquals(
+      static::assertEquals(
         $expected,
         ReportFormat::fromAcceptHeader((string) $acceptHeader, ReportFormat::JSON),
         "Accept: $acceptHeader"
       );
     }
 
-    $this->assertEquals(ReportFormat::CSV, ReportFormat::fromAcceptHeader('*/*', ReportFormat::CSV));
+    static::assertEquals(ReportFormat::CSV, ReportFormat::fromAcceptHeader('*/*', ReportFormat::CSV));
   }
 }

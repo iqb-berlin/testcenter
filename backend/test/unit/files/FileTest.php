@@ -18,10 +18,10 @@ class FileTest extends TestCase {
 
   function test_get() {
     $file = File::get(DATA_DIR . '/ws_1/Booklet/SAMPLE_BOOKLET.XML', 'Booklet');
-    $this->assertEquals('XMLFileBooklet', get_class($file));
+    static::assertEquals('XMLFileBooklet', get_class($file));
 
     $file = File::get(DATA_DIR . '/ws_1/Resource/verona-player-simple-6.0.html', 'Resource');
-    $this->assertEquals('ResourceFile', get_class($file));
+    static::assertEquals('ResourceFile', get_class($file));
   }
 
   function test_Report() {
@@ -32,7 +32,7 @@ class FileTest extends TestCase {
     $file->report('error', '3th error');
     $file->report('error', '4th error');
 
-    $this->assertEquals(
+    static::assertEquals(
       [
         'error' => ['1st error', '2nd error', '3th error', '4th error']
       ],
@@ -41,7 +41,7 @@ class FileTest extends TestCase {
 
     $file->report('error', '5th error');
 
-    $this->assertEquals(
+    static::assertEquals(
       [
         'error' => ['1st error', '2nd error', '3th error', '4th error', '5th error']
       ],
@@ -50,7 +50,7 @@ class FileTest extends TestCase {
 
     $file->report('error', '6th error');
 
-    $this->assertEquals(
+    static::assertEquals(
       [
         'error' => ['1st error', '2nd error', '3th error', '4th error', '2 more errors.']
       ],
@@ -61,7 +61,7 @@ class FileTest extends TestCase {
       $file->report('error', 'error # ' . $i);
     }
 
-    $this->assertEquals(
+    static::assertEquals(
       [
         'error' => ['1st error', '2nd error', '3th error', '4th error', '196 more errors.']
       ],
@@ -70,7 +70,7 @@ class FileTest extends TestCase {
 
     $file->report('warning', '1st warning');
 
-    $this->assertEquals(
+    static::assertEquals(
       [
         'error' => ['1st error', '2nd error', '3th error', '4th error', '196 more errors.'],
         'warning' => ['1st warning']
@@ -82,7 +82,7 @@ class FileTest extends TestCase {
       $file->report('warning', 'warning # ' . $i);
     }
 
-    $this->assertEquals(
+    static::assertEquals(
       [
         'error' => ['1st error', '2nd error', '3th error', '4th error', '196 more errors.'],
         'warning' => ['1st warning', 'warning # 2', 'warning # 3', 'warning # 4', '196 more warnings.']

@@ -128,7 +128,7 @@ class WorkspaceCacheTest extends TestCase {
       'SysCheck/SAMPLE_SYSCHECK.XML' => [],
     ];
 
-    $this->assertEquals($expected, $allReports);
+    static::assertEquals($expected, $allReports);
   }
 
   function test_validate_passwordRequired() {
@@ -145,16 +145,16 @@ class WorkspaceCacheTest extends TestCase {
         'Login `test-future` has no password, but passwords are required on this instance'
       ]
     ];
-    $this->assertEquals($expected, $report);
+    static::assertEquals($expected, $report);
   }
 
   function test_getResource() {
     $result = $this->workspaceCache->getResource('VERONA-PLAYER-SIMPLE-6.0');
     $expectation = "verona-player-simple-6.0.html";
-    $this->assertEquals($expectation, $result->getName());
+    static::assertEquals($expectation, $result->getName());
 
     $result = $this->workspaceCache->getResource('missing_player.html');
-    $this->assertNull($result);
+    static::assertNull($result);
 
     // more scenarios are implicitly tested with test_getPlayerIfExists in XMLFilesUnitTest
   }
