@@ -55,7 +55,7 @@ final class AdminDAOTest extends TestCase {
 
     $token = $this->dbc->createAdminToken('i_exist_but_am_not_allowed_anything', 'user123');
     $result = $this->dbc->getWorkspaces($token);
-    static::assertEquals(array(), $result);
+    static::assertEquals([], $result);
   }
 
   public function test_hasAdminAccessToWorkspace() {

@@ -23,97 +23,97 @@ class SuperAdminDAOTest extends TestCase {
 
   public function test_getWorkspaces() {
     $result = $this->dbc->getWorkspaces();
-    $expectation = array(
-      array(
+    $expectation = [
+      [
         "id" => 1,
         "name" => "example_workspace",
         "latest_modification_ts" => "2023-01-16 09:00:00"
-      )
-    );
+      ]
+    ];
     static::assertEquals($expectation, $result);
   }
 
   public function test_getUsers() {
     $result = $this->dbc->getUsers();
-    $expectation = array(
-      array(
+    $expectation = [
+      [
         "id" => "2",
         "name" => "i_exist_but_am_not_allowed_anything",
         "email" => null,
         "isSuperadmin" => false
-      ),
-      array(
+      ],
+      [
         "id" => "1",
         "name" => "super",
         "email" => null,
         "isSuperadmin" => true
-      )
-    );
+      ]
+    ];
 
     static::assertEquals($expectation, $result);
   }
 
   public function test_getUserByName() {
     $result = $this->dbc->getUserByName("i_exist_but_am_not_allowed_anything");
-    $expectation = array(
+    $expectation = [
       "id" => "2",
       "name" => "i_exist_but_am_not_allowed_anything",
       "email" => null,
       "isSuperadmin" => false
-    );
+    ];
 
     static::assertEquals($expectation, $result);
   }
 
   public function test_getWorkspacesByUser() {
     $result = $this->dbc->getWorkspacesByUser(1);
-    $expectation = array(
-      array(
+    $expectation = [
+      [
         "id" => 1,
         "name" => "example_workspace",
         "selected" => true,
         "role" => "RW"
-      )
-    );
+      ]
+    ];
     static::assertEquals($expectation, $result);
 
     $result = $this->dbc->getWorkspacesByUser(2);
-    $expectation = array(
-      array(
+    $expectation = [
+      [
         "id" => 1,
         "name" => "example_workspace",
         "selected" => false,
         "role" => ""
-      )
-    );
+      ]
+    ];
     static::assertEquals($expectation, $result);
   }
 
   public function test_getMapWorkspaceToRoleByUser() {
     $result = $this->dbc->getMapWorkspaceToRoleByUser(1);
-    $expectation = array(
+    $expectation = [
       "1" => "RW"
-    );
+    ];
     static::assertEquals($expectation, $result);
 
     $result = $this->dbc->getMapWorkspaceToRoleByUser(2);
-    $expectation = array();
+    $expectation = [];
     static::assertEquals($expectation, $result);
 
     $result = $this->dbc->getMapWorkspaceToRoleByUser(33);
-    $expectation = array();
+    $expectation = [];
     static::assertEquals($expectation, $result);
   }
 
   public function test_setWorkspaceRightsByUser() {
-    $this->dbc->setWorkspaceRightsByUser(1, array(
-      (object) array('id' => '1', 'role' => 'XX'),
-    ));
+    $this->dbc->setWorkspaceRightsByUser(1, [
+      (object) ['id' => '1', 'role' => 'XX'],
+    ]);
 
     $result = $this->dbc->getMapWorkspaceToRoleByUser(1);
-    $expectation = array(
+    $expectation = [
       1 => 'XX'
-    );
+    ];
     static::assertEquals($expectation, $result);
   }
 
@@ -164,53 +164,53 @@ class SuperAdminDAOTest extends TestCase {
   }
 
   public function test_deleteWorkspaces() {
-    $this->dbc->deleteWorkspaces(array(1));
+    $this->dbc->deleteWorkspaces([1]);
     $result = $this->dbc->getWorkspaces();
-    static::assertEquals(array(), $result);
+    static::assertEquals([], $result);
   }
 
   public function test_getUsersByWorkspace() {
     $result = $this->dbc->getUsersByWorkspace(1);
-    $expectation = array(
-      array(
+    $expectation = [
+      [
         'id' => '2',
         'name' => 'i_exist_but_am_not_allowed_anything',
         'selected' => false,
         'role' => ''
-      ),
-      array(
+      ],
+      [
         'id' => '1',
         'name' => 'super',
         'selected' => true,
         'role' => 'RW'
-      )
-    );
+      ]
+    ];
     static::assertEquals($expectation, $result);
   }
 
   public function test_getWorkspaceRolesPerUser() {
     $result = $this->dbc->getMapUserToRoleByWorkspace(1);
-    $expectation = array(
+    $expectation = [
       1 => 'RW'
-    );
+    ];
     static::assertEquals($expectation, $result);
 
     $result = $this->dbc->getMapWorkspaceToRoleByUser(33);
-    $expectation = array();
+    $expectation = [];
     static::assertEquals($expectation, $result);
   }
 
   public function test_setUserRightsForWorkspace() {
-    $this->dbc->setUserRightsForWorkspace(1, array(
-      (object) array('id' => '1', 'role' => 'RO'),
-      (object) array('id' => '2', 'role' => 'MO')
-    ));
+    $this->dbc->setUserRightsForWorkspace(1, [
+      (object) ['id' => '1', 'role' => 'RO'],
+      (object) ['id' => '2', 'role' => 'MO']
+    ]);
 
     $result = $this->dbc->getMapUserToRoleByWorkspace(1);
-    $expectation = array(
+    $expectation = [
       1 => 'RO',
       2 => 'MO'
-    );
+    ];
     static::assertEquals($expectation, $result);
   }
 
@@ -218,23 +218,23 @@ class SuperAdminDAOTest extends TestCase {
     $this->dbc->setSuperAdminStatus(2, true);
 
     $result = $this->dbc->getUserByName("i_exist_but_am_not_allowed_anything");
-    $expectation = array(
+    $expectation = [
       "id" => "2",
       "name" => "i_exist_but_am_not_allowed_anything",
       "email" => null,
       "isSuperadmin" => true
-    );
+    ];
     static::assertEquals($expectation, $result);
 
     $this->dbc->setSuperAdminStatus(2, false);
 
     $result = $this->dbc->getUserByName("i_exist_but_am_not_allowed_anything");
-    $expectation = array(
+    $expectation = [
       "id" => "2",
       "name" => "i_exist_but_am_not_allowed_anything",
       "email" => null,
       "isSuperadmin" => false
-    );
+    ];
     static::assertEquals($expectation, $result);
   }
 

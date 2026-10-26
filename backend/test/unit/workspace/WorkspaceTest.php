@@ -89,11 +89,11 @@ class WorkspaceTest extends TestCase {
 
   function test___construct() {
     $workspaceDirectories = scandir(vfsStream::url('root/data'));
-    $expectation = array('.', '..', 'ws_1');
+    $expectation = ['.', '..', 'ws_1'];
     static::assertEquals($expectation, $workspaceDirectories);
 
     $workspace1Directories = scandir(vfsStream::url('root/data/ws_1'));
-    $expectation = array('.', '..', 'Booklet', 'Resource', 'SysCheck', 'Testtakers', 'Unit');
+    $expectation = ['.', '..', 'Booklet', 'Resource', 'SysCheck', 'Testtakers', 'Unit'];
     static::assertEquals($expectation, $workspace1Directories);
   }
 
