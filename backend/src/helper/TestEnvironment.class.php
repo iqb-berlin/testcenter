@@ -19,7 +19,6 @@ class TestEnvironment {
       SystemConfig::$debug_useStaticTime = '@' . (int) $testClock;
       SystemConfig::$debug_useStaticTokens = true;
       SystemConfig::$debug_useInsecurePasswords = true;
-      SystemConfig::$debug_fastLoginReuse = true;
       self::makeRandomStatic();
       DB::connectToTestDB();
 
@@ -30,6 +29,8 @@ class TestEnvironment {
 
       if (self::$testMode == 'prepare-integration') {
         // this is called one time before each integration test (cypress)
+        // login lockouts, tokens and cached files of the previous spec must not leak into the next one
+        CacheService::flush();
         self::defineTestDataDir(self::integrationTestDataDir, true);
         self::createTestFiles(true);
         self::overwriteModificationDatesTestDataDir();

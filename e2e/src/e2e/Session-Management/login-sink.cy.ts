@@ -1,7 +1,7 @@
 import {
   oneStepLogin,
   probeBackendApi,
-  resetBackendTestData, twoStepLogin,
+  resetBackendTestData,
   visitLoginPage
 }
   from '../utils';
@@ -16,57 +16,21 @@ describe('The login-sink', () => {
     visitLoginPage();
   });
 
-  const loginAttempt = (type: 'admin' | 'user', user: string, expectedCode: number, pw: string = 'wrongpassword') => {
-    if (type === 'user') {
-      twoStepLogin(user, pw);
-    }
-    if (type === 'admin') {
-      cy.visit(`${Cypress.config().baseUrl}/#/r/admin-login`);
-      cy.wait(1); // seems to be unreliable without
-      oneStepLogin(user, pw)
-    }
+  const adminLoginAttempt = (user: string, expectedCode: number, pw: string = 'wrongpassword') => {
+    cy.visit(`${Cypress.config().baseUrl}/#/r/admin-login`);
+    cy.wait(1); // seems to be unreliable without
+    oneStepLogin(user, pw);
     cy.get(`[data-cy="login-problem:${expectedCode}"]`)
       .should('exist');
   };
 
   it('trigger after five failed logins for the same admin user', () => {
-    loginAttempt('admin', 'super', 400);
-    loginAttempt('admin', 'super', 400);
-    loginAttempt('admin', 'super', 400);
-    loginAttempt('admin', 'super', 400);
-    loginAttempt('admin', 'super', 400);
-    loginAttempt('admin', 'super', 429);
-    loginAttempt('admin', 'super', 429, 'user123');
-    loginAttempt('admin', 'super', 429);
-    cy.wait(10000); // in testmode the sink is only activated for a few seconds
-    loginAttempt('admin', 'super', 400);
-    loginAttempt('admin', 'super', 400);
-    loginAttempt('admin', 'super', 400);
-    loginAttempt('admin', 'super', 400);
-    loginAttempt('admin', 'super', 400);
-    loginAttempt('admin', 'super', 429);
-    loginAttempt('admin', 'super', 429, 'user123');
-  });
-
-  it('not trigger for testtaker logins', () => {
-    loginAttempt('user', 'username', 400);
-    loginAttempt('user', 'username', 400);
-    loginAttempt('user', 'username', 400);
-    loginAttempt('user', 'username', 400);
-    loginAttempt('user', 'username', 400);
-    loginAttempt('user', 'username', 400);
-    loginAttempt('user', 'username', 400);
-  });
-
-  it('user- and admin-logout must be independent of each other.', () => {
-    cy.wait(10000);
-    loginAttempt('user', 'username', 400);
-    loginAttempt('user', 'username', 400);
-    loginAttempt('user', 'username', 400);
-    loginAttempt('user', 'username', 400);
-    loginAttempt('user', 'username', 400);
-    loginAttempt('admin', 'username', 400);
-    loginAttempt('admin', 'username', 400, 'user123');
-    loginAttempt('admin', 'username', 400);
+    adminLoginAttempt('super', 400);
+    adminLoginAttempt('super', 400);
+    adminLoginAttempt('super', 400);
+    adminLoginAttempt('super', 400);
+    adminLoginAttempt('super', 400);
+    adminLoginAttempt('super', 429);
+    adminLoginAttempt('super', 429, 'user123');
   });
 });

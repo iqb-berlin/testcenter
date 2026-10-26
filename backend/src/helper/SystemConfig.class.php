@@ -25,7 +25,6 @@ class SystemConfig {
   public static string $system_timezone = 'Europe/Berlin';
   public static bool $debug_useInsecurePasswords = false;
   public static bool $debug_useStaticTokens = false;
-  public static bool $debug_fastLoginReuse = false;
   public static string $debug_useStaticTime = 'now';
   public static bool $debug_allowTestMode = false;
   public static string $language_dateFormat = 'd/m/Y H:i';
