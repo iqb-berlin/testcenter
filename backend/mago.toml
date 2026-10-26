@@ -25,6 +25,7 @@ ambiguous-function-call = { enabled = false }
 literal-named-argument = { enabled = false }
 halstead = { effort-threshold = 7000 }
 sensitive-parameter = { enabled = false }
+readable-literal = { enabled = false }
 
 [analyzer]
 plugins = []
