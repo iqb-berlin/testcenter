@@ -24,7 +24,7 @@ readonly class TestName {
     $params = $paramString ?
       array_reduce(
         explode(';', $paramString),
-        function($agg, $paramTuple) {
+        static function($agg, $paramTuple) {
           list($key, $value) = explode(':', $paramTuple, 2);
           $agg[$key] = $value;
           return $agg;

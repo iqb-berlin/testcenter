@@ -91,7 +91,7 @@ final class MonitorControllerTest extends TestCase {
     $this->broadcastServiceMock
       ->expects('send')
       ->times(1)
-      ->andReturnUsing(function(string $endpoint, string $payload) use (&$message): ?string {
+      ->andReturnUsing(static function(string $endpoint, string $payload) use (&$message): ?string {
         $message = $payload;
         return null;
       });

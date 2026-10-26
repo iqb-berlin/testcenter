@@ -322,7 +322,7 @@ final class SessionControllerTest extends TestCase {
     $this->mockSessionDAO(
       [
         'getOrCreateLoginSession' => $loginSessionMonitor,
-        'createLoginSession' => function(Login $login): LoginSession {
+        'createLoginSession' => static function(Login $login): LoginSession {
           return new LoginSession(
             -1,
             '',
@@ -330,7 +330,7 @@ final class SessionControllerTest extends TestCase {
             $login
           );
         },
-        'createOrUpdatePersonSession' => function(LoginSession $loginSession, string $code): PersonSession {
+        'createOrUpdatePersonSession' => static function(LoginSession $loginSession, string $code): PersonSession {
           return new PersonSession(
             $loginSession,
             new Person(-1, 'new_token', $code, $code)
@@ -343,9 +343,9 @@ final class SessionControllerTest extends TestCase {
         'getGroupMonitors' => [
           new Group('sample_group', 'Sample Group')
         ],
-        'getTestsOfPerson' => function(PersonSession $personSession): array {
+        'getTestsOfPerson' => static function(PersonSession $personSession): array {
           return array_map(
-            function(string $bookletId): TestData {
+            static function(string $bookletId): TestData {
               return new TestData(
                 1,
                 $bookletId,
@@ -372,7 +372,7 @@ final class SessionControllerTest extends TestCase {
     $this->mockTestDAO(
       [
         'getTestByPerson' => null,
-        'getOrCreateTest' => function(int $personId, TestName $testName, string $bookletLabel): TestData {
+        'getOrCreateTest' => static function(int $personId, TestName $testName, string $bookletLabel): TestData {
           return new TestData(
             1,
             $testName->name,
@@ -407,9 +407,9 @@ final class SessionControllerTest extends TestCase {
 
   public function test_putSessionAdmin(): void {
     $this->mockAdminDAO([
-      'createAdminToken' => function(string $name, string $password): string {
-        $this->assertSame('super', $name);
-        $this->assertSame('', $password);
+      'createAdminToken' => static function(string $name, string $password): string {
+        static::assertSame('super', $name);
+        static::assertSame('', $password);
         return 'admin_token';
       },
       'getAdmin' => new Admin(1, 'Admin1', 'admin1@mail.com', true, 'admin_token'),
@@ -591,7 +591,7 @@ final class SessionControllerTest extends TestCase {
     $adminToken = new AuthToken('admin_token', 1, 'admin', -1, 'admin', '[admins]');
 
     $this->mockAdminDao([
-      'refreshAdminToken' => function(): void {
+      'refreshAdminToken' => static function(): void {
       },
       'getAdmin' => new Admin(1, 'super', '', true, 'admin_token'),
       'getWorkspaces' => [new WorkspaceData(1, 'workspace', 'RW')]

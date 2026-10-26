@@ -21,7 +21,7 @@ class SysChecksFolder extends Workspace {
   public function getSysCheckReportList(): array {
     $allReports = $this->collectSysCheckReports();
 
-    $allReportsByCheckIds = array_reduce($allReports, function($agg, SysCheckReportFile $report) {
+    $allReportsByCheckIds = array_reduce($allReports, static function($agg, SysCheckReportFile $report) {
       if (!isset($agg[$report->getCheckId()])) {
         $agg[$report->getCheckId()] = [$report];
       } else {
@@ -30,7 +30,7 @@ class SysChecksFolder extends Workspace {
       return $agg;
     }, []);
 
-    return array_map(function(array $reportSet, string $checkId) {
+    return array_map(static function(array $reportSet, string $checkId) {
       return [
         'id' => $checkId,
         'count' => count($reportSet),

@@ -120,7 +120,7 @@ class XMLFileUnit extends XMLFile {
     $dE = $this->getXml()->xpath('/Unit/Dependencies/file[not(@for) or @for="player"]|/Unit/Dependencies/File[not(@for) or @for="player"]');
 
     return array_map(
-      function($e) {
+      static function($e) {
         return (string) $e;
       },
       $dE

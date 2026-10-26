@@ -186,8 +186,8 @@ class XMLFile extends File {
 
   protected function validateConstraint(string $desc, string $query1, string $query2, string $compare): bool {
     $getValuesFromQuery = function(string $query): array {
-      $getValue = fn(?string $queriedAttribute): callable =>
-        function(?SimpleXMLElement $node) use ($queriedAttribute): string | SimpleXMLElement {
+      $getValue = static fn(?string $queriedAttribute): callable =>
+        static function(?SimpleXMLElement $node) use ($queriedAttribute): string | SimpleXMLElement {
           if (!$node) return '';
           if (!$queriedAttribute) return $node;
           return (string) $node[$queriedAttribute];
@@ -220,7 +220,7 @@ class XMLFile extends File {
       $values2
     );
 
-    $errors = array_filter($validationResults, fn (true | string $a): bool => !is_bool($a));
+    $errors = array_filter($validationResults, static fn (true | string $a): bool => !is_bool($a));
 
     foreach ($errors as $error) {
       $this->report('error', "Advanced XML validation: Assertion `$desc` failed: $error.");

@@ -11,7 +11,7 @@ class AttachmentTemplate {
       ? implode(', ',
         array_unique(
           array_map(
-            function(Attachment $attachment): string {
+            static function(Attachment $attachment): string {
               return $attachment->_groupLabel;
             },
             $attachments

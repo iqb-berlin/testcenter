@@ -189,7 +189,7 @@ class AdminDAO extends DAO {
       true
     );
     return array_map(
-      function (array $ws): WorkspaceData {
+      static function (array $ws): WorkspaceData {
         return new WorkspaceData($ws['id'], $ws['name'], $ws['role']);
       },
       $workspaces
@@ -636,7 +636,7 @@ class AdminDAO extends DAO {
     );
 
     return array_map(
-      function(array $review): array {
+      static function(array $review): array {
         $review['reviewtime'] = TimeStamp::sqlToDisplayFormat($review['reviewtime']);
         return $review;
       },
@@ -710,7 +710,7 @@ class AdminDAO extends DAO {
       true
     );
 
-    return array_map(function ($groupStats) {
+    return array_map(static function ($groupStats) {
       return [
         "groupName" => $groupStats["group_name"],
         "groupLabel" => $groupStats["group_label"],

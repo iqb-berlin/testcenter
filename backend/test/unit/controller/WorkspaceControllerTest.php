@@ -441,7 +441,7 @@ final class WorkspaceControllerTest extends TestCase {
 
     $fileReports = array_reduce(
       array_keys($files),
-      function ($agg, $fileName) use ($files) {
+      static function ($agg, $fileName) use ($files) {
         $agg[$fileName] = ['type' => $files[$fileName]->getType(), ...$files[$fileName]->getValidationReport()];
         return $agg;
       },
@@ -450,7 +450,7 @@ final class WorkspaceControllerTest extends TestCase {
 
     $filesContents = array_reduce(
       array_keys($files),
-      function ($agg, $fileName) use ($files) {
+      static function ($agg, $fileName) use ($files) {
         $agg[$fileName] = $files[$fileName]->getContent();
         return $agg;
       },

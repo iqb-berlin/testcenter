@@ -138,9 +138,9 @@ class SysCheckReportFile {
     // TODO unit Test
     static function getStatistics(array $reportSet): array {
 
-        $digests = array_map(function(SysCheckReportFile $report) {return $report->getDigest();}, $reportSet);
+        $digests = array_map(static function(SysCheckReportFile $report) {return $report->getDigest();}, $reportSet);
 
-        return array_reduce($digests, function ($agg, $item) {
+        return array_reduce($digests, static function ($agg, $item) {
             foreach ($item as $key => $value) {
                 if (!isset($agg[$key])) {
                     $agg[$key] = [];

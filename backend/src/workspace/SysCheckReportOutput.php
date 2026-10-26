@@ -21,7 +21,7 @@ class SysCheckReportOutput extends Report {
 
     } else {
       $this->reportData = array_map(
-        function (SysCheckReportFile $report) {
+        static function (SysCheckReportFile $report) {
           return $report->getReport();
         },
         $systemChecks
@@ -29,7 +29,7 @@ class SysCheckReportOutput extends Report {
 
       if ($this->format == ReportFormat::CSV) {
         $flatReports = array_map(
-          function (SysCheckReportFile $report) {
+          static function (SysCheckReportFile $report) {
             return $report->getFlatReport();
           },
           $systemChecks

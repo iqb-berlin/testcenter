@@ -419,7 +419,7 @@ class WorkspaceTest extends TestCase {
     $getAllFilesWhereCalled = -1;
     $this->workspaceDaoMock
       ->shouldReceive('getAllFilesWhere')
-      ->andReturnUsing(function () use (&$getAllFilesWhereCalled) {
+      ->andReturnUsing(static function () use (&$getAllFilesWhereCalled) {
         $getAllFilesWhereCalled++;
         return match ($getAllFilesWhereCalled) {
           0 => [], // Unit
@@ -485,7 +485,7 @@ class WorkspaceTest extends TestCase {
     $getAllFilesWhereCalled = -1;
     $this->workspaceDaoMock
       ->shouldReceive('getAllFilesWhere')
-      ->andReturnUsing(function () use (&$getAllFilesWhereCalled) {
+      ->andReturnUsing(static function () use (&$getAllFilesWhereCalled) {
         $getAllFilesWhereCalled++;
         return match ($getAllFilesWhereCalled) {
           0 => [], // Unit
@@ -554,7 +554,7 @@ class WorkspaceTest extends TestCase {
     $getAllFilesWhereCalled = -1;
     $this->workspaceDaoMock
       ->shouldReceive('getAllFilesWhere')
-      ->andReturnUsing(function () use (&$getAllFilesWhereCalled) {
+      ->andReturnUsing(static function () use (&$getAllFilesWhereCalled) {
         $getAllFilesWhereCalled++;
         return match ($getAllFilesWhereCalled) {
           0 => [], // Unit
@@ -612,7 +612,7 @@ class WorkspaceTest extends TestCase {
     $getAllFilesWhereCalled = -1;
     $this->workspaceDaoMock
       ->shouldReceive('getAllFilesWhere')
-      ->andReturnUsing(function () use (&$getAllFilesWhereCalled) {
+      ->andReturnUsing(static function () use (&$getAllFilesWhereCalled) {
         $getAllFilesWhereCalled++;
         return match ($getAllFilesWhereCalled) {
           0 => [], // Resource
@@ -758,7 +758,7 @@ class WorkspaceTest extends TestCase {
     $getAllFilesWhereCalled = -1;
     $this->workspaceDaoMock
       ->shouldReceive('getAllFilesWhere')
-      ->andReturnUsing(function() use (&$getAllFilesWhereCalled) {
+      ->andReturnUsing(static function() use (&$getAllFilesWhereCalled) {
         $getAllFilesWhereCalled++;
         return match ($getAllFilesWhereCalled) {
           0 => [], // Unit
@@ -864,7 +864,7 @@ class WorkspaceTest extends TestCase {
 
   private function getErrorsFromValidationResult($result): array {
     return array_filter(
-      array_map(function (array $fileReport) {
+      array_map(static function (array $fileReport) {
         return $fileReport['error'] ?? null;
       }, $result),
       'is_array'

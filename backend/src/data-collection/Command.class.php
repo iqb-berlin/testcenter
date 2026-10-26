@@ -14,7 +14,7 @@ class Command extends DataCollectionTypeSafe {
         $this->id = $id;
         $this->keyword = $keyword;
         $this->timestamp = $timestamp;
-        $this->arguments = array_map(function($arg) {return (string) $arg;}, $arguments);
+        $this->arguments = array_map(static function($arg) {return (string) $arg;}, $arguments);
     }
 
     public function getId(): int {

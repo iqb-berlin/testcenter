@@ -327,7 +327,7 @@ class WorkspaceDAO extends DAO {
                 context_data
             from files
                 where workspace_id = ? and
-                name in (" . implode(',', array_map(fn ($name) => '?', $names)) . ')';
+                name in (" . implode(',', array_map(static fn ($name) => '?', $names)) . ')';
 
     $replacements = [
       $this->workspaceId,
@@ -393,7 +393,7 @@ class WorkspaceDAO extends DAO {
     );
 
     return array_map(
-      function(array $r): FileRelation {
+      static function(array $r): FileRelation {
         return new FileRelation(
           $r['object_type'],
           $r['object_name'],
@@ -478,7 +478,7 @@ class WorkspaceDAO extends DAO {
     // keyed by file name, so sorting them by key gives every file listing a stable order - here
     // rather than in each query, which would also depend on the collation of the deployment's db.
     return array_map(
-      function (array $filesOfType): array {
+      static function (array $filesOfType): array {
         ksort($filesOfType, SORT_STRING);
         return $filesOfType;
       },
@@ -565,7 +565,7 @@ class WorkspaceDAO extends DAO {
 
     return array_reduce(
       $result,
-      function(array $agg, array $row) {
+      static function(array $agg, array $row) {
         $agg[$row['file_local_path']] = $row['blocked_by'];
         return $agg;
       },

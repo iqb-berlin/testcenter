@@ -30,7 +30,7 @@ class IsWorkspaceBlocked {
     }
 
     file_put_contents($workspace->getWorkspacePath() . '/.lock', '.');
-    register_shutdown_function(function() use ($workspace) {
+    register_shutdown_function(static function() use ($workspace) {
       unlink($workspace->getWorkspacePath() . '/.lock');
     });
 

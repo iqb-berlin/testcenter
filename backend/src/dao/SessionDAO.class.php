@@ -613,7 +613,7 @@ class SessionDAO extends DAO {
       true
     );
     return array_map(
-      function(array $res): TestData {
+      static function(array $res): TestData {
         return new TestData(
           (int) $res['id'],
           $res['test_name'],
@@ -673,7 +673,7 @@ class SessionDAO extends DAO {
 
     return array_reduce(
       $this->_($sql, [':ws_id' => $workspaceId], true),
-      function(array $agg, array $row): array {
+      static function(array $agg, array $row): array {
         $expiration = TimeStamp::isExpired(
           TimeStamp::fromSQLFormat($row['valid_from']),
           TimeStamp::fromSQLFormat($row['valid_to'])
@@ -787,7 +787,7 @@ class SessionDAO extends DAO {
     );
 
     return array_map(
-      function (array $sysCheck) {
+      static function (array $sysCheck) {
         return new SystemCheck(
           (string) $sysCheck['workspace_id'],
           (string) $sysCheck['id'],

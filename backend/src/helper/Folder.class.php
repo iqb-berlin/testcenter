@@ -110,7 +110,7 @@ class Folder {
    */
   static function createPath(string $dirPath): string {
     $pathParts = parse_url($dirPath);
-    return array_reduce(explode('/', $pathParts['path']), function($agg, $item) {
+    return array_reduce(explode('/', $pathParts['path']), static function($agg, $item) {
       $agg .= "$item/";
       if (file_exists($agg) and !is_dir($agg)) {
         throw new Exception("$agg is not a directory, but should be!");

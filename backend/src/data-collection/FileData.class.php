@@ -158,7 +158,7 @@ class FileData extends DataCollectionTypeSafe {
         $report['warning'] = array_values(
           array_filter(
             $report['warning'],
-            fn(string $warning) => !str_contains($warning, 'is never used')
+            static fn(string $warning) => !str_contains($warning, 'is never used')
           )
         );
         $file->setValidationReport($report);

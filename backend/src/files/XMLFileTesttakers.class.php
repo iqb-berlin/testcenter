@@ -344,7 +344,7 @@ class XMLFileTesttakers extends XMLFile {
     /** @var string[][] $codeTestNames */
     $codeTestNames = [];
 
-    $testNameFromElement = function (SimpleXMLElement $bookletElement): string {
+    $testNameFromElement = static function (SimpleXMLElement $bookletElement): string {
       $bookletFileId = strtoupper(trim((string) $bookletElement));
       $statesString = (string) $bookletElement['state'];
       $testName = TestName::fromStrings($bookletFileId, $statesString);
@@ -430,10 +430,10 @@ class XMLFileTesttakers extends XMLFile {
     );
     $profiles = array_filter(
       $profiles,
-      fn (SimpleXMLElement | null $profileElem) => !!$profileElem
+      static fn (SimpleXMLElement | null $profileElem) => !!$profileElem
     );
     return array_map(
-      fn (SimpleXMLElement $profileElem): array => [
+      static fn (SimpleXMLElement $profileElem): array => [
         'id' => ((string) $profileElem['id']) ?? Random::string(8, false),
         'label' =>  ((string) $profileElem['label']) ?? "",
         'settings' => [
@@ -446,7 +446,7 @@ class XMLFileTesttakers extends XMLFile {
           'autoselectNextBlock' => ((string) $profileElem['autoselectNextBlock'] === 'no') ? 'no' : 'yes'
         ],
         'filters' => array_map(
-          fn (SimpleXMLElement $filterElem): array => [
+          static fn (SimpleXMLElement $filterElem): array => [
             'target' => ((string) $filterElem['field']) ?? "personLabel",
             'value' => ((string) $filterElem['value']) ?? "",
             'subValue' => ((string) $filterElem['subValue']) ?? null,

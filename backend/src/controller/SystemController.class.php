@@ -77,7 +77,7 @@ class SystemController extends Controller {
     global $app;
     $routes = array_reduce(
       $app->getRouteCollector()->getRoutes(),
-      function ($target, Route $route) {
+      static function ($target, Route $route) {
         foreach ($route->getMethods() as $method) {
           $target[] = "[$method] " . $route->getPattern();
         }
@@ -179,7 +179,7 @@ class SystemController extends Controller {
       $availableSysChecks = array_merge(
         $availableSysChecks,
         array_map(
-          function (XMLFileSysCheck $file) use ($sysChecksFolder) {
+          static function (XMLFileSysCheck $file) use ($sysChecksFolder) {
             return [
               'workspaceId' => $sysChecksFolder->getId(),
               'name' => $file->getId(),

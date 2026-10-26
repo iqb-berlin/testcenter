@@ -25,7 +25,7 @@ class ResponseReportOutput extends Report {
   private function generateCsvReportData(array $responseData): string {
     $columns = ['groupname', 'loginname', 'code', 'bookletname', 'unitname', 'originalUnitId', 'responses', 'laststate'];
     $rows = array_map(
-      fn(array $row) => [...$row, 'responses' => json_encode($row['responses'])],
+      static fn(array $row) => [...$row, 'responses' => json_encode($row['responses'])],
       $responseData
     );
     return CSV::BOM . CSV::build($rows, $columns);

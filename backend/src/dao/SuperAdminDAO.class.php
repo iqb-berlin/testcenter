@@ -16,7 +16,7 @@ class SuperAdminDAO extends DAO {
 
     // A workspace without files has no latest modification: sqlToDisplayFormat() passes that null through.
     return array_map(
-      function(array $workspace): array {
+      static function(array $workspace): array {
         $workspace['latest_modification_ts'] = TimeStamp::sqlToDisplayFormat($workspace['latest_modification_ts']);
         return $workspace;
       },
@@ -26,7 +26,7 @@ class SuperAdminDAO extends DAO {
 
   public function getUsers(): array {
     return array_map(
-      function($user) {
+      static function($user) {
         $user['isSuperadmin'] = (bool) $user['isSuperadmin'];
         return $user;
       },

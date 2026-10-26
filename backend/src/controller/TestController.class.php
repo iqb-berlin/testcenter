@@ -355,7 +355,7 @@ class TestController extends Controller {
     $newState = self::testDAO()->updateTestState($testId, $statePatch);
 
     $testLogs = array_map(
-      fn($entry) => new TestLog(
+      static fn($entry) => new TestLog(
         $testId,
         $entry['key'],
         $entry['timeStamp'],
@@ -382,7 +382,7 @@ class TestController extends Controller {
     ]);
 
     $testLogs = array_map(
-      fn($entry) => new TestLog(
+      static fn($entry) => new TestLog(
         $testId,
         $entry['key'],
         $entry['timeStamp'],
@@ -428,7 +428,7 @@ class TestController extends Controller {
     $newState = self::testDAO()->updateUnitState($testId, $unitName, $statePatch, $originalUnitId);
 
     $unitLogs = array_map(
-      fn($entry) => new UnitLog(
+      static fn($entry) => new UnitLog(
         $testId,
         $unitName,
         $entry['key'],
@@ -476,7 +476,7 @@ class TestController extends Controller {
     }
 
     $unitLogs = array_map(
-      fn($entry) => new UnitLog(
+      static fn($entry) => new UnitLog(
         $testId,
         $unitName,
         $entry['key'],

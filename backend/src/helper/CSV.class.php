@@ -39,7 +39,7 @@ class CSV {
 
     $rows = [self::row($columns)];
     foreach ($data as $set) {
-      $rows[] = self::row(array_map(fn($column) => $set[$column] ?? null, $columns));
+      $rows[] = self::row(array_map(static fn($column) => $set[$column] ?? null, $columns));
     }
 
     return implode(self::LINE_ENDING, $rows);
@@ -65,7 +65,7 @@ class CSV {
    * @return array - all used keys once
    */
   static function collectColumnNamesFromHeterogeneousObjects(array $data): array {
-    return array_values(array_unique(array_reduce($data, function($agg, $array) {
+    return array_values(array_unique(array_reduce($data, static function($agg, $array) {
       return array_merge($agg, array_keys($array));
     }, [])));
   }

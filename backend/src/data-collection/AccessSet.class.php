@@ -35,7 +35,7 @@ class AccessSet extends DataCollectionTypeSafe {
     $this->displayName = $displayName;
     $this->loginName = $loginName;
     $this->groupLabel = $groupLabel;
-    $this->flags = array_map(function ($flag) {
+    $this->flags = array_map(static function ($flag) {
       return (string) $flag;
     }, $flags);
     $this->claims = (object) [];
@@ -120,7 +120,7 @@ class AccessSet extends DataCollectionTypeSafe {
     );
 
     $accessObjects = array_map(
-      function (WorkspaceData $workspace): AccessObject {
+      static function (WorkspaceData $workspace): AccessObject {
         return new AccessObject(
           (string) $workspace->getId(),
           AccessObjectType::WORKSPACE_ADMIN,
@@ -192,7 +192,7 @@ class AccessSet extends DataCollectionTypeSafe {
 
   private function addTests(TestData ...$testsOfPerson): void {
     $bookletsData = array_map(
-      function (TestData $testData): AccessObject {
+      static function (TestData $testData): AccessObject {
         return new AccessObject(
           $testData->name,
           AccessObjectType::TEST,
@@ -250,7 +250,7 @@ class AccessSet extends DataCollectionTypeSafe {
 
   private function addSystemChecks(SystemCheck ...$accessItems): void {
     $systemChecks = array_map(
-      function (SystemCheck $systemCheck) {
+      static function (SystemCheck $systemCheck) {
         return new SystemCheckAccessObject(
           $systemCheck->getWorkspaceId(),
           $systemCheck->getId(),

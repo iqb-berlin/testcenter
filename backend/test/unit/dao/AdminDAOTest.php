@@ -432,7 +432,7 @@ final class AdminDAOTest extends TestCase {
       ]
     ];
 
-    $sessionChangeMessageArray = function(SessionChangeMessage $s): array {
+    $sessionChangeMessageArray = static function(SessionChangeMessage $s): array {
       $asArray = $s->jsonSerialize();
       foreach ($asArray as $key => $value) {
         if ((($key == "testState") or ($key == "unitState")) and (empty((array) $value))) {
@@ -444,21 +444,21 @@ final class AdminDAOTest extends TestCase {
 
     $result = $this->dbc->getTestSessions(1, ['sample_group']);
     $resultAsArray = array_map($sessionChangeMessageArray, $result->asArray());
-    usort($resultAsArray, function ($first, $second) {
+    usort($resultAsArray, static function ($first, $second) {
       return $first['testId'] <=> $second['testId'];
     });
     static::assertSame($expectation, $resultAsArray);
 
     $result = $this->dbc->getTestSessions(1, []); // all groups
     $resultAsArray = array_map($sessionChangeMessageArray, $result->asArray());
-    usort($resultAsArray, function ($first, $second) {
+    usort($resultAsArray, static function ($first, $second) {
       return $first['testId'] <=> $second['testId'];
     });
     static::assertSame($expectation, $resultAsArray);
 
     $result = $this->dbc->getTestSessions(1, ['unknown_group']);
     $resultAsArray = array_map($sessionChangeMessageArray, $result->asArray());
-    usort($resultAsArray, function ($first, $second) {
+    usort($resultAsArray, static function ($first, $second) {
       return $first['testId'] <=> $second['testId'];
     });
     static::assertSame([], $resultAsArray);

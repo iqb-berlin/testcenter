@@ -229,7 +229,7 @@ class InitDAO extends SessionDAO {
     $superAdminDAO->setWorkspaceRightsByUser(
       $adminId,
       array_map(
-        function (int $wsId) {
+        static function (int $wsId) {
           return (object) [
             "role" => "RW",
             "id" => $wsId
@@ -396,7 +396,7 @@ class InitDAO extends SessionDAO {
     ];
 
     $patches = array_map(
-      function ($file) {
+      static function ($file) {
         return basename($file, '.sql');
       },
       Folder::glob($patchesDir, '*.sql')

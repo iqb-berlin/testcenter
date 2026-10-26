@@ -122,7 +122,7 @@ class XMLFileSysCheck extends XMLFile {
 
     if ((string) $node[0]) {
       $speedtestParams['sequenceSizes'] = array_map(
-        function($str) {
+        static function($str) {
           return trim($str);
         },
         explode(',', (string) $node[0])

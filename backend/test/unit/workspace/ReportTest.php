@@ -588,7 +588,7 @@ final class ReportTest extends TestCase {
     $this->adminDaoMock->allows('getReviewReportData')->andReturn(self::REVIEWS);
 
     $expectedReviewsJsonReportData = array_map(
-      function($review) {
+      static function($review) {
         array_splice($review, array_search('categories', array_keys($review)), 1);
         unset($review['reviewer']); // old version doesn't include reviewer
         return $review;

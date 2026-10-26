@@ -19,7 +19,7 @@ class Mode {
    * @return string[] - the modes (lower case, as used in Testtakers files) that have the capability
    */
   static function getByCapability(ModeCapability $capability): array {
-    $modes = array_filter(self::capabilities(), fn(array $options) => $options[$capability->value] ?? false);
+    $modes = array_filter(self::capabilities(), static fn(array $options) => $options[$capability->value] ?? false);
     return array_map('strtolower', array_keys($modes));
   }
 
@@ -29,7 +29,7 @@ class Mode {
   private static function capabilities(): array {
     if (self::$capabilities === null) {
       $definition = JSON::decode(file_get_contents(ROOT_DIR . '/definitions/testtaker/test-mode.json'), true);
-      self::$capabilities = array_map(fn(array $mode) => $mode['config'], $definition);
+      self::$capabilities = array_map(static fn(array $mode) => $mode['config'], $definition);
     }
     return self::$capabilities;
   }

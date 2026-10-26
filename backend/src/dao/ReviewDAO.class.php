@@ -80,7 +80,7 @@ class ReviewDAO extends DAO
     );
 
     return array_map(
-      function(array $review): array {
+      static function(array $review): array {
         $review['reviewtime'] = TimeStamp::sqlToDisplayFormat($review['reviewtime']);
         return $review;
       },
