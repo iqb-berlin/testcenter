@@ -46,11 +46,9 @@ class XMLFileUnit extends XMLFile {
 
     $reference = $this->getXml()->xpath('/Unit/CodingSchemeRef');
 
-    $schemeIdRaw = count($reference) ? (string) $reference[0] : '';
-
     // TODO X check if schemer & scheme type is supported
 
-    return $schemeIdRaw;
+    return count($reference) ? (string) $reference[0] : '';
   }
 
   private function checkIfResourcesExist(WorkspaceCache $cache): void {

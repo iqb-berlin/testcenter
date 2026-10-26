@@ -31,7 +31,7 @@ class IsGroupMonitor {
       default:
         throw new HttpForbiddenException($request, "Access Denied: Not in Monitor Mode.");
       case 'monitor-group':
-        if (isset($params['group']) and ($authToken->getGroup() !== $params['group'])) { //
+        if (isset($params['group']) and ($authToken->getGroup() !== $params['group'])) {
           throw new HttpForbiddenException($request, "Access Denied for Group: `{$params['group']}`");
         }
         $groups = [$authToken->getGroup()];

@@ -13,7 +13,7 @@ class TestEnvironment {
 
   public static function setup(string $testMode, ?string $testClock = null): void {
     self::$testMode = in_array($testMode, self::testModes) ? $testMode : 'api';
-    $testClock = $testClock ?? self::staticDate;
+    $testClock ??= self::staticDate;
 
     try {
       SystemConfig::$debug_useStaticTime = '@' . (int) $testClock;

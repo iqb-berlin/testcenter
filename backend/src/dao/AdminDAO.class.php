@@ -67,7 +67,7 @@ class AdminDAO extends DAO {
   }
 
   private function storeToken(int $userId, string $token, ?int $validTo = null): void {
-    $validTo = $validTo ?? TimeStamp::expirationFromNow(0, $this->timeUserIsAllowedInMinutes);
+    $validTo ??= TimeStamp::expirationFromNow(0, $this->timeUserIsAllowedInMinutes);
 
     $this->_(
       'insert into admin_sessions (token, user_id, valid_until)

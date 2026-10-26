@@ -20,10 +20,10 @@ class Password {
   static function validate(string $password): void {
     $minLength = SystemConfig::$password_min_length;
     $maxLength = 60;
-    if ((strlen($password) < $minLength)) {
+    if (strlen($password) < $minLength) {
       throw new HttpError("Password must have at least $minLength characters.", 400);
     }
-    if ((strlen($password) > $maxLength)) {
+    if (strlen($password) > $maxLength) {
       throw new HttpError("Password too long", 400);
     }
 

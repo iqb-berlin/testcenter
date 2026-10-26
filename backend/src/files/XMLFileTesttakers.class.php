@@ -418,7 +418,7 @@ class XMLFileTesttakers extends XMLFile {
   private function collectProfiles(SimpleXMLElement $loginElem): array {
     $profiles = array_map(
       function(SimpleXMLElement $profileReferenceElem): SimpleXMLElement | null {
-        $id = ((string) $profileReferenceElem['id']);
+        $id = (string) $profileReferenceElem['id'];
         $profileElems = $this->getXml()->xpath('//Profiles/GroupMonitor/Profile[@id="' . $id . '"]');
         if (count($profileElems) !== 1) {
           $this->report('error', "Profile with `$id` referenced but not provided");

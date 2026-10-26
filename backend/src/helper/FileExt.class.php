@@ -113,7 +113,7 @@ class FileExt {
           basename($filePath)
         ),
         ($maxDots + 1) * -1,
-        ($maxDots + 1)
+        $maxDots + 1
       )
     );
   }

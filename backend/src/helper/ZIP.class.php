@@ -33,7 +33,7 @@ class ZIP {
   static function create(string $fileName): ZipArchive {
     $zip = new ZipArchive;
     $res = $zip->open($fileName, ZipArchive::CREATE);
-    if ($res === TRUE) {
+    if ($res === true) {
       return $zip;
     }
     $error = ZIP::getErrorMessageText($res);

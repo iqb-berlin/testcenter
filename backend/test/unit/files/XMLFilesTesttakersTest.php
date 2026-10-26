@@ -11,7 +11,6 @@ class XMLFileTesttakersExposed extends XMLFileTesttakers {
     return parent::getCodesFromBookletElement($element);
   }
 }
-;
 
 /**
  * @runTestsInSeparateProcesses

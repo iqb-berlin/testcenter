@@ -7,7 +7,6 @@ class XMLFileBookletExposed extends XMLFileBooklet {
     return parent::getUnitIds();
   }
 }
-;
 
 /**
  * @runTestsInSeparateProcesses

@@ -97,7 +97,7 @@ class UserController extends Controller {
       throw new HttpForbiddenException($request, "Invalid password for user {$authToken->getId()}");
     }
 
-    self::superAdminDAO()->setSuperAdminStatus($userId, ($toStatusString == 'on'));
+    self::superAdminDAO()->setSuperAdminStatus($userId, $toStatusString == 'on');
 
     return $response;
   }

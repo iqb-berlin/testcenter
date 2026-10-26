@@ -237,11 +237,9 @@ class WorkspaceController extends Controller {
     if ($report->generate($request->getParam('useNewVersion') === 'true')) {
       $response->getBody()->write($report->asString());
     }
-    $response = $reportFormat === ReportFormat::CSV
+    return $reportFormat === ReportFormat::CSV
       ? $response->withHeader('Content-type', 'text/csv;charset=UTF-8')
       : $response->withHeader('Content-Type', 'application/json');
-
-    return $response;
   }
 
   public static function getSysCheckReportsOverview(Request $request, Response $response): Response {

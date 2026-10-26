@@ -11,7 +11,7 @@ class FileSize {
       return '-';
     }
 
-    return round($fileSize / pow(1024, ($i = intval(log($fileSize, 1024)))), 2)
-      . ' ' . FileSize::$units[$i];
+    $i = intval(log($fileSize, 1024));
+    return round($fileSize / pow(1024, $i), 2) . ' ' . FileSize::$units[$i];
   }
 }

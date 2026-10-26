@@ -159,7 +159,7 @@ final class WorkspaceControllerTest extends TestCase {
 
     // Assert
     static::assertSame(200, $response->getStatusCode());
-    static::assertSame(1, sizeof($response->getHeader('Content-type')));
+    static::assertSame(1, count($response->getHeader('Content-type')));
     static::assertStringStartsWith($mediaType, $response->getHeader('Content-type')[0]);
     static::assertEmpty($response->getBody()->getContents());
   }
@@ -242,7 +242,7 @@ final class WorkspaceControllerTest extends TestCase {
 
     // Assert
     static::assertSame(200, $response->getStatusCode());
-    static::assertSame(1, sizeof($response->getHeader('Content-type')));
+    static::assertSame(1, count($response->getHeader('Content-type')));
     static::assertStringStartsWith($mediaType, $response->getHeader('Content-type')[0]);
     static::assertEmpty($response->getBody()->getContents());
   }

@@ -61,11 +61,11 @@ final class AdminDAOTest extends TestCase {
   public function test_hasAdminAccessToWorkspace() {
     $token = $this->dbc->createAdminToken('super', 'user123');
     $result = $this->dbc->hasAdminAccessToWorkspace($token, 1);
-    static::assertEquals(true, $result);
+    static::assertTrue($result);
 
     $token = $this->dbc->createAdminToken('i_exist_but_am_not_allowed_anything', 'user123');
     $result = $this->dbc->hasAdminAccessToWorkspace($token, 1);
-    static::assertEquals(false, $result);
+    static::assertFalse($result);
   }
 
   public function test_getWorkspaceRole() {

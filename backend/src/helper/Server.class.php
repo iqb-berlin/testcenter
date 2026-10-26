@@ -5,7 +5,7 @@ declare(strict_types=1);
 
 class Server {
   static function getUrl(array $senv = null): string {
-    $senv = $senv ?? $_SERVER;
+    $senv ??= $_SERVER;
 
     $ssl = (!empty($senv['HTTPS']) && $senv['HTTPS'] == 'on');
 
@@ -26,7 +26,7 @@ class Server {
   }
 
   static function getProjectPath(array $senv = null): string {
-    $senv = $senv ?? $_SERVER;
+    $senv ??= $_SERVER;
 
     // dirname is quite a strange function
     $returnPath = str_ends_with($senv['PHP_SELF'], '/') ? $senv['PHP_SELF'] : dirname($senv['PHP_SELF']);
