@@ -5,12 +5,32 @@ Formatting rules are integrated into tooling. It is expected that these have bee
 ## Commit Messages
 
 - Write the subject in the imperative mood ("Add", not "Added" or "Adds"), capitalized and without a trailing period. Keep it short — around 50 characters, and no more than 72 including the tag.
-- Separate subject and body with a blank line and wrap the body at 72 characters.
+- Separate subject and body with a blank line and wrap the body at 72 characters. Indent continuation lines of list items by two spaces.
 - Use the body to explain *why* the change was made and what it does, not how it works — the diff already shows that.
-- Prefix the subject with the part of the project the change is about, in square brackets — for example `[be]`, `[fe]`, `[db]`, `[e2e]`, `[ci]`, `[infra]`, `[docs]`, `[file-server]`. Several tags are combined in one pair of brackets: `[be, fe, docs]`.
-- The tag names what the change is *about*, not every directory it touches. A change that belongs to no single part needs no tag.
+- Reference issues as plain `#123`. Don't use GitHub's closing keywords (`Fixes`, `Closes`, `Resolves`), in commits or in pull request descriptions.
 
 The reasoning behind these rules is spelled out at [cbea.ms/git-commit](https://cbea.ms/git-commit/).
+
+### Tags
+
+Start the subject with a tag naming the area the change is about, e.g. `[be] Fix …`:
+
+| Tag      | Area                                                 |
+|----------|------------------------------------------------------|
+| `[be]`   | Backend                                              |
+| `[fe]`   | Frontend                                             |
+| `[bs]`   | Broadcaster                                          |
+| `[fs]`   | File server                                          |
+| `[db]`   | Database schema                                      |
+| `[e2e]`  | End-to-end tests                                     |
+| `[docs]` | Documentation, including instructions for AI agents  |
+| `[ci]`   | CI pipelines                                         |
+| `[ops]`  | Docker images, Compose, installer, Helm, Makefiles   |
+
+- A change to several areas gets adjacent tags in the order of the table: `[be][fe]`.
+- Tests and documentation that come with a change get no tag of their own. A change that consists only of tests or documentation gets the tag of its area, e.g. `[be]` for backend unit tests.
+- If no tag fits, use none.
+- Tags name areas, never features or projects. Group the commits of a project by its branch, pull request or issue.
 
 ## Backend (PHP)
 
