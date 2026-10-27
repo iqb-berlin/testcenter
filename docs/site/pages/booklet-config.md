@@ -1,18 +1,18 @@
-# Booklet: Konfiguration
+# Booklet-Konfiguration
 
-**You can find more detailed information about the testfiles [here](https://iqb-berlin.github.io/tba-info/study-run/preparation/test-files/).**
+Ein Booklet wird im Element `<BookletConfig>` der **Booklet-XML** konfiguriert. Dort werden die unten aufgelisteten
+Parameter als Key-Value-Paare hinterlegt:
 
-Die Konfiguration erfolgt im Feld: `<BookletConfig>`.
-
-```
-...
-</Metadata>
+```xml
 <BookletConfig>
-    <Config key="force_responses_complete">OFF</Config>
+    <Config key="force_response_complete">ON</Config>
     <Config key="unit_navibuttons">LABEL</Config>
-...
 </BookletConfig>
 ```
+
+::: tip Hinweis
+Detaillierte Informationen zur Booklet-XML finden Sie [hier](https://iqb-berlin.github.io/tba-info/study-run/preparation/test-files/booklet-xml.html).
+:::
 
 ## Liste der Konfigurationsparameter
 

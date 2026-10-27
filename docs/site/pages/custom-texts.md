@@ -1,30 +1,22 @@
-# Testtaker: Textersetzungen
+# Textersetzungen
 
-**You can find more detailed information about the testfiles [here](https://iqb-berlin.github.io/tba-info/study-run/preparation/test-files/).**
+Viele Texte der Oberfläche lassen sich durch eigene ersetzen. Diese Seite listet alle Schlüssel auf, deren Texte
+ersetzt werden können. Die Ersetzungen werden als Key-Value-Paare im Element `<CustomTexts>` hinterlegt:
 
-Dieses Dokument beschreibt, wie die benutzerdefinierten Texte in die Anwendung integriert werden und
-listet alle möglichen Schlüssel auf. Die Textersetzungen können im Feld: `<CustomTexts>` für alle Logins hinterlegt werden.
-
-```
+```xml
 <CustomTexts>
-    <CustomText key="login_testEndButtonText">Test beenden</CustomText>
-    <CustomText key="login_bookletSelectPrompt">Bitte wählen</CustomText>
-...
+    <CustomText key="login_testEndButtonLabel">Test beenden</CustomText>
+    <CustomText key="booklet_warningEndTestTitle">Test wirklich beenden?</CustomText>
 </CustomTexts>
 ```
 
-## Textersetzungen Systemcheck
+Das Element kann an diesen Stellen stehen:
 
-Textersetzungen für den Systemcheck werden im Konfigurationsfeld der **Systemcheck-XML** angegeben.
+- in der **Testtaker-XML**: für alle Logins dieser Datei
+- in der **Booklet-XML**: nur für dieses Booklet
 
-```
-<Config>
-    <UploadSpeed ...
-    <DownloadSpeed ...
-    <CustomText key="syscheck_questionsintro">...</CustomText>
-    <CustomText key="app_intro1">...</CustomText>
-...
-</Config>
-```
+::: tip Hinweis
+Detaillierte Informationen zu den Testdateien finden Sie [hier](https://iqb-berlin.github.io/tba-info/study-run/preparation/test-files/).
+:::
 
 <!--@include: ../generated/custom-texts.md-->

@@ -1,6 +1,10 @@
-# Dokumentation der Log-Events (Testcenter)
+---
+pageClass: wide-page
+---
 
-Diese Datei dokumentiert alle Log-Events, die vom Testcenter angelegt werden.
+# Log-Events
+
+Diese Seite dokumentiert alle Log-Events, die vom Testcenter angelegt werden.
 
 Es gibt zwei Log-Arten:
 
