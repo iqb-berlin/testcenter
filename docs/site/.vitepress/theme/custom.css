@@ -35,7 +35,15 @@
   max-width: 784px;
 }
 
-/* Pages with wide tables set `pageClass: wide-page` in their frontmatter. */
-.Layout.wide-page .VPContent .VPDoc.has-aside .content-container {
+/* Pages with wide tables set `pageClass: wide-page` in their frontmatter, with or without the outline. */
+.Layout.wide-page .VPContent .VPDoc.has-aside .content-container,
+.Layout.wide-page .VPContent .VPDoc:not(.has-aside) .content-container {
   max-width: 1200px;
+}
+
+/* Without the sidebar, VitePress additionally limits the container and the text column
+   (`.VPDoc:not(.has-sidebar) .container`/`.content`), which wide pages lift as well. */
+.Layout.wide-page .VPContent .VPDoc:not(.has-sidebar) .container,
+.Layout.wide-page .VPContent .VPDoc:not(.has-sidebar) .content {
+  max-width: none;
 }
