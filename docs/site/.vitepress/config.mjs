@@ -37,7 +37,8 @@ export default defineConfig({
         items: [
           { text: 'Installation', link: '/pages/installation-dev' },
           { text: "Developer's Guide", link: '/pages/developer-guide' },
-          { text: 'Contributing Guide', link: 'https://github.com/iqb-berlin/testcenter/blob/master/docs/CONTRIBUTING.md' }
+          { text: 'Contributing Guide', link: '/pages/contributing' },
+          { text: 'Style Guide', link: '/pages/style-guide' }
         ]
       },
       {

@@ -1,7 +1,6 @@
 # Developer's Guide
 
-Before opening a pull request, read the
-[Contributing Guide](https://github.com/iqb-berlin/testcenter/blob/master/docs/CONTRIBUTING.md).
+Before opening a pull request, read the [Contributing Guide](contributing).
 
 ## Application structure
 
@@ -19,7 +18,7 @@ https://github.com/lhall-adexos/xdebug-ext, set up "IDEA" as IDE-key, and
 it should work out of the box with IDEA.
 
 ## Coding Standards
-See the [style guide](https://github.com/iqb-berlin/testcenter/blob/master/docs/style-guide.md).
+See the [style guide](style-guide).
 
 ## Documentation
 How this documentation is built and how to run it locally is described in

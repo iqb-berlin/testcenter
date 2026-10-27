@@ -61,4 +61,5 @@ pages include them with `<!--@include: ../generated/<name>.md-->`. `npm run api`
 
 - put a Markdown file into `site/pages/`
 - add it to the sidebar in `site/.vitepress/config.mjs`
-- link to files outside `site/` (e.g. `CONTRIBUTING.md`) with their GitHub URL
+- link to files outside `site/` with their GitHub URL; to show such a file on the website, give it a
+  page that includes it, like `pages/contributing.md` does with `CONTRIBUTING.md`

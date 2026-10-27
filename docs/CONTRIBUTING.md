@@ -12,9 +12,9 @@ the workflow up front means your change lands in a predictable way, reviews
 stay short, and nobody spends time on work that was never going to be
 merged.
 
-> **Quick summary**
+> **Quick summary**\
 > **Your part:** (for larger changes: discuss first →) fork or branch →
-> open a PR against `master` on GitHub with a descriptive summary.
+> open a PR against `master` on GitHub with a descriptive summary.\
 > **Our part:** trigger the CI pipeline → review by at least one
 > maintainer → merge.
 
@@ -137,4 +137,4 @@ merged.
 ---
 
 *This document is itself a living document — suggestions for improvement
-are always welcome as a PR against this file.*
+are always welcome as a PR against `docs/CONTRIBUTING.md`.*
