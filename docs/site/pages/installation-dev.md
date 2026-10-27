@@ -1,83 +1,70 @@
 # Installation for development
 
-The other way of installation gives you more options to access data, logs, to change settings more in
-detail, to find bugs and even to change code to meet your needs. Our applications are great,
-but not perfect at all!
+The development setup runs the Testcenter from its source code in Docker containers. The source folders of frontend,
+backend and broadcaster are mounted into the containers, so changes to the code take effect without rebuilding the
+images.
 
-Technically, you check out all source code and build the application modules as developers do.
-The whole Angular development framework will be installed with all tools.
-The build process will include all unit end e2e tests we prepared.
+This guide assumes you are familiar with git, a Unix shell and Docker. The steps are written for Linux.
 
-We will not explain every step in detail. You should be familiar with git and bash and file
-handling in Unix, editing a text file etc.
+::: warning
+This setup is not safe for production use: its configuration contains publicly known passwords. For production, follow
+the [installation for production](installation-prod).
+:::
 
-## Preconditions
+## Prerequisites
 
-Before you follow the instructions below, you need to
-install [Docker](https://docs.docker.com/engine/install/ubuntu/#installation-methods), and `make`.
-We do not explain these applications, this is beyond the scope of this document.
+* [Docker](https://docs.docker.com/engine/install/) with the [Compose plugin](https://docs.docker.com/compose/install/linux/)
+* Make
 
-* Docker 20
-* [Docker-compose plugin](https://docs.docker.com/compose/install/linux/)
-* Make 4.3
-
-Although all steps below could be done in another operating system environment, we go for a unix/linux.
+Only for linting, building the documentation and the interactive end-to-end tests (`make test-system`) you also need
+[Node.js](https://nodejs.org/) 22 with npm. Run `npm install` in the repository root, and for the documentation also in
+`docs/`, see its [README](https://github.com/iqb-berlin/testcenter/blob/master/docs/README.md).
 
 ## 1. Install
-Clone this repository
+
+```
+git clone https://github.com/iqb-berlin/testcenter.git
+```
 
 ## 2. Configure
 
-`make init`
+```
+make init
+```
 
-> :warning: This creates configuration files with values meant for
-development purposes only. For any production setup be sure to customize the files.
-Most importantly use your own passwords!
-
-The important configuration files are:
-
-* `.env.dev` - This file contains sensitive information about database access
-  and user logins
-
-* `frontend/src/environments/environment.ts` - Here information about accessing the backend is kept for
-  the frontend component
-
-There is one important setting to be made in the generated file `.env.dev`.
-On the first line, set the variable _HOSTNAME_ to either the IP, or the hostname of the machine
-under which it is reachable, in case `localhost` does not work.
-
-`make init-backend`
-
-Installs the database schema, applies new patches and reads the data-dir - the dev stack's
+This creates the configuration files `.env.dev` for the containers and `frontend/src/environments/environment.ts` for
+the frontend.
 
 ## 3. Run
 
-`make build`
+```
+make build
+```
 
-Build all images of the project or a specified one as dev-images.
-Optional service: Only build a specified service, e.g. `service=backend`
+Builds the images of all services. To build only one service, add it as a parameter, e.g. `service=backend`.
 
-`make up`
+```
+make init-backend
+```
 
-Ramp the application up (i.e. creates and starts all application containers).
-Optional service: Only ramp up a specified service, e.g. `service=backend`
+Installs the database schema, applies new database patches and reads the files in the workspaces. Run it again after
+pulling changes that bring new database patches: the backend refuses to start until they are applied.
 
-**Note: Stop local webserver before, to free port 80**
+```
+make up
+```
 
-# 3. Update
+Creates and starts all containers. To start only one service, add it as a parameter, e.g. `service=backend`.
+The application runs in the foreground and is reachable under http://localhost. Stop it with Ctrl+C or `make down`.
 
-`git pull`
+::: warning
+The frontend's development server reports port 8080 in the log, but that port is only reachable inside the container
+network. Open the application under http://localhost.
+:::
 
-Update the local repository.
-
-`make build`
-
-Rebuilding.
-
-# Login
+## Login
 
 After installation two logins are prepared:
 
 - Username `super` and password `user123` as admin user
-
 - Username `test` and password `user123` and code `xxx` as test-taker
