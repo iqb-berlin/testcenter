@@ -4,7 +4,21 @@
   --vp-layout-max-width: 100vw;
 }
 
-/* The outline column is narrow (224px): long headings, e.g. booklet parameter names, wrap instead of
+/* Wide screens have room for a wider outline column, so long headings, e.g. booklet parameter names,
+   fit on one line. The column, the fixed box inside it and the fade-out at its bottom grow together, so
+   the outline stays next to the text. */
+@media (min-width: 1440px) {
+  .Layout .VPContent .VPDoc .aside {
+    max-width: 320px;
+  }
+
+  .Layout .VPContent .VPDoc .aside-container,
+  .Layout .VPContent .VPDoc .aside-curtain {
+    width: 288px;
+  }
+}
+
+/* Headings too long for the outline column, as on narrower screens where it is 224px wide, wrap instead of
    being cut off. Padding and line height keep single-line entries at their original height of 32px. */
 .VPDocAsideOutline .VPDocOutlineItem .outline-link {
   padding-top: 6px;
