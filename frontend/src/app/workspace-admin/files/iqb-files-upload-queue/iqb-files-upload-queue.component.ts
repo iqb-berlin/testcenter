@@ -22,10 +22,12 @@ export class IqbFilesUploadQueueComponent implements OnDestroy {
   @Output() uploadCompleteEvent = new EventEmitter<IqbFilesUploadQueueComponent>();
 
   add(file: File): void {
+    this.disableClearButton = true;
     this.files.push(file);
   }
 
   removeAll(): void {
+    this.disableClearButton = true;
     this.files.splice(0, this.files.length);
   }
 
