@@ -58,10 +58,7 @@
 
 <ng-template #logoutDialogTemplate>
   <div class="logout-dialog">
-    <p>Du bist dabei, dich abzumelden.<br>
-       Willst du lieber weitermachen?<br>
-       Dann drücke einfach auf <b>Hier bleiben!</b>
-    </p>
+    <p>{{ '' | customtext:'login_logoutDialogText' | async }}</p>
     <img [src]="confirmDialogImgSrc">
   </div>
 </ng-template>

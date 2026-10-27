@@ -48,6 +48,10 @@ mat-toolbar {
   justify-content: space-between;
   align-items: center;
 
+  p {
+    white-space: pre-line;
+  }
+
   img {
     width: 141px;
     height: 141px;

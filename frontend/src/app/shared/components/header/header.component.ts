@@ -12,7 +12,9 @@ import { MainDataService } from '@shared/services/maindata/maindata.service';
 import { filter } from 'rxjs/operators';
 import { MessageService } from '@shared/services/message.service';
 import { AssetService } from '@shared/services/asset.service';
-import { NgTemplateOutlet } from '@angular/common';
+import { AsyncPipe, NgTemplateOutlet } from '@angular/common';
+import { CustomtextPipe } from '@shared/pipes/customtext/customtext.pipe';
+import { CustomtextService } from '@shared/services/customtext/customtext.service';
 
 @Component({
   selector: 'tc-header',
@@ -27,7 +29,9 @@ import { NgTemplateOutlet } from '@angular/common';
     MatMenu,
     MatMenuTrigger,
     MatDivider,
-    NgTemplateOutlet
+    NgTemplateOutlet,
+    CustomtextPipe,
+    AsyncPipe
   ],
   templateUrl: 'header.component.html',
   styleUrl: 'header.component.scss'
@@ -44,6 +48,7 @@ export class HeaderComponent implements OnDestroy {
               public mainDataService: MainDataService,
               public assetService: AssetService,
               private messageService: MessageService,
+              private cts: CustomtextService,
               private router: Router) {
     router.events.pipe(
       filter(event => event instanceof NavigationEnd)
@@ -95,10 +100,10 @@ export class HeaderComponent implements OnDestroy {
       this.mainDataService.logOut();
     } else {
       this.messageService.showConfirmDialog({
-        title: 'Sicher, dass du dich abmelden möchtest?',
+        title: this.cts.getCustomText('login_logoutDialogTitle'),
         contentTemplate: this.logoutDialogTemplate,
-        confirmText: 'Abmelden',
-        cancelText: 'Hier bleiben'
+        confirmText: this.cts.getCustomText('login_logoutDialogConfirmButtonLabel'),
+        cancelText: this.cts.getCustomText('booklet_stayButtonLabel')
       }).subscribe((result: boolean | undefined) => {
         if (result) this.mainDataService.logOut();
       });

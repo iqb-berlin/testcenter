@@ -1045,10 +1045,10 @@ export class TestControllerService {
           of(false);
       case 'confirm':
         return this.messageService.showConfirmDialog({
-          title: alsoEndsTest ? 'Sicher, dass du den Test beenden möchtest?' : result.title,
+          title: alsoEndsTest ? this.cts.getCustomText('booklet_warningEndTestTitle') : result.title,
           content: result.content,
-          confirmText: 'Hier bleiben',
-          cancelText: 'Trotzdem weiter'
+          confirmText: this.cts.getCustomText('booklet_stayButtonLabel'),
+          cancelText: this.cts.getCustomText('booklet_warningLeaveCancelButtonLabel')
         }).pipe(
           concatMap(cdresult => {
             if (cdresult !== false) {
@@ -1181,7 +1181,7 @@ export class TestControllerService {
         }
         const isLeaveConfirmed = await firstValueFrom(
           this.messageService.showConfirmDialog({
-            title: 'Sicher, dass du den Test beenden möchtest?',
+            title: this.cts.getCustomText('booklet_warningEndTestTitle'),
             content: ''
           })
         );

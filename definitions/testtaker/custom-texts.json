@@ -19,6 +19,26 @@
     "label" : "Schalterbeschriftung für 'Test fortsetzen'",
     "defaultvalue" : "Test fortsetzen"
   },
+  "login_starterGreeting" : {
+    "label" : "Begrüßung auf der Starter-Seite",
+    "defaultvalue" : "Schön, dass du da bist!"
+  },
+  "login_starterPrompt" : {
+    "label" : "Aufforderung unter der Begrüßung auf der Starter-Seite",
+    "defaultvalue" : "Komm, wir legen los. Wähle einen Teil aus."
+  },
+  "login_logoutDialogTitle" : {
+    "label" : "Titel der Dialogbox zum Abmelden",
+    "defaultvalue" : "Sicher, dass du dich abmelden möchtest?"
+  },
+  "login_logoutDialogText" : {
+    "label" : "Text der Dialogbox zum Abmelden. Zeilenumbrüche werden übernommen.",
+    "defaultvalue" : "Du bist dabei, dich abzumelden.\nWillst du lieber weitermachen?\nDann drücke einfach auf Hier bleiben!"
+  },
+  "login_logoutDialogConfirmButtonLabel" : {
+    "label" : "Schalterbeschriftung für 'Abmelden' in der Dialogbox zum Abmelden",
+    "defaultvalue" : "Abmelden"
+  },
   "booklet_warningLeaveTimerBlockTextPrompt" : {
     "label" : "Schalterbeschriftung für 'Zurück zum Test'",
     "defaultvalue" : "Du verlässt einen zeitbeschränkten Bereich und kannst nicht zurückkehren."
@@ -38,6 +58,18 @@
   "booklet_warningLeaveTextPrompt-unit" : {
     "label": "Text für Warnung (Dialogbox) eines nur einmal betretbaren Bereiches.",
     "defaultvalue" : "Du verlässt eine Aufgabe zu der du später nicht zurückkehren kannst."
+  },
+  "booklet_warningEndTestTitle" : {
+    "label": "Titel für Warnung (Dialogbox) vor dem Beenden des Tests.",
+    "defaultvalue" : "Sicher, dass du den Test beenden möchtest?"
+  },
+  "booklet_stayButtonLabel" : {
+    "label": "Schalterbeschriftung für 'Hier bleiben' in den Dialogboxen zum Verlassen eines Bereiches, zum Beenden des Tests und zum Abmelden.",
+    "defaultvalue" : "Hier bleiben"
+  },
+  "booklet_warningLeaveCancelButtonLabel" : {
+    "label": "Schalterbeschriftung für 'Trotzdem weiter' in den Dialogboxen zum Verlassen eines Bereiches und zum Beenden des Tests.",
+    "defaultvalue" : "Trotzdem weiter"
   },
   "booklet_blockLockedByAfterLeave" : {
     "label": "Block kann nicht noch einmal betreten werden",

@@ -2,6 +2,15 @@
 
 ## Neue Funktionen
 - Der Kurztitel einer Unit (Attribut `labelshort` im Booklet) lässt sich während des Tests anzeigen: im Kopfbereich über `header_content` = `UNIT_LABEL_SHORT`, auf der Navigationsleiste über `navbar_unit_label` = `LABEL_SHORT` und auf der Werkzeugleiste über den neuen Booklet-Parameter `toolbar_unit_label` = `LABEL_SHORT`. Fehlt der Kurztitel, wird der Titel der Unit angezeigt. `toolbar_unit_label` ersetzt `toolbar_show_unit_title`, das weiterhin ausgewertet wird, aber als veraltet gilt. Bisher wurde `labelshort` nur im Gruppen-Monitor angezeigt.
+- Die Dialogboxen zum Beenden des Tests und zum Abmelden sowie die Begrüßung auf der Starter-Seite lassen sich über neue Custom-Texts anpassen, etwa um in Befragungen eine andere Anrede als „du“ oder eine andere Bezeichnung als „Test“ zu verwenden. Bisher waren diese Texte fest vorgegeben. (#1633)
+  - `booklet_warningEndTestTitle`: Titel der Dialogbox zum Beenden des Tests („Sicher, dass du den Test beenden möchtest?“)
+  - `booklet_stayButtonLabel`: Schalter „Hier bleiben“ in den Dialogboxen zum Verlassen eines Bereichs, zum Beenden des Tests und zum Abmelden
+  - `booklet_warningLeaveCancelButtonLabel`: Schalter „Trotzdem weiter“ in den Dialogboxen zum Verlassen eines Bereichs und zum Beenden des Tests
+  - `login_logoutDialogTitle`: Titel der Dialogbox zum Abmelden („Sicher, dass du dich abmelden möchtest?“)
+  - `login_logoutDialogText`: Text der Dialogbox zum Abmelden; Zeilenumbrüche werden übernommen
+  - `login_logoutDialogConfirmButtonLabel`: Schalter „Abmelden“ in der Dialogbox zum Abmelden
+  - `login_starterGreeting`: Begrüßung auf der Starter-Seite („Schön, dass du da bist!“)
+  - `login_starterPrompt`: Aufforderung unter der Begrüßung („Komm, wir legen los. Wähle einen Teil aus.“)
 
 ## Fehlerbehebungen
 - Ist der Brute-Force-Schutz (`BRUTE_FORCE_PROTECTION`) für eine Anmeldeart eingeschaltet, die Seite aber nicht über HTTPS aufgerufen, zeigt die Anmeldeseite einen entsprechenden Hinweis und sperrt die betroffene Anmeldung. Bisher blieb der Anmelde-Knopf nach dem ersten Versuch dauerhaft deaktiviert, weil Browser die für den Schutz nötige Verschlüsselungsfunktion nur über HTTPS bereitstellen.

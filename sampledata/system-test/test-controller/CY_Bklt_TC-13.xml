@@ -7,6 +7,10 @@
     <Description>Testheft Test-Controller 13</Description>
   </Metadata>
 
+  <CustomTexts>
+    <CustomText key="booklet_warningEndTestTitle">Befragung beenden?</CustomText>
+  </CustomTexts>
+
   <BookletConfig>
     <Config key="pagingMode">buttons</Config>
   </BookletConfig>
