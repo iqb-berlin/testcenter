@@ -24,6 +24,7 @@ export default defineConfig({
         text: 'Administration',
         items: [
           { text: 'Installation and Update', link: '/pages/installation-prod' },
+          { text: 'Configuration', link: '/pages/config-prod' },
           { text: 'Booklet-Konfiguration', link: '/pages/booklet-config' },
           { text: 'Modus der Testdurchführung', link: '/pages/test-mode' },
           { text: 'Textersetzungen', link: '/pages/custom-texts' },
