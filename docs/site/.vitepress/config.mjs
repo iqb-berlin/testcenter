@@ -24,12 +24,7 @@ export default defineConfig({
         text: 'Administration',
         items: [
           { text: 'Installation and Update', link: '/pages/installation-prod' },
-          { text: 'Configuration', link: '/pages/config-prod' },
-          { text: 'Booklet-Konfiguration', link: '/pages/booklet-config' },
-          { text: 'Modus der Testdurchführung', link: '/pages/test-mode' },
-          { text: 'Textersetzungen', link: '/pages/custom-texts' },
-          { text: 'Gruppenmonitor Statusmeldungen', link: '/pages/test-session-super-states' },
-          { text: 'Log-Events', link: '/pages/logging' }
+          { text: 'Configuration', link: '/pages/config-prod' }
         ]
       },
       {
@@ -48,6 +43,15 @@ export default defineConfig({
           { text: 'API of Verona Player', link: 'https://verona-interfaces.github.io/player/' },
           // not a VitePress page: _self makes the browser load it instead of the client-side router
           { text: 'HTTP API of the backend', link: '/api/index.html', target: '_self' }
+        ]
+      },
+      {
+        text: 'Study/Survey Management',
+        items: [
+          { text: 'Booklet Configuration', link: '/pages/booklet-config' },
+          { text: 'Test Modes', link: '/pages/test-mode' },
+          { text: 'Custom Texts', link: '/pages/custom-texts' },
+          { text: 'Log Events', link: '/pages/logging' }
         ]
       }
     ]
