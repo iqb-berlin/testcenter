@@ -50,6 +50,7 @@ part, change its source, not the page.
 - custom texts (`custom-texts.md`) – `definitions/testtaker/custom-texts.json`
 - group monitor states (`test-session-super-states.md`) –
   `frontend/src/app/group-monitor/test-session/super-states.ts` and the frontend's icon sprite
+- supported XML schema versions (`compatibility.md`) – `definitions/compatibility.json`
 - API reference – `api/*.spec.yml`
 
 `npm run generate` (`scripts/generate.js`) writes the Markdown parts into `site/generated/`, and the

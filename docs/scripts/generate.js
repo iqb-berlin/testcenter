@@ -86,6 +86,20 @@ const customTexts = () => {
     .join('\n');
 };
 
+const compatibility = () => {
+  const definition = readDefinition('compatibility.json');
+  const formatVersionRange = ({ min, max }) => ((min === max) ? `${min}` : `${min} to ${max}`);
+  let output = '| Schema | Repository | Supported major versions |\n';
+  output += '| :--- | :--- | :---: |\n';
+  output += Object.entries(definition['xml-schema-versions'])
+    .map(([schema, versionRange]) => {
+      const repoLink = `[${versionRange.repo}](https://github.com/iqb-specifications/${versionRange.repo})`;
+      return `| ${schema} | ${repoLink} | ${formatVersionRange(versionRange)} |\n`;
+    })
+    .join('');
+  return output;
+};
+
 // colors of the classes in frontend/src/app/group-monitor/test-session/test-session.component.css
 const SUPER_STATE_COLORS = {
   danger: '#821123',
@@ -114,7 +128,8 @@ const generators = {
   'booklet-config.md': bookletConfig,
   'test-mode.md': testMode,
   'custom-texts.md': customTexts,
-  'test-session-super-states.md': testSessionSuperStates
+  'test-session-super-states.md': testSessionSuperStates,
+  'compatibility.md': compatibility
 };
 
 fs.mkdirSync(generatedDir, { recursive: true });
