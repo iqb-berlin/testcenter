@@ -13,7 +13,7 @@ export const useVersions = () => {
   onMounted(() => {
     request ??= fetch(`${root}versions.json`)
       .then(response => response.json())
-      .then(list => { versions.value = list; })
+      .then((list) => { versions.value = list; })
       .catch(() => {}); // not reachable: only the current version is shown
   });
 

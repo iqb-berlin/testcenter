@@ -31,7 +31,7 @@ export default defineConfig({
         text: 'Development',
         items: [
           { text: 'Installation', link: '/pages/installation-dev' },
-          { text: "Developer's Guide", link: '/pages/developer-guide' },
+          { text: 'Developer\'s Guide', link: '/pages/developer-guide' },
           { text: 'Contributing Guide', link: '/pages/contributing' },
           { text: 'Style Guide', link: '/pages/style-guide' }
         ]

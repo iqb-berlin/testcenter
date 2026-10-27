@@ -53,14 +53,25 @@ const testMode = () => {
   output += `| Merkmal / Option |${modes.map(mode => ` \`${mode}\` |`).join('')}\n`;
   output += `| :--- |${modes.map(() => ' :---: |').join('')}\n`;
   output += Object.entries(modeOptions)
-    .map(([option, label]) => `| ${label} |${modes.map(mode => (definition[mode].config[option] ? ' ✅ |' : '  |')).join('')}\n`)
+    .map(([option, label]) => {
+      const cells = modes.map(mode => (definition[mode].config[option] ? ' ✅ |' : '  |')).join('');
+      return `| ${label} |${cells}\n`;
+    })
     .join('');
   return output;
 };
 
 const CUSTOM_TEXT_GROUPS = [
-  { prefix: 'login_', title: 'Anmeldeseite (`login_*`)', description: 'Texte für die Anmeldeseite und allgemeine UI-Elemente.' },
-  { prefix: 'booklet_', title: 'Testheft-Ansicht (`booklet_*`)', description: 'Texte für die Testheft-Ansicht, Navigation und Dialoge.' },
+  {
+    prefix: 'login_',
+    title: 'Anmeldeseite (`login_*`)',
+    description: 'Texte für die Anmeldeseite und allgemeine UI-Elemente.'
+  },
+  {
+    prefix: 'booklet_',
+    title: 'Testheft-Ansicht (`booklet_*`)',
+    description: 'Texte für die Testheft-Ansicht, Navigation und Dialoge.'
+  },
   { prefix: 'syscheck_', title: 'System-Check (`syscheck_*`)', description: 'Texte für den System-Check.' },
   { prefix: 'gm_', title: 'Gruppenmonitor (`gm_*`)', description: 'Texte für den Gruppenmonitor.' },
   { prefix: '', title: 'Sonstige', description: '' }
@@ -70,7 +81,7 @@ const customTexts = () => {
   const definition = readDefinition('testtaker/custom-texts.json');
   const groupOf = key => CUSTOM_TEXT_GROUPS.find(group => key.startsWith(group.prefix));
   return CUSTOM_TEXT_GROUPS
-    .map(group => {
+    .map((group) => {
       const keys = Object.keys(definition)
         .filter(key => groupOf(key) === group)
         .sort();
@@ -119,7 +130,10 @@ const testSessionSuperStates = () => {
   let output = '| Symbol | Zustand | Tooltip | Beschreibung |\n';
   output += '| :---: | :--- | :--- | :--- |\n';
   output += Object.entries(superStates)
-    .map(([name, state]) => `| ${icon(state.icon, state.class)} | \`${name}\` | ${cell(state.tooltip)} | ${cell(state.description)} |\n`)
+    .map(([name, state]) => {
+      const cells = [icon(state.icon, state.class), `\`${name}\``, cell(state.tooltip), cell(state.description)];
+      return `| ${cells.join(' | ')} |\n`;
+    })
     .join('');
   return output;
 };
