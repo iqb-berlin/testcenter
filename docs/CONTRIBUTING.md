@@ -18,8 +18,6 @@ merged.
 > **Our part:** trigger the CI pipeline → review by at least one
 > maintainer → merge.
 
----
-
 ## 1. Guiding Principles
 
 - **The product direction stays with IQB.** Testcenter is used by many
@@ -43,16 +41,12 @@ merged.
   public interfaces, architectural decisions). See section 2.
 - **Every external contribution goes through review.**
 
----
-
 ## 2. Before You Write Code: Proposing Changes
 
 | Scope of change | Approach |
 |---|---|
 | Bugfix, small improvement, docs, regular feature | Open a PR directly — motivation and approach can go in the **PR description**, a separate issue isn't needed |
 | Architecture/interface change, larger refactor, new dependency with far-reaching impact | Open an **RFC issue** first, labeled `rfc`: problem, proposed solution, alternatives, impact on existing users |
-
----
 
 ## 3. Workflow in Detail
 
@@ -113,8 +107,6 @@ merged.
   can silently drop or duplicate their work. From that point on, please
   merge or get in contact.
 
----
-
 ## 4. Coding Standards
 
 - Our conventions are collected in the [style guide](style-guide.md).
@@ -124,8 +116,6 @@ merged.
 - Public interfaces (APIs, CLI, configuration formats) are documented —
   flag any changes to these explicitly in the PR.
 
----
-
 ## 5. Communication
 
 - **Issues**: for anything related to the functionality/feature.
@@ -133,8 +123,6 @@ merged.
 - *TODO: further channels (e.g. mailing list / Matrix / recurring call
   between participating institutes) are not decided yet — link them here
   once they are.*
-
----
 
 *This document is itself a living document — suggestions for improvement
 are always welcome as a PR against `docs/CONTRIBUTING.md`.*

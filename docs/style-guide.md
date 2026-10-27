@@ -2,8 +2,6 @@
 
 Formatting rules are integrated into tooling. It is expected that these have been run and are satisfied. Basics like indentation and line endings come from `.editorconfig`, which your editor applies for you.
 
----
-
 ## Commit Messages
 
 - Write the subject in the imperative mood ("Add", not "Added" or "Adds"), capitalized and without a trailing period. Keep it short — around 50 characters, and no more than 72 including the tag.
@@ -14,8 +12,6 @@ Formatting rules are integrated into tooling. It is expected that these have bee
 
 The reasoning behind these rules is spelled out at [cbea.ms/git-commit](https://cbea.ms/git-commit/).
 
----
-
 ## Backend (PHP)
 
 Checked with [mago](https://mago.carthage.software), configured in `backend/mago.toml`. It runs in the dev backend container: `make test-backend-static-analysis args=lint` or `args=analyze`. The existing code still has many findings, so check that your change adds none. The code is not formatted with mago.
@@ -24,8 +20,6 @@ Checked with [mago](https://mago.carthage.software), configured in `backend/mago
 - Use phpDocumentor-style docblocks only where native type hints fall short — in practice whenever arrays appear in a function signature, or whenever values are read out of an array.
 - Prefer static functions — we aim for a functional style where the problem allows it.
 - Use enums and classes as value objects rather than passing primitives around.
-
----
 
 ## Frontend (Angular)
 
@@ -40,8 +34,6 @@ Linted with ESLint, configured in `eslint.config.mjs` in the repository root.
   4. outputs
 - Use declarative colors and font sizes instead of hex codes.
 - Don't add `get foo()` accessors. Use a plain field, or a method that says what it does.
-
----
 
 *Suggestions for improvement are welcome*
 
