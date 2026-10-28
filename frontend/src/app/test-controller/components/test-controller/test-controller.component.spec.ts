@@ -90,13 +90,18 @@ describe('TestControllerComponent calculator header', () => {
     controller.booklet = TestBed.inject(TestLoaderService).parseBookletXml(`<Booklet>
       <Metadata><Id>header-test</Id><Label>Header test</Label></Metadata><Units>
         <Testlet id="configured">
-          <Calculator show="yes" mode="SCIENTIFIC" journalLines="5" maxImageWidthPx="333">
+          <Calculator mode="SCIENTIFIC" journalLines="5" maxImageWidthPx="333">
             <Journal>${journal}</Journal>
           </Calculator>
           <Unit id="u1" label="Configured"/>
-          <Testlet id="inherits"><Unit id="u2" label="Inherited"/></Testlet>
-          <Testlet id="hidden"><Calculator show="no"/><Unit id="u3" label="Hidden"/></Testlet>
-          <Testlet id="overrides"><Calculator show="yes"/><Unit id="u4" label="Defaults"/></Testlet>
+          <Testlet id="explicit-child">
+            <Calculator mode="SCIENTIFIC" journalLines="5" maxImageWidthPx="333">
+              <Journal>${journal}</Journal>
+            </Calculator>
+            <Unit id="u2" label="Explicit child"/>
+          </Testlet>
+          <Testlet id="hidden"><Unit id="u3" label="Hidden"/></Testlet>
+          <Testlet id="overrides"><Calculator/><Unit id="u4" label="Defaults"/></Testlet>
         </Testlet>
         <Testlet id="absent"><Unit id="u5" label="No calculator"/></Testlet>
       </Units></Booklet>`);
@@ -389,7 +394,7 @@ describe('TestControllerComponent calculator header', () => {
     expect(button()).toBeTruthy();
   });
 
-  it('tracks inherited, disabled, overridden and absent configurations across units', () => {
+  it('tracks explicit child, absent and default configurations across units', () => {
     selectUnit(2);
     expect(button()).toBeTruthy();
     selectUnit(3);

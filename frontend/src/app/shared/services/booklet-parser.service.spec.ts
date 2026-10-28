@@ -30,7 +30,7 @@ function findTestlet(root: Testlet, id: string): Testlet {
 }
 
 const defaults: CalculatorConfiguration = {
-  show: 'yes', mode: 'SIMPLE', journalLines: 0, maxImageWidthPx: 200, journal: '[]'
+  mode: 'SIMPLE', journalLines: 0, maxImageWidthPx: 200, journal: '[]'
 };
 
 const consumers = [
@@ -68,57 +68,55 @@ for (const consumer of consumers) {
       expect(findTestlet(result.units, 'inner').restrictions.denyNavigationOnIncomplete?.presentation).toBe('ON');
     });
 
-    for (const show of ['yes', 'no'] as const) {
-      it(`applies defaults with show="${show}"`, () => {
-        const result = parser.parseBookletXml(block(`<Calculator show="${show}"/>`));
-        expect(findTestlet(result.units, 'outer').calculator).toEqual({ ...defaults, show });
-      });
-    }
+    it('applies defaults to an empty declaration', () => {
+      const result = parser.parseBookletXml(block('<Calculator/>'));
+      expect(findTestlet(result.units, 'outer').calculator).toEqual(defaults);
+    });
 
     it('parses all settings and preserves journal text and entry order', () => {
       const journal = JSON.stringify([
         { asLatex: '\\frac{1}{3}<2 & 3', asImage: 'data:image/png;base64,aW1hZ2U=' },
         { asLatex: '2+2=4', asImage: '' }
       ], null, 2);
-      const result = parser.parseBookletXml(block(`<Calculator show="yes" mode="SCIENTIFIC"
+      const result = parser.parseBookletXml(block(`<Calculator mode="SCIENTIFIC"
         journalLines="7" maxImageWidthPx="300"><Journal><![CDATA[${journal}]]></Journal></Calculator>`));
       expect(findTestlet(result.units, 'outer').calculator).toEqual({
-        show: 'yes', mode: 'SCIENTIFIC', journalLines: 7, maxImageWidthPx: 300, journal
+        mode: 'SCIENTIFIC', journalLines: 7, maxImageWidthPx: 300, journal
       });
     });
 
-    it('inherits the nearest whole declaration, including hiding, replacement and re-enabling', () => {
+    it('requires each child testlet to declare its own calculator', () => {
       const result = parser.parseBookletXml(booklet(`
         <Testlet id="outer">
-          <Calculator show="yes" mode="SCIENTIFIC" journalLines="5" maxImageWidthPx="500">
+          <Calculator mode="SCIENTIFIC" journalLines="5" maxImageWidthPx="500">
             <Journal>[{"asLatex":"1=1","asImage":""}]</Journal>
           </Calculator>
           <Testlet id="inherits"><Testlet id="deep"><Unit id="u1" label="Task"/></Testlet></Testlet>
-          <Testlet id="override"><Calculator show="yes"/>
+          <Testlet id="override"><Calculator/>
             <Testlet id="inherits-override"><Unit id="u2" label="Task"/></Testlet>
           </Testlet>
-          <Testlet id="disabled"><Calculator show="no"/>
+          <Testlet id="disabled">
             <Testlet id="inherits-disabled"><Unit id="u3" label="Task"/></Testlet>
-            <Testlet id="reenabled"><Calculator show="yes"/><Unit id="u4" label="Task"/></Testlet>
+            <Testlet id="reenabled"><Calculator/><Unit id="u4" label="Task"/></Testlet>
           </Testlet>
           <Testlet id="sibling"><Unit id="u5" label="Task"/></Testlet>
         </Testlet>
         <Testlet id="unrelated"><Unit id="u6" label="Task"/></Testlet>`));
-      const outer = findTestlet(result.units, 'outer').calculator;
-      for (const id of ['inherits', 'deep', 'sibling']) {
-        expect(findTestlet(result.units, id).calculator).withContext(id).toEqual(outer);
-      }
-      for (const id of ['override', 'inherits-override', 'reenabled']) {
+      expect(findTestlet(result.units, 'outer').calculator).toEqual({
+        mode: 'SCIENTIFIC', journalLines: 5, maxImageWidthPx: 500,
+        journal: '[{"asLatex":"1=1","asImage":""}]'
+      });
+      for (const id of ['override', 'reenabled']) {
         expect(findTestlet(result.units, id).calculator).withContext(id).toEqual(defaults);
       }
-      for (const id of ['disabled', 'inherits-disabled']) {
-        expect(findTestlet(result.units, id).calculator).withContext(id).toEqual({ ...defaults, show: 'no' });
+      for (const id of ['inherits', 'deep', 'sibling', 'inherits-override',
+        'disabled', 'inherits-disabled', 'unrelated']) {
+        expect(findTestlet(result.units, id).calculator).withContext(id).toBeUndefined();
       }
-      expect(findTestlet(result.units, 'unrelated').calculator).toBeUndefined();
     });
 
     it('accepts a declaration after restrictions and exposes configuration through the unit parent', () => {
-      const result = parser.parseBookletXml(block('<Restrictions/><Calculator show="yes"/>'));
+      const result = parser.parseBookletXml(block('<Restrictions/><Calculator/>'));
       const testlet = findTestlet(result.units, 'outer');
       expect(testlet.calculator).toEqual(defaults);
       const unit = testlet.children[0];
@@ -126,7 +124,7 @@ for (const consumer of consumers) {
     });
 
     it('accepts XML integer lexical forms without losing precision', () => {
-      const result = parser.parseBookletXml(block(`<Calculator show="yes"
+      const result = parser.parseBookletXml(block(`<Calculator
         journalLines=" +0002 " maxImageWidthPx="9007199254740991"/>`));
       expect(findTestlet(result.units, 'outer').calculator).toEqual({
         ...defaults, journalLines: 2, maxImageWidthPx: Number.MAX_SAFE_INTEGER
@@ -134,20 +132,20 @@ for (const consumer of consumers) {
     });
 
     const invalidDeclarations = [
-      '<Calculator/>', '<Calculator show=""/>', '<Calculator show="y"/>',
-      '<Calculator show="n"/>', '<Calculator show="true"/>', '<Calculator show="YES"/>',
-      '<Calculator enabled="y"/>', '<Calculator show="yes" mode="simple"/>',
-      '<Calculator show="yes" mode=""/>', '<Calculator show="yes" unknown="value"/>',
-      '<Calculator show="yes" journalLines="-1"/>', '<Calculator show="yes" journalLines="1.5"/>',
-      '<Calculator show="yes" journalLines="1e2"/>', '<Calculator show="yes" journalLines=""/>',
-      '<Calculator show="yes" journalLines="9007199254740992"/>',
-      '<Calculator show="yes" maxImageWidthPx="0"/>', '<Calculator show="yes" maxImageWidthPx="-1"/>',
-      '<Calculator show="yes" maxImageWidthPx="NaN"/>', '<Calculator show="yes" maxImageWidthPx="1.1"/>',
-      '<Calculator show="yes"/><Calculator show="no"/>',
-      '<Calculator show="yes"><Journal>[]</Journal><Journal>[]</Journal></Calculator>',
-      '<Calculator show="yes"><Unknown/></Calculator>', '<Calculator show="yes">[]</Calculator>',
-      '<Calculator show="yes"><Journal value="[]">[]</Journal></Calculator>',
-      '<Calculator show="yes"><Journal><Entry/></Journal></Calculator>'
+      '<Calculator show="yes"/>', '<Calculator show=""/>', '<Calculator show="y"/>',
+      '<Calculator show="no"/>', '<Calculator show="true"/>', '<Calculator show="YES"/>',
+      '<Calculator enabled="y"/>', '<Calculator mode="simple"/>',
+      '<Calculator mode=""/>', '<Calculator unknown="value"/>',
+      '<Calculator journalLines="-1"/>', '<Calculator journalLines="1.5"/>',
+      '<Calculator journalLines="1e2"/>', '<Calculator journalLines=""/>',
+      '<Calculator journalLines="9007199254740992"/>',
+      '<Calculator maxImageWidthPx="0"/>', '<Calculator maxImageWidthPx="-1"/>',
+      '<Calculator maxImageWidthPx="NaN"/>', '<Calculator maxImageWidthPx="1.1"/>',
+      '<Calculator/><Calculator/>',
+      '<Calculator><Journal>[]</Journal><Journal>[]</Journal></Calculator>',
+      '<Calculator><Unknown/></Calculator>', '<Calculator>[]</Calculator>',
+      '<Calculator><Journal value="[]">[]</Journal></Calculator>',
+      '<Calculator><Journal><Entry/></Journal></Calculator>'
     ];
     for (const declaration of invalidDeclarations) {
       it(`rejects invalid declaration ${declaration} with testlet context`, () => {
@@ -161,18 +159,18 @@ for (const consumer of consumers) {
       '[{"asLatex":"valid","asImage":""},null]']) {
       it(`rejects invalid journal ${JSON.stringify(journal)}`, () => {
         expect(() => parser.parseBookletXml(block(
-          `<Calculator show="yes"><Journal>${journal}</Journal></Calculator>`
+          `<Calculator><Journal>${journal}</Journal></Calculator>`
         ))).toThrowMatching((error: unknown) =>
           error instanceof AppError && error.type === 'xml' && error.description.includes('Journal'));
       });
     }
 
     const misplaced = [
-      booklet('<Calculator show="yes"/><Unit id="u1" label="Task"/>'),
-      block('<Restrictions><Calculator show="yes"/></Restrictions>'),
-      booklet('<Testlet id="outer"><Unit id="u1" label="Task"><Calculator show="yes"/></Unit></Testlet>'),
-      block('<Calculator show="yes"/><Restrictions/>'),
-      booklet('<Testlet id="outer"><Unit id="u1" label="Task"/><Calculator show="yes"/></Testlet>')
+      booklet('<Calculator/><Unit id="u1" label="Task"/>'),
+      block('<Restrictions><Calculator/></Restrictions>'),
+      booklet('<Testlet id="outer"><Unit id="u1" label="Task"><Calculator/></Unit></Testlet>'),
+      block('<Calculator/><Restrictions/>'),
+      booklet('<Testlet id="outer"><Unit id="u1" label="Task"/><Calculator/></Testlet>')
     ];
     for (const xml of misplaced) {
       it('rejects a calculator declaration outside its permitted XML position', () => {
@@ -182,7 +180,7 @@ for (const consumer of consumers) {
     }
 
     it('does not retain configuration between booklets', () => {
-      parser.parseBookletXml(block('<Calculator show="yes" mode="SCIENTIFIC"/>'));
+      parser.parseBookletXml(block('<Calculator mode="SCIENTIFIC"/>'));
       expect(findTestlet(parser.parseBookletXml(block('')).units, 'outer').calculator).toBeUndefined();
     });
   });
@@ -193,6 +191,6 @@ describe('Group-monitor calculator error result', () => {
     TestBed.configureTestingModule({
       providers: [BookletService, { provide: MonitorBackendService, useValue: {} }]
     });
-    expect(TestBed.inject(BookletService).parseXml(block('<Calculator/>'))).toEqual({ error: 'xml', species: null });
+    expect(TestBed.inject(BookletService).parseXml(block('<Calculator show="yes"/>'))).toEqual({ error: 'xml', species: null });
   });
 });

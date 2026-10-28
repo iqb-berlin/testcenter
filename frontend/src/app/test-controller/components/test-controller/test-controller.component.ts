@@ -225,7 +225,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
   get calculatorConfiguration(): CalculatorConfiguration | undefined {
     if (this.tcs.state$.getValue() !== 'RUNNING' || !this.tcs.unitContentReady$.getValue()) return undefined;
     const configuration = this.tcs.currentUnit?.parent.calculator;
-    return configuration?.show === 'yes' ? configuration : undefined;
+    return configuration;
   }
 
   openCalculator(event: Event): void {

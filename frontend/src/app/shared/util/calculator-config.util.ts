@@ -1,6 +1,6 @@
 import {
   CalculatorConfiguration, calculatorAttributeNames, calculatorDefaults, calculatorMinimums,
-  calculatorModeValues, calculatorShowValues
+  calculatorModeValues
 } from 'testcenter-common/interfaces/calculator.interfaces';
 import { AppError } from '../../app.interfaces';
 
@@ -13,11 +13,11 @@ function invalid(testlet: Element, description: string): AppError {
 }
 
 export function parseTestletCalculator(
-  testlet: Element, inherited?: CalculatorConfiguration
+  testlet: Element
 ): CalculatorConfiguration | undefined {
   const children = Array.from(testlet.children);
   const declarations = children.filter(child => child.tagName === 'Calculator');
-  if (!declarations.length) return inherited;
+  if (!declarations.length) return undefined;
   if (declarations.length !== 1) throw invalid(testlet, 'Nur eine <Calculator>-Deklaration ist erlaubt.');
   const calculator = declarations[0];
   const position = children.indexOf(calculator);
@@ -76,7 +76,6 @@ export function parseTestletCalculator(
   }
 
   return {
-    show: enumAttribute('show', calculatorShowValues),
     mode: enumAttribute('mode', calculatorModeValues, calculatorDefaults.mode),
     journalLines: integerAttribute('journalLines', calculatorDefaults.journalLines, calculatorMinimums.journalLines),
     maxImageWidthPx: integerAttribute('maxImageWidthPx', calculatorDefaults.maxImageWidthPx,
