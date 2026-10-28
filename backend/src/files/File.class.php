@@ -8,11 +8,7 @@ class File extends FileData {
   protected string $name = '';
   protected ?string $content = null;
 
-  static function get(StoragePath|FileData $init, string $type = null): File {
-    if (!$type and !is_a($init, FileData::class)) {
-      $type = File::determineType($init);
-    }
-
+  static function get(StoragePath|FileData $init, string $type): File {
     return match ($type) {
       'Testtakers' => new XMLFileTesttakers($init),
       'SysCheck' => new XMLFileSysCheck($init),
@@ -28,15 +24,28 @@ class File extends FileData {
   static function fromString(string $fileContent, string $fileName = 'virtual_file'): static {
     $file = new static(new FileData());
     $file->name = basename($fileName);
+    $file->id = strtoupper($file->name);
     $file->content = $fileContent;
     $file->validate();
     return $file;
   }
 
+  /** Like fromString(), but the subclass is determined from the file's name and content. */
+  static function fromStringOfAnyType(string $fileContent, string $fileName): File {
+    return match (File::determineType($fileContent, $fileName)) {
+      'Testtakers' => XMLFileTesttakers::fromString($fileContent, $fileName),
+      'SysCheck' => XMLFileSysCheck::fromString($fileContent, $fileName),
+      'Booklet' => XMLFileBooklet::fromString($fileContent, $fileName),
+      'Unit' => XMLFileUnit::fromString($fileContent, $fileName),
+      'Resource' => ResourceFile::fromString($fileContent, $fileName),
+      'xml' => XMLFile::fromString($fileContent, $fileName),
+    };
+  }
+
   // TODO unit-test
-  public static function determineType(StoragePath $path): string {
-    if (strtoupper(substr($path->name, -4)) == '.XML') {
-      $asGenericXmlFile = new XMLFile($path);
+  public static function determineType(string $fileContent, string $fileName): string {
+    if (strtoupper(substr($fileName, -4)) == '.XML') {
+      $asGenericXmlFile = XMLFile::fromString($fileContent, $fileName);
       if (!in_array($asGenericXmlFile->rootTagName, XMLFile::knownRootTags)) {
         return 'xml';
       }

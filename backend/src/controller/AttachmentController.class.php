@@ -84,17 +84,18 @@ class AttachmentController extends Controller {
       throw new HttpBadRequestException($request, "No type given");
     }
 
-    $workspace = new Workspace(self::authToken($request)->getWorkspaceId());
-    $workspacePath = $workspace->getWorkspacePath();
+    $workspaceId = self::authToken($request)->getWorkspaceId();
     $attachment = AttachmentController::getRequestedAttachmentById($request);
 
-    $uploadedFiles = UploadedFilesHandler::handleUploadedFiles($request, 'attachment', $workspacePath);
-
-    AttachmentFiles::importFiles(
-      $workspace->getId(),
-      $uploadedFiles,
-      $attachment,
-      $type
+    Folder::useTempDirectory(
+      'upload-',
+      static function(string $stagingPath) use ($request, $workspaceId, $attachment, $type): void {
+        $uploadedFilePaths = array_map(
+          static fn(string $fileName): string => "$stagingPath/$fileName",
+          UploadedFilesHandler::handleUploadedFiles($request, 'attachment', $stagingPath)
+        );
+        AttachmentFiles::importFiles($workspaceId, $uploadedFilePaths, $attachment, $type);
+      }
     );
 
     return $response->withStatus(201);

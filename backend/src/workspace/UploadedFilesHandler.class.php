@@ -37,7 +37,8 @@ class UploadedFilesHandler {
     ]
   ];
 
-  static function handleUploadedFiles(Request $request, string $fieldName, string $workspacePath): array {
+  /** @return string[] the names of the files, which are moved to $stagingPath */
+  static function handleUploadedFiles(Request $request, string $fieldName, string $stagingPath): array {
     $allUploadedFiles = $request->getUploadedFiles();
 
     if (!count($allUploadedFiles)) {
@@ -73,7 +74,7 @@ class UploadedFilesHandler {
         throw new HttpException($request, $error['message'], $error['code']);
       }
       $originalFileName = $uploadedFile->getClientFilename();
-      $uploadedFile->moveTo($workspacePath . '/' . $originalFileName);
+      $uploadedFile->moveTo($stagingPath . '/' . $originalFileName);
       $filesToImport[] = $originalFileName;
     }
 

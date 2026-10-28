@@ -6,19 +6,16 @@ declare(strict_types=1);
 class AttachmentFiles {
   protected static $_testDAO;
 
-  public static function importFiles(int $workspaceId, array $uploadedFiles, Attachment $attachment, string $type): void {
-    $workspace = new Workspace($workspaceId);
-    $workspacePath = $workspace->getWorkspacePath();
+  /** @param string[] $localFilePaths */
+  public static function importFiles(int $workspaceId, array $localFilePaths, Attachment $attachment, string $type): void {
+    $attachmentDirectory = Workspace::getStorageDirectoryOf($workspaceId)->createSubdirectory('UnitAttachments');
 
     $dataParts = [];
-    foreach ($uploadedFiles as $originalFileName) {
-      $dst = "$workspacePath/UnitAttachments/";
-      Folder::createPath($dst);
+    foreach ($localFilePaths as $localFilePath) {
       $attachmentCode = Random::string(32, false);
-      $extension = FileExt::get($originalFileName);
+      $extension = FileExt::get(basename($localFilePath));
       $attachmentFileId = "$type:$attachmentCode.$extension";
-      copy("$workspacePath/$originalFileName", "$dst/$attachmentCode.$extension");
-      unlink("$workspacePath/$originalFileName");
+      Storage::getDriver()->put($attachmentDirectory->createFilePath("$attachmentCode.$extension"), $localFilePath);
       $attachmentFileIds = [...$attachment->attachmentFileIds, $attachmentFileId];
       $dataParts[$attachment->attachmentId] = self::stringifyDataChunk($attachment->variableId, $attachmentFileIds);
     }

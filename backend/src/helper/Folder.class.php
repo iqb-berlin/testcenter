@@ -68,6 +68,20 @@ class Folder {
     return $list;
   }
 
+  /** Runs $use with a new, empty directory in the system temp dir and deletes it with everything in it afterwards. */
+  static function useTempDirectory(string $prefix, Closure $use): mixed {
+    $path = sys_get_temp_dir() . '/' . uniqid($prefix, true);
+    if (!mkdir($path)) {
+      throw new Exception("Could not create `$path`.");
+    }
+    try {
+      return $use($path);
+    } finally {
+      Folder::deleteContentsRecursive($path);
+      rmdir($path);
+    }
+  }
+
   // TODO unit-test
   static function deleteContentsRecursive(string $path): void {
     if (!is_dir($path)) {
