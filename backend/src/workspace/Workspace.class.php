@@ -613,6 +613,17 @@ class Workspace {
     return $resourceListStructured;
   }
 
+  /** @return array<string, list<string>> Resource paths grouped by Verona model. */
+  public function getWidgetResourcePaths(): array {
+    $widgets = [];
+    foreach ($this->workspaceDAO->getWidgetResources() as $resource) {
+      $path = "Resource/{$resource['name']}";
+      $widgets[$resource['verona_model']][] = $path;
+      CacheService::storeFile("/ws_$this->workspaceId/$path");
+    }
+    return $widgets;
+  }
+
   public function getWorkspaceHash(): string {
     return hash('XXH3', serialize(self::getHashOfAllFiles($this->getWorkspacePath())));
   }
