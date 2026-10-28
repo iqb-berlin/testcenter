@@ -33,7 +33,7 @@ describe('UnitMenuComponent', () => {
     currentUnitSequenceId: number;
     testMode: TestMode;
     setUnitNavigationRequest: jasmine.Spy;
-    terminateTest: jasmine.Spy;
+    requestTestEnd: jasmine.Spy;
     onStateOptionChanged: jasmine.Spy;
   };
 
@@ -72,7 +72,7 @@ describe('UnitMenuComponent', () => {
       currentUnitSequenceId: 1,
       testMode: new TestMode('RUN-HOT-RESTART'),
       setUnitNavigationRequest: jasmine.createSpy('setUnitNavigationRequest'),
-      terminateTest: jasmine.createSpy('terminateTest'),
+      requestTestEnd: jasmine.createSpy('requestTestEnd'),
       onStateOptionChanged: jasmine.createSpy('onStateOptionChanged')
     };
 
@@ -114,6 +114,11 @@ describe('UnitMenuComponent', () => {
 
     expect(tcs.setUnitNavigationRequest).toHaveBeenCalledOnceWith('2');
     expect(closed).toHaveBeenCalled();
+  });
+
+  it('requests the end of the test, so it takes the same confirmation path as the logo', () => {
+    fixture.nativeElement.querySelector('[data-cy="endTest"]').click();
+    expect(tcs.requestTestEnd).toHaveBeenCalledOnceWith();
   });
 
   // Asserted on the rendered state rather than by clicking: what keeps a real pointer out is

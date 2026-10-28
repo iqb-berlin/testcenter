@@ -42,4 +42,16 @@ describe('check parameter: silent_mode', { testIsolation: true }, () => {
     cy.get('[data-cy="toast-text-0"]')
       .should('not.exist');
   });
+
+  it('TRUE: ends the test without asking, since the testee can re-enter it', () => {
+    loginTestTaker('Bklt_Config-51', '123');
+    cy.get('[data-cy="unit-title"]')
+      .contains('Ende');
+    cy.get('[data-cy="logo"]')
+      .click();
+    cy.get('[data-cy="dialog-title"]')
+      .should('not.exist');
+    cy.get('[data-cy="booklet-CY-BKLT_BKLTCONFIG-51"]')
+      .contains('Weiter');
+  });
 });

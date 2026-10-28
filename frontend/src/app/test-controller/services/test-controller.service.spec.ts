@@ -2,6 +2,7 @@
 import {
   discardPeriodicTasks, fakeAsync, TestBed, tick
 } from '@angular/core/testing';
+import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { firstValueFrom, Observable, of } from 'rxjs';
@@ -10,7 +11,7 @@ import { TestControllerService } from './test-controller.service';
 import { BackendService } from './backend.service';
 import {
   KeyValuePairString, NavigationLeaveRestrictionValue, StateReportEntry, Testlet, Unit,
-  UnitDataParts, UnitStateKey, UnitStateUpdate
+  UnitDataParts, UnitNavigationTarget, UnitStateKey, UnitStateUpdate
 } from '../interfaces/test-controller.interfaces';
 import { MainDataService, TestMode } from '../../shared/shared.module';
 import { MessageService } from '../../shared/services/message.service';
@@ -49,6 +50,10 @@ class MockMessageService {
 
   // eslint-disable-next-line class-methods-use-this
   showInfoDialog(dialog: { title: string, content: string }): Observable<boolean> {
+    return of(true);
+  }
+
+  showConfirmDialog(): Observable<boolean> {
     return of(true);
   }
 
@@ -430,6 +435,82 @@ describe('TestControllerService', () => {
       setUp(current, unitIn(block, 5));
 
       expect(service.checkCompleteness(current, 'forward')).toEqual([]);
+    });
+  });
+
+  // The logo, the unit menu and the player's request to end the test all end up in
+  // confirmEndTestIfNeeded().
+  describe('ending the test on the testee\'s request', () => {
+    let showConfirmDialog: jasmine.Spy;
+    let terminateTest: jasmine.Spy;
+
+    const setUp = (config: { silent_mode: string; lock_test_on_termination: string }): void => {
+      service.testMode = new TestMode('RUN-HOT-RESTART'); // one of the modes that enforce restrictions
+      service.booklet!.config.setFromKeyValuePairs(config);
+      service.state$.next('RUNNING');
+      showConfirmDialog = spyOn(TestBed.inject(MessageService), 'showConfirmDialog').and.callThrough();
+      spyOn(service, 'closeAllBuffers').and.resolveTo();
+      terminateTest = spyOn(service, 'terminateTest').and.resolveTo(true);
+    };
+
+    it('asks before ending the test', async () => {
+      setUp({ silent_mode: 'FALSE', lock_test_on_termination: 'OFF' });
+
+      expect(await service.confirmEndTestIfNeeded()).toBeTrue();
+      expect(showConfirmDialog).toHaveBeenCalledTimes(1);
+      expect(terminateTest).toHaveBeenCalledOnceWith('BOOKLETLOCKEDbyTESTEE', false);
+    });
+
+    it('keeps the test running when the testee does not confirm', async () => {
+      setUp({ silent_mode: 'FALSE', lock_test_on_termination: 'OFF' });
+      showConfirmDialog.and.returnValue(of(false));
+
+      expect(await service.confirmEndTestIfNeeded()).toBeFalse();
+      expect(terminateTest).not.toHaveBeenCalled();
+    });
+
+    it('asks in a paused test as well', async () => {
+      setUp({ silent_mode: 'FALSE', lock_test_on_termination: 'OFF' });
+      service.state$.next('PAUSED');
+
+      expect(await service.confirmEndTestIfNeeded()).toBeTrue();
+      expect(showConfirmDialog).toHaveBeenCalledTimes(1);
+      expect(terminateTest).toHaveBeenCalledTimes(1);
+    });
+
+    it('ends the test without asking in silent mode, since the testee can re-enter it', async () => {
+      setUp({ silent_mode: 'TRUE', lock_test_on_termination: 'OFF' });
+
+      expect(await service.confirmEndTestIfNeeded()).toBeTrue();
+      expect(showConfirmDialog).not.toHaveBeenCalled();
+      expect(terminateTest).toHaveBeenCalledOnceWith('BOOKLETLOCKEDbyTESTEE', false);
+    });
+
+    it('asks in silent mode as well when ending the test locks it', async () => {
+      setUp({ silent_mode: 'TRUE', lock_test_on_termination: 'ON' });
+
+      expect(await service.confirmEndTestIfNeeded()).toBeTrue();
+      expect(showConfirmDialog).toHaveBeenCalledTimes(1);
+      expect(terminateTest).toHaveBeenCalledOnceWith('BOOKLETLOCKEDbyTESTEE', true);
+    });
+
+    it('leaves the test through the guards when the player requests its end', async () => {
+      setUp({ silent_mode: 'FALSE', lock_test_on_termination: 'OFF' });
+      const navigate = spyOn(TestBed.inject(Router), 'navigate').and.resolveTo(true);
+
+      await service.setUnitNavigationRequest(UnitNavigationTarget.END);
+
+      expect(navigate).toHaveBeenCalledOnceWith(['/r/starter']);
+      expect(terminateTest).not.toHaveBeenCalled();
+    });
+
+    it('does not ask again once the test has been ended', async () => {
+      setUp({ silent_mode: 'FALSE', lock_test_on_termination: 'OFF' });
+      service.state$.next('TERMINATED');
+
+      expect(await service.confirmEndTestIfNeeded()).toBeTrue();
+      expect(showConfirmDialog).not.toHaveBeenCalled();
+      expect(terminateTest).not.toHaveBeenCalled();
     });
   });
 });

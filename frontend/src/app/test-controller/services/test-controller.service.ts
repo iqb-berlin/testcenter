@@ -547,12 +547,12 @@ export class TestControllerService {
     this.finishTimer();
   }
 
-  async terminateTest(logEntryKey: string, force: boolean, lockTest: boolean = false): Promise<boolean> {
+  // Ends the test right away, without any checks or dialogs. For the testee's own request to end
+  // the test use requestTestEnd(), which asks for confirmation where needed.
+  async terminateTest(logEntryKey: string, lockTest: boolean = false): Promise<boolean> {
     if (this.state$.getValue() === 'TERMINATED') return true; // sometimes terminateTest get called two times
 
-    const navigationSuccessful = await lastValueFrom(this.canDeactivateUnit('/r/starter', force));
-    if (!(navigationSuccessful || force)) return true;
-
+    this.interruptTimer();
     this.state$.next((this.state$.getValue() === 'PAUSED') ? 'TERMINATED_PAUSED' : 'TERMINATED');
     // todo race condition: between state$.next() and the subsequent closingBufferListener, the automatic test_state_buffer_time could already flush the testState. This is handled by complete() instead of next() but could be improved overall.
     await this.closeAllBuffers(`terminateTest:${logEntryKey}`, 'saved');
@@ -561,7 +561,14 @@ export class TestControllerService {
       await lastValueFrom(this.bs.lockTest(this.testId, Date.now(), logEntryKey));
     }
 
-    return this.router.navigate(['/r/starter'], { state: { force: force } });
+    return this.router.navigate(['/r/starter'], { state: { force: true } });
+  }
+
+  // The testee's request to end the test - from the unit menu or the player. Takes the same path
+  // as leaving the test via the logo: the deactivate guards ask for confirmation where needed (see
+  // canDeactivateUnit and confirmEndTestIfNeeded) and then terminate the test.
+  requestTestEnd(): Promise<boolean> {
+    return this.router.navigate(['/r/starter']);
   }
 
   async executeGotoCommand(params: string[]): Promise<boolean> {
@@ -617,11 +624,10 @@ export class TestControllerService {
       navigation = await this.closeAllBuffers(`setUnitNavigationRequest(${navString} LAST`);
       return this.router.navigate([`/t/${this.testId}/u/${navigation.targets.last}`], { state: { force } });
     case UnitNavigationTarget.END:
-      return this.terminateTest(
-        force ? 'BOOKLETLOCKEDforced' : 'BOOKLETLOCKEDbyTESTEE',
-        force,
-        this.booklet?.config.lock_test_on_termination === 'ON'
-      );
+      if (!force) {
+        return this.requestTestEnd();
+      }
+      return this.terminateTest('BOOKLETLOCKEDforced', this.isTestLockedOnTermination());
     default:
       const targetIsCurrent = this.currentUnitSequenceId.toString(10) === navString;
       return this.router.navigate(
@@ -1130,9 +1136,11 @@ export class TestControllerService {
     if (firstSegment === 't') {
       return false; // still inside the running test, not actually exiting it
     }
-    const testStatus = this.state$.getValue();
-    const ignorePause = this.shouldShowConfirmationUI();
-    return (testStatus === 'RUNNING') || (testStatus === 'PAUSED' && !ignorePause);
+    return this.isTestOngoing();
+  }
+
+  private isTestOngoing(): boolean {
+    return ['RUNNING', 'PAUSED'].includes(this.state$.getValue());
   }
 
   // Both UnitDeactivateGuard and TestControllerDeactivateGuard call this - instead of
@@ -1159,39 +1167,29 @@ export class TestControllerService {
   // Terminates the test as a consequence of the user confirming they want to leave/end it.
   private async terminateConfirmedLeave(): Promise<void> {
     await this.closeAllBuffers(`setUnitNavigationRequest(${UnitNavigationTarget.PAUSE} NEXT`);
-    await this.terminateTest(
-      'BOOKLETLOCKEDbyTESTEE', true, this.booklet?.config.lock_test_on_termination === 'ON'
-    );
+    await this.terminateTest('BOOKLETLOCKEDbyTESTEE', this.isTestLockedOnTermination());
     this.cts.restoreDefault(false);
   }
 
+  private isTestLockedOnTermination(): boolean {
+    return this.booklet?.config.lock_test_on_termination === 'ON';
+  }
+
+  // Asks before the testee leaves - and thereby ends - the test. Silent mode skips the question
+  // only when the testee can re-enter the test afterwards, i.e. when it does not get locked.
   async confirmEndTestIfNeeded(): Promise<boolean> {
-    if (this.testMode.saveResponses) {
-      const testStatus: TestControllerState = this.state$.getValue();
-      // at this moment in time, hideConfirmationUI comes with ignorePause for Logo Navigation
-      const ignorePause = this.shouldShowConfirmationUI();
-      if ((testStatus === 'RUNNING') || (testStatus === 'PAUSED' && !ignorePause)) {
-        // this whole inner block mimics setUnitNavigationRequest(PAUSE), without manually triggering router.navigate()
-        // in order to correctly return a redirect, instead of hacking (router.navigate + return false)
-        if (!this.booklet) {
-          throw new AppError({
-            label: 'Kein Booklet gefunden.',
-            description: ''
-          });
-        }
-        const isLeaveConfirmed = await firstValueFrom(
-          this.messageService.showConfirmDialog({
-            title: this.cts.getCustomText('booklet_warningEndTestTitle'),
-            content: ''
-          })
-        );
-        if (isLeaveConfirmed) {
-          await this.terminateConfirmedLeave();
-        }
-        return isLeaveConfirmed;
-      }
+    if (!this.testMode.saveResponses || !this.isTestOngoing()) {
+      return true;
     }
-    return true;
+    const isEndConfirmed = (!this.shouldShowConfirmationUI() && !this.isTestLockedOnTermination()) ||
+      await firstValueFrom(this.messageService.showConfirmDialog({
+        title: this.cts.getCustomText('booklet_warningEndTestTitle'),
+        content: ''
+      }));
+    if (isEndConfirmed) {
+      await this.terminateConfirmedLeave();
+    }
+    return isEndConfirmed;
   }
 
   shouldShowConfirmationUI(): boolean {

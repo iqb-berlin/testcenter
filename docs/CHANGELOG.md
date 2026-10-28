@@ -17,6 +17,7 @@
 - Der Bestätigungsknopf im Bereich "Dateien" eines Workspace befindet sich nun oben und nicht mehr potentiell weit unten, nach der Liste der hochgeladenen Dateien.
 
 ## Fehlerbehebungen
+- „Test beenden“ im Unit-Menü und die Aufforderung einer Unit, den Test zu beenden, fragen jetzt nach, wie bereits das Logo. Mit `silent_mode` entfällt die Nachfrage auf allen drei Wegen, außer der Test oder ein Block wird dabei gesperrt. Bisher fragten Unit-Menü und Unit nicht nach, das Logo dagegen auch mit `silent_mode`. (#1651)
 - Ist der Brute-Force-Schutz (`BRUTE_FORCE_PROTECTION`) für eine Anmeldeart eingeschaltet, die Seite aber nicht über HTTPS aufgerufen, zeigt die Anmeldeseite einen entsprechenden Hinweis und sperrt die betroffene Anmeldung. Bisher blieb der Anmelde-Knopf nach dem ersten Versuch dauerhaft deaktiviert, weil Browser die für den Schutz nötige Verschlüsselungsfunktion nur über HTTPS bereitstellen.
 - Bei der Anmeldung mit Kennwort, als Administrator:in und mit Code bleibt die Anmeldeschaltfläche während der gesamten ALTCHA-Prüfung deaktiviert, bis der Server die Prüfung abgeschlossen hat. Mehrfaches Absenden während der Prüfung wird verhindert.
 - `make testcenter-update` endet, wenn man nach einem fehlgeschlagenen Daten-Backup oder nach übersprungenen Migrationsskripten das Fortfahren ablehnt. Bisher meldete das Skript zwar „update script finished“, spielte die neue Version aber trotzdem ein.

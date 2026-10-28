@@ -264,7 +264,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
       case 'resume':
         return this.tcs.resume();
       case 'terminate':
-        return this.tcs.terminateTest('BOOKLETLOCKEDbyOPERATOR', true, params.indexOf('lock') > -1);
+        return this.tcs.terminateTest('BOOKLETLOCKEDbyOPERATOR', params.indexOf('lock') > -1);
       case 'goto':
         return this.goto(params);
       default:

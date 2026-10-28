@@ -3,7 +3,6 @@ import {
 } from '@angular/core';
 import { TestControllerService } from '../../services/test-controller.service';
 import { Testlet, isTestlet } from '../../interfaces/test-controller.interfaces';
-import { CustomtextService } from '../../../shared/services/customtext/customtext.service';
 
 @Component({
     selector: 'tc-unit-menu',
@@ -16,17 +15,9 @@ export class UnitMenuComponent {
 
   testletContext?: { testlet: Testlet, level: number };
 
-  constructor(
-    public tcs: TestControllerService,
-    private cts: CustomtextService
-  ) { }
+  constructor(public tcs: TestControllerService) { }
 
   protected readonly isTestlet = isTestlet;
-
-  terminateTest(): void {
-    this.tcs.terminateTest('BOOKLETLOCKEDbyTESTEE', false, this.tcs.booklet?.config.lock_test_on_termination === 'ON');
-    this.cts.restoreDefault(false);
-  }
 
   goto(target: string): void {
     this.close.emit();

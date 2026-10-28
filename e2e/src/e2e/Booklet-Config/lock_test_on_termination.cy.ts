@@ -49,6 +49,20 @@ describe('check parameter: lock_test_on_termination', { testIsolation: true }, (
       .contains('Fertig');
   });
 
+  it('ON: Cancel ending the test via Unit-Menu', () => {
+    loginTestTaker('Bklt_Config-18', '123');
+    cy.get('[data-cy="unit-navigation-forward"]')
+      .should('be.visible');
+    cy.get('[data-cy="unit-menu"]')
+      .click();
+    cy.get('[data-cy="endTest"]')
+      .click({force: true});
+    cy.get('[data-cy="dialog-cancel"]')
+      .click();
+    cy.get('[data-cy="unit-title"]')
+      .contains('Aufgabe1');
+  });
+
   it('ON: End Test via Unit-Menu', () => {
     loginTestTaker('Bklt_Config-18', '123');
     cy.get('[data-cy="unit-navigation-forward"]')
@@ -57,6 +71,11 @@ describe('check parameter: lock_test_on_termination', { testIsolation: true }, (
       .click();
     cy.get('[data-cy="endTest"]')
       .click({force: true});
+    cy.get('[data-cy="dialog-title"]')
+      .contains('Sicher, dass du den Test beenden möchtest?')
+      .should('be.visible');
+    cy.get('[data-cy="dialog-confirm"]')
+      .click();
     cy.get('[data-cy="booklet-CY-BKLT_BKLTCONFIG-18"]')
       .contains('Fertig');
   });

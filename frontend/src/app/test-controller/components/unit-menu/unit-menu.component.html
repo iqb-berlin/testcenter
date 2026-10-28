@@ -62,7 +62,7 @@
   </ng-container>
 
 
-  <a mat-raised-button data-cy="endTest" (click)="terminateTest()">
+  <a mat-raised-button data-cy="endTest" (click)="tcs.requestTestEnd()">
     {{ 'Test beenden'  | customtext:'login_testEndButtonLabel' | async}}
   </a>
 </div>
