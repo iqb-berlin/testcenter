@@ -76,7 +76,7 @@ class TestEnvironment {
     $initializer = new WorkspaceInitializer();
     $initializer->importSampleFiles(1, 'default');
     Folder::createPath(DATA_DIR . "/ws_1/UnitAttachments");
-    $initializer->createSampleScanImage("UnitAttachments/h5ki-bd-va4dg-jc2to2mp_6tga4teiw.png", 1);
+    $initializer->createSampleScanImage(DATA_DIR . "/ws_1/UnitAttachments/h5ki-bd-va4dg-jc2to2mp_6tga4teiw.png");
     if ($includeSystemTestFiles) {
       $initializer->importSampleFiles(1, 'system-test');
       $initializer->importSampleFiles(2, 'default');
@@ -105,8 +105,14 @@ class TestEnvironment {
     $initDAO->createSampleCommands($groupMonitor->getPerson()->getId());
 
     $initializer = new WorkspaceInitializer();
-    $initializer->createSampleScanImage('sample_scanned_image.png', 1);
-    $initDAO->importScanImage(1, 'sample_scanned_image.png');
+    Folder::useTempDirectory(
+      'upload-',
+      static function(string $stagingPath) use ($initializer, $initDAO): void {
+        $imagePath = "$stagingPath/sample_scanned_image.png";
+        $initializer->createSampleScanImage($imagePath);
+        $initDAO->importScanImage(1, $imagePath);
+      }
+    );
   }
 
   // full.sql is the complete, hand-maintained schema, so the test DB is just a plain re-run of it.

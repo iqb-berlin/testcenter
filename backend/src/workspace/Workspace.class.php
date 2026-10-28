@@ -187,60 +187,54 @@ class Workspace {
    *   error: array,
    *   info: array}
    */
-  public function importUncategorizedFiles(array $fileNames): array {
-    $toDeleteFilePaths = [];
+  public function importUncategorizedFiles(string $stagingPath, array $fileNames): array {
     $toSortInFilePaths = [];
     foreach ($fileNames as $fileName) {
       if (FileExt::has($fileName, 'ZIP') and !FileExt::has($fileName, 'ITCR.ZIP')) {
-        array_push($toSortInFilePaths, ...$this->unpackRootlevelZipArchive($fileName));
-        array_push($toDeleteFilePaths, $fileName, $this->getExtractionDirName($fileName));
+        array_push($toSortInFilePaths, ...$this->unpackRootlevelZipArchive($stagingPath, $fileName));
       } else {
         $toSortInFilePaths[] = $fileName;
-        $toDeleteFilePaths[] = $fileName;
       }
     }
 
-    $importedFiles = $this->sortAndValidateToplevelFiles($toSortInFilePaths);
-    $this->deleteRootlevelFiles($toDeleteFilePaths);
-
-    return $importedFiles;
+    return $this->sortAndValidateToplevelFiles($stagingPath, $toSortInFilePaths);
   }
 
-  private function sortAndValidateToplevelFiles(array $relativeFilePaths): array {
+  private function sortAndValidateToplevelFiles(string $stagingPath, array $relativeFilePaths): array {
     $filesAfterSorting = [];
-    $pathsPerType = array_fill_keys(Workspace::subFolders, []);
+    $filesPerType = array_fill_keys([...Workspace::subFolders, 'xml'], []);
 
     foreach ($relativeFilePaths as $relativeFilePath) {
-      $pathsPerType[File::determineType($this->createStoragePath($relativeFilePath))][] = $relativeFilePath;
+      $file = File::fromStringOfAnyType(file_get_contents("$stagingPath/$relativeFilePath"), $relativeFilePath);
+      $filesPerType[$file->getType()][$relativeFilePath] = $file;
     }
 
-    $pathsPerType = [
+    $filesPerType = [
       // Resource and Unit are merged in order to save one call to getFilesWhere(['type' => 'Resource']), as this is the
       // most expensive call in the following loop (Unit depends on Resource anyway)
-      !empty($pathsPerType['Unit']) ? 'Unit' : 'Resource' => array_merge(
-        $pathsPerType['Resource'],
-        $pathsPerType['Unit']
+      !empty($filesPerType['Unit']) ? 'Unit' : 'Resource' => array_merge(
+        $filesPerType['Resource'],
+        $filesPerType['Unit']
       ),
-      'Booklet' => $pathsPerType['Booklet'],
-      'Testtakers' => $pathsPerType['Testtakers'],
-      'SysCheck' => $pathsPerType['SysCheck'],
-      'xml' => $pathsPerType['xml']
+      'Booklet' => $filesPerType['Booklet'],
+      'Testtakers' => $filesPerType['Testtakers'],
+      'SysCheck' => $filesPerType['SysCheck'],
+      'xml' => $filesPerType['xml']
     ];
 
-    foreach ($pathsPerType as $type => $filePaths) {
-      if (!empty($filePaths)) {
+    foreach ($filesPerType as $type => $files) {
+      if (!empty($files)) {
         // these files are all not valid from the start
         if ($type === 'xml') {
-          foreach ($filePaths as $path) {
-            $file = File::get($this->createStoragePath($path));
-            $filesAfterSorting[$path] = ['type' => $file->getType(), ...$file->getValidationReport()];
+          foreach ($files as $filePath => $file) {
+            $filesAfterSorting[$filePath] = ['type' => $file->getType(), ...$file->getValidationReport()];
           }
           continue;
         }
 
-        $files = $this->validateFilesForCategory($filePaths, FileType::tryFrom($type));
+        $this->validateFilesForCategory($files, FileType::tryFrom($type));
         foreach ($files as $filePath => $file) {
-          if ($file->isValid() and $this->categorizeFile($filePath, $file)) {
+          if ($file->isValid() and $this->categorizeFile("$stagingPath/$filePath", $file)) {
             $this->workspaceDAO->storeFile($file);
             $this->storeFileMeta($file);
             $this->updateDependentFiles($file);
@@ -256,38 +250,24 @@ class Workspace {
     return $filesAfterSorting;
   }
 
-  protected function validateFilesForCategory(array $localFilePaths, FileType $highestTypeAmongFiles): array {
-    $filesPerType = [];
+  /** @param array<string, File> $files */
+  protected function validateFilesForCategory(array $files, FileType $highestTypeAmongFiles): void {
     $workspaceCache = new WorkspaceCache($this);
     $this->loadFilesIntoCache($workspaceCache, $highestTypeAmongFiles);
 
-    foreach ($localFilePaths as $localFilePath) {
-      $file = File::get($this->createStoragePath($localFilePath));
+    foreach ($files as $file) {
       $workspaceCache->addFile($file->getType(), $file, true);
-      $filesPerType[$localFilePath] = $file;
     }
 
     $workspaceCache->validate($highestTypeAmongFiles->value);
-
-    return $filesPerType;
   }
 
-  protected function categorizeFile(string $localFilePath, File $file): bool {
-    $targetFolder = $this->workspacePath . '/' . $file->getType();
-
-    if (!file_exists($targetFolder)) {
-      if (!mkdir($targetFolder)) {
-        $file->report('error', "Could not create folder: `$targetFolder`.");
-        return false;
-      }
-    }
-
-    $targetFilePath = $targetFolder . '/' . basename($localFilePath);
+  protected function categorizeFile(string $stagedFilePath, File $file): bool {
     $targetStoragePath = $this->storageDirectory
       ->createSubdirectory($file->getType())
-      ->createFilePath(basename($localFilePath));
+      ->createFilePath($file->getName());
 
-    if (file_exists($targetFilePath)) {
+    if (Storage::getDriver()->getFileInfo($targetStoragePath)) {
       $oldFile = File::get($targetStoragePath, $file->getType());
 
       if ($oldFile->getId() !== $file->getId()) {
@@ -319,63 +299,27 @@ class Workspace {
         return false;
       }
 
-      if (!unlink($targetFilePath)) {
-        $file->report('error', "Could not delete file: `$targetFolder/$localFilePath`");
-        return false;
-      }
-
       $file->report('warning', "File of name `{$oldFile->getName()}` did already exist and was overwritten.");
     }
 
-    if (!rename($this->workspacePath . '/' . $localFilePath, $targetFilePath)) {
-      $file->report('error', "Could not move file to `$targetFolder/$localFilePath`");
-      return false;
-    }
-
+    Storage::getDriver()->put($targetStoragePath, $stagedFilePath);
     $file->readFileMeta($targetStoragePath);
 
     return true;
   }
 
-  protected function unpackRootlevelZipArchive(string $fileName): array {
-    $filePath = "$this->workspacePath/$fileName";
-    $extractionFolder = $this->getExtractionDirName($fileName);
-    $extractionPath = "$this->workspacePath/$extractionFolder";
-
-    // sometimes in error cases there are remains from previous attempts
-    if (file_exists($extractionPath) and is_dir($extractionPath)) {
-      Folder::deleteContentsRecursive($extractionPath);
-      rmdir($extractionPath);
-    }
+  /** @return string[] the paths of the extracted files, relative to $stagingPath */
+  protected function unpackRootlevelZipArchive(string $stagingPath, string $fileName): array {
+    $extractionFolder = "{$fileName}_Extract";
+    $extractionPath = "$stagingPath/$extractionFolder";
 
     if (!mkdir($extractionPath)) {
       throw new Exception("Could not create directory for extracted files: `$extractionPath`");
     }
 
-    ZIP::extract(file_get_contents($filePath), $extractionPath);
+    ZIP::extract(file_get_contents("$stagingPath/$fileName"), $extractionPath);
 
     return Folder::getContentsFlat($extractionPath, $extractionFolder);
-  }
-
-  protected function getExtractionDirName(string $fileName): string {
-    return "{$fileName}_Extract";
-  }
-
-  protected function deleteRootlevelFiles(array $relativePaths): void {
-    foreach ($relativePaths as $relativePath) {
-      $filePath = "$this->workspacePath/$relativePath";
-      if (is_dir($filePath)) {
-        Folder::deleteContentsRecursive($filePath);
-        rmdir($filePath);
-      }
-      if (is_file($filePath)) {
-        unlink($filePath);
-      }
-    }
-  }
-
-  private function createStoragePath(string $relativePath): StoragePath {
-    return StoragePath::fromString($this->storageDirectory . $relativePath);
   }
 
   public function getFileById(string $type, string $fileId): File {

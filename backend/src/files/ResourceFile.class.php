@@ -260,27 +260,21 @@ class ResourceFile extends File {
       return;
     }
 
-    $extractionPath = sys_get_temp_dir() . '/' . uniqid('package-', true);
     try {
-      if (!mkdir($extractionPath)) {
-        throw new Exception("Could not create `$extractionPath`.");
-      }
-      ZIP::extract($this->getContent(), $extractionPath);
+      Folder::useTempDirectory('package-', function(string $extractionPath): void {
+        ZIP::extract($this->getContent(), $extractionPath);
 
-      $packageDirectory = $this->getPackageDirectory();
-      foreach (Folder::getContentsFlat($extractionPath) as $relativePath) {
-        Storage::getDriver()->put(
-          StoragePath::fromString($packageDirectory . $relativePath),
-          "$extractionPath/$relativePath"
-        );
-      }
+        $packageDirectory = $this->getPackageDirectory();
+        foreach (Folder::getContentsFlat($extractionPath) as $relativePath) {
+          Storage::getDriver()->put(
+            StoragePath::fromString($packageDirectory . $relativePath),
+            "$extractionPath/$relativePath"
+          );
+        }
+      });
 
     } catch (Exception $e) {
       $this->report('error', "Could not extract package: {$e->getMessage()}");
-
-    } finally {
-      Folder::deleteContentsRecursive($extractionPath);
-      @rmdir($extractionPath);
     }
   }
 

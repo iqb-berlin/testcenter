@@ -108,4 +108,30 @@ class FolderTest extends TestCase {
     ];
     static::assertEquals($expected, $result);
   }
+
+  function test_useTempDirectory() {
+    $usedPath = Folder::useTempDirectory('test-', static function(string $path): string {
+      mkdir("$path/sub");
+      file_put_contents("$path/sub/file.txt", 'x');
+      return $path;
+    });
+
+    $this->assertStringStartsWith(sys_get_temp_dir() . '/test-', $usedPath);
+    $this->assertFalse(file_exists($usedPath), 'deleted with its contents');
+  }
+
+  function test_useTempDirectory_deletesOnException() {
+    $usedPath = null;
+    try {
+      Folder::useTempDirectory('test-', static function(string $path) use (&$usedPath): void {
+        $usedPath = $path;
+        file_put_contents("$path/file.txt", 'x');
+        throw new Exception('failed');
+      });
+    } catch (Exception) {
+    }
+
+    $this->assertNotNull($usedPath);
+    $this->assertFalse(file_exists($usedPath), 'deleted although $use failed');
+  }
 }
