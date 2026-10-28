@@ -113,11 +113,6 @@ try {
 
   CLI::h2("Workspaces");
 
-  if (!file_exists(DATA_DIR)) {
-    mkdir(DATA_DIR);
-    CLI::success("Data-Directory created: `" . DATA_DIR . "`");
-  }
-
   $initializer = new WorkspaceInitializer();
 
   if ($args['overwrite_existing_installation']) {
@@ -127,10 +122,8 @@ try {
         return $carry + $item;
       }, 0);
 
-      $initializer->cleanWorkspace($workspace->getId());
+      $workspace->delete();
       CLI::warning("Workspace-folder `ws_{$workspace->getId()}` was DELETED. It contained {$filesInWorkspace} files.");
-
-      Folder::deleteContentsRecursive($workspace->getWorkspacePath());
     }
   }
 

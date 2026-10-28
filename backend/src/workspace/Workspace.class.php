@@ -5,7 +5,6 @@ declare(strict_types=1);
 
 class Workspace {
   protected int $workspaceId = 0;
-  protected string $workspacePath = '';
   protected StorageDirectory $storageDirectory;
   public WorkspaceDAO $workspaceDAO;
 
@@ -42,46 +41,12 @@ class Workspace {
 
   function __construct(int $workspaceId) {
     $this->workspaceId = $workspaceId;
-    $this->workspacePath = $this->getOrCreateWorkspacePath();
     $this->storageDirectory = self::getStorageDirectoryOf($workspaceId);
     $this->workspaceDAO = new WorkspaceDAO($this->workspaceId);
   }
 
-  protected function getOrCreateWorkspacePath(): string {
-    $workspacePath = DATA_DIR . '/ws_' . $this->workspaceId;
-    if (file_exists($workspacePath) and !is_dir($workspacePath)) {
-      throw new Exception("Workspace dir $this->workspaceId seems not to be a proper directory!");
-    }
-    if (!file_exists($workspacePath)) {
-      if (!mkdir($workspacePath)) {
-        throw new Exception("Could not create workspace dir $this->workspaceId");
-      }
-    }
-    return $workspacePath;
-  }
-
-  public function getOrCreateSubFolderPath(string $type): string {
-    $subFolderPath = $this->workspacePath . '/' . $type;
-    if (!in_array($type, $this::subFolders)) {
-      throw new Exception("Invalid type `$type`!");
-    }
-    if (file_exists($subFolderPath) and !is_dir($subFolderPath)) {
-      throw new Exception("Workspace dir `$subFolderPath` seems not to be a proper directory!");
-    }
-    if (!file_exists($subFolderPath)) {
-      if (!mkdir($subFolderPath)) {
-        throw new Exception("Could not create workspace dir `$subFolderPath`");
-      }
-    }
-    return $subFolderPath;
-  }
-
   public function getId(): int {
     return $this->workspaceId;
-  }
-
-  public function getWorkspacePath(): string {
-    return $this->workspacePath;
   }
 
   public function getStorageDirectory(): StorageDirectory {
@@ -121,6 +86,13 @@ class Workspace {
 
       list($type, $name) = $pathParts;
 
+      try {
+        $path = StoragePath::fromString($this->storageDirectory . $localFilePath);
+      } catch (InvalidArgumentException) {
+        $deletionReport->incorrect_path[] = $localFilePath;
+        continue;
+      }
+
       $cachedFile = $cachedFilesToDelete[$type][$name] ?? null;
 
       // file does not exist in db means, it must be something not validatable like sysCheck-Reports
@@ -135,8 +107,7 @@ class Workspace {
           continue;
         }
       }
-      $fieldName = $this->deleteFileFromFs($this->workspacePath . '/' . $localFilePath);
-      $deletionReport->$fieldName[] = $localFilePath;
+      self::deleteFromStorage($path, $deletionReport, $localFilePath);
     }
 
     $this->workspaceDAO->updateContentTypeBasedOnRemainingTesttakers();
@@ -144,16 +115,22 @@ class Workspace {
     return $deletionReport;
   }
 
-  protected function deleteFileFromFs(string $fullPath): string {
-    if (!file_exists($fullPath)) {
-      return 'did_not_exist';
+  /** Deletes the file at $path and records the outcome under $entry in $deletionReport. */
+  protected static function deleteFromStorage(
+    StoragePath $path,
+    FileDeletionReport $deletionReport,
+    string $entry
+  ): void {
+    try {
+      if (Storage::getDriver()->delete($path)) {
+        $deletionReport->deleted[] = $entry;
+      } else {
+        $deletionReport->did_not_exist[] = $entry;
+      }
+    } catch (Exception $e) {
+      error_log($e->getMessage());
+      $deletionReport->not_allowed[] = $entry;
     }
-
-    if ($this->isPathLegal($fullPath) and unlink($fullPath)) {
-      return 'deleted';
-    }
-
-    return 'not_allowed';
   }
 
   private function deleteFileFromDb(?File $file): bool {
@@ -174,10 +151,6 @@ class Workspace {
       return false;
     }
     return true;
-  }
-
-  protected function isPathLegal(string $path): bool {
-    return substr_count($path, '..') == 0;
   }
 
   /** takes files from the workspace-dir toplevel and puts it to the correct subdir if valid
@@ -377,8 +350,7 @@ class Workspace {
   }
 
   public function delete(): void {
-    Folder::deleteContentsRecursive($this->workspacePath);
-    rmdir($this->workspacePath);
+    Storage::getDriver()->deleteDirectory($this->storageDirectory);
   }
 
   /**

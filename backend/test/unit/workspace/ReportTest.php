@@ -22,12 +22,12 @@ final class ReportTest extends TestCase {
    *    VfsForTest would instantiate the real Workspace class before our mocks are registered,
    *    causing conflicts.
    *
-   * 3. ReviewCSVFormatter::enrichWithLabels() instantiates Workspace directly (line 18),
-   *    which calls getOrCreateWorkspacePath() needing DATA_DIR. Our Workspace mock intercepts
-   *    getFileById() to return empty results, avoiding actual file parsing.
+   * 3. ReviewCSVFormatter::enrichWithLabels() instantiates Workspace directly (line 18).
+   *    Our Workspace mock intercepts getFileById() to return empty results, avoiding actual
+   *    file parsing.
    *
-   * Minimal setup: define DATA_DIR pointing to vfsStream so Workspace constructor doesn't
-   * fail, then mock away the actual file operations.
+   * Minimal setup: define DATA_DIR pointing to vfsStream so the storage driver lands there,
+   * then mock away the actual file operations.
    *
    * Future refactor opportunity: inject Workspace dependency into ReviewCSVFormatter
    * instead of instantiating internally, enabling cleaner test isolation.

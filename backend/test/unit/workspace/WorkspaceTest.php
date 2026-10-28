@@ -90,21 +90,10 @@ class WorkspaceTest extends TestCase {
     unset($this->vfs);
   }
 
-  function test___construct() {
-    $workspaceDirectories = scandir(vfsStream::url('root/data'));
-    $expectation = ['.', '..', 'ws_1'];
-    static::assertEquals($expectation, $workspaceDirectories);
+  function test___construct_writesNothingToStorage() {
+    new Workspace(3);
 
-    $workspace1Directories = scandir(vfsStream::url('root/data/ws_1'));
-    $expectation = ['.', '..', 'Booklet', 'Resource', 'SysCheck', 'Testtakers', 'Unit'];
-    static::assertEquals($expectation, $workspace1Directories);
-  }
-
-  function test_getWorkspacePath() {
-    $workspace = new Workspace(1);
-    $result = $workspace->getWorkspacePath();
-    $expectation = 'vfs://root/data/ws_1';
-    static::assertEquals($expectation, $result);
+    static::assertEquals(['.', '..', 'ws_1'], scandir(vfsStream::url('root/data')));
   }
 
   function test_deleteFiles() {
@@ -112,6 +101,9 @@ class WorkspaceTest extends TestCase {
     $voDataDir = $this->vfs->getChild('data')->getChild('ws_1')->getChild('SysCheck');
     $voDataDir->chmod(0o444);
     file_put_contents(DATA_DIR . '/ws_1/Resource/somePlayer.HTML', 'player content');
+    // in a separate process PHPUnit treats anything on stderr as an error
+    $errorLog = tempnam(sys_get_temp_dir(), 'error-log');
+    ini_set('error_log', $errorLog);
 
     $this->workspaceDaoMock
       ->expects('getFiles')
@@ -133,7 +125,9 @@ class WorkspaceTest extends TestCase {
       'Resource/somePlayer.HTML',
       'SysCheck/SAMPLE_SYSCHECK.XML',
       'i_dont/even.exist',
-      "SysCheck/reports/SAMPLE_SYSCHECK-REPORT.JSON"
+      "SysCheck/reports/SAMPLE_SYSCHECK-REPORT.JSON",
+      'Resource/../Unit/SAMPLE_UNIT.XML',
+      'no-type'
     ]);
     $expectation = new FileDeletionReport(
       deleted: [
@@ -142,7 +136,8 @@ class WorkspaceTest extends TestCase {
       ],
       did_not_exist: ['i_dont/even.exist'],
       not_allowed: ['SysCheck/SAMPLE_SYSCHECK.XML'],
-      was_used: ['Resource/verona-player-simple-6.0.html']
+      was_used: ['Resource/verona-player-simple-6.0.html'],
+      incorrect_path: ['Resource/../Unit/SAMPLE_UNIT.XML', 'no-type']
     );
     static::assertEquals($expectation, $result);
 
@@ -156,6 +151,17 @@ class WorkspaceTest extends TestCase {
       'verona-player-simple-6.0.html'
     ];
     static::assertEquals($resourcesLeftExpected, $resourcesLeft);
+    static::assertFileExists(DATA_DIR . '/ws_1/Unit/SAMPLE_UNIT.XML');
+    static::assertStringContainsString('Could not delete `ws_1/SysCheck/SAMPLE_SYSCHECK.XML`', file_get_contents($errorLog));
+    unlink($errorLog);
+  }
+
+  function test_delete(): void {
+    file_put_contents(DATA_DIR . '/ws_1.txt', 'shares the prefix, but is not part of ws_1');
+
+    (new Workspace(1))->delete();
+
+    static::assertEquals(['.', '..', 'ws_1.txt'], scandir(vfsStream::url('root/data')));
   }
 
   function test_deleteFiles_rejectIfDependencies() {
@@ -705,19 +711,19 @@ class WorkspaceTest extends TestCase {
     static::assertCount(3, $errors);
 
     static::assertFalse(
-      file_exists($workspace->getWorkspacePath() . '/Unit/valid_unit.xml'),
+      file_exists(DATA_DIR . '/ws_1/Unit/valid_unit.xml'),
       'don\'t import invalid Unit from ZIP'
     );
     static::assertFalse(
-      file_exists($workspace->getWorkspacePath() . '/Booklet/valid_booklet.xml'),
+      file_exists(DATA_DIR . '/ws_1/Booklet/valid_booklet.xml'),
       'don\'t import Booklet dependant of invalid unit from ZIP'
     );
     static::assertTrue(
-      file_exists($workspace->getWorkspacePath() . '/Resource/P.html'),
+      file_exists(DATA_DIR . '/ws_1/Resource/P.html'),
       'import resource from ZIP'
     );
     static::assertFalse(
-      file_exists($workspace->getWorkspacePath() . '/Testtakers/valid_testtakers.xml'),
+      file_exists(DATA_DIR . '/ws_1/Testtakers/valid_testtakers.xml'),
       'don\'t import Testtakers dependant of invalid unit from ZIP'
     );
   }
@@ -872,23 +878,23 @@ class WorkspaceTest extends TestCase {
     static::assertCount(1, $errors);
 
     static::assertFalse(
-      file_exists($workspace->getWorkspacePath() . '/Unit/invalid_unit.xml'),
+      file_exists(DATA_DIR . '/ws_1/Unit/invalid_unit.xml'),
       'don\'t import invalid Unit from ZIP'
     );
     static::assertTrue(
-      file_exists($workspace->getWorkspacePath() . '/Unit/valid_unit.xml'),
+      file_exists(DATA_DIR . '/ws_1/Unit/valid_unit.xml'),
       'import valid Unit from ZIP'
     );
     static::assertTrue(
-      file_exists($workspace->getWorkspacePath() . '/Booklet/valid_booklet.xml'),
+      file_exists(DATA_DIR . '/ws_1/Booklet/valid_booklet.xml'),
       'import Booklet dependant of invalid unit from ZIP'
     );
     static::assertTrue(
-      file_exists($workspace->getWorkspacePath() . '/Resource/P.html'),
+      file_exists(DATA_DIR . '/ws_1/Resource/P.html'),
       'import resource from ZIP'
     );
     static::assertTrue(
-      file_exists($workspace->getWorkspacePath() . '/Testtakers/valid_testtakers.xml'),
+      file_exists(DATA_DIR . '/ws_1/Testtakers/valid_testtakers.xml'),
       'import Testtakers dependant of invalid unit from ZIP'
     );
   }

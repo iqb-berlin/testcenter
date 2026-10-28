@@ -51,7 +51,7 @@ class SysChecksFolder extends Workspace {
    * @return SysCheckReportFile[]
    */
   public function collectSysCheckReports(?array $filterCheckIds = null): array {
-    $directory = $this->storageDirectory->createSubdirectory('SysCheck', 'reports');
+    $directory = $this->getReportsDirectory();
     $reports = [];
 
     foreach (Storage::getDriver()->listFiles($directory) as $reportFileName => $fileInfo) {
@@ -73,16 +73,8 @@ class SysChecksFolder extends Workspace {
     return $reports;
   }
 
-  private function getSysCheckReportsPath(): string {
-    $sysCheckPath = $this->workspacePath . '/SysCheck';
-    if (!file_exists($sysCheckPath)) {
-      mkdir($sysCheckPath);
-    }
-    $sysCheckReportsPath = $sysCheckPath . '/reports';
-    if (!file_exists($sysCheckReportsPath)) {
-      mkdir($sysCheckReportsPath);
-    }
-    return $sysCheckReportsPath;
+  private function getReportsDirectory(): StorageDirectory {
+    return $this->storageDirectory->createSubdirectory('SysCheck', 'reports');
   }
 
   // TODO unit test
@@ -93,21 +85,18 @@ class SysChecksFolder extends Workspace {
 
     /** @var SysCheckReportFile $report */
     foreach ($reports as $report) {
-      $fullPath = "$this->workspacePath/SysCheck/reports/{$report->getFileName()}";
-      $fieldName = $this->deleteFileFromFs($fullPath);
-      $deletionReport->$fieldName[] = $report->getCheckId();
+      $path = $this->getReportsDirectory()->createFilePath($report->getFileName());
+      self::deleteFromStorage($path, $deletionReport, $report->getCheckId());
     }
 
     return $deletionReport;
   }
 
-  // TODO unit test
   public function saveSysCheckReport(SysCheckReport $report): void {
-    $reportFilename = $this->getSysCheckReportsPath() . '/' . uniqid('report_', true) . '.json';
-
-    if (!file_put_contents($reportFilename, json_encode((array) $report))) {
-      throw new Exception("Could not write to file `$reportFilename`");
-    }
+    Storage::getDriver()->putContents(
+      $this->getReportsDirectory()->createFilePath(uniqid('report_', true) . '.json'),
+      json_encode((array) $report, JSON_THROW_ON_ERROR)
+    );
   }
 
 }
