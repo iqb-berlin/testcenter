@@ -1,127 +1,106 @@
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-import { MatIconModule } from '@angular/material/icon';
-import { MatDialogModule } from '@angular/material/dialog';
-import { RouterTestingModule } from '@angular/router/testing';
-import { BehaviorSubject, Subject } from 'rxjs';
+import { TestControllerModule } from '../../test-controller.module';
+import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { ActivatedRoute, Params } from '@angular/router';
-import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { CommonModule } from '@angular/common';
-import { MatSidenavModule } from '@angular/material/sidenav';
+import { RouterTestingModule } from '@angular/router/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import { MatDialog } from '@angular/material/dialog';
 import { MatIconTestingModule } from '@angular/material/icon/testing';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-import { Component } from '@angular/core';
+import { BehaviorSubject, Subject } from 'rxjs';
 import {
-  CustomtextService, ConnectionStatus, MainDataService, BookletConfig, TestMode, BackendService as SharedBackendService
+  CustomtextService, ConnectionStatus, MainDataService, TestMode, BackendService as SharedBackendService
 } from '../../../shared/shared.module';
+import { AppError } from '../../../app.interfaces';
 import { BackendService } from '../../services/backend.service';
 import { CommandService } from '../../services/command.service';
+import { TestControllerService } from '../../services/test-controller.service';
+import { TestLoaderService } from '../../services/test-loader.service';
 import { TestControllerComponent } from './test-controller.component';
 import {
-  Command, TestControllerState, TestData, WindowFocusState
+  Booklet, Command, TestControllerState, TestData, Unit, WindowFocusState
 } from '../../interfaces/test-controller.interfaces';
-import { TestControllerService } from '../../services/test-controller.service';
-import { AppError } from '../../../app.interfaces';
 import { TimerData } from '../../classes/test-controller.classes';
-import { MatMenu, MatMenuTrigger } from '@angular/material/menu';
-import { NavigationComponent } from '../navigation/navigation.component';
 
-const testData$ = new Subject<boolean | TestData>();
-const command$ = new Subject<Command>();
-const connectionStatus$ = new Subject<ConnectionStatus>();
-const appWindowHasFocus$ = new Subject<WindowFocusState>();
-const appError$ = new Subject<AppError>();
-const state$ = new BehaviorSubject<TestControllerState>('ERROR');
-const unitContentReady$ = new BehaviorSubject<boolean>(true);
-const maxTimeTimer$ = new Subject<TimerData>();
-const routeParams$ = new Subject<Params>();
-const currentUnitSequenceId$ = new Subject<number>();
-
-@Component({
-  template: '',
-  selector: 'tc-unit-menu',
-  standalone: false
-})
-class MockUnitMenuComponent {
-  // @Input() menu: Array<UnitNaviButtonData | string> = [];
+function createController() {
+  const data: { booklet: Booklet | null; units: Record<number, Unit>; widgets: TestData['widgets'] } = {
+    booklet: null, units: {}, widgets: { CALCULATOR: ['Resource/calculator.html'] }
+  };
+  return {
+    ...data, workspaceId: 1, currentUnitSequenceId: 1, totalLoadingProgress: 0,
+    get currentUnit(): Unit | null { return this.units[this.currentUnitSequenceId] || null; },
+    currentUnitSequenceId$: new Subject<number>(), runReset$: new Subject<void>(),
+    state$: new BehaviorSubject<TestControllerState>('RUNNING'), unitContentReady$: new BehaviorSubject(true),
+    timers$: new Subject<TimerData>(), navigation$: new Subject(),
+    windowFocusState$: new BehaviorSubject<WindowFocusState>('HOST'),
+    testMode: new TestMode(), sharedParameters: [],
+    addSharedParameters: jasmine.createSpy('addSharedParameters'),
+    addToTestStateBuffer: jasmine.createSpy('addToTestStateBuffer'),
+    setUnitNavigationRequest: jasmine.createSpy('setUnitNavigationRequest'),
+    getWidgetResourcePath(model: string): string | undefined {
+      return TestControllerService.prototype.getWidgetResourcePath.call(this, model);
+    }
+  };
 }
 
-const MockBackendService = {
-  getTestData: () => testData$
-};
-
-const MockCommandService = {
-  command$,
-  connectionStatus$
-};
-
-const MockMainDataService = {
-  progressVisualEnabled: false,
-  appWindowHasFocus$,
-  appError$,
-  getAuthData: () => ({
-    displayName: 'testAccountName'
-  })
-};
-
-const MockTestControllerService = {
-  state$,
-  unitContentReady$,
-  maxTimeTimer$,
-  currentUnitSequenceId$,
-  testMode: new TestMode(),
-  bookletConfig: new BookletConfig(),
-  setUnitNavigationRequest: () => {},
-  resetDataStore: () => {}
-};
-
-const MockSharedBackendService = {};
-
-const MockActivatedRoute = {
-  params: routeParams$
-};
-
 describe('TestControllerComponent', () => {
-  let component: TestControllerComponent;
   let fixture: ComponentFixture<TestControllerComponent>;
+  let component: TestControllerComponent;
+  let controller: ReturnType<typeof createController>;
+  let messages: Subject<MessageEvent>;
+  let http: HttpTestingController;
+  let dialog: MatDialog;
+  let authData: Subject<void>;
 
-  beforeEach(waitForAsync(() => {
+  beforeEach(fakeAsync(() => {
+    controller = createController();
+    messages = new Subject<MessageEvent>();
+    authData = new Subject<void>();
     TestBed.configureTestingModule({
-      declarations: [
-        TestControllerComponent,
-        MockUnitMenuComponent
-      ],
-      imports: [CommonModule,
-        MatIconModule,
-        MatDialogModule,
-        MatMenu,
-        MatMenuTrigger,
-        MatSidenavModule,
-        RouterTestingModule.withRoutes([{ path: 'yourpath', redirectTo: '' }]),
-        NoopAnimationsModule,
-        MatIconTestingModule,
-        NavigationComponent
-      ],
+      imports: [TestControllerModule, MatIconTestingModule, NoopAnimationsModule, RouterTestingModule],
       providers: [
-        CustomtextService,
-        MatSnackBar,
-        { provide: TestControllerService, useValue: MockTestControllerService },
-        { provide: BackendService, useValue: MockBackendService },
-        { provide: CommandService, useValue: MockCommandService },
-        { provide: MainDataService, useValue: MockMainDataService },
-        { provide: ActivatedRoute, useValue: MockActivatedRoute },
-        { provide: SharedBackendService, useValue: MockSharedBackendService },
-        { provide: 'IS_PRODUCTION_MODE', useValue: false },
-        provideHttpClient(withInterceptorsFromDi())
+        CustomtextService, BackendService,
+        { provide: TestControllerService, useValue: controller },
+        { provide: CommandService, useValue: {
+          command$: new Subject<Command>(), connectionStatus$: new Subject<ConnectionStatus>()
+        } },
+        { provide: MainDataService, useValue: {
+          appError$: new Subject<AppError>(), appWindowHasFocus$: new Subject<boolean>(),
+          authData$: authData, postMessage$: messages, appConfig: { fileServiceUri: '' },
+          clearErrorBuffer: () => {},
+          getAuthData: () => ({ displayName: 'testAccountName', groupToken: 'header-group' })
+        } },
+        { provide: ActivatedRoute, useValue: { params: new Subject<Params>() } },
+        { provide: SharedBackendService, useValue: {} },
+        { provide: 'IS_PRODUCTION_MODE', useValue: true },
+        { provide: 'FILE_SERVER_URL', useValue: '/files/' },
+        { provide: 'BACKEND_URL', useValue: '/api/' },
+        provideHttpClient(), provideHttpClientTesting()
       ]
-    })
-      .compileComponents();
+    });
+    controller.booklet = TestBed.inject(TestLoaderService).parseBookletXml(`<Booklet>
+      <Metadata><Id>widget-test</Id><Label>Widget test</Label></Metadata>
+      <Units><Unit id="u1" label="Task"/></Units></Booklet>`);
+    const unit = controller.booklet.units.children[0];
+    if ('sequenceId' in unit) controller.units[unit.sequenceId] = unit;
+    fixture = TestBed.createComponent(TestControllerComponent);
+    component = fixture.componentInstance;
+    // Supply the viewport height normally provided by the application's flex layout.
+    fixture.nativeElement.style.height = 'calc(100vh - 16px)';
+    fixture.detectChanges();
+    tick();
+    controller.currentUnitSequenceId$.next(1);
+    fixture.detectChanges();
+    http = TestBed.inject(HttpTestingController);
+    dialog = TestBed.inject(MatDialog);
   }));
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(TestControllerComponent);
-    fixture.detectChanges();
-    component = fixture.componentInstance;
+  afterEach(() => {
+    fixture.destroy();
+    controller.currentUnitSequenceId$.complete();
+    controller.navigation$.complete();
+    dialog.closeAll();
+    http.verify();
   });
 
   it('should create', () => {

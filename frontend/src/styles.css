@@ -70,3 +70,22 @@ body {
   margin-top: 12px;
   border: 1px solid var(--mat-sys-primary);
 }
+
+.cdk-overlay-pane.widget-dialog {
+  resize: both;
+  overflow: hidden;
+}
+
+.widget-dialog .mat-mdc-dialog-surface {
+  background: white;
+  border-radius: 12px;
+}
+
+.widget-dialog .mat-mdc-dialog-surface:has(tc-widget-dialog.preparing) {
+  background: transparent;
+  box-shadow: none;
+}
+
+.widget-dialog:has(tc-widget-dialog.preparing) {
+  resize: none;
+}

@@ -71,6 +71,7 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
     }
 
     this.tcs.workspaceId = testData.workspaceId;
+    this.tcs.widgets = testData.widgets;
     this.tcs.testMode = new TestMode(testData.mode);
     this.presetBookletStates = testData.presetBookletStates;
 

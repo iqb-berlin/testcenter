@@ -1,0 +1,239 @@
+import { AsyncPipe } from '@angular/common';
+import { CustomtextPipe } from '@shared/shared.module';
+import { Component, ElementRef, Inject, OnDestroy, ViewChild, inject, signal } from '@angular/core';
+import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { CdkDrag, CdkDragHandle } from '@angular/cdk/drag-drop';
+import { WIDGET_WINDOW_LIMITS } from './widget-window.constants';
+import { WidgetContentSize } from '../../interfaces/widget.interfaces';
+
+export type WidgetDialogStatus = 'loading' | 'starting' | 'running' | 'download-error' | 'startup-error' |
+  'unavailable';
+
+export interface WidgetWindowBounds {
+  width: number;
+  height: number;
+  left: number;
+  top: number;
+}
+
+export interface WidgetDialogData {
+  name: string;
+}
+
+@Component({
+  selector: 'tc-widget-dialog',
+  host: { '[class.preparing]': '!layoutReady()' },
+  imports: [
+    AsyncPipe, CustomtextPipe, MatDialogModule, MatButtonModule, MatIconModule,
+    CdkDrag, CdkDragHandle
+  ],
+  template: `
+    @if (!layoutReady()) {
+      <div class="preparation">
+        <p role="status" aria-live="polite">
+          {{ (status() === 'loading' ? 'Widget wird geladen …' : 'Widget wird gestartet …') |
+             customtext: (status() === 'loading' ? 'booklet_widgetLoading' : 'booklet_widgetStarting') | async }}
+        </p>
+        <button [attr.aria-label]="'Widget schließen' | customtext: 'booklet_widgetClose' | async"
+              mat-icon-button mat-dialog-close="user_called">
+          <mat-icon svgIcon="close"></mat-icon>
+        </button>
+      </div>
+    }
+    <header cdkDrag cdkDragRootElement=".cdk-overlay-pane"
+            cdkDragBoundary=".cdk-overlay-container">
+      <h2 [attr.aria-label]="name()" mat-dialog-title cdkDragHandle
+          (pointerdown)="capturePointer($event)"></h2>
+      <button [attr.aria-label]="'Widget schließen' | customtext: 'booklet_widgetClose' | async"
+              mat-icon-button mat-dialog-close="user_called">
+        <mat-icon svgIcon="close"></mat-icon>
+      </button>
+    </header>
+    <div class="status" aria-live="polite" role="status">
+      @switch (status()) {
+        @case ('loading') { <p>{{ 'Widget wird geladen …' | customtext: 'booklet_widgetLoading' | async }}</p> }
+        @case ('starting') { <p>{{ 'Widget wird gestartet …' | customtext: 'booklet_widgetStarting' | async }}</p> }
+        @case ('startup-error') {
+          <p>{{ 'Das Widget konnte nicht gestartet werden. Bitte schließen Sie das Fenster.' |
+            customtext: 'booklet_widgetStartupError' | async }}</p>
+        }
+        @case ('download-error') {
+          <p>{{ 'Das Widget konnte nicht geladen werden. Bitte schließen Sie das Fenster.' |
+            customtext: 'booklet_widgetDownloadError' | async }}</p>
+        }
+        @case ('unavailable') {
+          <p>{{ unavailableMessage() }}</p>
+        }
+      }
+    </div>
+    <div #frameHost class="frame-host"></div>
+  `,
+  styles: [`
+    :host { display: flex; flex-direction: column; position: relative; height: 100%; background: white; }
+    :host(.preparing) { background: transparent; }
+    :host(.preparing) header, :host(.preparing) .frame-host { visibility: hidden; }
+    :host(.preparing) .status { display: none; }
+    .preparation {
+      position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+      display: flex; align-items: center; gap: 16px; padding: 16px 24px;
+      max-width: 90%; box-sizing: border-box; background: white; border-radius: 12px;
+    }
+    .preparation p { margin: 0; }
+    header { display: flex; align-items: center; flex-shrink: 0; }
+    h2 {
+      flex: 1; min-width: 0; margin: 0; padding: 8px 16px; cursor: move;
+      overflow-wrap: anywhere; touch-action: none; user-select: none;
+    }
+    h2::before { display: none; }
+    header button { margin-right: 8px; }
+    .frame-host { flex: 1; min-width: 0; min-height: 0; position: relative; overflow: hidden; }
+    .status:has(p) { margin: auto; padding: 60px 20px; text-align: center; }
+  `]
+})
+export class WidgetDialogComponent implements OnDestroy {
+  @ViewChild('frameHost', { static: true }) private frameHost!: ElementRef<HTMLElement>;
+  readonly status = signal<WidgetDialogStatus>('loading');
+  readonly name = signal('Widget');
+  readonly unavailableMessage = signal('');
+  readonly layoutReady = signal(false);
+  private iframe: HTMLIFrameElement | undefined;
+  private iframeLoaded: Promise<void> = Promise.resolve();
+  private readonly dialogRef = inject(MatDialogRef<WidgetDialogComponent>);
+  @ViewChild(CdkDrag, { static: true }) private drag!: CdkDrag;
+
+  constructor(@Inject(MAT_DIALOG_DATA) data: WidgetDialogData) {
+    this.name.set(data.name);
+  }
+
+  get windowBounds(): WidgetWindowBounds {
+    const { width, height, left, top } = this.drag.getRootElement().getBoundingClientRect();
+    return { width, height, left, top };
+  }
+
+  capturePointer(event: PointerEvent): void {
+    // Keep drag events in the host document when crossing the widget iframe.
+    if (event.currentTarget instanceof HTMLElement) event.currentTarget.setPointerCapture(event.pointerId);
+  }
+
+  start(html: string, initialize: (widgetWindow: Window) => void, colorScheme?: 'light' | 'dark'): void {
+    this.status.set('starting');
+    const iframe = document.createElement('iframe');
+    this.iframe = iframe;
+    iframe.title = this.name();
+    iframe.style.cssText = 'display:block;border:0;width:100%;height:100%;';
+    this.iframeLoaded = new Promise(resolve => iframe.addEventListener('load', () => resolve(), { once: true }));
+    if (colorScheme) {
+      // Apply the theme before the iframe can paint its default colors.
+      const doc = new DOMParser().parseFromString(html, 'text/html');
+      doc.documentElement.style.colorScheme = colorScheme;
+      doc.body.style.colorScheme = colorScheme;
+      const doctype = doc.doctype ? new XMLSerializer().serializeToString(doc.doctype) : '';
+      html = `${doctype}\n${doc.documentElement.outerHTML}`;
+    }
+    this.frameHost.nativeElement.appendChild(iframe);
+    const widgetWindow = iframe.contentWindow;
+    if (!widgetWindow) throw new Error('Widget iframe has no window');
+    // Install the protocol listener before executing any widget script.
+    initialize(widgetWindow);
+    iframe.srcdoc = html;
+  }
+
+  showRunning(name: string, contentSize?: WidgetContentSize): void {
+    if (contentSize && (!Number.isFinite(contentSize.width) || contentSize.width <= 0 ||
+      !Number.isFinite(contentSize.height) || contentSize.height <= 0)) {
+      throw new Error('Widget content dimensions must be positive finite numbers');
+    }
+    this.name.set(name);
+    if (this.iframe) this.iframe.title = name;
+    this.status.set('running');
+    void this.fitInitialWindow(contentSize ? { ...contentSize } : undefined);
+  }
+
+  showStartupError(): void {
+    this.removeIframe();
+    this.status.set('startup-error');
+    this.showLayout();
+  }
+
+  showDownloadError(): void {
+    this.status.set('download-error');
+    this.showLayout();
+  }
+
+  showUnavailable(message: string): void {
+    this.unavailableMessage.set(message);
+    this.status.set('unavailable');
+    this.showLayout();
+  }
+
+  ngOnDestroy(): void {
+    this.removeIframe();
+  }
+
+  private showLayout(): void {
+    // Anchor the top-left corner so native CSS resizing does not recenter the dialog.
+    const { left, top, width, height } = this.windowBounds;
+    this.dialogRef.updatePosition({
+      left: `${Math.max(0, Math.min(left, window.innerWidth - width))}px`,
+      top: `${Math.max(0, Math.min(top, window.innerHeight - height))}px`
+    });
+    this.layoutReady.set(true);
+  }
+
+  private async fitInitialWindow(contentSize?: WidgetContentSize): Promise<void> {
+    const iframe = this.iframe;
+    await this.iframeLoaded;
+    // Let the widget render its start parameters before fitting the window once.
+    await new Promise<void>(resolve => requestAnimationFrame(() => resolve()));
+    await iframe?.contentDocument?.fonts.ready;
+    if (!iframe || iframe !== this.iframe || !iframe.contentDocument?.body) return;
+    const host = this.frameHost.nativeElement;
+    const { width, height: contentHeight } = contentSize ?? this.measureContent(iframe.contentDocument);
+    const height = contentHeight + this.windowBounds.height - host.clientHeight;
+    this.dialogRef.updateSize(
+      `${Math.min(window.innerWidth * WIDGET_WINDOW_LIMITS.viewportFraction,
+                  Math.max(WIDGET_WINDOW_LIMITS.minWidth, width))}px`,
+      `${Math.min(window.innerHeight * WIDGET_WINDOW_LIMITS.viewportFraction,
+                  Math.max(WIDGET_WINDOW_LIMITS.minHeight, height))}px`
+    );
+    await new Promise<void>(resolve => requestAnimationFrame(() => resolve()));
+    if (iframe !== this.iframe) return;
+    const scale = Math.min(1, host.clientWidth / width, host.clientHeight / contentHeight);
+    // Keep the initial content size and scale when the user resizes the window later.
+    iframe.style.width = `${width}px`;
+    iframe.style.height = `${contentHeight}px`;
+    iframe.style.transformOrigin = 'top left';
+    iframe.style.transform = scale < 1 ? `scale(${scale})` : '';
+    const windowWidth = Math.ceil(width * scale + this.windowBounds.width - host.clientWidth);
+    this.dialogRef.updateSize(`${windowWidth}px`, `${this.windowBounds.height}px`);
+    this.showLayout();
+  }
+
+  private measureContent(doc: Document): WidgetContentSize {
+    const { body, documentElement } = doc;
+    const elements = [documentElement, body];
+    const styles = elements.map(element => element.style.cssText);
+    try {
+      for (const element of elements) {
+        element.style.setProperty('width', 'max-content', 'important');
+        element.style.setProperty('height', 'max-content', 'important');
+      }
+      const content = documentElement.getBoundingClientRect();
+      return {
+        width: Math.ceil(Math.max(content.width, body.scrollWidth)) || this.frameHost.nativeElement.clientWidth,
+        height: Math.ceil(Math.max(content.height, body.scrollHeight)) || this.frameHost.nativeElement.clientHeight
+      };
+    } finally {
+      elements.forEach((element, index) => {
+        element.style.cssText = styles[index];
+      });
+    }
+  }
+
+  private removeIframe(): void {
+    this.iframe?.remove();
+    this.iframe = undefined;
+  }
+}

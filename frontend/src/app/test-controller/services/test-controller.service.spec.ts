@@ -11,7 +11,7 @@ import { TestControllerService } from './test-controller.service';
 import { BackendService } from './backend.service';
 import {
   KeyValuePairString, NavigationLeaveRestrictionValue, StateReportEntry, Testlet, Unit,
-  UnitDataParts, UnitNavigationTarget, UnitStateKey, UnitStateUpdate
+  UnitDataParts, UnitNavigationTarget, UnitStateKey, UnitStateUpdate, TestStateUpdate
 } from '../interfaces/test-controller.interfaces';
 import { MainDataService, TestMode } from '../../shared/shared.module';
 import { MessageService } from '../../shared/services/message.service';
@@ -25,6 +25,11 @@ const uploadedData: UnitDataParts[] = [];
 const uploadedStates: UnitStateUpdate[] = [];
 
 class MockBackendService {
+  // eslint-disable-next-line class-methods-use-this
+  patchTestState(update: TestStateUpdate): Observable<string> {
+    return of('ok');
+  }
+
   // eslint-disable-next-line class-methods-use-this
   updateDataParts(
     testId: string, unitDbKey: string, originalUnitId: string, dataParts: KeyValuePairString, unitStateDataType: string
@@ -124,6 +129,99 @@ describe('TestControllerService', () => {
   it('should be created', () => {
     expect(service).toBeTruthy();
   });
+
+  it('should resolve the last widget path using an exact model match', () => {
+    service.widgets = {
+      PERIODIC_TABLE: ['Resource/older.html', 'Resource/newer.html'],
+      MOLECULE_EDITOR: ['Resource/molecule.html'],
+      EMPTY: []
+    };
+    expect(service.getWidgetResourcePath('PERIODIC_TABLE')).toBe('Resource/newer.html');
+    expect(service.getWidgetResourcePath('MOLECULE_EDITOR')).toBe('Resource/molecule.html');
+    expect(service.getWidgetResourcePath('periodic_table')).toBeUndefined();
+    expect(service.getWidgetResourcePath('WIDGET_PERIODIC_TABLE')).toBeUndefined();
+    expect(service.getWidgetResourcePath('EMPTY')).toBeUndefined();
+    expect(service.getWidgetResourcePath('toString')).toBeUndefined();
+    expect(service.getWidgetResourcePath('__proto__')).toBeUndefined();
+  });
+
+  it('should clear widget paths when resetting the test run', () => {
+    const reset = jasmine.createSpy('run reset');
+    const subscription = service.runReset$.subscribe(reset);
+    service.widgets = { PERIODIC_TABLE: ['Resource/periodic.html'] };
+    service.reset();
+    expect(reset).toHaveBeenCalledTimes(1);
+    subscription.unsubscribe();
+    expect(service.widgets).toEqual({});
+    expect(service.getWidgetResourcePath('PERIODIC_TABLE')).toBeUndefined();
+  });
+
+  it('prefers CALCULATOR for either calculator name and selects its last file', () => {
+    service.widgets = {
+      CALC: ['Resource/calc.html'],
+      CALCULATOR: ['Resource/old.html', 'Resource/calculator.html']
+    };
+    expect(service.getWidgetResourcePath('CALCULATOR')).toBe('Resource/calculator.html');
+    expect(service.getWidgetResourcePath('CALC')).toBe('Resource/calculator.html');
+    expect(service.getWidgetResourcePath('calculator')).toBeUndefined();
+  });
+
+  it('falls back to the last CALC file when CALCULATOR is absent or empty', () => {
+    service.widgets = { CALC: ['Resource/old.html', 'Resource/calc.html'] };
+    expect(service.getWidgetResourcePath('CALCULATOR')).toBe('Resource/calc.html');
+    service.widgets.CALCULATOR = [];
+    expect(service.getWidgetResourcePath('CALC')).toBe('Resource/calc.html');
+    service.widgets.CALC = [];
+    expect(service.getWidgetResourcePath('CALCULATOR')).toBeUndefined();
+  });
+
+  it('does not discover calculator paths from the widget map prototype', () => {
+    service.widgets = { CALC: ['Resource/calc.html'] };
+    Object.setPrototypeOf(service.widgets, { CALCULATOR: ['Resource/inherited.html'] });
+    expect(service.getWidgetResourcePath('CALCULATOR')).toBe('Resource/calc.html');
+    service.widgets.CALC = [];
+    expect(service.getWidgetResourcePath('CALCULATOR')).toBeUndefined();
+  });
+
+
+  it('updates existing shared parameters and persists empty values with one config notification', () => {
+    const buffer = spyOn(service, 'addToTestStateBuffer');
+    const changed = jasmine.createSpy('config changed');
+    const subscription = service.configChanged$.subscribe(changed);
+    service.sharedParameters = [{ key: 'existing', value: 'old' }];
+    service.addSharedParameters([{ key: 'existing', value: '' }, { key: 'new', value: '' }]);
+    expect(service.sharedParameters).toEqual([{ key: 'existing', value: '' }, { key: 'new', value: '' }]);
+    expect(buffer).toHaveBeenCalledOnceWith('SHARED_PARAMETERS', JSON.stringify(service.sharedParameters));
+    expect(changed).toHaveBeenCalledTimes(1);
+    buffer.calls.reset();
+    changed.calls.reset();
+    service.addSharedParameters([{ key: 'existing', value: '' }, { key: 'new', value: '' }, { key: 'omitted' }]);
+    expect(buffer).not.toHaveBeenCalled();
+    expect(changed).not.toHaveBeenCalled();
+    subscription.unsubscribe();
+  });
+
+  it('flushes changed shared parameters through the existing test-state persistence path', fakeAsync(() => {
+    const uploaded: TestStateUpdate[] = [];
+    const backend = TestBed.inject(BackendService);
+    spyOn(backend, 'patchTestState').and.callFake(update => {
+      uploaded.push(update);
+      return of('ok');
+    });
+    service.testId = 'shared-parameter-test';
+    service.testMode = new TestMode('run-hot-return');
+    service.sharedParameters = [{ key: 'selection', value: 'old' }];
+    service.setupTestStateBuffer();
+    service.addSharedParameters([{ key: 'selection', value: '' }]);
+    service.closeAllBuffers('shared-parameter-test');
+    tick();
+    expect(uploaded.length).toBe(1);
+    expect(uploaded[0].testId).toBe('shared-parameter-test');
+    expect(uploaded[0].state).toEqual([jasmine.objectContaining({
+      key: 'SHARED_PARAMETERS', content: JSON.stringify([{ key: 'selection', value: '' }])
+    })]);
+    discardPeriodicTasks();
+  }));
 
   it('should code aliased and derived variables in a subform with the current responses API', () => {
     service.units[1] = {
