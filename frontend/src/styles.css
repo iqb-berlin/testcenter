@@ -72,7 +72,8 @@ body {
 }
 
 .cdk-overlay-pane.widget-dialog {
-  resize: both;
+  /* A restored position must not shrink the iframe viewport before content measurement. */
+  flex-shrink: 0;
   overflow: hidden;
 }
 
@@ -84,8 +85,4 @@ body {
 .widget-dialog .mat-mdc-dialog-surface:has(tc-widget-dialog.preparing) {
   background: transparent;
   box-shadow: none;
-}
-
-.widget-dialog:has(tc-widget-dialog.preparing) {
-  resize: none;
 }

@@ -42,7 +42,7 @@ export interface WidgetDialogData {
         </button>
       </div>
     }
-    <header cdkDrag cdkDragRootElement=".cdk-overlay-pane"
+    <header #windowHeader cdkDrag cdkDragRootElement=".cdk-overlay-pane"
             cdkDragBoundary=".cdk-overlay-container">
       <h2 [attr.aria-label]="name()" mat-dialog-title cdkDragHandle
           (pointerdown)="capturePointer($event)"></h2>
@@ -81,9 +81,9 @@ export interface WidgetDialogData {
       max-width: 90%; box-sizing: border-box; background: white; border-radius: 12px;
     }
     .preparation p { margin: 0; }
-    header { display: flex; align-items: center; flex-shrink: 0; }
+    header { display: flex; align-items: center; flex-shrink: 0; height: 48px; }
     h2 {
-      flex: 1; min-width: 0; margin: 0; padding: 8px 16px; cursor: move;
+      flex: 1; min-width: 0; margin: 0; padding: 8px 0; cursor: move;
       overflow-wrap: anywhere; touch-action: none; user-select: none;
     }
     h2::before { display: none; }
@@ -93,6 +93,7 @@ export interface WidgetDialogData {
   `]
 })
 export class WidgetDialogComponent implements OnDestroy {
+  @ViewChild('windowHeader', { static: true }) private windowHeader!: ElementRef<HTMLElement>;
   @ViewChild('frameHost', { static: true }) private frameHost!: ElementRef<HTMLElement>;
   readonly status = signal<WidgetDialogStatus>('loading');
   readonly name = signal('Widget');
@@ -140,7 +141,7 @@ export class WidgetDialogComponent implements OnDestroy {
     iframe.srcdoc = html;
   }
 
-  showRunning(name: string, contentSize?: WidgetContentSize): void {
+  showRunning(name: string, contentSize?: WidgetContentSize, preferredWidth?: number): void {
     if (contentSize && (!Number.isFinite(contentSize.width) || contentSize.width <= 0 ||
       !Number.isFinite(contentSize.height) || contentSize.height <= 0)) {
       throw new Error('Widget content dimensions must be positive finite numbers');
@@ -148,7 +149,9 @@ export class WidgetDialogComponent implements OnDestroy {
     this.name.set(name);
     if (this.iframe) this.iframe.title = name;
     this.status.set('running');
-    void this.fitInitialWindow(contentSize ? { ...contentSize } : undefined);
+    void this.fitInitialWindow(
+      contentSize ? { ...contentSize } : undefined, preferredWidth
+    );
   }
 
   showStartupError(): void {
@@ -173,7 +176,7 @@ export class WidgetDialogComponent implements OnDestroy {
   }
 
   private showLayout(): void {
-    // Anchor the top-left corner so native CSS resizing does not recenter the dialog.
+    // Keep the window within the viewport when revealing it.
     const { left, top, width, height } = this.windowBounds;
     this.dialogRef.updatePosition({
       left: `${Math.max(0, Math.min(left, window.innerWidth - width))}px`,
@@ -182,32 +185,28 @@ export class WidgetDialogComponent implements OnDestroy {
     this.layoutReady.set(true);
   }
 
-  private async fitInitialWindow(contentSize?: WidgetContentSize): Promise<void> {
+  private async fitInitialWindow(contentSize?: WidgetContentSize, preferredWidth?: number): Promise<void> {
     const iframe = this.iframe;
     await this.iframeLoaded;
     // Let the widget render its start parameters before fitting the window once.
     await new Promise<void>(resolve => requestAnimationFrame(() => resolve()));
     await iframe?.contentDocument?.fonts.ready;
     if (!iframe || iframe !== this.iframe || !iframe.contentDocument?.body) return;
-    const host = this.frameHost.nativeElement;
     const { width, height: contentHeight } = contentSize ?? this.measureContent(iframe.contentDocument);
-    const height = contentHeight + this.windowBounds.height - host.clientHeight;
-    this.dialogRef.updateSize(
-      `${Math.min(window.innerWidth * WIDGET_WINDOW_LIMITS.viewportFraction,
-                  Math.max(WIDGET_WINDOW_LIMITS.minWidth, width))}px`,
-      `${Math.min(window.innerHeight * WIDGET_WINDOW_LIMITS.viewportFraction,
-                  Math.max(WIDGET_WINDOW_LIMITS.minHeight, height))}px`
+    // Content dimensions exclude the fixed-height host header.
+    const headerHeight = this.windowHeader.nativeElement.getBoundingClientRect().height;
+    const scale = Math.min(
+      (preferredWidth ?? width) / width,
+      window.innerWidth * WIDGET_WINDOW_LIMITS.viewportFraction / width,
+      Math.max(1, window.innerHeight * WIDGET_WINDOW_LIMITS.viewportFraction - headerHeight) / contentHeight
     );
-    await new Promise<void>(resolve => requestAnimationFrame(() => resolve()));
-    if (iframe !== this.iframe) return;
-    const scale = Math.min(1, host.clientWidth / width, host.clientHeight / contentHeight);
-    // Keep the initial content size and scale when the user resizes the window later.
     iframe.style.width = `${width}px`;
     iframe.style.height = `${contentHeight}px`;
     iframe.style.transformOrigin = 'top left';
-    iframe.style.transform = scale < 1 ? `scale(${scale})` : '';
-    const windowWidth = Math.ceil(width * scale + this.windowBounds.width - host.clientWidth);
-    this.dialogRef.updateSize(`${windowWidth}px`, `${this.windowBounds.height}px`);
+    iframe.style.transform = scale !== 1 ? `scale(${scale})` : '';
+    this.dialogRef.updateSize(
+      `${Math.ceil(width * scale)}px`, `${Math.ceil(contentHeight * scale + headerHeight)}px`
+    );
     this.showLayout();
   }
 

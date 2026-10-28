@@ -14,6 +14,7 @@ import { BackendService } from './backend.service';
 import { TestControllerService } from './test-controller.service';
 import { parseWidgetCall, widgetParameters } from '../util/widget-start.util';
 import { widgetModelCandidates } from '../util/widget-model.util';
+import { initialWidgetWidth } from '../util/initial-widget-width.util';
 import { WIDGET_WINDOW_LIMITS } from '../components/widget-dialog/widget-window.constants';
 
 export interface WidgetRequest {
@@ -190,7 +191,7 @@ export class WidgetRuntimeService implements OnDestroy {
               sharedParameters,
               state: state ?? behavior.state,
               onReady: (name, id) => {
-                view.showRunning(name, behavior.contentSize);
+                view.showRunning(name, behavior.contentSize, initialWidgetWidth(model));
                 behavior.onReady?.(id);
               },
               onState: (state) => {
@@ -254,8 +255,8 @@ export class WidgetRuntimeService implements OnDestroy {
       width: WIDGET_WINDOW_LIMITS.maxWidth,
       height: WIDGET_WINDOW_LIMITS.maxHeight,
       position: savedPosition ? { left: `${savedPosition.left}px`, top: `${savedPosition.top}px` } : undefined,
-      minWidth: `min(${WIDGET_WINDOW_LIMITS.minWidth}px, ${WIDGET_WINDOW_LIMITS.maxWidth})`,
-      minHeight: `min(${WIDGET_WINDOW_LIMITS.minHeight}px, ${WIDGET_WINDOW_LIMITS.maxHeight})`,
+      minWidth: 0,
+      minHeight: 0,
       maxWidth: WIDGET_WINDOW_LIMITS.maxWidth,
       maxHeight: WIDGET_WINDOW_LIMITS.maxHeight,
       panelClass: 'widget-dialog',
