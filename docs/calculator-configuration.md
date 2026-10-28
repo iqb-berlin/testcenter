@@ -2,9 +2,12 @@
 
 Der Booklet-Parser unterstützt die folgende Konfiguration. Die benötigte
 Booklet-XSD-Erweiterung ist noch nicht veröffentlicht. Uploads mit aktiver
-Schema-Prüfung akzeptieren die Deklaration deshalb noch nicht. Die
-Taschenrechner-Schaltfläche und die Übergabe der Booklet-Einstellungen folgen in
-späteren Schritten. Das Rechnermodul wird als Workspace-Ressource bereitgestellt.
+Schema-Prüfung akzeptieren die Deklaration deshalb noch nicht. Bei einer laufenden
+und geladenen Unit mit `show="yes"` erscheint ein Taschenrechner-Symbol
+im Kopfbereich neben dem Menü für Neuladen und Vollbild. Der Tooltip und die
+Beschriftung für Screenreader lauten „Taschenrechner“. Die Schaltfläche ist auch
+verfügbar, wenn die Schaltflächen für Neuladen und Vollbild ausgeblendet sind.
+Das Rechnermodul wird als Workspace-Ressource bereitgestellt.
 
 ## Rechnermodul bereitstellen
 
@@ -92,3 +95,66 @@ Die ausgewertete Konfiguration liegt auf dem jeweiligen Testlet. Testcontroller
 und Gruppen-Monitor verwenden dafür denselben Parser. Im Testcontroller ist sie
 über `unit.parent.calculator` verfügbar. Der Parser ändert keine Widget-Zustände
 und speichert das Journal nicht als Testantwort.
+
+
+## Parameter und Zustand beim Öffnen
+
+Jeder Aufruf übergibt alle vier Parameter als Zeichenfolgen:
+
+| Booklet-Einstellung | Widget-Parameter |
+| --- | --- |
+| `mode` | `MODE` |
+| `journalLines` | `JOURNAL_LINES` |
+| `maxImageWidthPx` | `MAX_IMAGE_WIDTH_PX` |
+| `<Journal>` | `JOURNAL` |
+
+Das konfigurierte Journal wird bei jedem Start als `JOURNAL` übergeben. Bereits
+akzeptierte Widget-Zustände werden unabhängig davon über das Feld `state`
+wiederhergestellt, auch wenn der gespeicherte Zustand eine leere Zeichenfolge ist.
+Testcenter ersetzt den gespeicherten Zustand nicht durch das konfigurierte Journal.
+Das Modul entscheidet, wie es seine Parameter und seinen Startzustand verarbeitet.
+
+Testcenter hält den Rechnerzustand pro Unit und Widget-Ressource im Arbeitsspeicher.
+Units mit derselben Rechnerkonfiguration haben jeweils ein eigenes Journal. Beim
+Zurückkehren zu einer Unit wird deren bisheriger Zustand wiederhergestellt, auch
+wenn dieselbe Unit-Datei an anderer Stelle im Testheft erneut verwendet wird.
+Eine Pause erhält die Zustände. Beim Neuladen oder Verlassen des Testlaufs werden
+sie gelöscht; Testcenter speichert die Journale nicht in der Datenbank.
+
+Die Parameter werden auch dann übergeben, wenn eine hochgeladene Modulversion
+`MODE` oder `JOURNAL` noch nicht auswertet. Testcenter passt das Modul nicht an und
+verwendet keine Ersatzdarstellung für diese Parameter.
+
+Während des Ladens, einer Pause und nach Testende ist die Schaltfläche verborgen.
+Vor dem Öffnen werden die aktuelle Unit und ihre Freigabe erneut geprüft. Beim
+gewöhnlichen Schließen kehrt der Fokus zur Schaltfläche zurück. Bei einem
+Unit-Wechsel oder einer Pause schließt das Fenster ohne Fokus-Rückgabe an die
+verlassene Ansicht. Die vorhandenen Laufzeitregeln für Widget-Zustände bleiben
+bestehen.
+
+## Ergebnisfenster für die letzte Rechnung
+
+Beim gewöhnlichen Schließen des Taschenrechners erscheint ein kleines
+Ergebnisfenster, wenn der letzte Journaleintrag im akzeptierten Zustand ein
+`asImage` enthält. Unterstützt werden PNG- und JPEG-Bilder als Base64-Daten-URL.
+Das Fenster zeigt das vom Modul gelieferte Bild mit Formel und Ergebnis. Es
+blockiert keine Eingaben in der Unit und lässt sich an seiner Titelleiste mit der
+Maus verschieben.
+
+Die Schließen-Schaltfläche minimiert das Ergebnisfenster. Eine feste Schaltfläche
+„Letzte Rechnung“ bleibt am unteren rechten Bildschirmrand sichtbar und öffnet es
+wieder. Diese Schaltfläche hat keine Funktion zum Entfernen. Ein neues Ergebnis
+ersetzt das vorherige Bild und öffnet das Ergebnisfenster erneut. Ohne neues
+verwendbares Bild bleibt das bisherige Ergebnis erhalten.
+
+Das Ergebnis bleibt innerhalb des Testlaufs über Unit-Wechsel hinweg erhalten.
+Fenster und Schaltfläche sind nur sichtbar, wenn die aktuelle Unit geladen ist,
+der Test läuft und der Taschenrechner freigegeben ist. Während eines modalen
+Dialogs sind sie ebenfalls verborgen. Wird die Freigabe wieder wirksam, erscheint
+die vorherige Darstellung, auch wenn sie minimiert war.
+
+Ein erzwungenes Schließen, etwa beim Unit-Wechsel oder bei einer Pause, öffnet
+kein neues Ergebnisfenster. Bereits angezeigte Ergebnisse bleiben im Speicher.
+Beim Zurücksetzen, Abmelden oder Verlassen des Testlaufs werden sie gelöscht.
+Nach einer Änderung der Fenstergröße wird die Position zurückgesetzt, damit das
+Ergebnisfenster erreichbar bleibt.
