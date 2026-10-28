@@ -101,6 +101,8 @@ exports.testModeData = done => {
   done();
 };
 
+exports.calculatorConfiguration = require('./create-calculator-interface');
+
 // the package.json contains rules like "latest 2 versions". this resolves this to actual browser versions
 exports.compileBrowserlist = done => fs.writeFile(
   `${definitionsDir}/browsers.json`,
@@ -114,5 +116,6 @@ exports.compileBrowserlist = done => fs.writeFile(
 exports.createInterfaces = gulp.series(
   exports.bookletConfigData,
   exports.testModeData,
+  exports.calculatorConfiguration,
   exports.compileBrowserlist
 );

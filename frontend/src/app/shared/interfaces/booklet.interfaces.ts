@@ -1,6 +1,7 @@
 // currently group-monitor and test-controller have parallel structures to represent booklets
 // goal is to use the same interfaces in both areas: those in this file.
 
+import { CalculatorConfiguration } from 'testcenter-common/interfaces/calculator.interfaces';
 import { BookletConfig } from '../classes/booklet-config.class';
 
 export interface BookletDef<TestletType, BookletStateType extends BookletStateDef<BookletStateOptionDef>> {
@@ -21,6 +22,7 @@ export interface TestletDef<TestletType, UnitType> {
   readonly id: string;
   readonly label: string;
   readonly restrictions: Restrictions;
+  readonly calculator?: CalculatorConfiguration;
   readonly children: (TestletType | UnitType)[];
 }
 
