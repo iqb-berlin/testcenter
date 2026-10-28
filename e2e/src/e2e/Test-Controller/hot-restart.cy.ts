@@ -252,6 +252,10 @@ describe('check hot-restart: complete tests with different logins', { testIsolat
         .click();
       cy.get('[data-cy="endTest"]')
         .click({force: true});
+      cy.get('[data-cy="dialog-title"]')
+        .contains('Sicher, dass du den Test beenden möchtest?');
+      cy.get('[data-cy="dialog-confirm"]')
+        .click();
       cy.get('[data-cy="booklet-CY-BKLT_TC-4"]');
     });
   });

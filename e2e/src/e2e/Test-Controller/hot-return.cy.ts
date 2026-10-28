@@ -250,6 +250,10 @@ describe('check hot-return: complete tests with different logins', { testIsolati
         .click();
       cy.get('[data-cy="endTest"]')
         .click({force: true});
+      cy.get('[data-cy="dialog-title"]')
+        .contains('Sicher, dass du den Test beenden möchtest?');
+      cy.get('[data-cy="dialog-confirm"]')
+        .click();
       cy.get('[data-cy="booklet-CY-BKLT_TC-3"]');
     });
   });

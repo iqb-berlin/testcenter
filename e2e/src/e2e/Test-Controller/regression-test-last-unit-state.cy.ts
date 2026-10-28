@@ -50,6 +50,12 @@ describe('Test Controller', { testIsolation: true }, () => {
     getFromIframe('iframe.unitHost')
       .find('#end-unit')
       .click();
+    cy.get('[data-cy="dialog-title"]')
+      .contains('Sicher, dass du den Test beenden möchtest?');
+    cy.get('[data-cy="dialog-confirm"]')
+      .click();
+    // the responses are complete only once the test has ended
+    cy.url().should('eq', `${Cypress.config().baseUrl}/#/r/starter`);
     // response outputs are ordered by groupname, loginname, code, unitname, originalUnitId (see AdminDAO)
     getResponses()
       .then(rows => {
