@@ -7,6 +7,7 @@ import {
   Subscription, timer
 } from 'rxjs';
 import { Injectable } from '@angular/core';
+import { widgetModelCandidates } from '../util/widget-model.util';
 import { PRIMARY_OUTLET, Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { CodingSchemeFactory } from '@iqb/responses';
@@ -27,6 +28,7 @@ import {
   NavigationState,
   StateReportEntry,
   TestControllerState,
+  TestData,
   Testlet,
   TestletLockType,
   TestletLockTypes,
@@ -72,6 +74,8 @@ type LeaveCheckResult =
   providedIn: 'root'
 })
 export class TestControllerService {
+  private readonly runResetSubject = new Subject<void>();
+  readonly runReset$ = this.runResetSubject.asObservable();
   testId = '';
   readonly state$ = new BehaviorSubject<TestControllerState>('INIT');
   workspaceId = 0;
@@ -116,6 +120,7 @@ export class TestControllerService {
   }
 
   private players: { [filename: string]: string } = {};
+  widgets: TestData['widgets'] = {};
   private testState: { [key in TestStateKey]?: string } = {};
 
   sharedParameters: SharedParameter[] = [];
@@ -314,7 +319,9 @@ export class TestControllerService {
   }
 
   reset(): void {
+    this.runResetSubject.next();
     this.players = {};
+    this.widgets = {};
     this.sharedParameters = [];
 
     this.currentUnitSequenceId = -Infinity;
@@ -336,6 +343,16 @@ export class TestControllerService {
       this.timerIntervalSubscription = null;
     }
     this.currentTimerId = '';
+  }
+
+  getWidgetResourcePath(model: string): string | undefined {
+    for (const candidate of widgetModelCandidates(model)) {
+      const paths = Object.prototype.hasOwnProperty.call(this.widgets, candidate) ? this.widgets[candidate] : undefined;
+      // Temporary policy: the backend orders candidates by modification time, then filename.
+      const path = paths?.[paths.length - 1];
+      if (path !== undefined) return path;
+    }
+    return undefined;
   }
 
   AddToUnitStateDataPartsBuffer(unitSequenceId: number, dataParts: KeyValuePairString, unitStateDataType: string): void {
@@ -1203,7 +1220,7 @@ export class TestControllerService {
     let hasChanged = false;
 
     parameters.forEach(param => {
-      if (param.key && param.value) {
+      if (param.key && typeof param.value === 'string') {
         hasChanged = this.addSharedParameter(param.key, param.value) || hasChanged;
       }
     });
@@ -1219,8 +1236,8 @@ export class TestControllerService {
     const existingParam = this.sharedParameters.find(p => p.key === key);
 
     if (existingParam) {
-      existingParam.value = value;
       hasChanged = existingParam.value !== value;
+      existingParam.value = value;
     } else {
       const newParameter: SharedParameter = {
         key: key,

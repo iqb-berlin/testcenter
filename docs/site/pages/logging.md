@@ -42,8 +42,23 @@ Mögliche State-Keys (aus `TestState`, `frontend/.../test-controller.interfaces.
 | logKey | Wann wird geloggt | Bedeutung / Zweck | logContent |
 |---|---|---|---|
 | `Runtime Error: {code}` | Wenn ein Verona-Player einen Runtime-Fehler meldet (z. B. fehlende Session-ID, fehlende Unit-Definition, falsche Session-ID, nicht unterstützter Definitions- oder State-Typ, generischer Runtime-Fehler). Nur wenn `saveResponses` aktiv und die Unit ermittelbar ist. | Player-seitige Fehler festhalten, um Fehlbedienungen und Player-/Definitions-Inkompatibilitäten auszuwerten. | Fehler-Meldung (Text, ggf. leer) |
+| `CALCULATOR_OPENED` | Nach erfolgreichem Ready/Start-Austausch eines Widgets mit Modell `CALCULATOR` oder `CALC`. Nur mit aktiver Unit und `saveResponses`. | Beginn einer Rechnernutzung innerhalb der Unit. | JSON-Objekt mit `sessionId` der Widget-Sitzung |
+| `CALCULATOR_STATE_CHANGED` | Bei einer gültigen, nicht veralteten `vowStateChangedNotification`, deren Zustand ein Journal-Array mit `asLatex` als Zeichenfolge im letzten Eintrag enthält. | Neueste Rechnung; ältere Journaleinträge und Bilder werden ausgelassen. Wiederhergestellter Startzustand und finale Rückgabe erzeugen diesen Eintrag nicht. | JSON-Objekt mit `sessionId` und `asLatex`; Zeitstempel aus der Widget-Nachricht |
+| `CALCULATOR_CLOSED` | Beim Schließen eines erfolgreich gestarteten Rechners, auch ohne `vowReturnRequested`. | Ende der Rechnernutzung und Ursache des Schließens. | JSON-Objekt mit `sessionId`, `reason` und `returnReceived` (Boolean) |
 | Player-Logs (`vopStateChangedNotification.log`) | Wenn ein Verona-Player über die `vopStateChangedNotification`-Message eigene Log-Einträge sendet. `logKey` und `content` werden vom Player bestimmt und vom Testcenter unverändert übernommen. | Player-spezifische Ereignisse (siehe Doku des jeweiligen Players — Aspect, Speedtest, StarS usw.). | Vom Player definiert |
 | State-Keys via `PATCH /test/{id}/unit/{unit}/state` | Bei jeder Änderung des Unit-States (z. B. Seitenwechsel, Fortschritts-Updates), die vom Frontend gemeldet wird. Jeder gepatchte Key erzeugt einen UnitLog-Eintrag mit demselben Key. | Historie der Unit-Bearbeitung (Seiten, Fortschritt, Player-Ladezustand). | Neuer Wert des jeweiligen State-Keys |
+
+Die drei Taschenrechner-Events werden ausschließlich bei aktiver Antwortspeicherung
+angelegt und bleiben dem Test und der Unit beim Öffnen zugeordnet. Die Widget-Sitzungskennung
+verbindet Öffnen, Zustandsmeldungen und Schließen. Ein leeres oder ungültiges Journal sowie
+ein letzter Eintrag ohne gültiges `asLatex` erzeugen keinen Rechnungseintrag; es wird
+nicht auf ältere Einträge zurückgegriffen. Der Schließgrund `reason` ist
+`widget_return` (Widget-Rückgabe), `user_called` (Schließen-Schaltfläche) oder
+`host_triggered` (Schließen durch Testcenter, etwa bei Unit-Wechsel, Pause oder
+Verlassen des Testlaufs). `returnReceived` zeigt an, ob eine gültige
+`vowReturnRequested` empfangen wurde. Öffnen und Schließen verwenden die aktuelle
+Clientzeit. Ein vor dem erfolgreichen Start geschlossenes Fenster erzeugt keine
+Taschenrechner-Events.
 
 Mögliche State-Keys (aus `UnitState`, `frontend/.../test-controller.interfaces.ts:98`):
 

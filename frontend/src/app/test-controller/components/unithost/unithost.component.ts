@@ -6,7 +6,6 @@ import { AsyncPipe, NgIf } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Params } from '@angular/router';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { distinctUntilChanged, map, withLatestFrom } from 'rxjs/operators';
 import { CustomtextPipe, MainDataService } from '@shared/shared.module';
 import { AppError, AuthData, CodeInputType } from '@app/app.interfaces';
@@ -28,6 +27,8 @@ import {
 import { PageService } from '../../services/page.service';
 import { VeronaAPIService } from '../../services/verona-api.service';
 import { MessageService } from '@app/shared/services/message.service';
+import { WidgetRuntimeService } from '../../services/widget-runtime.service';
+import { CalculatorService } from '../../services/calculator.service';
 
 @Component({
   templateUrl: './unithost.component.html',
@@ -44,6 +45,7 @@ import { MessageService } from '@app/shared/services/message.service';
 
 export class UnithostComponent implements OnInit, OnDestroy {
   @ViewChild('iframeHost') private iFrameHostElement!: ElementRef;
+  private readonly playerSessions = new WeakMap<MessageEventSource, string>();
   private iFrameItemplayer: HTMLIFrameElement | null = null;
   private subscriptions: { [tag: string ]: Subscription } = {};
   clearCode: string = '';
@@ -57,7 +59,8 @@ export class UnithostComponent implements OnInit, OnDestroy {
               @Inject('FILE_SERVER_URL') private readonly fileServerUrl: string,
               public themeService: ThemeService,
               private messageService: MessageService,
-              private bs: BackendService, private route: ActivatedRoute) { }
+              private bs: BackendService, private route: ActivatedRoute, private widgets: WidgetRuntimeService,
+              private calculator: CalculatorService) { }
 
   ngOnInit(): void {
     this.iFrameItemplayer = null;
@@ -83,6 +86,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this.widgets.close();
     Object.values(this.subscriptions).forEach(subscription => subscription.unsubscribe());
   }
 
@@ -91,12 +95,21 @@ export class UnithostComponent implements OnInit, OnDestroy {
       return;
     }
     const msgData = messageEvent.data;
+    if (msgData === null || typeof msgData !== 'object' || typeof msgData.type !== 'string' ||
+        !msgData.type.startsWith('vop')) return;
     const msgType = msgData.type;
-
-    this.apiService.postMessageTarget = messageEvent.source as Window;
-    const dontNeedSessionId = ['vopReadyNotification', 'vopWindowFocusChangedNotification'];
+    const currentPlayer = this.iFrameItemplayer?.contentWindow;
+    const source = messageEvent.source;
+    const latePlayerState = msgType === 'vopStateChangedNotification' && source !== null &&
+      this.playerSessions.get(source) === msgData.sessionId &&
+      Object.hasOwn(this.tcs.unitAliasMap, msgData.sessionId);
+    if (!latePlayerState && (!currentPlayer || source !== currentPlayer)) return;
+    const dontNeedSessionId = [
+      'vopReadyNotification', 'vopWindowFocusChangedNotification', 'vopRuntimeErrorNotification'
+    ];
     if ((!dontNeedSessionId.includes(msgType)) && (!(msgData.sessionId in this.tcs.unitAliasMap))) {
       console.warn('wrong player session id: ', msgData.sessionId, msgData, this.tcs.unitAliasMap);
+      return;
     }
 
     switch (msgType) {
@@ -115,6 +128,13 @@ export class UnithostComponent implements OnInit, OnDestroy {
     case 'vopRuntimeErrorNotification':
       this.handleRuntimeError(msgData);
       break;
+      case 'vopWidgetCall':
+        this.widgets.open({
+          call: msgData, source: messageEvent.source, playerIframe: this.iFrameItemplayer
+        }, widget => this.calculator.supports(widget.model) ?
+          this.calculator.createBehavior(widget.resourcePath) :
+          undefined);
+        break;
     default:
       console.log(`processMessagePost ignored message: ${msgType}`);
       break;
@@ -166,7 +186,11 @@ export class UnithostComponent implements OnInit, OnDestroy {
       unitState.responseProgress = this.tcs.currentUnit.state.RESPONSE_PROGRESS;
     }
 
+    const playerWindow = this.iFrameItemplayer?.contentWindow;
+    const startingUnit = this.tcs.currentUnit;
     const navigation = await this.tcs.closeAllBuffers('handleReadyNotification');
+    if (!playerWindow || playerWindow !== this.iFrameItemplayer?.contentWindow ||
+        startingUnit !== this.tcs.currentUnit) return;
 
     const msg: VopStartCommand = {
       type: 'vopStartCommand',
@@ -176,7 +200,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
       unitState,
       playerConfig: this.getPlayerConfig(navigation)
     };
-    this.apiService.postMessageTarget.postMessage(msg, '*');
+    playerWindow.postMessage(msg, '*');
   }
 
   private handleStateChangedNotification(msg: VopStateChangedNotification): void {
@@ -287,6 +311,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
   }
 
   private open(unitSequenceId: number): void {
+    this.widgets.close();
     while (this.iFrameHostElement.nativeElement.hasChildNodes()) {
       this.iFrameHostElement.nativeElement.removeChild(this.iFrameHostElement.nativeElement.lastChild);
     }
@@ -396,6 +421,10 @@ export class UnithostComponent implements OnInit, OnDestroy {
     }
     this.iFrameItemplayer.setAttribute('class', 'unitHost');
     this.iFrameHostElement.nativeElement.appendChild(this.iFrameItemplayer);
+    const playerWindow = this.iFrameItemplayer.contentWindow;
+    if (!playerWindow) throw new Error('Player iframe has no window');
+    this.playerSessions.set(playerWindow, this.tcs.currentUnit.alias);
+    this.apiService.postMessageTarget = playerWindow;
     this.iFrameItemplayer.setAttribute('srcdoc', this.tcs.getPlayer(this.tcs.currentUnit.playerFileName));
   }
 

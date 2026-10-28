@@ -27,9 +27,13 @@ import { PageService } from '../../services/page.service';
 import { VeronaAPIService } from '../../services/verona-api.service';
 import { MessageService } from '@shared/services/message.service';
 
+import { WidgetRuntimeService } from '../../services/widget-runtime.service';
+import { CalculatorService } from '../../services/calculator.service';
+
 @Component({
   templateUrl: './test-controller.component.html',
   styleUrls: ['./test-controller.component.css'],
+  providers: [WidgetRuntimeService, CalculatorService],
   standalone: false
 })
 export class TestControllerComponent implements OnInit, OnDestroy {
