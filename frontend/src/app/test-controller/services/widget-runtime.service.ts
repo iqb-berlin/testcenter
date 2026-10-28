@@ -9,7 +9,7 @@ import {
 } from '../components/widget-dialog/widget-dialog.component';
 import { WidgetSession } from '../classes/widget-session.class';
 import { isLoadingFileLoaded } from '../interfaces/test-controller.interfaces';
-import { WidgetCall, WidgetContentSize, WidgetParameter } from '../interfaces/widget.interfaces';
+import { WidgetCall, WidgetParameter } from '../interfaces/widget.interfaces';
 import { BackendService } from './backend.service';
 import { TestControllerService } from './test-controller.service';
 import { parseWidgetCall, widgetParameters } from '../util/widget-start.util';
@@ -41,8 +41,6 @@ interface ActiveWidgetDialog {
 
 export interface WidgetBehavior {
   colorScheme?: 'light' | 'dark';
-  /** Use known content dimensions instead of measuring the rendered widget. */
-  contentSize?: WidgetContentSize;
   state?: string;
   onReady?: (sessionId: string) => void;
   onState: (state: string) => void;
@@ -191,7 +189,7 @@ export class WidgetRuntimeService implements OnDestroy {
               sharedParameters,
               state: state ?? behavior.state,
               onReady: (name, id) => {
-                view.showRunning(name, behavior.contentSize, initialWidgetWidth(model));
+                view.showRunning(name, initialWidgetWidth(model));
                 behavior.onReady?.(id);
               },
               onState: (state) => {

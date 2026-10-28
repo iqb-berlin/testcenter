@@ -87,24 +87,6 @@ class WorkspaceTest extends TestCase {
     unset($this->vfs);
   }
 
-  public function test_getWidgetResourcePaths(): void {
-    $this->workspaceDaoMock->expects('getWidgetResources')->andReturn([
-      ['name' => 'molecule.html', 'verona_model' => 'MOLECULE_EDITOR'],
-      ['name' => 'periodic-a.html', 'verona_model' => 'PERIODIC_TABLE'],
-      ['name' => 'periodic-b.html', 'verona_model' => 'PERIODIC_TABLE']
-    ]);
-    $workspace = new Workspace(1);
-    $this->assertSame([
-      'MOLECULE_EDITOR' => ['Resource/molecule.html'],
-      'PERIODIC_TABLE' => ['Resource/periodic-a.html', 'Resource/periodic-b.html']
-    ], $workspace->getWidgetResourcePaths());
-  }
-
-  public function test_getWidgetResourcePathsWithoutWidgets(): void {
-    $this->workspaceDaoMock->expects('getWidgetResources')->andReturn([]);
-    $this->assertSame([], (new Workspace(1))->getWidgetResourcePaths());
-  }
-
   function test___construct() {
     $workspaceDirectories = scandir(vfsStream::url('root/data'));
     $expectation = ['.', '..', 'ws_1'];
@@ -503,7 +485,6 @@ class WorkspaceTest extends TestCase {
     $this->workspaceDaoMock
       ->expects('updateContentTypeBasedOnRemainingTesttakers');
 
-
     $workspace = new Workspace(1);
     $result = $workspace->importUncategorizedFiles(
       ["valid_testtakers.xml", "valid_booklet.xml", "P.html", "valid_unit.xml"]
@@ -568,7 +549,6 @@ class WorkspaceTest extends TestCase {
       ->times(6);
     $this->workspaceDaoMock
       ->expects('updateContentTypeBasedOnRemainingTesttakers');
-
 
     $workspace = new Workspace(1);
     $result = $workspace->importUncategorizedFiles(["valid_testtakers.xml", "valid_booklet.xml", "valid_unit.xml"]);

@@ -6,7 +6,6 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { CdkDrag, CdkDragHandle } from '@angular/cdk/drag-drop';
 import { WIDGET_WINDOW_LIMITS } from './widget-window.constants';
-import { WidgetContentSize } from '../../interfaces/widget.interfaces';
 
 export type WidgetDialogStatus = 'loading' | 'starting' | 'running' | 'download-error' | 'startup-error' |
   'unavailable';
@@ -141,17 +140,11 @@ export class WidgetDialogComponent implements OnDestroy {
     iframe.srcdoc = html;
   }
 
-  showRunning(name: string, contentSize?: WidgetContentSize, preferredWidth?: number): void {
-    if (contentSize && (!Number.isFinite(contentSize.width) || contentSize.width <= 0 ||
-      !Number.isFinite(contentSize.height) || contentSize.height <= 0)) {
-      throw new Error('Widget content dimensions must be positive finite numbers');
-    }
+  showRunning(name: string, preferredWidth?: number): void {
     this.name.set(name);
     if (this.iframe) this.iframe.title = name;
     this.status.set('running');
-    void this.fitInitialWindow(
-      contentSize ? { ...contentSize } : undefined, preferredWidth
-    );
+    void this.fitInitialWindow(preferredWidth);
   }
 
   showStartupError(): void {
@@ -185,14 +178,14 @@ export class WidgetDialogComponent implements OnDestroy {
     this.layoutReady.set(true);
   }
 
-  private async fitInitialWindow(contentSize?: WidgetContentSize, preferredWidth?: number): Promise<void> {
+  private async fitInitialWindow(preferredWidth?: number): Promise<void> {
     const iframe = this.iframe;
     await this.iframeLoaded;
     // Let the widget render its start parameters before fitting the window once.
     await new Promise<void>(resolve => requestAnimationFrame(() => resolve()));
     await iframe?.contentDocument?.fonts.ready;
     if (!iframe || iframe !== this.iframe || !iframe.contentDocument?.body) return;
-    const { width, height: contentHeight } = contentSize ?? this.measureContent(iframe.contentDocument);
+    const { width, height: contentHeight } = this.measureContent(iframe.contentDocument);
     // Content dimensions exclude the fixed-height host header.
     const headerHeight = this.windowHeader.nativeElement.getBoundingClientRect().height;
     const scale = Math.min(
@@ -210,7 +203,7 @@ export class WidgetDialogComponent implements OnDestroy {
     this.showLayout();
   }
 
-  private measureContent(doc: Document): WidgetContentSize {
+  private measureContent(doc: Document): { width: number; height: number } {
     const { body, documentElement } = doc;
     const elements = [documentElement, body];
     const styles = elements.map(element => element.style.cssText);
