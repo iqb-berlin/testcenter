@@ -3,7 +3,7 @@
 Der Booklet-Parser unterstützt die folgende Konfiguration. Die benötigte
 Booklet-XSD-Erweiterung ist noch nicht veröffentlicht. Uploads mit aktiver
 Schema-Prüfung akzeptieren die Deklaration deshalb noch nicht. Bei einer laufenden
-und geladenen Unit mit `show="yes"` erscheint ein Taschenrechner-Symbol
+und geladenen Unit mit einer eigenen `<Calculator>`-Deklaration im Eltern-Testlet erscheint ein Taschenrechner-Symbol
 im Kopfbereich neben dem Menü für Neuladen und Vollbild. Der Tooltip und die
 Beschriftung für Screenreader lauten „Taschenrechner“. Die Schaltfläche ist auch
 verfügbar, wenn die Schaltflächen für Neuladen und Vollbild ausgeblendet sind.
@@ -37,7 +37,7 @@ Es steht nach dem optionalen `<Restrictions>` und vor Units oder Testlets.
 
 ```xml
 <Testlet id="math">
-  <Calculator show="yes" mode="SCIENTIFIC" journalLines="5" maxImageWidthPx="200">
+  <Calculator mode="SCIENTIFIC" journalLines="5" maxImageWidthPx="200">
     <Journal>[]</Journal>
   </Calculator>
   <Unit id="task" label="Mathematik"/>
@@ -46,7 +46,6 @@ Es steht nach dem optionalen `<Restrictions>` und vor Units oder Testlets.
 
 | Einstellung | Erlaubte Werte | Bei fehlender Angabe |
 | --- | --- | --- |
-| `show` | `yes`, `no` | Pflichtattribut jeder Deklaration |
 | `mode` | `SIMPLE`, `SCIENTIFIC` | `SIMPLE` |
 | `journalLines` | Nichtnegative ganze Zahl | `0`, kein sichtbares Journal |
 | `maxImageWidthPx` | Positive ganze Zahl | `200` |
@@ -62,32 +61,28 @@ dekodiert keine Bilder. Die [Rechner-Spezifikation](https://iqb-specifications.g
 beschreibt das Bildformat. XML-Sonderzeichen müssen maskiert werden oder innerhalb
 eines CDATA-Abschnitts stehen. Ein leeres `<Journal/>` ist kein gültiges JSON-Array.
 
-## Vererbung und Überschreiben
+## Geltungsbereich
 
-Ohne eigene Deklaration erben alle Nachfahren die vollständige Konfiguration des
-Eltern-Testlets. Eine eigene `<Calculator>`-Deklaration ersetzt diese vollständig.
-Ausgelassene Einstellungen erhalten die Standardwerte; einzelne Attribute werden
-nicht mit den Einstellungen der Vorfahren kombiniert.
+Eine `<Calculator>`-Deklaration gilt nur für die direkten Units ihres Testlets.
+Kind-Testlets benötigen jeweils eine eigene Deklaration. Dabei erhalten
+ausgelassene Einstellungen die Standardwerte; Einstellungen der Vorfahren
+werden nicht übernommen. Ohne eigene Deklaration ist kein Taschenrechner verfügbar.
+Das Attribut `show` ist nicht erlaubt.
 
 ```xml
 <Testlet id="outer">
-  <Calculator show="yes" mode="SCIENTIFIC" journalLines="5"/>
-  <Testlet id="inherits">
-    <Unit id="scientific" label="Wissenschaftlicher Rechner mit fünf Journalzeilen"/>
-  </Testlet>
-  <Testlet id="disabled">
-    <Calculator show="no"/>
+  <Calculator mode="SCIENTIFIC" journalLines="5"/>
+  <Unit id="scientific" label="Wissenschaftlicher Rechner"/>
+  <Testlet id="without-calculator">
     <Unit id="hidden" label="Kein Taschenrechner"/>
-    <Testlet id="reenabled">
-      <Calculator show="yes"/>
-      <Unit id="simple" label="Einfacher Rechner ohne sichtbares Journal"/>
-    </Testlet>
+  </Testlet>
+  <Testlet id="with-calculator">
+    <Calculator/>
+    <Unit id="simple" label="Einfacher Rechner ohne sichtbares Journal"/>
   </Testlet>
 </Testlet>
 ```
 
-`show="no"` gilt auch für Nachfahren, bis eine eigene Deklaration die Einstellung
-ersetzt. Ohne anwendbare Deklaration ist kein Taschenrechner konfiguriert.
 Eine Deklaration direkt unter `<Units>`, innerhalb von `<Restrictions>` oder
 innerhalb einer `<Unit>` ist ungültig.
 

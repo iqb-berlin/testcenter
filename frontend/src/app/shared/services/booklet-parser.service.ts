@@ -166,7 +166,7 @@ export abstract class BookletParserService<
     let testletCount = 0;
     let unitCount = 0;
     const genericTestletId = `${context.parents.map(p => p.id).join('>')}[${testletCount}]`;
-    const calculator = parseTestletCalculator(testletElement, context.parents[0]?.calculator);
+    const calculator = parseTestletCalculator(testletElement);
     const testlet = this.toTestlet(
       {
         id: testletElement.getAttribute('id') || genericTestletId,

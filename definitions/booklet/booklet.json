@@ -87,19 +87,8 @@
     "Calculator": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "show"
-      ],
-      "description": "Noch nicht veröffentlicht: benötigt eine kommende Booklet-XSD-Version. Optionale Taschenrechner-Konfiguration. Alle Nachfahren erben die vollständige Deklaration, bis ein Testlet eine eigene Calculator-Deklaration enthält. Eine eigene Deklaration ersetzt alle geerbten Einstellungen; ausgelassene Einstellungen erhalten Standardwerte. Ohne anwendbare Deklaration bleibt der Taschenrechner verborgen.",
+      "description": "Noch nicht veröffentlicht: benötigt eine kommende Booklet-XSD-Version. Optionale Taschenrechner-Konfiguration für die direkten Units dieses Testlets. Kind-Testlets benötigen eine eigene Calculator-Deklaration. Ausgelassene Einstellungen erhalten Standardwerte. Ohne eigene Deklaration bleibt der Taschenrechner verborgen.",
       "properties": {
-        "show": {
-          "type": "string",
-          "enum": [
-            "yes",
-            "no"
-          ],
-          "description": "Pflichtattribut. yes zeigt den Taschenrechner; no blendet ihn für das Testlet und dessen Nachfahren aus, bis eine eigene Deklaration ihn wieder einblendet."
-        },
         "mode": {
           "type": "string",
           "enum": [
