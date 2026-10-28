@@ -20,6 +20,7 @@ export interface IQBFile {
     totalSize?: number;
     testtakers?: number;
     veronaVersion?: string;
+    veronaModel?: string;
     version?: string;
     playerId?: string;
     description?: string;

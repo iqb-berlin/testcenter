@@ -179,12 +179,13 @@ class WorkspaceDAO extends DAO {
                     verona_module_type,
                     verona_version,
                     verona_module_id,
+                    verona_model,
                     is_valid,
                     validation_report,
                     size,
                     modification_ts,
                     context_data
-                ) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);",
+                ) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);",
         [
           $this->workspaceId,
           $file->getName(),
@@ -199,6 +200,7 @@ class WorkspaceDAO extends DAO {
           $file->getVeronaModuleType(),
           $file->getVeronaVersion(),
           $file->getVeronaModuleId(),
+          $file->getVeronaModel(),
           $file->isValid() ? 1 : 0,
           serialize($file->getValidationReport()),
           $file->getSize(),
@@ -233,6 +235,7 @@ class WorkspaceDAO extends DAO {
                     version_patch,
                     version_label,
                     verona_module_id,
+                    verona_model,
                     verona_module_type,
                     verona_version,
                     context_data
@@ -295,6 +298,7 @@ class WorkspaceDAO extends DAO {
                 version_patch,
                 version_label,
                 verona_module_id,
+                verona_model,
                 verona_module_type,
                 verona_version,
                 context_data
@@ -322,6 +326,7 @@ class WorkspaceDAO extends DAO {
                 version_patch,
                 version_label,
                 verona_module_id,
+                verona_model,
                 verona_module_type,
                 verona_version,
                 context_data
@@ -356,6 +361,7 @@ class WorkspaceDAO extends DAO {
                 version_patch,
                 version_label,
                 verona_module_id,
+                verona_model,
                 verona_module_type,
                 verona_version,
                 context_data
@@ -451,6 +457,7 @@ class WorkspaceDAO extends DAO {
                     version_patch,
                     version_label,
                     verona_module_id,
+                    verona_model,
                     verona_module_type,
                     verona_version,
                     context_data
@@ -506,7 +513,8 @@ class WorkspaceDAO extends DAO {
         $row['version_minor'],
         $row['version_patch'],
         $row['version_label'],
-        $row['verona_version']
+        $row['verona_version'],
+        $row['verona_model']
       ),
       $row['type']
     );
@@ -635,6 +643,25 @@ class WorkspaceDAO extends DAO {
         );
     }
 
+  /**
+   * @return list<array{name: string, verona_model: string}>
+   * Oldest modification first within each model; filename breaks timestamp ties.
+   */
+  public function getWidgetResources(): array {
+    return $this->_(
+      "SELECT name, verona_model
+       FROM files
+       WHERE workspace_id = :ws_id
+         AND type = 'Resource'
+         AND verona_module_type = 'widget'
+         AND is_valid = true
+         AND verona_model <> ''
+       ORDER BY verona_model COLLATE \"C\", modification_ts ASC, name COLLATE \"C\" ASC",
+      [':ws_id' => $this->workspaceId],
+      true
+    );
+  }
+
   public function getWorkspaceHash(): string
   {
     return $this->_(
@@ -753,6 +780,7 @@ class WorkspaceDAO extends DAO {
       files.version_patch,
       files.version_label,
       files.verona_module_id,
+      files.verona_model,
       files.verona_module_type,
       files.verona_version,
       files.context_data
