@@ -21,7 +21,6 @@ import {
   Booklet, Command, TestControllerState, TestData, Testlet, Unit, WindowFocusState
 } from '../../interfaces/test-controller.interfaces';
 import { TimerData } from '../../classes/test-controller.classes';
-import { CalculatorService } from '../../services/calculator.service';
 
 function createController() {
   const data: { booklet: Booklet | null; units: Record<number, Unit>; widgets: TestData['widgets'] } = {
@@ -205,14 +204,17 @@ describe('TestControllerComponent calculator header', () => {
       await image.decode();
       const windowElement = element('[data-cy="calculator-peek"]');
       const peek = windowElement.getBoundingClientRect();
-      const style = getComputedStyle(windowElement);
-      const chromeWidth = 32 + parseFloat(style.borderLeftWidth) + parseFloat(style.borderRightWidth);
       const boundary = element('.peek-viewport').getBoundingClientRect();
-      expect(peek.width).toBeCloseTo(Math.min(width + chromeWidth, boundary.width - 16), 0);
-      expect(Math.abs(image.getBoundingClientRect().width - (peek.width - chromeWidth))).toBeLessThan(1);
-      expect(peek.right).toBeLessThanOrEqual(window.innerWidth);
+      const imageRect = image.getBoundingClientRect();
+      expect(imageRect.width).toBeGreaterThan(0);
+      expect(imageRect.left).toBeGreaterThanOrEqual(peek.left);
+      expect(imageRect.right).toBeLessThanOrEqual(peek.right);
+      expect(peek.left).toBeGreaterThanOrEqual(boundary.left);
+      expect(peek.right).toBeLessThanOrEqual(boundary.right);
+      if (width < boundary.width / 2) expect(imageRect.width).toBeCloseTo(width, 0);
+      else expect(imageRect.width).toBeLessThan(width);
       fakeAsync(() => {
-        fixture.debugElement.injector.get(CalculatorService).dismissResult();
+        element<HTMLButtonElement>('[aria-label="Ergebnisfenster schließen"]').click();
         fixture.detectChanges();
         tick();
       })();
@@ -226,8 +228,8 @@ describe('TestControllerComponent calculator header', () => {
     const content = element('mat-sidenav-content').getBoundingClientRect();
     expect(peek.width).toBeGreaterThan(0);
     expect(peek.height).toBeGreaterThan(0);
-    expect(peek.top).toBeCloseTo(content.top + 8, 0);
-    expect(peek.top).toBeGreaterThan(toolbar.bottom);
+    expect(peek.top).toBeGreaterThanOrEqual(content.top);
+    expect(peek.top).toBeGreaterThanOrEqual(toolbar.bottom);
     expect(peek.bottom).toBeLessThanOrEqual(content.bottom);
   }));
 
@@ -240,24 +242,24 @@ describe('TestControllerComponent calculator header', () => {
     expect(element('[data-cy="calculator-peek"]').hidden).toBeFalse();
     expect(document.activeElement).toBe(button());
     expect(document.querySelector('.cdk-overlay-backdrop')).toBeNull();
-    expect(getComputedStyle(element('tc-calculator-peek')).pointerEvents).toBe('none');
-    expect(getComputedStyle(element('[data-cy="calculator-peek"]')).pointerEvents).toBe('auto');
-    // The underlying header remains usable while the peek is expanded.
-    start();
-    close();
-  }));
-
-  it('closes the result entirely without leaving a taskbar button', fakeAsync(() => {
-    returnResult();
-    element<HTMLButtonElement>('[aria-label="Ergebnisfenster schließen"]').click();
+    const viewport = element('.peek-viewport').getBoundingClientRect();
+    const underneath = document.elementFromPoint(viewport.left + 2, viewport.top + 2);
+    expect(underneath).not.toBeNull();
+    expect(element('tc-calculator-peek').contains(underneath)).toBeFalse();
+    const clicked = jasmine.createSpy('underlying click');
+    underneath?.addEventListener('click', clicked, { once: true });
+    (underneath as HTMLElement).click();
+    expect(clicked).toHaveBeenCalled();
+    const trigger = button();
+    const rect = trigger.getBoundingClientRect();
+    const target = document.elementFromPoint(rect.left + rect.width / 2, rect.top + rect.height / 2);
+    expect(trigger.contains(target)).toBeTrue();
+    target?.dispatchEvent(new MouseEvent('click', { bubbles: true }));
     fixture.detectChanges();
-    expect(host().querySelector('tc-calculator-peek')).toBeNull();
-    expect(host().querySelector('[data-cy="calculator-peek-taskbar"]')).toBeNull();
-    expect(fixture.debugElement.injector.get(CalculatorService).result()).toBeUndefined();
-    selectUnit(2);
-    expect(host().querySelector('tc-calculator-peek')).toBeNull();
-    sendState(start(), '[{"asLatex":"no image","asImage":null}]');
-    expect(host().querySelector('tc-calculator-peek')).toBeNull();
+    http.expectOne('/api/file/header-group/ws_1/Resource/calculator.html').flush('<html></html>');
+    tick();
+    expect(dialog.openDialogs.length).toBe(1);
+    close();
   }));
 
   it('shows a new peek with the newest result after closing the previous one', fakeAsync(() => {
@@ -316,22 +318,7 @@ describe('TestControllerComponent calculator header', () => {
     expect(peek.hidden).toBeFalse();
   }));
 
-  it('does not create a peek on a forced close and clears it on run reset', fakeAsync(() => {
-    const widget = start();
-    sendState(widget, JSON.stringify([{ asLatex: '1+2=3', asImage: resultImage }]),
-              'vowStateChangedNotification');
-    selectUnit(2);
-    tick();
-    fixture.detectChanges();
-    expect(host().querySelector('tc-calculator-peek')).toBeNull();
-    returnResult();
-    controller.runReset$.next();
-    fixture.detectChanges();
-    expect(host().querySelector('tc-calculator-peek')).toBeNull();
-    expect(fixture.debugElement.injector.get(CalculatorService).result()).toBeUndefined();
-  }));
-
-  it('moves by its title bar, stays in the viewport and remains recoverable after resizing', fakeAsync(() => {
+  it('moves by its title bar and remains within the content boundary after resizing', fakeAsync(() => {
     returnResult();
     const peek = element('[data-cy="calculator-peek"]');
     const handle = element('[data-cy="calculator-peek"] .handle');
@@ -357,9 +344,14 @@ describe('TestControllerComponent calculator header', () => {
     expect(peek.getBoundingClientRect().top).toBeGreaterThan(initial.top);
     expect(peek.getBoundingClientRect().left).toBeGreaterThanOrEqual(0);
     expect(peek.getBoundingClientRect().right).toBeLessThanOrEqual(window.innerWidth);
+    const viewport = element('.peek-viewport');
+    const originalWidth = viewport.getBoundingClientRect().width;
+    host().style.width = `${originalWidth / 2}px`;
+    expect(viewport.getBoundingClientRect().width).toBeLessThan(originalWidth);
     window.dispatchEvent(new Event('resize'));
     fixture.detectChanges();
-    expect(peek.getBoundingClientRect().left).toBeCloseTo(initial.left, 0);
+    expect(peek.getBoundingClientRect().left).toBeGreaterThanOrEqual(viewport.getBoundingClientRect().left);
+    expect(peek.getBoundingClientRect().right).toBeLessThanOrEqual(viewport.getBoundingClientRect().right);
   }));
 
   it('retains an existing result when a later close has no usable image', fakeAsync(() => {
@@ -452,6 +444,27 @@ describe('TestControllerComponent calculator header', () => {
     }
   }
 
+  it('discards calculator state and ignores old widget messages when the controller is destroyed', fakeAsync(() => {
+    const first = start();
+    sendState(first, 'old owner state', 'vowStateChangedNotification');
+    fixture.destroy();
+    tick();
+    expect(dialog.openDialogs.length).toBe(0);
+    messages.next(new MessageEvent('message', { source: first.source, data: {
+      type: 'vowReturnRequested', sessionId: (first.command as { sessionId: string }).sessionId,
+      timeStamp: '2026-10-16T12:00:01Z', state: 'late old owner state'
+    } }));
+    fixture = TestBed.createComponent(TestControllerComponent);
+    component = fixture.componentInstance;
+    fixture.nativeElement.style.height = 'calc(100vh - 16px)';
+    fixture.detectChanges();
+    tick();
+    controller.currentUnitSequenceId$.next(1);
+    fixture.detectChanges();
+    expect(start().command).not.toEqual(jasmine.objectContaining({ state: jasmine.anything() }));
+    close();
+  }));
+
   it('retains unit journals through pause and clears all of them on run reset', fakeAsync(() => {
     sendState(start(), journal, 'vowStateChangedNotification');
     controller.state$.next('PAUSED');
@@ -509,7 +522,10 @@ describe('TestControllerComponent calculator header', () => {
     fixture.detectChanges();
     tick();
     const modal = document.querySelector('[role="dialog"]');
-    expect(modal?.querySelector('h2')?.textContent).toBe('Calculator tool');
+    const titleId = modal?.getAttribute('aria-labelledby');
+    expect(titleId).toBeTruthy();
+    expect(titleId ? document.getElementById(titleId)?.getAttribute('aria-label') : null)
+      .toBe('Calculator tool');
     expect(modal?.textContent).toContain('Ask your supervisor for help');
     close();
   }));

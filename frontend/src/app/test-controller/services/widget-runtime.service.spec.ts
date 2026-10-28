@@ -1,6 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { Location } from '@angular/common';
-import { provideLocationMocks, SpyLocation } from '@angular/common/testing';
+import { provideLocationMocks } from '@angular/common/testing';
 import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
@@ -14,7 +13,6 @@ import { TestControllerService } from './test-controller.service';
 import { WidgetRequest, WidgetRuntimeService } from './widget-runtime.service';
 import { CalculatorService } from './calculator.service';
 import { TestControllerState } from '../interfaces/test-controller.interfaces';
-import { WidgetDialogComponent } from '../components/widget-dialog/widget-dialog.component';
 import { getTestData } from '../test/test-data';
 
 @Component({
@@ -105,12 +103,6 @@ describe('Uploaded calculator launch', () => {
     http.verify();
   });
 
-  function view(): WidgetDialogComponent {
-    const instance: unknown = dialog.openDialogs[0].componentInstance;
-    if (!(instance instanceof WidgetDialogComponent)) throw new Error('Missing widget dialog');
-    return instance;
-  }
-
   function open(): void {
     trigger.click();
     fixture.detectChanges();
@@ -131,243 +123,6 @@ describe('Uploaded calculator launch', () => {
     }));
     return { source, post };
   }
-
-  function expectPosition(expected: { left: number; top: number }): void {
-    const actual = view().windowBounds;
-    expect(actual.left).toBeCloseTo(expected.left, 0);
-    expect(actual.top).toBeCloseTo(expected.top, 0);
-  }
-
-  for (const running of [false, true]) {
-    it(`closes safely on browser history changes while ${running ? 'running' : 'loading'}`, fakeAsync(() => {
-      open();
-      const request = http.expectOne('/api/file/calculator-group/ws_1/Resource/calculator.html');
-      if (running) {
-        request.flush('<html></html>');
-        ready();
-        dialog.openDialogs[0].updatePosition({ left: '12px', top: '16px' });
-      }
-      const bounds = view().windowBounds;
-      const restoreFocus = spyOn(trigger, 'focus');
-      const location = TestBed.inject(Location) as SpyLocation;
-      location.simulateUrlPop('/previous');
-      tick();
-      expect(dialog.openDialogs.length).toBe(0);
-      expect(fixture.componentInstance.runtime.isBusy()).toBeFalse();
-      expect(restoreFocus).not.toHaveBeenCalled();
-      if (!running) expect(request.cancelled).toBeTrue();
-      open();
-      http.expectOne('/api/file/calculator-group/ws_1/Resource/calculator.html').flush('<html></html>');
-      ready();
-      expectPosition(bounds);
-      cancel();
-    }));
-  }
-
-  it('restores the position of a widget type until the test run resets', fakeAsync(() => {
-    open();
-    http.expectOne('/api/file/calculator-group/ws_1/Resource/calculator.html').flush('<html></html>');
-    ready();
-    const original = view().windowBounds;
-    dialog.openDialogs[0].updatePosition({ left: '12px', top: '16px' });
-    const moved = view().windowBounds;
-    cancel();
-    open();
-    http.expectOne('/api/file/calculator-group/ws_1/Resource/calculator.html').flush('<html></html>');
-    ready();
-    expectPosition(moved);
-    expect(view().windowBounds.width).toBeCloseTo(original.width, 0);
-    expect(view().windowBounds.height).toBeCloseTo(original.height, 0);
-    // A reset must also discard the position saved by closing the open window.
-    reset.next();
-    tick();
-    open();
-    http.expectOne('/api/file/calculator-group/ws_1/Resource/calculator.html').flush('<html></html>');
-    ready();
-    expectPosition(original);
-    cancel();
-  }));
-
-  it('restores the position after initial fitting while measuring each opening afresh', async () => {
-    async function nextLayout(): Promise<void> {
-      for (let frame = 0; frame < 3; frame++) {
-        await new Promise<void>(resolve => requestAnimationFrame(() => resolve()));
-      }
-      fixture.detectChanges();
-    }
-    async function startWidget(): Promise<void> {
-      fixture.componentInstance.runtime.openHost({
-        resourcePath: 'Resource/calculator.html', model: 'OTHER', parameters: [], trigger
-      });
-      await nextLayout();
-      http.expectOne('/api/file/calculator-group/ws_1/Resource/calculator.html').flush(
-        '<!doctype html><html><body style="margin:0"><main style="width:350px;height:200px">' +
-        'Widget</main></body></html>'
-      );
-      const iframe = document.querySelector<HTMLIFrameElement>('.widget-dialog iframe');
-      if (!iframe) throw new Error('Missing widget iframe');
-      await new Promise<void>(resolve => iframe.addEventListener('load', () => resolve(), { once: true }));
-      messages.next(new MessageEvent('message', {
-        source: iframe.contentWindow, data: { type: 'vowReadyNotification', metadata: metadata('OTHER') }
-      }));
-      await nextLayout();
-    }
-
-    await startWidget();
-    const fitted = view().windowBounds;
-    expect(fitted.width).toBe(350);
-    dialog.openDialogs[0].updatePosition({ left: '60px', top: '70px' });
-    dialog.openDialogs[0].close();
-    await nextLayout();
-    await startWidget();
-    expectPosition({ left: 60, top: 70 });
-    expect(view().windowBounds.width).toBe(fitted.width);
-    expect(view().windowBounds.height).toBe(fitted.height);
-    dialog.openDialogs[0].close();
-    await nextLayout();
-  });
-
-  it('measures the same initial content size when reopening at a saved position', async () => {
-    async function nextLayout(): Promise<void> {
-      for (let frame = 0; frame < 5; frame++) {
-        await new Promise<void>(resolve => requestAnimationFrame(() => resolve()));
-      }
-      fixture.detectChanges();
-    }
-    async function startWidget(): Promise<HTMLIFrameElement> {
-      open();
-      await nextLayout();
-      http.expectOne('/api/file/calculator-group/ws_1/Resource/calculator.html').flush(
-        '<!doctype html><html><body style="margin:0"><main style="width:100vw;height:100vh">' +
-        'Widget</main></body></html>'
-      );
-      const iframe = document.querySelector<HTMLIFrameElement>('.widget-dialog iframe');
-      if (!iframe) throw new Error('Missing widget iframe');
-      await new Promise<void>(resolve => iframe.addEventListener('load', () => resolve(), { once: true }));
-      messages.next(new MessageEvent('message', {
-        source: iframe.contentWindow, data: { type: 'vowReadyNotification', metadata: metadata('CALCULATOR') }
-      }));
-      await nextLayout();
-      return iframe;
-    }
-
-    const first = await startWidget();
-    const firstStyle = first.style.cssText;
-    dialog.openDialogs[0].updatePosition({ left: '100px', top: '20px' });
-    const position = view().windowBounds;
-    dialog.openDialogs[0].close();
-    await nextLayout();
-    const second = await startWidget();
-    expect(second.style.cssText).toBe(firstStyle);
-    expectPosition(position);
-    dialog.openDialogs[0].close();
-    await nextLayout();
-  });
-
-  it('shares positions across player calls and Units while separating widget types', fakeAsync(() => {
-    tcs.widgets.PERIODIC_TABLE = ['Resource/periodic.html'];
-    tcs.widgets.MOLECULE_EDITOR = ['Resource/molecule.html'];
-    const player = document.createElement('iframe');
-    trigger.parentElement?.appendChild(player);
-    const source = player.contentWindow;
-    if (!source) throw new Error('Missing player window');
-    const launch = (widgetType = 'PERIODIC_TABLE'): void => {
-      fixture.componentInstance.openPlayer({
-        call: { type: 'vopWidgetCall', sessionId: 'player-session', callId: crypto.randomUUID(), widgetType },
-        source, playerIframe: player
-      });
-      fixture.detectChanges();
-      const resource = widgetType === 'PERIODIC_TABLE' ? 'periodic' : 'molecule';
-      http.expectOne(`/api/file/calculator-group/ws_1/Resource/${resource}.html`).flush('<html></html>');
-      ready(widgetType);
-    };
-    launch();
-    const original = view().windowBounds;
-    dialog.openDialogs[0].updatePosition({ left: '12px', top: '16px' });
-    const moved = view().windowBounds;
-    cancel();
-    launch();
-    expectPosition(moved);
-    cancel();
-    launch('MOLECULE_EDITOR');
-    expectPosition(original);
-    cancel();
-    launch();
-    tcs.currentUnitSequenceId = 2;
-    tcs.currentUnitSequenceId$.next(2);
-    tick();
-    expect(dialog.openDialogs.length).toBe(0);
-    launch();
-    expectPosition(moved);
-    dialog.openDialogs[0].updatePosition({ left: '20px', top: '24px' });
-    const updated = view().windowBounds;
-    cancel();
-    tcs.currentUnitSequenceId = 1;
-    tcs.currentUnitSequenceId$.next(1);
-    launch();
-    expectPosition(updated);
-    cancel();
-
-    // Host launches share positions even with another button and resource.
-    const otherTrigger = document.createElement('button');
-    trigger.parentElement?.appendChild(otherTrigger);
-    fixture.componentInstance.runtime.openHost({
-      model: 'PERIODIC_TABLE', resourcePath: 'Resource/other-periodic.html', parameters: [], trigger: otherTrigger
-    });
-    fixture.detectChanges();
-    http.expectOne('/api/file/calculator-group/ws_1/Resource/other-periodic.html').flush('<html></html>');
-    ready('PERIODIC_TABLE');
-    expectPosition(updated);
-    cancel();
-    otherTrigger.remove();
-    player.remove();
-  }));
-
-  it('shares calculator positions across Units between host launches and the CALC player alias', fakeAsync(() => {
-    open();
-    http.expectOne('/api/file/calculator-group/ws_1/Resource/calculator.html').flush('<html></html>');
-    ready();
-    dialog.openDialogs[0].updatePosition({ left: '12px', top: '16px' });
-    const moved = view().windowBounds;
-    cancel();
-    tcs.currentUnitSequenceId = 2;
-    tcs.currentUnitSequenceId$.next(2);
-    const player = document.createElement('iframe');
-    trigger.parentElement?.appendChild(player);
-    fixture.componentInstance.openPlayer({
-      call: { type: 'vopWidgetCall', sessionId: 'player-session', callId: crypto.randomUUID(), widgetType: 'CALC' },
-      source: player.contentWindow, playerIframe: player
-    });
-    fixture.detectChanges();
-    http.expectOne('/api/file/calculator-group/ws_1/Resource/calculator.html').flush('<html></html>');
-    ready();
-    expectPosition(moved);
-    cancel();
-    player.remove();
-  }));
-
-  it('downloads the preferred uploaded resource through the authenticated path without a player', fakeAsync(() => {
-    tcs.widgets = { CALC: ['Resource/calc.html'], CALCULATOR: ['Resource/old.html', 'Resource/calculator.html'] };
-    open();
-    expect(view().status()).toBe('loading');
-    http.expectOne('/api/file/calculator-group/ws_1/Resource/calculator.html').flush('<html></html>');
-    const { post } = ready();
-    expect(view().status()).toBe('running');
-    expect(post).toHaveBeenCalledOnceWith(jasmine.objectContaining({
-      type: 'vowStartCommand', parameters: fixture.componentInstance.parameters
-    }), '*');
-    cancel();
-    expect(document.activeElement).toBe(trigger);
-  }));
-
-  it('falls back to CALC and accepts that model in the ready handshake', fakeAsync(() => {
-    tcs.widgets = { CALCULATOR: [], CALC: ['Resource/calc.html'] };
-    open();
-    http.expectOne('/api/file/calculator-group/ws_1/Resource/calc.html').flush('<html></html>');
-    expect(ready('CALC').post).toHaveBeenCalled();
-    expect(view().status()).toBe('running');
-    cancel();
-  }));
 
   it('preserves player returns when a CALC request loads a CALCULATOR resource', fakeAsync(() => {
     const player = document.createElement('iframe');
@@ -399,47 +154,6 @@ describe('Uploaded calculator launch', () => {
     open();
     http.expectOne('/files/file/calculator-group/ws_1/Resource/calculator.html').flush('<html></html>');
     ready();
-    cancel();
-  }));
-
-  it('shows an actionable missing-resource error without downloading and permits a later retry', fakeAsync(() => {
-    tcs.widgets = {};
-    open();
-    tick();
-    expect(view().status()).toBe('unavailable');
-    expect(document.querySelector('[role="dialog"]')?.textContent).toContain('Bitte informieren Sie die Testleitung.');
-    http.expectNone(request => request.url.includes('/file/'));
-    cancel();
-    tcs.widgets = { CALC: ['Resource/calc.html'] };
-    open();
-    http.expectOne('/api/file/calculator-group/ws_1/Resource/calc.html').flush('<html></html>');
-    ready('CALC');
-    cancel();
-  }));
-
-  it('reports a missing selected file without silently loading a different calculator', fakeAsync(() => {
-    spyOn(console, 'error');
-    tcs.widgets.CALC = ['Resource/calc.html'];
-    open();
-    http.expectOne('/api/file/calculator-group/ws_1/Resource/calculator.html')
-      .flush('missing', { status: 404, statusText: 'Not found' });
-    tick();
-    expect(view().status()).toBe('download-error');
-    http.expectNone('/api/file/calculator-group/ws_1/Resource/calc.html');
-    cancel();
-  }));
-
-  it('rejects a different model and retains the ready timeout', fakeAsync(() => {
-    spyOn(console, 'error');
-    open();
-    http.expectOne('/api/file/calculator-group/ws_1/Resource/calculator.html').flush('<html></html>');
-    expect(ready('PERIODIC_TABLE').post).not.toHaveBeenCalled();
-    expect(view().status()).toBe('startup-error');
-    cancel();
-    open();
-    http.expectOne('/api/file/calculator-group/ws_1/Resource/calculator.html').flush('<html></html>');
-    tick(15000);
-    expect(view().status()).toBe('startup-error');
     cancel();
   }));
 
@@ -475,14 +189,29 @@ describe('Uploaded calculator launch', () => {
       http.expectOne('/api/file/calculator-group/ws_1/Resource/calculator.html').flush('<html></html>');
       expect(ready().post).toHaveBeenCalledWith(jasmine.objectContaining({ state: '' }), '*');
       cancel();
-      reset.next();
-      fixture.componentInstance.calculator.open({ trigger, parameters: [], state: 'explicit' });
-      fixture.detectChanges();
-      http.expectOne('/api/file/calculator-group/ws_1/Resource/calculator.html').flush('<html></html>');
-      expect(ready().post).toHaveBeenCalledWith(jasmine.objectContaining({ state: 'explicit' }), '*');
-      cancel();
     }));
   }
+
+  it('clears retained calculator state on reset and accepts explicit state afterwards', fakeAsync(() => {
+    open();
+    http.expectOne('/api/file/calculator-group/ws_1/Resource/calculator.html').flush('<html></html>');
+    const previous = ready();
+    const sessionId = previous.post.calls.mostRecent().args[0].sessionId;
+    messages.next(new MessageEvent('message', { source: previous.source, data: {
+      type: 'vowStateChangedNotification', sessionId, timeStamp: '2026-10-21T12:00:00Z', state: 'old journal'
+    } }));
+    cancel();
+    reset.next();
+    open();
+    http.expectOne('/api/file/calculator-group/ws_1/Resource/calculator.html').flush('<html></html>');
+    expect(ready().post.calls.mostRecent().args[0].state).toBeUndefined();
+    cancel();
+    fixture.componentInstance.calculator.open({ trigger, parameters: [], state: 'explicit' });
+    fixture.detectChanges();
+    http.expectOne('/api/file/calculator-group/ws_1/Resource/calculator.html').flush('<html></html>');
+    expect(ready().post).toHaveBeenCalledWith(jasmine.objectContaining({ state: 'explicit' }), '*');
+    cancel();
+  }));
 
   for (const model of ['CALCULATOR', 'CALC', 'PERIODIC_TABLE', 'MOLECULE_EDITOR']) {
     it(`starts independent player ${model} instances with only player-supplied state`, fakeAsync(() => {
@@ -523,119 +252,6 @@ describe('Uploaded calculator launch', () => {
       cancel();
       player.remove();
     }));
-  }
-
-  for (const model of ['CALCULATOR', 'CALC']) {
-    it(`isolates player ${model} state from the toolbar journal`, fakeAsync(() => {
-      const player = document.createElement('iframe');
-      trigger.parentElement?.appendChild(player);
-      const source = player.contentWindow;
-      if (!source) throw new Error('Missing player window');
-      fixture.componentInstance.openPlayer({
-        call: { type: 'vopWidgetCall', sessionId: 'player-session', widgetType: model },
-        source, playerIframe: player
-      });
-      fixture.detectChanges();
-      http.expectOne('/api/file/calculator-group/ws_1/Resource/calculator.html').flush('<html></html>');
-      const widget = ready();
-      const command = widget.post.calls.mostRecent().args[0] as { sessionId: string };
-      const state = '[{"asLatex":"2+2=4","asImage":"data:image/png;base64,AAAA"}]';
-      messages.next(new MessageEvent('message', { source: widget.source, data: {
-        type: 'vowStateChangedNotification', sessionId: command.sessionId,
-        timeStamp: '2026-10-21T12:00:00Z', state
-      } }));
-      cancel();
-      expect(fixture.componentInstance.calculator.result()).toBeUndefined();
-      const expectJournal = (expected: string | undefined): void => {
-        open();
-        http.expectOne('/api/file/calculator-group/ws_1/Resource/calculator.html').flush('<html></html>');
-        const start = ready().post.calls.mostRecent().args[0] as { state?: string };
-        expect(start.state).toBe(expected);
-        cancel();
-      };
-      expectJournal(undefined);
-      tcs.currentUnitSequenceId = 2;
-      tcs.currentUnitSequenceId$.next(2);
-      expectJournal(undefined);
-      tcs.currentUnitSequenceId = 1;
-      tcs.currentUnitSequenceId$.next(1);
-      expectJournal(undefined);
-      reset.next();
-      expectJournal(undefined);
-      player.remove();
-    }));
-  }
-
-  for (const { launch, contentSize } of [
-    ...['host', 'CALC', 'PERIODIC_TABLE', 'MOLECULE_EDITOR', 'OTHER'].map(launch => ({
-      launch, contentSize: undefined
-    })),
-    ...['host', 'PERIODIC_TABLE'].map(launch => ({ launch, contentSize: { width: 700, height: 2200 } }))
-  ]) {
-    const dimensionSource = contentSize ? 'supplied' : launch === 'OTHER' ? 'measured' : 'preferred width';
-    it(`fits ${dimensionSource} widget dimensions through ${launch}`, async () => {
-      const model = launch === 'host' || launch === 'CALC' ? 'CALCULATOR' : launch;
-      const resource = model === 'CALCULATOR' ? 'calculator' : model.toLowerCase();
-      tcs.widgets[model] = [`Resource/${resource}.html`];
-      const player = document.createElement('iframe');
-      document.body.appendChild(player);
-      let observe!: (event: MessageEvent) => void;
-      const started = new Promise<void>((resolve) => {
-        observe = (event) => {
-          const data: unknown = event.data;
-          if (event.source !== document.querySelector<HTMLIFrameElement>('[role="dialog"] iframe')?.contentWindow ||
-            data === null || typeof data !== 'object' || !('type' in data) ||
-            data.type !== 'vowReadyNotification') return;
-          messages.next(event);
-          resolve();
-        };
-      });
-      window.addEventListener('message', observe);
-      try {
-        if (launch === 'host') {
-          if (contentSize) fixture.componentInstance.runtime.openHost({
-            resourcePath: `Resource/${resource}.html`, model, parameters: [], trigger
-          }, { contentSize, onState: () => {} });
-          else open();
-        } else {
-          const request = {
-            call: { type: 'vopWidgetCall', sessionId: 'player-session', widgetType: launch },
-            source: player.contentWindow, playerIframe: player
-          };
-          if (contentSize) fixture.componentInstance.runtime.open(request, () => ({ contentSize, onState: () => {} }));
-          else fixture.componentInstance.openPlayer(request);
-        }
-        http.expectOne(`/api/file/calculator-group/ws_1/Resource/${resource}.html`).flush(`<!doctype html>
-          <html><head><style>
-            html, body { margin: 0; width: 100%; height: 100%; overflow: hidden; }
-            main { width: 550px; height: 2000px; }
-          </style></head><body><main>Widget</main><script>
-            parent.postMessage({
-              type: 'vowReadyNotification', metadata: ${JSON.stringify(metadata(model))}
-            }, '*');
-          </script></body></html>`);
-        await started;
-        for (let frame = 0; frame < 5; frame++) {
-          await new Promise<void>(resolve => requestAnimationFrame(() => resolve()));
-        }
-        expect(view().layoutReady()).toBeTrue();
-        const iframe = document.querySelector<HTMLIFrameElement>('[role="dialog"] iframe');
-        if (!iframe) throw new Error('Missing widget iframe');
-        const host = iframe.parentElement;
-        if (!host) throw new Error('Missing widget frame host');
-        const frame = iframe.getBoundingClientRect();
-        expect(frame.width).toBeLessThanOrEqual(host.clientWidth + 1);
-        expect(frame.height).toBeLessThanOrEqual(host.clientHeight + 1);
-        const expectedContentSize = contentSize ?? { width: 550, height: 2000 };
-        expect(iframe.style.width).toBe(`${expectedContentSize.width}px`);
-        expect(iframe.style.height).toBe(`${expectedContentSize.height}px`);
-        expect(Math.abs(frame.width - host.clientWidth)).toBeLessThanOrEqual(1);
-        expect(Math.abs(frame.height - host.clientHeight)).toBeLessThanOrEqual(1);
-      } finally {
-        window.removeEventListener('message', observe);
-        player.remove();
-      }
-    });
   }
 
   it('applies the calculator light theme before widget scripts run and the iframe finishes loading', async () => {

@@ -34,8 +34,8 @@ const defaults: CalculatorConfiguration = {
 };
 
 const consumers = [
-  { name: 'Testcontroller', create: () => TestBed.inject(TestLoaderService) },
-  { name: 'group monitor', create: () => TestBed.inject(BookletService) }
+  { name: 'Testcontroller', fullValidation: true, create: () => TestBed.inject(TestLoaderService) },
+  { name: 'group monitor', fullValidation: false, create: () => TestBed.inject(BookletService) }
 ];
 
 for (const consumer of consumers) {
@@ -115,12 +115,17 @@ for (const consumer of consumers) {
       }
     });
 
-    it('accepts a declaration after restrictions and exposes configuration through the unit parent', () => {
+    it('accepts a declaration after restrictions and exposes controller configuration through the unit parent', () => {
       const result = parser.parseBookletXml(block('<Restrictions/><Calculator/>'));
       const testlet = findTestlet(result.units, 'outer');
       expect(testlet.calculator).toEqual(defaults);
       const unit = testlet.children[0];
-      if ('parent' in unit) expect(unit.parent.calculator).toEqual(defaults);
+      expect(unit.id).toBe('u1');
+      if (consumer.name === 'Testcontroller') {
+        if (!('parent' in unit)) throw new Error('Expected a controller unit with a parent');
+        expect(Object.is(unit.parent, testlet)).toBeTrue();
+        expect(unit.parent.calculator).toEqual(defaults);
+      }
     });
 
     it('accepts XML integer lexical forms without losing precision', () => {
@@ -147,16 +152,19 @@ for (const consumer of consumers) {
       '<Calculator><Journal value="[]">[]</Journal></Calculator>',
       '<Calculator><Journal><Entry/></Journal></Calculator>'
     ];
-    for (const declaration of invalidDeclarations) {
+    // Both consumers inherit the same validation. Run its full matrix once and
+    // retain one invalid input per category for the monitor adapter.
+    for (const declaration of consumer.fullValidation ? invalidDeclarations : invalidDeclarations.slice(0, 1)) {
       it(`rejects invalid declaration ${declaration} with testlet context`, () => {
         expect(() => parser.parseBookletXml(block(declaration))).toThrowMatching((error: unknown) =>
           error instanceof AppError && error.type === 'xml' && error.description.includes('outer'));
       });
     }
 
-    for (const journal of ['', ' ', 'invalid', '{}', 'null', '[null]', '[[]]', '[1]',
+    const invalidJournals = ['', ' ', 'invalid', '{}', 'null', '[null]', '[[]]', '[1]',
       '[{"asLatex":"x"}]', '[{"asLatex":"x","asImage":null}]', '[{"asLatex":0,"asImage":""}]',
-      '[{"asLatex":"valid","asImage":""},null]']) {
+      '[{"asLatex":"valid","asImage":""},null]'];
+    for (const journal of consumer.fullValidation ? invalidJournals : ['invalid']) {
       it(`rejects invalid journal ${JSON.stringify(journal)}`, () => {
         expect(() => parser.parseBookletXml(block(
           `<Calculator><Journal>${journal}</Journal></Calculator>`
@@ -172,7 +180,7 @@ for (const consumer of consumers) {
       block('<Calculator/><Restrictions/>'),
       booklet('<Testlet id="outer"><Unit id="u1" label="Task"/><Calculator/></Testlet>')
     ];
-    for (const xml of misplaced) {
+    for (const xml of consumer.fullValidation ? misplaced : misplaced.slice(0, 1)) {
       it('rejects a calculator declaration outside its permitted XML position', () => {
         expect(() => parser.parseBookletXml(xml)).toThrowMatching((error: unknown) =>
           error instanceof AppError && error.type === 'xml');

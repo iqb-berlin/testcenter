@@ -23,10 +23,6 @@
     "label": "Beschriftung zum Schließen eines Widget-Fensters",
     "defaultvalue": "Widget schließen"
   },
-  "booklet_widgetResize": {
-    "label": "Beschriftung zum Ändern der Widget-Fenstergröße",
-    "defaultvalue": "Widget-Größe ändern"
-  },
   "booklet_calculator": {
     "label": "Beschriftung für den Taschenrechner",
     "defaultvalue": "Taschenrechner"

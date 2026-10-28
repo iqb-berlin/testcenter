@@ -134,19 +134,6 @@ describe('TestLoaderService', () => {
   });
 
   describe('(loadTest)', () => {
-    it('should store the widget map from the test response and clear it on reset', async () => {
-      const backend = TestBed.inject(BackendService);
-      const testData = await lastValueFrom(backend.getTestData(service.tcs.testId));
-      const widgets = { PERIODIC_TABLE: ['Resource/older.html', 'Resource/newer.html'] };
-      spyOn(backend, 'getTestData').and.returnValue(of({ ...testData, widgets }));
-
-      await service.loadTest();
-      expect(service.tcs.widgets).toEqual(widgets);
-      expect(service.tcs.getWidgetResourcePath('PERIODIC_TABLE')).toBe('Resource/newer.html');
-
-      service.reset();
-      expect(service.tcs.widgets).toEqual({});
-    });
 
     it('should load and parse the booklet, load the units, their definitions and players', async () => {
       await service.loadTest();

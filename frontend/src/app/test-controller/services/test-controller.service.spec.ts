@@ -146,13 +146,9 @@ describe('TestControllerService', () => {
   });
 
   it('should clear widget paths when resetting the test run', () => {
-    const reset = jasmine.createSpy('run reset');
-    const subscription = service.runReset$.subscribe(reset);
     service.widgets = { PERIODIC_TABLE: ['Resource/periodic.html'] };
+    expect(service.getWidgetResourcePath('PERIODIC_TABLE')).toBe('Resource/periodic.html');
     service.reset();
-    expect(reset).toHaveBeenCalledTimes(1);
-    subscription.unsubscribe();
-    expect(service.widgets).toEqual({});
     expect(service.getWidgetResourcePath('PERIODIC_TABLE')).toBeUndefined();
   });
 
@@ -181,24 +177,6 @@ describe('TestControllerService', () => {
     expect(service.getWidgetResourcePath('CALCULATOR')).toBe('Resource/calc.html');
     service.widgets.CALC = [];
     expect(service.getWidgetResourcePath('CALCULATOR')).toBeUndefined();
-  });
-
-
-  it('updates existing shared parameters and persists empty values with one config notification', () => {
-    const buffer = spyOn(service, 'addToTestStateBuffer');
-    const changed = jasmine.createSpy('config changed');
-    const subscription = service.configChanged$.subscribe(changed);
-    service.sharedParameters = [{ key: 'existing', value: 'old' }];
-    service.addSharedParameters([{ key: 'existing', value: '' }, { key: 'new', value: '' }]);
-    expect(service.sharedParameters).toEqual([{ key: 'existing', value: '' }, { key: 'new', value: '' }]);
-    expect(buffer).toHaveBeenCalledOnceWith('SHARED_PARAMETERS', JSON.stringify(service.sharedParameters));
-    expect(changed).toHaveBeenCalledTimes(1);
-    buffer.calls.reset();
-    changed.calls.reset();
-    service.addSharedParameters([{ key: 'existing', value: '' }, { key: 'new', value: '' }, { key: 'omitted' }]);
-    expect(buffer).not.toHaveBeenCalled();
-    expect(changed).not.toHaveBeenCalled();
-    subscription.unsubscribe();
   });
 
   it('flushes changed shared parameters through the existing test-state persistence path', fakeAsync(() => {

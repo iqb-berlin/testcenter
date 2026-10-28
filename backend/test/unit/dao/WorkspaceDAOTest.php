@@ -175,7 +175,6 @@ class WorkspaceDAOTest extends TestCase {
       ['name' => 'lowercase.html', 'verona_model' => 'periodic_table']
     ];
     $this->assertSame($expected, $this->dbc->getWidgetResources());
-    $this->assertSame($expected, $this->dbc->getWidgetResources());
   }
 
   public function test_addLoginSource(): void {
