@@ -233,7 +233,7 @@
     "defaultvalue": "FALSE"
   },
   "silent_mode": {
-    "label": "Unterdrückung von Einblendungen, wie unerlaubte Navigation und Ablauf Timer.",
+    "label": "Unterdrückung von Hinweisen und Nachfragen während der Testdurchführung.\n\nWirkt nur in den Modi `run-hot-return`, `run-hot-restart` und `run-simulation`. In allen anderen Modi werden alle Einblendungen angezeigt.\n\nUnterdrückt werden:\n\n* die Hinweise zur Zeitbegrenzung: Start, verbleibende Minuten, Ablauf und Abbruch der Zeit\n* der Hinweis, dass eine Unit nicht angesteuert werden kann, weil sie gesperrt ist oder nicht existiert\n* der Hinweis, dass die erste bzw. letzte Seite einer Unit bereits erreicht ist\n* die Nachfrage beim Beenden des Tests, sofern er sich danach wieder aufnehmen lässt (siehe `lock_test_on_termination`)\n\nWeiterhin angezeigt werden die Nachfragen vor unumkehrbaren Schritten und die Hinweise, warum eine Navigation nicht möglich ist – sonst bliebe ein Klick ohne erkennbare Wirkung:\n\n* die Nachfrage beim Verlassen eines zeitbeschränkten Blocks oder eines Blocks, der danach gesperrt wird\n* die Nachfrage beim Beenden des Tests, wenn er dabei gesperrt wird\n* der Hinweis, dass eine Unit erst vollständig angesehen bzw. bearbeitet werden muss\n* der Hinweis, dass ein zeitbeschränkter Block erst nach Ablauf der Zeit verlassen werden darf",
     "options": {
       "TRUE": "Einblendungen werden unterdrückt.",
       "FALSE": "Normales Anzeigeverhalten"
