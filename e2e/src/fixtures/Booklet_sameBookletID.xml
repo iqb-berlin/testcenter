@@ -3,7 +3,7 @@
                xsi:noNamespaceSchemaLocation="https://w3id.org/iqb/spec/testcenter-booklet-xml/18.0">
 
   <Metadata>
-    <Id>BOOKLET.SAMPLE-100</Id>
+    <Id>BOOKLET.SAMPLE-1</Id>
     <Label>Sample booklet</Label>
     <Description>This a sample booklet for testing/development/showcase purposes.</Description>
   </Metadata>
