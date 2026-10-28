@@ -17,6 +17,7 @@
 - Der Bestätigungsknopf im Bereich "Dateien" eines Workspace befindet sich nun oben und nicht mehr potentiell weit unten, nach der Liste der hochgeladenen Dateien.
 
 ## Fehlerbehebungen
+- Wird eine hochgeladene Datei abgelehnt, weil eine gleichnamige Datei mit anderer ID, anderem Verona-Modul oder inkompatibler Version existiert, bleibt auch der Eintrag in der Datenbank unverändert. Bisher wurde er trotz der Fehlermeldung mit den Daten der abgelehnten Datei überschrieben, bis der Arbeitsbereich neu eingelesen wurde.
 - „Test beenden“ im Unit-Menü und die Aufforderung einer Unit, den Test zu beenden, fragen jetzt nach, wie bereits das Logo. Mit `silent_mode` entfällt die Nachfrage auf allen drei Wegen, außer der Test oder ein Block wird dabei gesperrt. Bisher fragten Unit-Menü und Unit nicht nach, das Logo dagegen auch mit `silent_mode`. (#1651)
 - Ist der Brute-Force-Schutz (`BRUTE_FORCE_PROTECTION`) für eine Anmeldeart eingeschaltet, die Seite aber nicht über HTTPS aufgerufen, zeigt die Anmeldeseite einen entsprechenden Hinweis und sperrt die betroffene Anmeldung. Bisher blieb der Anmelde-Knopf nach dem ersten Versuch dauerhaft deaktiviert, weil Browser die für den Schutz nötige Verschlüsselungsfunktion nur über HTTPS bereitstellen.
 - Bei der Anmeldung mit Kennwort, als Administrator:in und mit Code bleibt die Anmeldeschaltfläche während der gesamten ALTCHA-Prüfung deaktiviert, bis der Server die Prüfung abgeschlossen hat. Mehrfaches Absenden während der Prüfung wird verhindert.

@@ -391,6 +391,49 @@ class WorkspaceTest extends TestCase {
     static::assertFalse(file_exists(DATA_DIR . '/ws_1/valid.xml'), 'cleanup after import');
   }
 
+  function test_importUncategorizedFiles_singleFile_fail_sameNameDifferentId() {
+    file_put_contents(DATA_DIR . '/ws_1/Unit/valid.xml', self::validFile);
+    file_put_contents(DATA_DIR . '/ws_1/Resource/P.HTML', "this would be a player");
+    file_put_contents(DATA_DIR . '/ws_1/valid.xml', self::validUnit);
+
+    $this->workspaceDaoMock
+      ->shouldReceive('storeFile')
+      ->never();
+    $this->workspaceDaoMock
+      ->shouldReceive('storeRelations')
+      ->never();
+    $this->workspaceDaoMock
+      ->expects('getAllFilesWhere')
+      ->andReturn(
+        [
+          'Unit' => [
+            'VALID.XML' => new XMLFileUnit(DATA_DIR . '/ws_1/Unit/valid.xml')
+          ]
+        ],
+        [
+          'Resource' => [
+            'P-0.0.HTML' => new ResourceFile(DATA_DIR . '/ws_1/Resource/P.HTML')
+          ]
+        ],
+      )->twice();
+    $this->workspaceDaoMock
+      ->expects('updateContentTypeBasedOnRemainingTesttakers');
+
+    $workspace = new Workspace(1);
+    $result = $workspace->importUncategorizedFiles(['valid.xml']);
+
+    static::assertStringContainsString(
+      '1st valid file',
+      file_get_contents(DATA_DIR . '/ws_1/Unit/valid.xml'),
+      "don't overwrite if filename is the same but id differs"
+    );
+    static::assertGreaterThan(
+      0,
+      count($result["valid.xml"]['error']),
+      'return error if filename is the same but id differs'
+    );
+  }
+
   function test_importUncategorizedFiles_multipleFilesWithDependencies() {
     file_put_contents(DATA_DIR . '/ws_1/valid_testtakers.xml', self::validTesttakers);
     file_put_contents(DATA_DIR . '/ws_1/valid_booklet.xml', self::validBooklet);

@@ -247,8 +247,7 @@ class Workspace {
 
         $files = $this->validateFilesForCategory($filePaths, FileType::tryFrom($type));
         foreach ($files as $filePath => $file) {
-          if ($file->isValid()) {
-            $this->categorizeFile($filePath, $file);
+          if ($file->isValid() and $this->categorizeFile($filePath, $file)) {
             $this->workspaceDAO->storeFile($file);
             $this->storeFileMeta($file);
             $this->updateDependentFiles($file);
