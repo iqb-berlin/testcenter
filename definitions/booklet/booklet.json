@@ -84,6 +84,49 @@
     }
   },
   "$defs": {
+    "Calculator": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "show"
+      ],
+      "description": "Noch nicht veröffentlicht: benötigt eine kommende Booklet-XSD-Version. Optionale Taschenrechner-Konfiguration. Alle Nachfahren erben die vollständige Deklaration, bis ein Testlet eine eigene Calculator-Deklaration enthält. Eine eigene Deklaration ersetzt alle geerbten Einstellungen; ausgelassene Einstellungen erhalten Standardwerte. Ohne anwendbare Deklaration bleibt der Taschenrechner verborgen.",
+      "properties": {
+        "show": {
+          "type": "string",
+          "enum": [
+            "yes",
+            "no"
+          ],
+          "description": "Pflichtattribut. yes zeigt den Taschenrechner; no blendet ihn für das Testlet und dessen Nachfahren aus, bis eine eigene Deklaration ihn wieder einblendet."
+        },
+        "mode": {
+          "type": "string",
+          "enum": [
+            "SIMPLE",
+            "SCIENTIFIC"
+          ],
+          "default": "SIMPLE"
+        },
+        "journalLines": {
+          "type": "integer",
+          "minimum": 0,
+          "default": 0,
+          "description": "Anzahl sichtbarer Journalzeilen. 0 blendet das Journal aus."
+        },
+        "maxImageWidthPx": {
+          "type": "integer",
+          "minimum": 1,
+          "default": 200,
+          "description": "Maximale Breite des Ergebnisbildes in Pixeln."
+        },
+        "Journal": {
+          "type": "string",
+          "default": "[]",
+          "description": "Serialisiertes JSON-Array bisheriger Berechnungen mit asLatex und asImage je Eintrag; der neueste Eintrag steht am Ende. Im XML ist Journal ein optionales Kindelement. JSON-Syntax und Einträge müssen zusätzlich zur XSD-Prüfung durch die Anwendung validiert werden."
+        }
+      }
+    },
     "Testlet": {
       "type": "object",
       "required": ["id"],
@@ -99,6 +142,9 @@
         },
         "Restrictions": {
           "$ref": "#/$defs/Restrictions"
+        },
+        "Calculator": {
+          "$ref": "#/$defs/Calculator"
         },
         "Unit": {
           "type": "array",
