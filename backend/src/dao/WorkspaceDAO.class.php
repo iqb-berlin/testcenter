@@ -651,6 +651,30 @@ class WorkspaceDAO extends DAO {
     );
   }
 
+  /**
+   * Takes the lock unless another request holds it. A lock older than 12 minutes counts as abandoned:
+   * uploads may run for 10 minutes (`set_time_limit(600)`), and a request that dies never unlocks.
+   *
+   * @return string|null the lock's timestamp, which unlockWorkspace() needs; null if the workspace is locked
+   */
+  public function lockWorkspace(): ?string {
+    $row = $this->_(
+      "UPDATE workspaces SET locked_at = now()
+        WHERE id = :ws_id AND (locked_at IS NULL OR locked_at < now() - INTERVAL '12 minutes')
+        RETURNING locked_at",
+      [':ws_id' => $this->workspaceId]
+    );
+    return $row['locked_at'] ?? null;
+  }
+
+  /** Releases the lock taken at $lockedAt; does nothing if another request has taken it over since. */
+  public function unlockWorkspace(string $lockedAt): void {
+    $this->_(
+      "UPDATE workspaces SET locked_at = NULL WHERE id = :ws_id AND locked_at = :locked_at",
+      [':ws_id' => $this->workspaceId, ':locked_at' => $lockedAt]
+    );
+  }
+
   private function setSysCheckModeAccordingToTT(LoginArray $logins): void {
     $enableSysCheckMode = SysCheckMode::TEST;
     /** @var Login $login */

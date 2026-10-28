@@ -1,3 +1,8 @@
+# storage-driver (nach dem nächsten Release)
+
+## Technisches
+- Datenbank: Neue Spalte `workspaces.locked_at`. Während eines Uploads oder Löschvorgangs sperrt sie den Arbeitsbereich für weitere solche Aktionen. Bisher übernahm das eine Datei `.lock` im Workspace-Ordner, die mehrere Backend-Container ohne gemeinsames Laufwerk nicht teilen können.
+
 # next
 
 ## Neue Funktionen

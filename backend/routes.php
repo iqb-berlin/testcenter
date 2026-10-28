@@ -201,8 +201,8 @@ $app->group('/workspace', function (RouteCollectorProxy $group) {
     ->add(new IsWorkspacePermitted(WorkspaceRole::RO));
 
   $group->post('/{ws_id}/file', [WorkspaceController::class, 'postFile'])
-    ->add(new IsWorkspacePermitted(WorkspaceRole::RW))
-    ->add(new IsWorkspaceBlocked());
+    ->add(new IsWorkspaceBlocked())
+    ->add(new IsWorkspacePermitted(WorkspaceRole::RW));
 
   $group->get('/{ws_id}/files', [WorkspaceController::class, 'getFiles'])
     ->add(new IsWorkspacePermitted(WorkspaceRole::RO));
@@ -210,8 +210,8 @@ $app->group('/workspace', function (RouteCollectorProxy $group) {
     ->add(new IsWorkspacePermitted(WorkspaceRole::RO));
 
   $group->delete('/{ws_id}/files', [WorkspaceController::class, 'deleteFiles'])
-    ->add(new IsWorkspacePermitted(WorkspaceRole::RW))
-    ->add(new IsWorkspaceBlocked());
+    ->add(new IsWorkspaceBlocked())
+    ->add(new IsWorkspacePermitted(WorkspaceRole::RW));
 
   $group->get('/{ws_id}/report/{type}', [WorkspaceController::class, 'getReport'])
     ->add(new IsWorkspacePermitted(WorkspaceRole::RO));
