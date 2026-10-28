@@ -18,7 +18,7 @@ describe('Widget window interactions', () => {
     dialog = TestBed.inject(MatDialog);
     ref = dialog.open(WidgetDialogComponent, {
       data: { name: 'Test widget' }, width: '400px', height: '300px',
-      minWidth: 'min(320px, 95vw)', minHeight: 'min(240px, 95vh)',
+      minWidth: 0, minHeight: 0,
       maxWidth: '95vw', maxHeight: '95vh', panelClass: 'widget-dialog'
     });
     tick();
@@ -60,20 +60,21 @@ describe('Widget window interactions', () => {
   }
 
   async function nextLayout(): Promise<void> {
-    for (let frame = 0; frame < 3; frame++) {
+    for (let frame = 0; frame < 5; frame++) {
       await new Promise<void>(resolve => requestAnimationFrame(() => resolve()));
     }
   }
 
   async function loadWidget(contentWidth = 550, contentHeight = 240,
-                            contentSize?: WidgetContentSize): Promise<HTMLIFrameElement> {
+                            contentSize?: WidgetContentSize,
+                            preferredWidth?: number): Promise<HTMLIFrameElement> {
     ref.componentInstance.start(`<!doctype html><html><head><style>
       html, body { margin: 0; width: 100%; height: 100%; }
       main { width: ${contentWidth}px; height: ${contentHeight}px; background: green; }
     </style></head><body><main>Widget</main></body></html>`, () => {});
     const iframe = target('iframe') as HTMLIFrameElement;
     await new Promise<void>(resolve => iframe.addEventListener('load', () => resolve(), { once: true }));
-    ref.componentInstance.showRunning('Test widget', contentSize);
+    ref.componentInstance.showRunning('Test widget', contentSize, preferredWidth);
     ref.componentRef?.changeDetectorRef.detectChanges();
     await nextLayout();
     return iframe;
@@ -83,12 +84,6 @@ describe('Widget window interactions', () => {
     const element = document.querySelector<HTMLElement>('.cdk-overlay-pane.widget-dialog');
     if (!element) throw new Error('Missing widget pane');
     return element;
-  }
-
-  function resizeWindow(width: number, height: number): void {
-    // Native CSS resizing writes dimensions on the resizable element itself.
-    pane().style.width = `${width}px`;
-    pane().style.height = `${height}px`;
   }
 
   function expectFrameFillsWindow(iframe: HTMLIFrameElement): void {
@@ -194,6 +189,35 @@ describe('Widget window interactions', () => {
     expect(iframe.contentDocument?.querySelector('main')?.getBoundingClientRect().width).toBe(550);
   });
 
+  it('derives the height from the preferred width', async () => {
+    const iframe = await loadWidget(850, 650, undefined, 400);
+    const host = target('.frame-host');
+    expect(host.clientWidth).toBe(400);
+    expect(host.clientHeight).toBeCloseTo(650 * 400 / 850, 0);
+    expect(iframe.style.width).toBe('850px');
+    expect(iframe.style.height).toBe('650px');
+    const frame = iframe.getBoundingClientRect();
+    expect(frame.width).toBeCloseTo(400, 0);
+    expect(frame.height).toBeCloseTo(650 * 400 / 850, 0);
+  });
+
+  for (const dimensions of [{ width: 2000, height: 300 }, { width: 300, height: 2000 }]) {
+    it(`hugs ${dimensions.width}×${dimensions.height} content within the screen at a preferred width`, async () => {
+      const iframe = await loadWidget(dimensions.width, dimensions.height, undefined, 1100);
+      const frame = iframe.getBoundingClientRect();
+      const host = target('.frame-host');
+      expect(Math.abs(host.clientWidth - frame.width)).toBeLessThanOrEqual(1);
+      expect(Math.abs(host.clientHeight - frame.height)).toBeLessThanOrEqual(1);
+      expect(frame.width / frame.height).toBeCloseTo(dimensions.width / dimensions.height);
+      const header = target('header').getBoundingClientRect();
+      expect(header.height).toBe(48);
+      expect(Math.abs(ref.componentInstance.windowBounds.height - frame.height - header.height))
+        .toBeLessThanOrEqual(1);
+      expect(ref.componentInstance.windowBounds.width).toBeLessThanOrEqual(Math.ceil(innerWidth * 0.95));
+      expect(ref.componentInstance.windowBounds.height).toBeLessThanOrEqual(Math.ceil(innerHeight * 0.95));
+    });
+  }
+
   for (const contentSize of [{ width: 500, height: 250 }, { width: 900, height: 1200 }]) {
     it(`fits supplied ${contentSize.width}×${contentSize.height} dimensions instead of measured content`, async () => {
       const iframe = await loadWidget(350, 200, contentSize);
@@ -204,11 +228,7 @@ describe('Widget window interactions', () => {
       expect(frame.width / frame.height).toBeCloseTo(contentSize.width / contentSize.height);
       expect(frame.width).toBeLessThanOrEqual(host.width + 1);
       expect(frame.height).toBeLessThanOrEqual(host.height + 1);
-      expect(host.width).toBeCloseTo(Math.max(Math.min(320, innerWidth * 0.95), Math.ceil(frame.width)), 0);
-      const initialStyle = iframe.style.cssText;
-      resizeWindow(500, 400);
-      await nextLayout();
-      expect(iframe.style.cssText).toBe(initialStyle);
+      expect(host.width).toBeCloseTo(Math.ceil(frame.width), 0);
     });
   }
 
@@ -248,8 +268,7 @@ describe('Widget window interactions', () => {
       expect(frame.width).toBeLessThanOrEqual(width);
       expect(frame.height).toBeLessThanOrEqual(height);
       expect(frame.width / frame.height).toBeCloseTo(width / height);
-      // The window follows the scaled width, subject to its existing minimum width.
-      expect(host.width).toBeCloseTo(Math.max(Math.min(320, innerWidth * 0.95), Math.ceil(frame.width)), 0);
+      expect(host.width).toBeCloseTo(Math.ceil(frame.width), 0);
       const doc = iframe.contentDocument;
       if (!doc) throw new Error('Missing widget document');
       expect(doc.documentElement.scrollWidth).toBe(doc.documentElement.clientWidth);
@@ -258,7 +277,7 @@ describe('Widget window interactions', () => {
     });
   }
 
-  it('keeps the initial fitted content size after resizing and interacting', async () => {
+  it('keeps the initial fitted content size when interacting', async () => {
     const iframe = await loadWidget(550, 2000);
     const initialFrame = iframe.getBoundingClientRect();
     const initialStyle = iframe.style.cssText;
@@ -267,46 +286,29 @@ describe('Widget window interactions', () => {
     doc.body.insertAdjacentHTML('beforeend', '<input aria-label="Calculation">');
     const input = doc.querySelector('input');
     if (!input) throw new Error('Missing widget input');
-    for (const [width, height] of [[400, 250], [600, 500]]) {
-      resizeWindow(width, height);
-      input.value = '123';
+    for (const value of ['123', '456']) {
+      input.value = value;
       input.dispatchEvent(new Event('input', { bubbles: true }));
       await nextLayout();
       expect(iframe.style.cssText).toBe(initialStyle);
       expect(iframe.getBoundingClientRect().width).toBe(initialFrame.width);
       expect(iframe.getBoundingClientRect().height).toBe(initialFrame.height);
-      expect(input.value).toBe('123');
+      expect(input.value).toBe(value);
     }
   });
 
-  it('uses native CSS resizing while keeping the initial content size', async () => {
+  it('disables manual resizing while loading and running', async () => {
+    expect(getComputedStyle(pane()).resize).toBe('none');
     const iframe = await loadWidget();
-    const initialFrame = iframe.getBoundingClientRect();
-    const initialStyle = iframe.style.cssText;
-    expect(getComputedStyle(pane()).resize).toBe('both');
+    expect(getComputedStyle(pane()).resize).toBe('none');
     expect(getComputedStyle(pane()).overflow).toBe('hidden');
     expect(document.querySelector('.widget-dialog .resize')).toBeNull();
-    resizeWindow(400, 350);
-    await nextLayout();
-    expect(ref.componentInstance.windowBounds.width).toBe(400);
-    expect(ref.componentInstance.windowBounds.height).toBe(350);
-    expect(iframe.getBoundingClientRect().width).toBe(initialFrame.width);
-    expect(iframe.getBoundingClientRect().height).toBe(initialFrame.height);
-    expect(iframe.style.cssText).toBe(initialStyle);
-    resizeWindow(500, 400);
-    await nextLayout();
-    expect(ref.componentInstance.windowBounds.width).toBe(500);
-    expect(ref.componentInstance.windowBounds.height).toBe(400);
-    expect(iframe.getBoundingClientRect().width).toBe(initialFrame.width);
-    expect(iframe.getBoundingClientRect().height).toBe(initialFrame.height);
-    expect(iframe.style.cssText).toBe(initialStyle);
+    expectFrameFillsWindow(iframe);
   });
 
-  it('does not remeasure content or resize the window after resizing and interacting', async () => {
+  it('does not remeasure content or resize the window when interacting', async () => {
     const iframe = await loadWidget();
     const initialFrame = iframe.getBoundingClientRect();
-    resizeWindow(400, 350);
-    await nextLayout();
     const bounds = ref.componentInstance.windowBounds;
     const doc = iframe.contentDocument;
     if (!doc) throw new Error('Missing widget document');
@@ -375,21 +377,20 @@ describe('Widget window interactions', () => {
     expect(bounds.top + bounds.height).toBeLessThanOrEqual(innerHeight + 1);
   });
 
-  it('preserves the dragged position when resizing and allows dragging again', async () => {
-    await loadWidget();
+  it('keeps the fitted content visible when dragging repeatedly', async () => {
+    const iframe = await loadWidget();
+    const fitted = ref.componentInstance.windowBounds;
     dragBy(20, 20);
     const moved = ref.componentInstance.windowBounds;
-    resizeWindow(moved.width - 10, moved.height + 10);
-    await nextLayout();
-    const resized = ref.componentInstance.windowBounds;
-    expect(resized.left).toBeCloseTo(moved.left, 0);
-    expect(resized.top).toBeCloseTo(moved.top, 0);
-    expect(resized.width).toBeCloseTo(moved.width - 10, 0);
+    expect(moved.left).toBeCloseTo(fitted.left + 20, 0);
+    expect(moved.top).toBeCloseTo(fitted.top + 20, 0);
     dragBy(-20, -20);
     const draggedAgain = ref.componentInstance.windowBounds;
-    expect(draggedAgain.left).toBeCloseTo(resized.left - 20, 0);
-    expect(draggedAgain.top).toBeCloseTo(resized.top - 20, 0);
-    expect(draggedAgain.width).toBeCloseTo(resized.width, 0);
+    expect(draggedAgain.left).toBeCloseTo(fitted.left, 0);
+    expect(draggedAgain.top).toBeCloseTo(fitted.top, 0);
+    expect(draggedAgain.width).toBe(fitted.width);
+    expect(draggedAgain.height).toBe(fitted.height);
+    expectFrameFillsWindow(iframe);
   });
 
   it('does not drag when pressing the close button', () => {

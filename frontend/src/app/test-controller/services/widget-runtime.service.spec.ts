@@ -132,14 +132,6 @@ describe('Uploaded calculator launch', () => {
     return { source, post };
   }
 
-  function shrinkWindow(): void {
-    const pane = document.querySelector<HTMLElement>('.cdk-overlay-pane.widget-dialog');
-    if (!pane) throw new Error('Missing widget pane');
-    const bounds = view().windowBounds;
-    pane.style.width = `${bounds.width - 120}px`;
-    pane.style.height = `${bounds.height - 120}px`;
-  }
-
   function expectPosition(expected: { left: number; top: number }): void {
     const actual = view().windowBounds;
     expect(actual.left).toBeCloseTo(expected.left, 0);
@@ -153,7 +145,6 @@ describe('Uploaded calculator launch', () => {
       if (running) {
         request.flush('<html></html>');
         ready();
-        shrinkWindow();
         dialog.openDialogs[0].updatePosition({ left: '12px', top: '16px' });
       }
       const bounds = view().windowBounds;
@@ -178,16 +169,13 @@ describe('Uploaded calculator launch', () => {
     http.expectOne('/api/file/calculator-group/ws_1/Resource/calculator.html').flush('<html></html>');
     ready();
     const original = view().windowBounds;
-    shrinkWindow();
     dialog.openDialogs[0].updatePosition({ left: '12px', top: '16px' });
-    const resized = view().windowBounds;
-    expect(resized.width).toBeLessThan(original.width);
-    expect(resized.height).toBeLessThan(original.height);
+    const moved = view().windowBounds;
     cancel();
     open();
     http.expectOne('/api/file/calculator-group/ws_1/Resource/calculator.html').flush('<html></html>');
     ready();
-    expectPosition(resized);
+    expectPosition(moved);
     expect(view().windowBounds.width).toBeCloseTo(original.width, 0);
     expect(view().windowBounds.height).toBeCloseTo(original.height, 0);
     // A reset must also discard the position saved by closing the open window.
@@ -208,7 +196,9 @@ describe('Uploaded calculator launch', () => {
       fixture.detectChanges();
     }
     async function startWidget(): Promise<void> {
-      open();
+      fixture.componentInstance.runtime.openHost({
+        resourcePath: 'Resource/calculator.html', model: 'OTHER', parameters: [], trigger
+      });
       await nextLayout();
       http.expectOne('/api/file/calculator-group/ws_1/Resource/calculator.html').flush(
         '<!doctype html><html><body style="margin:0"><main style="width:350px;height:200px">' +
@@ -218,7 +208,7 @@ describe('Uploaded calculator launch', () => {
       if (!iframe) throw new Error('Missing widget iframe');
       await new Promise<void>(resolve => iframe.addEventListener('load', () => resolve(), { once: true }));
       messages.next(new MessageEvent('message', {
-        source: iframe.contentWindow, data: { type: 'vowReadyNotification', metadata: metadata('CALCULATOR') }
+        source: iframe.contentWindow, data: { type: 'vowReadyNotification', metadata: metadata('OTHER') }
       }));
       await nextLayout();
     }
@@ -226,10 +216,6 @@ describe('Uploaded calculator launch', () => {
     await startWidget();
     const fitted = view().windowBounds;
     expect(fitted.width).toBe(350);
-    const pane = document.querySelector<HTMLElement>('.cdk-overlay-pane.widget-dialog');
-    if (!pane) throw new Error('Missing widget pane');
-    pane.style.width = '500px';
-    pane.style.height = '400px';
     dialog.openDialogs[0].updatePosition({ left: '60px', top: '70px' });
     dialog.openDialogs[0].close();
     await nextLayout();
@@ -237,6 +223,43 @@ describe('Uploaded calculator launch', () => {
     expectPosition({ left: 60, top: 70 });
     expect(view().windowBounds.width).toBe(fitted.width);
     expect(view().windowBounds.height).toBe(fitted.height);
+    dialog.openDialogs[0].close();
+    await nextLayout();
+  });
+
+  it('measures the same initial content size when reopening at a saved position', async () => {
+    async function nextLayout(): Promise<void> {
+      for (let frame = 0; frame < 5; frame++) {
+        await new Promise<void>(resolve => requestAnimationFrame(() => resolve()));
+      }
+      fixture.detectChanges();
+    }
+    async function startWidget(): Promise<HTMLIFrameElement> {
+      open();
+      await nextLayout();
+      http.expectOne('/api/file/calculator-group/ws_1/Resource/calculator.html').flush(
+        '<!doctype html><html><body style="margin:0"><main style="width:100vw;height:100vh">' +
+        'Widget</main></body></html>'
+      );
+      const iframe = document.querySelector<HTMLIFrameElement>('.widget-dialog iframe');
+      if (!iframe) throw new Error('Missing widget iframe');
+      await new Promise<void>(resolve => iframe.addEventListener('load', () => resolve(), { once: true }));
+      messages.next(new MessageEvent('message', {
+        source: iframe.contentWindow, data: { type: 'vowReadyNotification', metadata: metadata('CALCULATOR') }
+      }));
+      await nextLayout();
+      return iframe;
+    }
+
+    const first = await startWidget();
+    const firstStyle = first.style.cssText;
+    dialog.openDialogs[0].updatePosition({ left: '100px', top: '20px' });
+    const position = view().windowBounds;
+    dialog.openDialogs[0].close();
+    await nextLayout();
+    const second = await startWidget();
+    expect(second.style.cssText).toBe(firstStyle);
+    expectPosition(position);
     dialog.openDialogs[0].close();
     await nextLayout();
   });
@@ -260,12 +283,11 @@ describe('Uploaded calculator launch', () => {
     };
     launch();
     const original = view().windowBounds;
-    shrinkWindow();
     dialog.openDialogs[0].updatePosition({ left: '12px', top: '16px' });
-    const resized = view().windowBounds;
+    const moved = view().windowBounds;
     cancel();
     launch();
-    expectPosition(resized);
+    expectPosition(moved);
     cancel();
     launch('MOLECULE_EDITOR');
     expectPosition(original);
@@ -276,8 +298,7 @@ describe('Uploaded calculator launch', () => {
     tick();
     expect(dialog.openDialogs.length).toBe(0);
     launch();
-    expectPosition(resized);
-    shrinkWindow();
+    expectPosition(moved);
     dialog.openDialogs[0].updatePosition({ left: '20px', top: '24px' });
     const updated = view().windowBounds;
     cancel();
@@ -306,9 +327,8 @@ describe('Uploaded calculator launch', () => {
     open();
     http.expectOne('/api/file/calculator-group/ws_1/Resource/calculator.html').flush('<html></html>');
     ready();
-    shrinkWindow();
     dialog.openDialogs[0].updatePosition({ left: '12px', top: '16px' });
-    const resized = view().windowBounds;
+    const moved = view().windowBounds;
     cancel();
     tcs.currentUnitSequenceId = 2;
     tcs.currentUnitSequenceId$.next(2);
@@ -321,7 +341,7 @@ describe('Uploaded calculator launch', () => {
     fixture.detectChanges();
     http.expectOne('/api/file/calculator-group/ws_1/Resource/calculator.html').flush('<html></html>');
     ready();
-    expectPosition(resized);
+    expectPosition(moved);
     cancel();
     player.remove();
   }));
@@ -547,10 +567,13 @@ describe('Uploaded calculator launch', () => {
   }
 
   for (const { launch, contentSize } of [
-    ...['host', 'CALC', 'PERIODIC_TABLE', 'MOLECULE_EDITOR'].map(launch => ({ launch, contentSize: undefined })),
+    ...['host', 'CALC', 'PERIODIC_TABLE', 'MOLECULE_EDITOR', 'OTHER'].map(launch => ({
+      launch, contentSize: undefined
+    })),
     ...['host', 'PERIODIC_TABLE'].map(launch => ({ launch, contentSize: { width: 700, height: 2200 } }))
   ]) {
-    it(`fits ${contentSize ? 'supplied' : 'measured'} widget dimensions through ${launch}`, async () => {
+    const dimensionSource = contentSize ? 'supplied' : launch === 'OTHER' ? 'measured' : 'preferred width';
+    it(`fits ${dimensionSource} widget dimensions through ${launch}`, async () => {
       const model = launch === 'host' || launch === 'CALC' ? 'CALCULATOR' : launch;
       const resource = model === 'CALCULATOR' ? 'calculator' : model.toLowerCase();
       tcs.widgets[model] = [`Resource/${resource}.html`];
@@ -584,7 +607,7 @@ describe('Uploaded calculator launch', () => {
         }
         http.expectOne(`/api/file/calculator-group/ws_1/Resource/${resource}.html`).flush(`<!doctype html>
           <html><head><style>
-            html, body { margin: 0; width: 100%; height: 100%; }
+            html, body { margin: 0; width: 100%; height: 100%; overflow: hidden; }
             main { width: 550px; height: 2000px; }
           </style></head><body><main>Widget</main><script>
             parent.postMessage({
@@ -600,11 +623,14 @@ describe('Uploaded calculator launch', () => {
         if (!iframe) throw new Error('Missing widget iframe');
         const host = iframe.parentElement;
         if (!host) throw new Error('Missing widget frame host');
-        expect(iframe.getBoundingClientRect().height).toBeCloseTo(host.clientHeight, 0);
-        expect(host.clientWidth).toBeCloseTo(Math.max(320, Math.ceil(iframe.getBoundingClientRect().width)), 0);
-        expect(iframe.style.width).toBe(`${contentSize?.width ?? 550}px`);
-        expect(iframe.contentDocument?.documentElement.scrollHeight).toBe(contentSize?.height ?? 2000);
-        expect(iframe.contentDocument?.documentElement.clientHeight).toBe(contentSize?.height ?? 2000);
+        const frame = iframe.getBoundingClientRect();
+        expect(frame.width).toBeLessThanOrEqual(host.clientWidth + 1);
+        expect(frame.height).toBeLessThanOrEqual(host.clientHeight + 1);
+        const expectedContentSize = contentSize ?? { width: 550, height: 2000 };
+        expect(iframe.style.width).toBe(`${expectedContentSize.width}px`);
+        expect(iframe.style.height).toBe(`${expectedContentSize.height}px`);
+        expect(Math.abs(frame.width - host.clientWidth)).toBeLessThanOrEqual(1);
+        expect(Math.abs(frame.height - host.clientHeight)).toBeLessThanOrEqual(1);
       } finally {
         window.removeEventListener('message', observe);
         player.remove();
