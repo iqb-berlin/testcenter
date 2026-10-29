@@ -114,7 +114,6 @@ download_files() {
   download_file .env.prod-template .env.prod-template
   download_file config/traefik/tls-acme.yml config/traefik/tls-acme.yml
   download_file config/traefik/tls-certificates.yml config/traefik/tls-certificates.yml
-  download_file config/traefik/tls-options.yml config/traefik/tls-options.yml
   download_file scripts/make/$APP_NAME.mk scripts/make/prod.mk
   download_file scripts/update_$APP_NAME.sh scripts/update.sh
   chmod +x scripts/update_$APP_NAME.sh

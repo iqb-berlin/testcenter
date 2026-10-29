@@ -432,7 +432,6 @@ check_config_files_modifications() {
 
   get_modified_file config/traefik/tls-acme.yml config/traefik/tls-acme.yml "conf-file"
   get_modified_file config/traefik/tls-certificates.yml config/traefik/tls-certificates.yml "conf-file"
-  get_modified_file config/traefik/tls-options.yml config/traefik/tls-options.yml "conf-file"
 
   printf "Configuration template files modification check done.\n\n"
 }

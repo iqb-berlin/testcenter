@@ -21,10 +21,8 @@ services:
       - "--entrypoints.web.http.redirections.entryPoint.to=websecure"
       - "--entrypoints.web.http.redirections.entryPoint.scheme=https"
       - "--entrypoints.websecure.address=:443"
-      - "--entrypoints.websecure.http.tls.options=default@file"
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
-      - "--providers.file.filename=/tls-options.yml"
       - "--providers.file.filename=/tls-${TLS_CERTIFICATE_RESOLVER:-certificates}.yml"
       - "--log.level=INFO"
       - "--accesslog=false"
@@ -37,7 +35,6 @@ services:
     ports:
       - "${HTTPS_PORT}:443"
     volumes:
-      - "./config/traefik/tls-options.yml:/tls-options.yml"
       - "./config/traefik/tls-${TLS_CERTIFICATE_RESOLVER:-certificates}.yml:/tls-${TLS_CERTIFICATE_RESOLVER:-certificates}.yml"
       - "./secrets/traefik/certs/${TLS_CERTIFICATE_RESOLVER}:/certs"
 

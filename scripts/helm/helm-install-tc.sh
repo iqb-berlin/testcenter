@@ -145,27 +145,6 @@ install_traefik() {
     }
     }' traefik-values.yaml && rm traefik-values.yaml.bak
 
-    # tlsOptions
-    declare tls_options
-    tls_options="tlsOptions:\n"
-    tls_options+="  default:\n"
-    tls_options+="    sniStrict: false # set false to use self-signed certificates\n"
-    tls_options+="    cipherSuites:\n"
-    tls_options+="      - TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256\n"
-    tls_options+="      - TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384\n"
-    tls_options+="      - TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA\n"
-    tls_options+="      - TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA\n"
-    tls_options+="      - TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256\n"
-    tls_options+="      - TLS_ECDHE_ECDSA_WITH_RC4_128_SHA\n"
-    tls_options+="      - TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256\n"
-    tls_options+="      - TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256\n"
-    tls_options+="      - TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384\n"
-    tls_options+="      - TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256\n"
-    tls_options+="    minVersion: VersionTLS12\n"
-
-    if ${is_tls_enabled}; then
-      sed -i.bak "s|tlsOptions: {}|$tls_options|" traefik-values.yaml && rm traefik-values.yaml.bak
-    fi
     printf "Traefik Ingress configuration for Testcenter done (q.v. traefik-values.yaml).\n\n"
 
     printf "Installing 'Traefik' Ingress Controller in the 'kube-system' namespace ...\n"
