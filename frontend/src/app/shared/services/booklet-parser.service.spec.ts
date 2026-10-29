@@ -136,27 +136,11 @@ for (const consumer of consumers) {
       });
     });
 
-    const invalidDeclarations = [
-      '<Calculator show="yes"/>', '<Calculator show=""/>', '<Calculator show="y"/>',
-      '<Calculator show="no"/>', '<Calculator show="true"/>', '<Calculator show="YES"/>',
-      '<Calculator enabled="y"/>', '<Calculator mode="simple"/>',
-      '<Calculator mode=""/>', '<Calculator unknown="value"/>',
-      '<Calculator journalLines="-1"/>', '<Calculator journalLines="1.5"/>',
-      '<Calculator journalLines="1e2"/>', '<Calculator journalLines=""/>',
-      '<Calculator journalLines="9007199254740992"/>',
-      '<Calculator maxImageWidthPx="0"/>', '<Calculator maxImageWidthPx="-1"/>',
-      '<Calculator maxImageWidthPx="NaN"/>', '<Calculator maxImageWidthPx="1.1"/>',
-      '<Calculator/><Calculator/>',
-      '<Calculator><Journal>[]</Journal><Journal>[]</Journal></Calculator>',
-      '<Calculator><Unknown/></Calculator>', '<Calculator>[]</Calculator>',
-      '<Calculator><Journal value="[]">[]</Journal></Calculator>',
-      '<Calculator><Journal><Entry/></Journal></Calculator>'
-    ];
-    // Both consumers inherit the same validation. Run its full matrix once and
-    // retain one invalid input per category for the monitor adapter.
-    for (const declaration of consumer.fullValidation ? invalidDeclarations : invalidDeclarations.slice(0, 1)) {
-      it(`rejects invalid declaration ${declaration} with testlet context`, () => {
-        expect(() => parser.parseBookletXml(block(declaration))).toThrowMatching((error: unknown) =>
+    for (const attribute of ['journalLines', 'maxImageWidthPx']) {
+      it(`rejects ${attribute} beyond JavaScript integer precision with testlet context`, () => {
+        expect(() => parser.parseBookletXml(block(
+          `<Calculator ${attribute}="9007199254740992"/>`
+        ))).toThrowMatching((error: unknown) =>
           error instanceof AppError && error.type === 'xml' && error.description.includes('outer'));
       });
     }
@@ -173,20 +157,6 @@ for (const consumer of consumers) {
       });
     }
 
-    const misplaced = [
-      booklet('<Calculator/><Unit id="u1" label="Task"/>'),
-      block('<Restrictions><Calculator/></Restrictions>'),
-      booklet('<Testlet id="outer"><Unit id="u1" label="Task"><Calculator/></Unit></Testlet>'),
-      block('<Calculator/><Restrictions/>'),
-      booklet('<Testlet id="outer"><Unit id="u1" label="Task"/><Calculator/></Testlet>')
-    ];
-    for (const xml of consumer.fullValidation ? misplaced : misplaced.slice(0, 1)) {
-      it('rejects a calculator declaration outside its permitted XML position', () => {
-        expect(() => parser.parseBookletXml(xml)).toThrowMatching((error: unknown) =>
-          error instanceof AppError && error.type === 'xml');
-      });
-    }
-
     it('does not retain configuration between booklets', () => {
       parser.parseBookletXml(block('<Calculator mode="SCIENTIFIC"/>'));
       expect(findTestlet(parser.parseBookletXml(block('')).units, 'outer').calculator).toBeUndefined();
@@ -195,10 +165,10 @@ for (const consumer of consumers) {
 }
 
 describe('Group-monitor calculator error result', () => {
-  it('returns an XML error for an invalid calculator declaration', () => {
+  it('returns an XML error for an invalid calculator journal', () => {
     TestBed.configureTestingModule({
       providers: [BookletService, { provide: MonitorBackendService, useValue: {} }]
     });
-    expect(TestBed.inject(BookletService).parseXml(block('<Calculator show="yes"/>'))).toEqual({ error: 'xml', species: null });
+    expect(TestBed.inject(BookletService).parseXml(block('<Calculator><Journal>invalid</Journal></Calculator>'))).toEqual({ error: 'xml', species: null });
   });
 });

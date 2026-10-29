@@ -1,6 +1,7 @@
 # next
 
 ## Neue Funktionen
+- Widgets aus Aufgaben und ein im Testlet konfigurierbarer Taschenrechner mit Journal und Ergebnisvorschau werden unterstützt.
 - Der Kurztitel einer Unit (Attribut `labelshort` im Booklet) lässt sich während des Tests anzeigen: im Kopfbereich über `header_content` = `UNIT_LABEL_SHORT`, auf der Navigationsleiste über `navbar_unit_label` = `LABEL_SHORT` und auf der Werkzeugleiste über den neuen Booklet-Parameter `toolbar_unit_label` = `LABEL_SHORT`. Fehlt der Kurztitel, wird der Titel der Unit angezeigt. `toolbar_unit_label` ersetzt `toolbar_show_unit_title`, das weiterhin ausgewertet wird, aber als veraltet gilt. Bisher wurde `labelshort` nur im Gruppen-Monitor angezeigt.
 - Die Dialogboxen zum Beenden des Tests und zum Abmelden sowie die Begrüßung auf der Starter-Seite lassen sich über neue Custom-Texts anpassen, etwa um in Befragungen eine andere Anrede als „du“ oder eine andere Bezeichnung als „Test“ zu verwenden. Bisher waren diese Texte fest vorgegeben. (#1633)
   - `booklet_warningEndTestTitle`: Titel der Dialogbox zum Beenden des Tests („Sicher, dass du den Test beenden möchtest?“)
@@ -25,6 +26,7 @@
 - API: Berichte (`GET /workspace/{ws_id}/report/{type}`) ohne den optionalen Parameter `dataIds` umfassen alle Gruppen bzw. alle System-Checks des Arbeitsbereichs. Bisher brachen Log-, Antwort- und Review-Berichte mit einem SQL-Fehler ab, und der System-Check-Bericht war leer. (#1614)
 
 ## Technisches
+- Der Taschenrechner setzt künftig den Booklet-Vertrag 18.1 voraus: `<Calculator>` steht optional einmal nach `<Restrictions>` und vor den Units/Testlets. XML-Struktur, Attribute und Wertebereiche werden beim Backend-Upload gegen die XSD geprüft; das Frontend prüft zusätzlich JSON-Journalinhalte und die sichere Darstellbarkeit ganzer Zahlen. Die Veröffentlichung der XSD erfolgt separat.
 - Der Brute-Force-Schutz (`BRUTE_FORCE_PROTECTION` in `.env.prod-template`) ist bei Neuinstallationen via docker-compose ausgeschaltet.
 - Die Umgebungsvariable `DOCKER_DAEMON_MTU` entfällt; das Update-Skript entfernt sie aus der `.env.prod`. Die MTU des Docker-Netzwerks wird nicht mehr in den Compose-Dateien gesetzt, sondern folgt der Voreinstellung des Docker-Daemons des Hosts.
 - Die Datei `config/traefik/tls-options.yml` entfällt; Traefik verwendet seine eigenen TLS-Voreinstellungen. Bei Installationen via docker-compose wurde die Datei nie geladen, dort ändert sich nichts. Neue Installationen über Helm setzen keine eigene Liste von Cipher-Suites mehr.

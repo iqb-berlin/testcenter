@@ -63,16 +63,6 @@ export abstract class BookletParserService<
       throw new AppError({ label: 'Invalid XML', description: 'wrong root-tag', type: 'xml' });
     }
 
-    for (const calculator of Array.from(bookletElement.getElementsByTagName('Calculator'))) {
-      if (calculator.parentElement?.tagName !== 'Testlet') {
-        throw new AppError({
-          label: 'Ungültige Taschenrechner-Konfiguration',
-          description: '<Calculator> muss ein direktes Kind von <Testlet> sein.',
-          type: 'xml'
-        });
-      }
-    }
-
     const unitsElement = this.xmlGetChildIfExists(bookletElement, 'Units');
     if (unitsElement == null) {
       throw new AppError({ label: 'Invalid XML', description: 'no <units>', type: 'xml' });
