@@ -114,5 +114,3 @@ networks:
   initialization-test:
     name: testcenter-initialization-test
     driver: bridge
-    driver_opts:
-      com.docker.network.driver.mtu: ${DOCKER_DAEMON_MTU:-1500}
