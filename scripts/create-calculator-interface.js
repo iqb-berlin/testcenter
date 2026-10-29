@@ -15,14 +15,10 @@ module.exports = (done) => {
   for (const [name, property] of properties) {
     if (property.enum) output.push(`export const ${enumName(name)} = ${list(property.enum)} as const;`);
   }
-  const attributes = properties.map(([name]) => name).filter(name => name !== 'Journal');
-  output.push(`export const calculatorAttributeNames = ${list(attributes)} as const;`, '');
+  output.push('');
   output.push('export const calculatorDefaults = {');
   output.push(properties.filter(([, property]) => 'default' in property)
     .map(([name, property]) => `  ${fieldName(name)}: ${literal(property.default)}`).join(',\n'));
-  output.push('} as const;', '', 'export const calculatorMinimums = {');
-  output.push(properties.filter(([, property]) => 'minimum' in property)
-    .map(([name, property]) => `  ${fieldName(name)}: ${property.minimum}`).join(',\n'));
   output.push('} as const;', '', 'export interface CalculatorConfiguration {');
   for (const [name, property] of properties) {
     const type = property.enum ?
