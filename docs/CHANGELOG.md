@@ -1,7 +1,8 @@
 # next
 
 ## Neue Funktionen
-- Widgets aus Aufgaben und ein im Testlet konfigurierbarer Taschenrechner mit Journal und Ergebnisvorschau werden unterstützt.
+- Verona-Widgets aus dem Arbeitsbereich lassen sich während der Aufgabenbearbeitung in verschiebbaren, größenveränderbaren Fenstern öffnen.
+- Ein Taschenrechner lässt sich pro Testlet für dessen direkte Aufgaben in der Werkzeugleiste bereitstellen, wahlweise im einfachen oder wissenschaftlichen Modus und mit konfigurierbarem Journal. Nach dem Schließen kann die letzte Rechnung als Ergebnisvorschau angezeigt werden. Die Taschenrechnernutzung wird bei aktiver Antwortspeicherung im Aufgaben-Log protokolliert.
 - Der Kurztitel einer Unit (Attribut `labelshort` im Booklet) lässt sich während des Tests anzeigen: im Kopfbereich über `header_content` = `UNIT_LABEL_SHORT`, auf der Navigationsleiste über `navbar_unit_label` = `LABEL_SHORT` und auf der Werkzeugleiste über den neuen Booklet-Parameter `toolbar_unit_label` = `LABEL_SHORT`. Fehlt der Kurztitel, wird der Titel der Unit angezeigt. `toolbar_unit_label` ersetzt `toolbar_show_unit_title`, das weiterhin ausgewertet wird, aber als veraltet gilt. Bisher wurde `labelshort` nur im Gruppen-Monitor angezeigt.
 - Die Dialogboxen zum Beenden des Tests und zum Abmelden sowie die Begrüßung auf der Starter-Seite lassen sich über neue Custom-Texts anpassen, etwa um in Befragungen eine andere Anrede als „du“ oder eine andere Bezeichnung als „Test“ zu verwenden. Bisher waren diese Texte fest vorgegeben. (#1633)
   - `booklet_warningEndTestTitle`: Titel der Dialogbox zum Beenden des Tests („Sicher, dass du den Test beenden möchtest?“)
@@ -26,7 +27,18 @@
 - API: Berichte (`GET /workspace/{ws_id}/report/{type}`) ohne den optionalen Parameter `dataIds` umfassen alle Gruppen bzw. alle System-Checks des Arbeitsbereichs. Bisher brachen Log-, Antwort- und Review-Berichte mit einem SQL-Fehler ab, und der System-Check-Bericht war leer. (#1614)
 
 ## Technisches
-- Der Taschenrechner setzt künftig den Booklet-Vertrag 18.1 voraus: `<Calculator>` steht optional einmal nach `<Restrictions>` und vor den Units/Testlets. XML-Struktur, Attribute und Wertebereiche werden beim Backend-Upload gegen die XSD geprüft; das Frontend prüft zusätzlich JSON-Journalinhalte und die sichere Darstellbarkeit ganzer Zahlen. Die Veröffentlichung der XSD erfolgt separat.
+- Die Datenbankmigration ergänzt den Verona-Modultyp `widget` und das Feld `files.verona_model`; vorhandene Arbeitsbereiche werden beim Start neu eingelesen. Die API liefert das Modell einer Ressource als `info.veronaModel` und verfügbare Widgets als Zuordnung von Modellen zu Ressourcenpfaden im neuen Feld `widgets` von `GET /test/{test_id}`.
+- Die Taschenrechner-Konfiguration erfolgt über `<Calculator>` im Testlet und benötigt Booklet-XSD 18.1.
+  Beispiel für einen wissenschaftlichen Rechner mit fünf sichtbaren Journalzeilen und einer maximalen Ergebnisbildbreite von 300 Pixeln:
+
+  ```xml
+  <Testlet id="mathematik">
+    <Calculator mode="SCIENTIFIC" journalLines="5" maxImageWidthPx="300" />
+    <Unit id="aufgabe1" label="Aufgabe 1"/>
+  </Testlet>
+  ```
+
+  `<Calculator>` steht nach einem gegebenenfalls vorhandenen `<Restrictions>` und vor den Units bzw. Kind-Testlets. Die Konfiguration gilt nur für die direkten Units; Kind-Testlets benötigen eine eigene Deklaration. `mode="SIMPLE"` wählt den einfachen Rechner, `journalLines="0"` blendet das Journal aus. Das optionale `<Journal>` enthält bisherige Berechnungen als JSON-Array; `[]` startet mit einem leeren Journal.
 - Der Brute-Force-Schutz (`BRUTE_FORCE_PROTECTION` in `.env.prod-template`) ist bei Neuinstallationen via docker-compose ausgeschaltet.
 
 # 19.0.0
