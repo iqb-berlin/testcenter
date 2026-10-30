@@ -1,6 +1,7 @@
 # next
 
 ## Neue Funktionen
+- Verona-Widgets aus dem Arbeitsbereich lassen sich während der Aufgabenbearbeitung in verschiebbaren Fenstern öffnen.
 - Der Kurztitel einer Unit (Attribut `labelshort` im Booklet) lässt sich während des Tests anzeigen: im Kopfbereich über `header_content` = `UNIT_LABEL_SHORT`, auf der Navigationsleiste über `navbar_unit_label` = `LABEL_SHORT` und auf der Werkzeugleiste über den neuen Booklet-Parameter `toolbar_unit_label` = `LABEL_SHORT`. Fehlt der Kurztitel, wird der Titel der Unit angezeigt. `toolbar_unit_label` ersetzt `toolbar_show_unit_title`, das weiterhin ausgewertet wird, aber als veraltet gilt. Bisher wurde `labelshort` nur im Gruppen-Monitor angezeigt.
 - Die Dialogboxen zum Beenden des Tests und zum Abmelden sowie die Begrüßung auf der Starter-Seite lassen sich über neue Custom-Texts anpassen, etwa um in Befragungen eine andere Anrede als „du“ oder eine andere Bezeichnung als „Test“ zu verwenden. Bisher waren diese Texte fest vorgegeben. (#1633)
   - `booklet_warningEndTestTitle`: Titel der Dialogbox zum Beenden des Tests („Sicher, dass du den Test beenden möchtest?“)
@@ -17,6 +18,8 @@
 - Der Bestätigungsknopf im Bereich "Dateien" eines Workspace befindet sich nun oben und nicht mehr potentiell weit unten, nach der Liste der hochgeladenen Dateien.
 
 ## Fehlerbehebungen
+- Widgets, insbesondere der Moleküleditor, verwenden beim Öffnen eine begrenzte Ausgangsbreite. Ohne modellspezifische Vorgabe beträgt die Obergrenze 1100 Pixel. In schmaleren Browserfenstern passt sich die Arbeitsfläche an die verfügbare Breite an, ohne responsive Bedienelemente unnötig zu verkleinern. Eine Verkleinerung des gesamten Widgets erfolgt nur, wenn dessen Inhalt trotzdem zu breit oder zu hoch ist.
+- Widget-Fenster warten vor der einmaligen Größenberechnung auf das Laden des Widget-Dokuments, die Zustellung des Startkommandos und einen Darstellungsdurchlauf im Widget. Bisher konnte die leere Startseite oder die noch nicht fertig dargestellte Startansicht vermessen werden, sodass das Widget als schmaler Streifen erschien, unter anderem auf dem iPad. Die Startanzeige bleibt in Firefox nicht mehr unnötig rund zwei Sekunden lang stehen. (#1652)
 - Änderungen vorhandener gemeinsamer Player-Parameter werden wieder gespeichert. Auch leere Zeichenfolgen werden als Parameterwerte übernommen.
 - Verspätete Player-Antworten bleiben nach einem Aufgabenwechsel der ursprünglichen Aufgabe zugeordnet. Nach dem Warten auf ausstehende Speicherungen wird kein inzwischen ersetzter Player mehr gestartet.
 - Wird eine hochgeladene Datei abgelehnt, weil eine gleichnamige Datei mit anderer ID, anderem Verona-Modul oder inkompatibler Version existiert, bleibt auch der Eintrag in der Datenbank unverändert. Bisher wurde er trotz der Fehlermeldung mit den Daten der abgelehnten Datei überschrieben, bis der Arbeitsbereich neu eingelesen wurde.

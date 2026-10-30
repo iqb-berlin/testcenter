@@ -26,10 +26,12 @@ import { ReviewPanelComponent } from '../review-panel/review-panel.component';
 import { PageService } from '../../services/page.service';
 import { VeronaAPIService } from '../../services/verona-api.service';
 import { MessageService } from '@shared/services/message.service';
+import { WidgetRuntimeService } from '../../services/widget-runtime.service';
 
 @Component({
   templateUrl: './test-controller.component.html',
   styleUrls: ['./test-controller.component.css'],
+  providers: [WidgetRuntimeService],
   standalone: false
 })
 export class TestControllerComponent implements OnInit, OnDestroy {

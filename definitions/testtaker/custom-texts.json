@@ -1,4 +1,28 @@
 {
+  "booklet_widgetUnavailable": {
+    "label": "Meldung bei einem nicht verfügbaren Widget aus einer Aufgabe",
+    "defaultvalue": "Das angeforderte Widget ist nicht verfügbar. Bitte informieren Sie die Testleitung."
+  },
+  "booklet_widgetLoading": {
+    "label": "Ladeanzeige für Widgets",
+    "defaultvalue": "Widget wird geladen …"
+  },
+  "booklet_widgetStarting": {
+    "label": "Startanzeige für Widgets",
+    "defaultvalue": "Widget wird gestartet …"
+  },
+  "booklet_widgetStartupError": {
+    "label": "Fehlermeldung beim Start eines Widgets",
+    "defaultvalue": "Das Widget konnte nicht gestartet werden. Bitte schließen Sie das Fenster."
+  },
+  "booklet_widgetDownloadError": {
+    "label": "Fehlermeldung beim Laden eines Widgets",
+    "defaultvalue": "Das Widget konnte nicht geladen werden. Bitte schließen Sie das Fenster."
+  },
+  "booklet_widgetClose": {
+    "label": "Beschriftung zum Schließen eines Widget-Fensters",
+    "defaultvalue": "Widget schließen"
+  },
   "login_sidepanel_title": {
     "label" : "Titel des seitlichen Infobereichs auf der Anmeldeseite",
     "defaultvalue" : "Willkommen im IQB‑Testcenter"

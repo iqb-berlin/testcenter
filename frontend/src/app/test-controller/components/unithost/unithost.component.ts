@@ -6,7 +6,6 @@ import { AsyncPipe, NgIf } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Params } from '@angular/router';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { distinctUntilChanged, map, withLatestFrom } from 'rxjs/operators';
 import { CustomtextPipe, MainDataService } from '@shared/shared.module';
 import { AppError, AuthData, CodeInputType } from '@app/app.interfaces';
@@ -28,6 +27,7 @@ import {
 import { PageService } from '../../services/page.service';
 import { VeronaAPIService } from '../../services/verona-api.service';
 import { MessageService } from '@app/shared/services/message.service';
+import { WidgetRuntimeService } from '../../services/widget-runtime.service';
 
 @Component({
   templateUrl: './unithost.component.html',
@@ -58,7 +58,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
               @Inject('FILE_SERVER_URL') private readonly fileServerUrl: string,
               public themeService: ThemeService,
               private messageService: MessageService,
-              private bs: BackendService, private route: ActivatedRoute) { }
+              private bs: BackendService, private route: ActivatedRoute, private widgets: WidgetRuntimeService) { }
 
   ngOnInit(): void {
     this.iFrameItemplayer = null;
@@ -84,6 +84,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this.widgets.close();
     Object.values(this.subscriptions).forEach(subscription => subscription.unsubscribe());
   }
 
@@ -125,6 +126,11 @@ export class UnithostComponent implements OnInit, OnDestroy {
     case 'vopRuntimeErrorNotification':
       this.handleRuntimeError(msgData);
       break;
+      case 'vopWidgetCall':
+        this.widgets.open({
+          call: msgData, source: messageEvent.source, playerIframe: this.iFrameItemplayer
+        });
+        break;
     default:
       console.log(`processMessagePost ignored message: ${msgType}`);
       break;
@@ -301,6 +307,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
   }
 
   private open(unitSequenceId: number): void {
+    this.widgets.close();
     while (this.iFrameHostElement.nativeElement.hasChildNodes()) {
       this.iFrameHostElement.nativeElement.removeChild(this.iFrameHostElement.nativeElement.lastChild);
     }

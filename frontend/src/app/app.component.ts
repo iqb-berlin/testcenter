@@ -57,12 +57,10 @@ export class AppComponent implements OnInit, OnDestroy {
       });
 
     window.addEventListener('message', (event: MessageEvent) => {
-      const msgData = event.data;
-      const msgType = msgData.type;
-      if ((msgType !== undefined) && (msgType !== null)) {
-        if ((msgType.startsWith('vo'))) {
-          this.mainDataService.postMessage$.next(event);
-        }
+      const msgData: unknown = event.data;
+      if (msgData !== null && typeof msgData === 'object' && 'type' in msgData &&
+          typeof msgData.type === 'string' && msgData.type.startsWith('vo')) {
+        this.mainDataService.postMessage$.next(event);
       }
     });
 
