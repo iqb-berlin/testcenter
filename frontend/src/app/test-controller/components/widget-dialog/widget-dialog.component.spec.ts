@@ -216,6 +216,78 @@ describe('Widget window interactions', () => {
     expectContentFits(iframe, 'main');
   });
 
+  function mouse(element: EventTarget, type: string, x: number, y: number): void {
+    element.dispatchEvent(new MouseEvent(type, {
+      bubbles: true, cancelable: true, button: 0, buttons: type === 'mouseup' ? 0 : 1,
+      clientX: x, clientY: y, view: window, detail: 1
+    }));
+  }
+
+  function beginDrag(x: number, y: number): void {
+    const element = document.elementFromPoint(x, y);
+    if (!element) throw new Error(`No drag target at ${x}, ${y}`);
+    mouse(element, 'mousedown', x, y);
+    mouse(document, 'mousemove', x + 10, y);
+  }
+
+  it('allows partial off-screen dragging without following the pointer beyond the viewport', async () => {
+    await loadWidget(300, 160);
+    const header = target('header').getBoundingClientRect();
+    const start = { x: header.left + header.width / 2, y: header.top + header.height / 2 };
+    const bounds = () => target('[role="dialog"]').getBoundingClientRect();
+    const initial = bounds();
+    beginDrag(start.x, start.y);
+    try {
+      for (const [edgeX, edgeY, outsideX, outsideY] of [
+        [0, 0, -1000, -1000],
+        [window.innerWidth - 1, window.innerHeight - 1, window.innerWidth + 1000, window.innerHeight + 1000]
+      ]) {
+        mouse(document, 'mousemove', edgeX, edgeY);
+        const atEdge = bounds();
+        expect(atEdge.left < 0 || atEdge.right > window.innerWidth).toBeTrue();
+        expect(atEdge.top < 0 || atEdge.bottom > window.innerHeight).toBeTrue();
+        mouse(document, 'mousemove', outsideX, outsideY);
+        const outside = bounds();
+        expect(Math.abs(outside.left - atEdge.left)).toBeLessThanOrEqual(1);
+        expect(Math.abs(outside.top - atEdge.top)).toBeLessThanOrEqual(1);
+      }
+      mouse(document, 'mousemove', start.x, start.y);
+      expect(bounds().left).toBeCloseTo(initial.left, 0);
+      expect(bounds().top).toBeCloseTo(initial.top, 0);
+    } finally {
+      mouse(document, 'mouseup', start.x, start.y);
+    }
+  });
+
+  it('can be dragged using the header edges and retrieved after releasing at the viewport bottom', async () => {
+    await loadWidget(300, 160);
+    // Exercise the visible edges rather than asserting which DOM node is the handle.
+    for (const edge of ['top', 'bottom'] as const) {
+      const header = target('header').getBoundingClientRect();
+      const x = header.left + header.width / 2;
+      const y = edge === 'top' ? header.top + 1 : header.bottom - 1;
+      beginDrag(x, y);
+      mouse(document, 'mousemove', x, y + 20);
+      mouse(document, 'mouseup', x, y + 20);
+      expect(target('header').getBoundingClientRect().top).toBeCloseTo(header.top + 20, 0);
+    }
+
+    const header = target('header').getBoundingClientRect();
+    const x = header.left + header.width / 2;
+    const startY = header.top + header.height / 2;
+    beginDrag(x, startY);
+    mouse(document, 'mousemove', x, window.innerHeight + 200);
+    mouse(document, 'mouseup', x, window.innerHeight + 200);
+    const lowered = target('header').getBoundingClientRect();
+    expect(lowered.top).toBeLessThan(window.innerHeight);
+    expect(lowered.bottom).toBeGreaterThan(window.innerHeight);
+    const visibleY = lowered.top + 1;
+    beginDrag(x, visibleY);
+    mouse(document, 'mousemove', x, startY);
+    mouse(document, 'mouseup', x, startY);
+    expectWithinViewport(target('header').getBoundingClientRect());
+  });
+
   it('uses custom text for loading, errors, and window controls and follows text updates', () => {
     const texts = TestBed.inject(CustomtextService);
     texts.addCustomTexts({

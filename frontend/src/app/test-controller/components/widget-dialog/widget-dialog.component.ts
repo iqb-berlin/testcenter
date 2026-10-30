@@ -4,7 +4,7 @@ import { Component, ElementRef, Inject, OnDestroy, ViewChild, inject, signal } f
 import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { CdkDrag, CdkDragHandle } from '@angular/cdk/drag-drop';
+import { CdkDrag, CdkDragHandle, DragConstrainPosition } from '@angular/cdk/drag-drop';
 import { WIDGET_WINDOW_LIMITS } from './widget-window.constants';
 
 export type WidgetDialogStatus = 'loading' | 'starting' | 'running' | 'download-error' | 'startup-error' |
@@ -42,7 +42,7 @@ export interface WidgetDialogData {
       </div>
     }
     <header #windowHeader cdkDrag cdkDragRootElement=".cdk-overlay-pane"
-            cdkDragBoundary=".cdk-overlay-container">
+            [cdkDragConstrainPosition]="constrainDragPosition">
       <h2 [attr.aria-label]="name()" mat-dialog-title cdkDragHandle
           (pointerdown)="capturePointer($event)"></h2>
       <button [attr.aria-label]="'Widget schließen' | customtext: 'booklet_widgetClose' | async"
@@ -82,13 +82,17 @@ export interface WidgetDialogData {
       max-width: 90%; box-sizing: border-box; background: white; border-radius: 12px;
     }
     .preparation p { margin: 0; }
-    header { display: flex; align-items: center; flex-shrink: 0; height: 48px; }
+    header { display: flex; align-items: center; flex-shrink: 0; height: 40px; }
     h2 {
-      flex: 1; min-width: 0; margin: 0; padding: 8px 0; cursor: move;
-      overflow-wrap: anywhere; touch-action: none; user-select: none;
+      flex: 1; align-self: stretch; min-width: 0; margin: 0; padding: 8px 0; cursor: move;
+      touch-action: none; user-select: none;
     }
     h2::before { display: none; }
-    header button { margin-right: 8px; }
+    header button {
+      margin-right: 8px;
+      --mat-icon-button-state-layer-size: 40px;
+      --mat-icon-button-touch-target-size: 40px;
+    }
     .frame-host { flex: 1; min-width: 0; min-height: 0; position: relative; overflow: hidden; }
     .status:has(p) { margin: auto; padding: 60px 20px; text-align: center; }
   `]
@@ -113,6 +117,13 @@ export class WidgetDialogComponent implements OnDestroy {
     const { width, height, left, top } = this.drag.getRootElement().getBoundingClientRect();
     return { width, height, left, top };
   }
+
+  // Constrain the grabbed point, not the window edges. Captured pointer events
+  // can carry coordinates outside the viewport while the mouse button is held.
+  readonly constrainDragPosition: DragConstrainPosition = (point, _drag, _rect, pickup) => ({
+    x: Math.max(0, Math.min(point.x, window.innerWidth)) - pickup.x,
+    y: Math.max(0, Math.min(point.y, window.innerHeight)) - pickup.y
+  });
 
   capturePointer(event: PointerEvent): void {
     // Keep drag events in the host document when crossing the widget iframe.
