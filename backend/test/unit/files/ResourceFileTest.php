@@ -111,6 +111,39 @@ class ResourceFileTest extends TestCase {
     // TODO write test for verona3.5 format
   }
 
+  public function test_readModernWidgetMetadata(): void {
+    foreach (['master', 'refs/heads/master', '85175cbc51a5d40e77b4e6f2ddab944ac0179dd1'] as $ref) {
+      $metadata = [
+        '$schema' => "https://raw.githubusercontent.com/verona-interfaces/verona-module-metadata/$ref/verona-module-metadata.schema.json",
+        'type' => 'WIDGET',
+        'id' => 'molecule-editor-widget',
+        'name' => [['lang' => 'en', 'value' => 'Molecule editor']],
+        'version' => '0.2.0',
+        'specVersion' => '1.0',
+        'metadataVersion' => '3.1',
+        'model' => 'MOLECULE_EDITOR'
+      ];
+      $widget = $this->createPlayerStubV4('molecule-editor-widget-0.2.html', json_encode($metadata, JSON_THROW_ON_ERROR));
+      $this->assertSame('widget', $widget->getVeronaModuleType());
+      $this->assertSame('MOLECULE_EDITOR', $widget->getVeronaModel());
+      $this->assertSame('0.2.0', $widget->getVersion());
+      $this->assertSame('', $widget->getDescription());
+      $this->assertSame('MOLECULE_EDITOR', $widget->jsonSerialize()['info']['veronaModel']);
+      $this->assertArrayNotHasKey('warning', $widget->getValidationReport());
+
+      unset($metadata['model']);
+      $widget = $this->createPlayerStubV4('molecule-editor-widget-0.2.html', json_encode($metadata, JSON_THROW_ON_ERROR));
+      $this->assertSame('', $widget->getVeronaModel());
+      $this->assertArrayNotHasKey('veronaModel', $widget->jsonSerialize()['info']);
+
+      $metadata['model'] = 42;
+      $widget = $this->createPlayerStubV4('molecule-editor-widget-0.2.html', json_encode($metadata, JSON_THROW_ON_ERROR));
+      $this->assertSame('', $widget->getVeronaModel());
+      $this->assertContains('Could not read metadata: model must be a string', $widget->getValidationReport()['warning']);
+    }
+  }
+
+  /** @param array<string, string> $meta */
   private function createPlayerStubV3(string $fileName, string $title, array $meta = []): ResourceFile {
     $metaTag = '';
     if (count($meta)) {

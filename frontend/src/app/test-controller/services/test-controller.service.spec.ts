@@ -130,6 +130,55 @@ describe('TestControllerService', () => {
     expect(service).toBeTruthy();
   });
 
+  it('should resolve the last widget path using an exact model match', () => {
+    service.widgets = {
+      PERIODIC_TABLE: ['Resource/older.html', 'Resource/newer.html'],
+      MOLECULE_EDITOR: ['Resource/molecule.html'],
+      EMPTY: []
+    };
+    expect(service.getWidgetResourcePath('PERIODIC_TABLE')).toBe('Resource/newer.html');
+    expect(service.getWidgetResourcePath('MOLECULE_EDITOR')).toBe('Resource/molecule.html');
+    expect(service.getWidgetResourcePath('periodic_table')).toBeUndefined();
+    expect(service.getWidgetResourcePath('WIDGET_PERIODIC_TABLE')).toBeUndefined();
+    expect(service.getWidgetResourcePath('EMPTY')).toBeUndefined();
+    expect(service.getWidgetResourcePath('toString')).toBeUndefined();
+    expect(service.getWidgetResourcePath('__proto__')).toBeUndefined();
+  });
+
+  it('should clear widget paths when resetting the test run', () => {
+    service.widgets = { PERIODIC_TABLE: ['Resource/periodic.html'] };
+    expect(service.getWidgetResourcePath('PERIODIC_TABLE')).toBe('Resource/periodic.html');
+    service.reset();
+    expect(service.getWidgetResourcePath('PERIODIC_TABLE')).toBeUndefined();
+  });
+
+  it('prefers CALCULATOR for either calculator name and selects its last file', () => {
+    service.widgets = {
+      CALC: ['Resource/calc.html'],
+      CALCULATOR: ['Resource/old.html', 'Resource/calculator.html']
+    };
+    expect(service.getWidgetResourcePath('CALCULATOR')).toBe('Resource/calculator.html');
+    expect(service.getWidgetResourcePath('CALC')).toBe('Resource/calculator.html');
+    expect(service.getWidgetResourcePath('calculator')).toBeUndefined();
+  });
+
+  it('falls back to the last CALC file when CALCULATOR is absent or empty', () => {
+    service.widgets = { CALC: ['Resource/old.html', 'Resource/calc.html'] };
+    expect(service.getWidgetResourcePath('CALCULATOR')).toBe('Resource/calc.html');
+    service.widgets.CALCULATOR = [];
+    expect(service.getWidgetResourcePath('CALC')).toBe('Resource/calc.html');
+    service.widgets.CALC = [];
+    expect(service.getWidgetResourcePath('CALCULATOR')).toBeUndefined();
+  });
+
+  it('does not discover calculator paths from the widget map prototype', () => {
+    service.widgets = { CALC: ['Resource/calc.html'] };
+    Object.setPrototypeOf(service.widgets, { CALCULATOR: ['Resource/inherited.html'] });
+    expect(service.getWidgetResourcePath('CALCULATOR')).toBe('Resource/calc.html');
+    service.widgets.CALC = [];
+    expect(service.getWidgetResourcePath('CALCULATOR')).toBeUndefined();
+  });
+
   it('flushes changed shared parameters through the existing test-state persistence path', fakeAsync(() => {
     const uploaded: TestStateUpdate[] = [];
     const backend = TestBed.inject(BackendService);

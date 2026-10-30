@@ -65,6 +65,7 @@ class File extends FileData {
       $this->versionPatch = $init->versionPatch;
       $this->versionLabel = $init->versionLabel;
       $this->veronaVersion = $init->veronaVersion;
+      $this->veronaModel = $init->veronaModel;
       return;
     }
 
@@ -158,6 +159,10 @@ class File extends FileData {
       $info['veronaModuleType'] = $this->veronaModuleType;
       $info['veronaVersion'] = $this->veronaVersion;
       $info['version'] = $this->getVersion();
+    }
+
+    if ($this->veronaModel !== '') {
+      $info['veronaModel'] = $this->veronaModel;
     }
 
     return [

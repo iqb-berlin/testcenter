@@ -278,6 +278,13 @@ components:
         type:
           type: string
           description: Testtakers | Booklet | Resource | Unit | SysCheck
+        info:
+          type: object
+          properties:
+            veronaModel:
+              type: string
+              description: Verona metadata model, preserved unchanged. Omitted when empty or absent.
+              example: MOLECULE_EDITOR
         typelabel:
           type: string
           description: Testtakers | Booklet | Resource | Unit | SysCheck

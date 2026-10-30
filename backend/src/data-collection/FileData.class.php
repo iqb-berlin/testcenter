@@ -20,7 +20,13 @@ class FileData extends DataCollectionTypeSafe {
   protected int $versionPatch;
   protected string $versionLabel;
   protected string $veronaVersion;
+  protected string $veronaModel;
 
+  /**
+   * @param array<string, string[]> $validationReport
+   * @param FileRelation[] $relations
+   * @param array<string, mixed> $contextData
+   */
   public function __construct(
     string $path = '',
     string $type = null,
@@ -39,7 +45,8 @@ class FileData extends DataCollectionTypeSafe {
     int    $versionMinor = 0,
     int    $versionPatch = 0,
     string $versionLabel = "",
-    string $veronaVersion = ""
+    string $veronaVersion = "",
+    string $veronaModel = ""
   ) {
     $this->path = $path;
     $this->type = $type;
@@ -59,6 +66,7 @@ class FileData extends DataCollectionTypeSafe {
     $this->versionPatch = $versionPatch;
     $this->versionLabel = $versionLabel;
     $this->veronaVersion = $veronaVersion;
+    $this->veronaModel = $veronaModel;
   }
 
   public function getType(): string {
@@ -139,6 +147,10 @@ class FileData extends DataCollectionTypeSafe {
 
   public function getVersionLabel(): string {
     return $this->versionLabel;
+  }
+
+  public function getVeronaModel(): string {
+    return $this->veronaModel;
   }
 
   public function getVeronaVersion(): string {

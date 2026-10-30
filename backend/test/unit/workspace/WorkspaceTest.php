@@ -485,7 +485,6 @@ class WorkspaceTest extends TestCase {
     $this->workspaceDaoMock
       ->expects('updateContentTypeBasedOnRemainingTesttakers');
 
-
     $workspace = new Workspace(1);
     $result = $workspace->importUncategorizedFiles(
       ["valid_testtakers.xml", "valid_booklet.xml", "P.html", "valid_unit.xml"]
@@ -550,7 +549,6 @@ class WorkspaceTest extends TestCase {
       ->times(6);
     $this->workspaceDaoMock
       ->expects('updateContentTypeBasedOnRemainingTesttakers');
-
 
     $workspace = new Workspace(1);
     $result = $workspace->importUncategorizedFiles(["valid_testtakers.xml", "valid_booklet.xml", "valid_unit.xml"]);

@@ -171,11 +171,21 @@ class ResourceFile extends File {
     if (!isset($meta['$schema'])) {
       return "Could not read metadata: \$schema missing";
     }
-    if ($meta['$schema'] !== "https://raw.githubusercontent.com/verona-interfaces/metadata/master/verona-module-metadata.json") {
+    $schema = $meta['$schema'];
+    $legacySchema = 'https://raw.githubusercontent.com/verona-interfaces/metadata/master/verona-module-metadata.json';
+    $modernSchema = is_string($schema) && preg_match(
+      '~^https://raw\.githubusercontent\.com/verona-interfaces/verona-module-metadata/'
+      . '(?:master|refs/heads/master|[a-f0-9]{40})/verona-module-metadata\.schema\.json$~',
+      $schema
+    );
+    if ($schema !== $legacySchema && !$modernSchema) {
       return "Wrong metadata-schema: {$meta['$schema']}";
     }
+    if (array_key_exists('model', $meta) && !is_string($meta['model'])) {
+      return 'Could not read metadata: model must be a string';
+    }
     $this->label = $this->getPreferredTranslationV4($meta['name']);
-    $this->description = $this->getPreferredTranslationV4($meta['description']);
+    $this->description = $this->getPreferredTranslationV4($meta['description'] ?? null);
     $this->veronaModuleId = $meta['id'];
     $this->veronaVersion = $meta['specVersion'];
     list(
@@ -184,7 +194,8 @@ class ResourceFile extends File {
       $this->versionPatch,
       $this->versionLabel
       ) = array_values(Version::split($meta['version']));
-    $this->veronaModuleType = $meta['type'];
+    $this->veronaModuleType = strtolower($meta['type']);
+    $this->veronaModel = $meta['model'] ?? '';
     return null;
   }
 
