@@ -84,6 +84,47 @@ describe('Widget window interactions', () => {
     expect(document.querySelector('.widget-dialog')).toBeNull();
   });
 
+  it('waits for the widget document instead of fitting the initial blank page', async () => {
+    const srcdoc = Object.getOwnPropertyDescriptor(HTMLIFrameElement.prototype, 'srcdoc');
+    if (!srcdoc?.set) throw new Error('Missing iframe srcdoc setter');
+    // Hold back navigation so the blank page and widget load are separate,
+    // regardless of how quickly this browser processes srcdoc.
+    const navigation = spyOnProperty(HTMLIFrameElement.prototype, 'srcdoc', 'set').and.stub();
+    const updateSize = spyOn(ref, 'updateSize').and.callThrough();
+    ref.componentInstance.start(`<!doctype html><style>
+      html, body { margin: 0; }
+      main { width: 550px; height: 600px; }
+    </style><main>Widget</main>`, () => {});
+    ref.componentInstance.showRunning('Test widget', 400);
+    await nextLayout();
+    expect(updateSize).not.toHaveBeenCalled();
+    expect(ref.componentInstance.layoutReady()).toBeFalse();
+
+    const iframe = target('iframe') as HTMLIFrameElement;
+    const loaded = new Promise<void>(resolve => iframe.addEventListener('load', () => resolve(), { once: true }));
+    srcdoc.set.call(iframe, navigation.calls.mostRecent().args[0]);
+    await loaded;
+    await nextLayout();
+    const frame = iframe.getBoundingClientRect();
+    expect(ref.componentInstance.layoutReady()).toBeTrue();
+    expect(frame.width / frame.height).toBeCloseTo(550 / 600);
+    expect(frame.height).toBeGreaterThan(100);
+    expect(updateSize).toHaveBeenCalledTimes(1);
+  });
+
+  it('keeps the initial size after later content and viewport changes', async () => {
+    const iframe = await loadWidget();
+    const before = ref.componentInstance.windowBounds;
+    const updateSize = spyOn(ref, 'updateSize').and.callThrough();
+    const main = iframe.contentDocument?.querySelector('main');
+    if (!main) throw new Error('Missing widget content');
+    main.style.height = '600px';
+    window.dispatchEvent(new Event('resize'));
+    await nextLayout();
+    expect(ref.componentInstance.windowBounds).toEqual(before);
+    expect(updateSize).not.toHaveBeenCalled();
+  });
+
   for (const [width, height] of [[550, 2000], [900, 1200], [3000, 400], [350, 200]]) {
     it(`fits ${width}×${height} content on opening without scrolling or enlarging it`, async () => {
       const iframe = await loadWidget(width, height);
@@ -102,5 +143,4 @@ describe('Widget window interactions', () => {
       expect(doc.querySelector('main')?.getBoundingClientRect().height).toBe(height);
     });
   }
-
 });

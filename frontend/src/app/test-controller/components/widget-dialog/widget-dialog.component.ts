@@ -123,7 +123,6 @@ export class WidgetDialogComponent implements OnDestroy {
     this.iframe = iframe;
     iframe.title = this.name();
     iframe.style.cssText = 'display:block;border:0;width:100%;height:100%;';
-    this.iframeLoaded = new Promise(resolve => iframe.addEventListener('load', () => resolve(), { once: true }));
     if (colorScheme) {
       // Apply the theme before the iframe can paint its default colors.
       const doc = new DOMParser().parseFromString(html, 'text/html');
@@ -133,6 +132,8 @@ export class WidgetDialogComponent implements OnDestroy {
       html = `${doctype}\n${doc.documentElement.outerHTML}`;
     }
     this.frameHost.nativeElement.appendChild(iframe);
+    // Appending the iframe loads about:blank synchronously. Wait for srcdoc instead.
+    this.iframeLoaded = new Promise(resolve => iframe.addEventListener('load', () => resolve(), { once: true }));
     const widgetWindow = iframe.contentWindow;
     if (!widgetWindow) throw new Error('Widget iframe has no window');
     // Install the protocol listener before executing any widget script.
