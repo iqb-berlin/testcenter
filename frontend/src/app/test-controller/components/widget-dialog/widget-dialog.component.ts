@@ -185,6 +185,11 @@ export class WidgetDialogComponent implements OnDestroy {
     const iframe = this.iframe;
     await this.iframeLoaded;
     if (!iframe || iframe !== this.iframe || !iframe.contentWindow) return;
+    // Cap the workspace at the preferred width, but let responsive widgets lay
+    // out at the available width on smaller screens before considering scaling.
+    const availableWidth = window.innerWidth * WIDGET_WINDOW_LIMITS.viewportFraction;
+    const layoutWidth = preferredWidth === undefined ? undefined : Math.min(preferredWidth, availableWidth);
+    if (layoutWidth !== undefined) iframe.style.width = `${layoutWidth}px`;
     const widgetWindow = iframe.contentWindow;
     // After start-command delivery, allow a complete render cycle in the widget
     // document. A host frame can run before the iframe's rendering callbacks.
@@ -193,12 +198,12 @@ export class WidgetDialogComponent implements OnDestroy {
     }));
     await iframe?.contentDocument?.fonts.ready;
     if (!iframe || iframe !== this.iframe || !iframe.contentDocument?.body) return;
-    const { width, height: contentHeight } = this.measureContent(iframe.contentDocument);
+    const { width, height: contentHeight } = this.measureContent(iframe.contentDocument, layoutWidth);
     // Content dimensions exclude the fixed-height host header.
     const headerHeight = this.windowHeader.nativeElement.getBoundingClientRect().height;
     const scale = Math.min(
-      (preferredWidth ?? width) / width,
-      window.innerWidth * WIDGET_WINDOW_LIMITS.viewportFraction / width,
+      1,
+      availableWidth / width,
       Math.max(1, window.innerHeight * WIDGET_WINDOW_LIMITS.viewportFraction - headerHeight) / contentHeight
     );
     iframe.style.width = `${width}px`;
@@ -211,13 +216,14 @@ export class WidgetDialogComponent implements OnDestroy {
     this.showLayout();
   }
 
-  private measureContent(doc: Document): { width: number; height: number } {
+  private measureContent(doc: Document, layoutWidth?: number): { width: number; height: number } {
     const { body, documentElement } = doc;
     const elements = [documentElement, body];
     const styles = elements.map(element => element.style.cssText);
     try {
       for (const element of elements) {
-        element.style.setProperty('width', 'max-content', 'important');
+        element.style.setProperty('width', layoutWidth === undefined ? 'max-content' : `${layoutWidth}px`,
+                                  'important');
         element.style.setProperty('height', 'max-content', 'important');
       }
       const content = documentElement.getBoundingClientRect();
