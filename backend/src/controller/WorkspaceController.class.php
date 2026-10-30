@@ -9,6 +9,7 @@ use Slim\Exception\HttpBadRequestException;
 use Slim\Exception\HttpNotFoundException;
 use Slim\Http\Response;
 use Slim\Http\ServerRequest as Request;
+use Slim\Psr7\Stream;
 
 class WorkspaceController extends Controller {
   /**
@@ -131,6 +132,13 @@ class WorkspaceController extends Controller {
     }
 
     $contentType = ($fileType === 'Resource') ? 'application/octet-stream' : 'text/xml';
+
+    if (Storage::isObjectStore()) {
+      return $response
+        ->withHeader('Content-Type', $contentType)
+        ->withHeader('Content-Disposition', 'attachment; filename="' . $filename . '"')
+        ->withBody(new Stream(Storage::driver()->getStream(Storage::toLogical($filePath))));
+    }
 
     return FileResponse::stream($response, $filePath, $filename, $contentType);
   }
