@@ -44,15 +44,15 @@
     }
 
     <div class="toolbar-right" data-cy="toolbar-right">
-      @if ((tcs.testMode.showTimeLeft || tcs.booklet?.config?.toolbar_show_time_left === 'TRUE') && timerValue) {
-        <p data-cy="time-value">Verbleibende Zeit: {{timerValue.timeLeftString}}</p>
-      }
-
       @if (calculatorConfiguration) {
         <button [attr.aria-label]="'Taschenrechner' | customtext: 'booklet_calculator' | async" data-cy="calculator" matIconButton
                 [matTooltip]="('Taschenrechner' | customtext: 'booklet_calculator' | async) || ''" (click)="openCalculator($event)">
           <mat-icon svgIcon="calculate"></mat-icon>
         </button>
+      }
+
+      @if ((tcs.testMode.showTimeLeft || tcs.booklet?.config?.toolbar_show_time_left === 'TRUE') && timerValue) {
+        <p data-cy="time-value">Verbleibende Zeit: {{timerValue.timeLeftString}}</p>
       }
 
       @if (tcs.testMode.canReview) {
