@@ -67,12 +67,14 @@ export interface WidgetDialogData {
         }
       }
     </div>
-    <div #frameHost class="frame-host"></div>
+    <div #frameHost class="frame-host" [inert]="!layoutReady()"></div>
   `,
   styles: [`
     :host { display: flex; flex-direction: column; position: relative; height: 100%; background: white; }
     :host(.preparing) { background: transparent; }
-    :host(.preparing) header, :host(.preparing) .frame-host { visibility: hidden; }
+    :host(.preparing) header { visibility: hidden; }
+    /* Hidden iframe documents can have their animation frames throttled. */
+    :host(.preparing) .frame-host { opacity: 0; }
     :host(.preparing) .status { display: none; }
     .preparation {
       position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
@@ -182,8 +184,13 @@ export class WidgetDialogComponent implements OnDestroy {
   private async fitInitialWindow(preferredWidth?: number): Promise<void> {
     const iframe = this.iframe;
     await this.iframeLoaded;
-    // Let the widget render its start parameters before fitting the window once.
-    await new Promise<void>(resolve => requestAnimationFrame(() => resolve()));
+    if (!iframe || iframe !== this.iframe || !iframe.contentWindow) return;
+    const widgetWindow = iframe.contentWindow;
+    // After start-command delivery, allow a complete render cycle in the widget
+    // document. A host frame can run before the iframe's rendering callbacks.
+    await new Promise<void>(resolve => widgetWindow.requestAnimationFrame(() => {
+      widgetWindow.requestAnimationFrame(() => resolve());
+    }));
     await iframe?.contentDocument?.fonts.ready;
     if (!iframe || iframe !== this.iframe || !iframe.contentDocument?.body) return;
     const { width, height: contentHeight } = this.measureContent(iframe.contentDocument);

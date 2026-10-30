@@ -121,6 +121,9 @@ describe('Uploaded calculator launch', () => {
     messages.next(new MessageEvent('message', {
       source, data: { type: 'vowReadyNotification', metadata: metadata(model) }
     }));
+    // postMessage is spied on above, so deliver its command to the widget explicitly.
+    const command: unknown = post.calls.mostRecent().args[0];
+    source.dispatchEvent(new MessageEvent('message', { source: window, data: command }));
     return { source, post };
   }
 
@@ -279,6 +282,65 @@ describe('Uploaded calculator launch', () => {
       expect(event.data.scheme).toBe('light');
       expect(event.data.background).toBe('rgb(255, 255, 255)');
       expect(event.data.readyState).toBe('loading');
+    } finally {
+      window.removeEventListener('message', observe);
+    }
+  });
+
+  it('fits the configured widget on opening and preserves its window size during use', async () => {
+    let observe!: (event: MessageEvent<unknown>) => void;
+    const rendered = new Promise<void>((resolve) => {
+      observe = (event) => {
+        const source = document.querySelector<HTMLIFrameElement>('[role="dialog"] iframe')?.contentWindow;
+        if (event.source !== source) return;
+        const data = event.data;
+        if (data === null || typeof data !== 'object' || !('type' in data) || typeof data.type !== 'string') return;
+        if (data.type.startsWith('vow')) messages.next(event);
+        if (data.type === 'widgetRendered') resolve();
+      };
+    });
+    async function settleLayout(): Promise<void> {
+      for (let frame = 0; frame < 5; frame++) {
+        await new Promise<void>(resolve => requestAnimationFrame(() => resolve()));
+      }
+    }
+    window.addEventListener('message', observe);
+    try {
+      open();
+      http.expectOne('/api/file/calculator-group/ws_1/Resource/calculator.html').flush(`<!doctype html>
+        <style>
+          html, body { margin: 0; }
+          main { width: 550px; height: 0; }
+        </style>
+        <main><button onclick="this.parentElement.style.height = '1200px'">Show history</button></main>
+        <script>
+          addEventListener('message', event => {
+            if (event.data.type !== 'vowStartCommand') return;
+            requestAnimationFrame(() => {
+              document.querySelector('main').style.height = '600px';
+              parent.postMessage({type: 'widgetRendered'}, '*');
+            });
+          });
+          parent.postMessage({type: 'vowReadyNotification', metadata: ${JSON.stringify(metadata('CALCULATOR'))}}, '*');
+        </script>`);
+      await rendered;
+      await settleLayout();
+      const pane = document.querySelector<HTMLElement>('[role="dialog"]');
+      const iframe = pane?.querySelector('iframe');
+      const historyButton = iframe?.contentDocument?.querySelector('button');
+      if (!pane || !iframe || !historyButton) throw new Error('Missing widget UI');
+      const frame = iframe.getBoundingClientRect();
+      const before = pane.getBoundingClientRect();
+      expect(frame.width / frame.height).toBeCloseTo(550 / 600);
+      expect(frame.height).toBeGreaterThan(100);
+      expect(frame.height).toBeLessThanOrEqual(before.height);
+      expect(frame.width).toBeLessThanOrEqual(before.width + 1);
+
+      historyButton.click();
+      await settleLayout();
+      const after = pane.getBoundingClientRect();
+      expect(after.width).toBe(before.width);
+      expect(after.height).toBe(before.height);
     } finally {
       window.removeEventListener('message', observe);
     }

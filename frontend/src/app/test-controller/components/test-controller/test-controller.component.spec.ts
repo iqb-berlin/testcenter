@@ -162,6 +162,7 @@ describe('TestControllerComponent calculator header', () => {
       type: 'vowReadyNotification', metadata: JSON.stringify({ ...JSON.parse(metadata), model })
     } }));
     const command: unknown = post.calls.mostRecent().args[0];
+    source.dispatchEvent(new MessageEvent('message', { source: window, data: command }));
     return { source, post, command, trigger };
   }
 

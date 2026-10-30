@@ -95,9 +95,22 @@ export class WidgetSession {
       };
       this.session = { kind: 'running', id: command.sessionId, latestTimestamp: -Infinity, state: this.options.state };
       this.timeout.unsubscribe();
+      // postMessage queues delivery. Start fitting only after the widget receives
+      // its configuration, rather than racing that message with a host animation frame.
+      const onStartDelivered = (event: MessageEvent<unknown>) => {
+        const data = event.data;
+        if (event.source !== window || data === null || typeof data !== 'object' ||
+          !('type' in data) || data.type !== 'vowStartCommand' ||
+          !('sessionId' in data) || data.sessionId !== command.sessionId) return;
+        this.options.window.removeEventListener('message', onStartDelivered);
+        try {
+          this.options.onReady(name, command.sessionId);
+        } catch (error) { this.fail(error); }
+      };
+      this.options.window.addEventListener('message', onStartDelivered);
+      this.subscriptions.add(() => this.options.window.removeEventListener('message', onStartDelivered));
       this.options.window.postMessage(command, '*');
       if (this.options.state !== undefined) this.options.onState(this.options.state);
-      this.options.onReady(name, command.sessionId);
     } catch (error) { this.fail(error); }
   }
 }

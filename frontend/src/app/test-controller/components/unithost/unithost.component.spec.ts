@@ -298,6 +298,8 @@ describe('UnithostComponent', () => {
     MockMainDataService.postMessage$.next(new MessageEvent('message', {
       source: widgetWindow, data: { type: 'vowReadyNotification', metadata: JSON.stringify(metadata) }
     }));
+    const command: unknown = start.calls.mostRecent().args[0];
+    widgetWindow.dispatchEvent(new MessageEvent('message', { source: window, data: command }));
     const sessionId = start.calls.mostRecent().args[0].sessionId;
     const returned = playerReturns.get(playerWindow) ?? spyOn(playerWindow, 'postMessage');
     playerReturns.set(playerWindow, returned);
