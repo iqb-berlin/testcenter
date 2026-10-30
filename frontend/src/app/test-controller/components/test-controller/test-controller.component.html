@@ -44,6 +44,13 @@
     }
 
     <div class="toolbar-right" data-cy="toolbar-right">
+      @if (calculatorConfiguration) {
+        <button [attr.aria-label]="'Taschenrechner' | customtext: 'booklet_calculator' | async" data-cy="calculator" matIconButton
+                [matTooltip]="('Taschenrechner' | customtext: 'booklet_calculator' | async) || ''" (click)="openCalculator($event)">
+          <mat-icon svgIcon="calculate"></mat-icon>
+        </button>
+      }
+
       @if ((tcs.testMode.showTimeLeft || tcs.booklet?.config?.toolbar_show_time_left === 'TRUE') && timerValue) {
         <p data-cy="time-value">Verbleibende Zeit: {{timerValue.timeLeftString}}</p>
       }
@@ -104,6 +111,10 @@
         <tc-loading-progress [progress]="tcs.totalLoadingProgress" heading="Gleich geht's los!"></tc-loading-progress>
       </div>
     }
+    @if (calculator.result(); as result) {
+      <tc-calculator-peek [hidden]="!calculatorConfiguration || dialog.openDialogs.length > 0"
+                          [result]="result"
+                          (closed)="calculator.dismissResult()"></tc-calculator-peek>
+    }
   </mat-sidenav-content>
-
 </mat-sidenav-container>

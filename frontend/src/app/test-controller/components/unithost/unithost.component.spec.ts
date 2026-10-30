@@ -8,6 +8,7 @@ import { MatIconTestingModule } from '@angular/material/icon/testing';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { ApplicationRef } from '@angular/core';
 import { WidgetRuntimeService } from '../../services/widget-runtime.service';
+import { CalculatorService } from '../../services/calculator.service';
 import { WidgetDialogComponent } from '../widget-dialog/widget-dialog.component';
 import { HttpEventType, provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
@@ -102,7 +103,7 @@ describe('UnithostComponent', () => {
         provideNoopAnimations(),
         { provide: TestControllerService, useValue: MockTestControllerService },
         BackendService,
-        WidgetRuntimeService,
+        WidgetRuntimeService, CalculatorService,
         provideHttpClient(),
         provideHttpClientTesting(),
         { provide: AssetService, useValue: MockAssetService },

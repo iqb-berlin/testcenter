@@ -35,12 +35,14 @@ import { NavigationComponent } from './components/navigation/navigation.componen
 import { DebugPaneComponent } from '@app/test-controller/components/debug-pane/debug-pane.component';
 import { UnitInaccessiblePipe } from '@app/test-controller/pipes/unit-inaccessible.pipe';
 import { TemplateContextDirective } from '@shared/directives/template-context.directive';
+import { CalculatorPeekComponent } from './components/calculator-peek/calculator-peek.component';
 
 export { TestControllerService } from './services/test-controller.service';
 
 @NgModule({
   imports: [
     CommonModule,
+    CalculatorPeekComponent,
     TestControllerRoutingModule,
     MatTooltipModule,
     MatSnackBarModule,

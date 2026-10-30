@@ -1,3 +1,4 @@
+import { parseTestletCalculator } from '../util/calculator-config.util';
 import { BookletConfig } from '../classes/booklet-config.class';
 import {
   BlockCondition, BlockConditionSourceAggregation,
@@ -155,11 +156,13 @@ export abstract class BookletParserService<
     let testletCount = 0;
     let unitCount = 0;
     const genericTestletId = `${context.parents.map(p => p.id).join('>')}[${testletCount}]`;
+    const calculator = parseTestletCalculator(testletElement);
     const testlet = this.toTestlet(
       {
         id: testletElement.getAttribute('id') || genericTestletId,
         label: testletElement.getAttribute('label') || '',
         restrictions: this.parseRestrictions(testletElement, context),
+        ...(calculator !== undefined ? { calculator } : {}),
         children: []
       },
       testletElement,

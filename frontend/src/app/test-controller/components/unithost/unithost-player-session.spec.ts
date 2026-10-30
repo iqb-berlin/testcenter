@@ -12,6 +12,7 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDividerModule } from '@angular/material/divider';
 import { AssetService } from '@shared/services/asset.service';
 import { WidgetRuntimeService } from '../../services/widget-runtime.service';
+import { CalculatorService } from '../../services/calculator.service';
 import { UnithostComponent } from './unithost.component';
 import { TestControllerService } from '../../services/test-controller.service';
 import { BackendService } from '../../services/backend.service';
@@ -97,6 +98,7 @@ describe('UnithostComponent player sessions', () => {
         { provide: TestControllerService, useValue: MockTestControllerService },
         BackendService,
         { provide: WidgetRuntimeService, useValue: { close: () => {} } },
+        { provide: CalculatorService, useValue: {} },
         provideHttpClient(),
         { provide: AssetService, useValue: MockAssetService },
         { provide: MainDataService, useValue: MockMainDataService },

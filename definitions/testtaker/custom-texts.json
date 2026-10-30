@@ -23,6 +23,22 @@
     "label": "Beschriftung zum Schließen eines Widget-Fensters",
     "defaultvalue": "Widget schließen"
   },
+  "booklet_calculator": {
+    "label": "Beschriftung für den Taschenrechner",
+    "defaultvalue": "Taschenrechner"
+  },
+  "booklet_calculatorUnavailable": {
+    "label": "Meldung bei fehlendem Taschenrechner",
+    "defaultvalue": "Kein Taschenrechner verfügbar. Bitte informieren Sie die Testleitung."
+  },
+  "booklet_calculatorResult": {
+    "label": "Titel und Ersatztext für das Bild der letzten Rechnung",
+    "defaultvalue": "Letzte Rechnung"
+  },
+  "booklet_calculatorResultClose": {
+    "label": "Beschriftung zum Schließen des Ergebnisfensters",
+    "defaultvalue": "Ergebnisfenster schließen"
+  },
   "login_sidepanel_title": {
     "label" : "Titel des seitlichen Infobereichs auf der Anmeldeseite",
     "defaultvalue" : "Willkommen im IQB‑Testcenter"

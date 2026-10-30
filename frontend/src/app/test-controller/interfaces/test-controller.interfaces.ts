@@ -122,10 +122,10 @@ export interface UnitDataParts {
   unitStateDataType: string;
 }
 
-export interface StateReportEntry<StateType extends string> {
+export interface StateReportEntry<StateType extends string, Content = string> {
   key: StateType
   timeStamp: number;
-  content: string;
+  content: Content;
 }
 
 export interface StateUpdate<StateType extends string> {

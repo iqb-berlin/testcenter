@@ -2,6 +2,18 @@
 
 ## Neue Funktionen
 - Verona-Widgets aus dem Arbeitsbereich lassen sich während der Aufgabenbearbeitung in verschiebbaren Fenstern öffnen.
+- Ein Taschenrechner lässt sich pro Testlet für dessen direkte Aufgaben in der Werkzeugleiste bereitstellen, wahlweise im einfachen oder wissenschaftlichen Modus und mit konfigurierbarem Journal. Nach dem Schließen kann die letzte Rechnung als Ergebnisvorschau angezeigt werden. Die Taschenrechnernutzung wird bei aktiver Antwortspeicherung im Aufgaben-Log protokolliert.
+- Die Taschenrechner-Konfiguration erfolgt über `<Calculator>` im Testlet und benötigt Booklet-XSD 18.1.
+  Beispiel für einen wissenschaftlichen Rechner mit fünf sichtbaren Journalzeilen und einer maximalen Ergebnisbildbreite von 300 Pixeln:
+
+  ```xml
+  <Testlet id="mathematik">
+    <Calculator mode="SCIENTIFIC" journalLines="5" maxImageWidthPx="300" />
+    <Unit id="aufgabe1" label="Aufgabe 1"/>
+  </Testlet>
+  ```
+
+  `<Calculator>` steht nach einem gegebenenfalls vorhandenen `<Restrictions>` und vor den Units bzw. Kind-Testlets. Die Konfiguration gilt nur für die direkten Units; Kind-Testlets benötigen eine eigene Deklaration. `mode="SIMPLE"` wählt den einfachen Rechner, `journalLines="0"` blendet das Journal aus. Das optionale `<Journal>` enthält bisherige Berechnungen als JSON-Array; `[]` startet mit einem leeren Journal.
 - Der Kurztitel einer Unit (Attribut `labelshort` im Booklet) lässt sich während des Tests anzeigen: im Kopfbereich über `header_content` = `UNIT_LABEL_SHORT`, auf der Navigationsleiste über `navbar_unit_label` = `LABEL_SHORT` und auf der Werkzeugleiste über den neuen Booklet-Parameter `toolbar_unit_label` = `LABEL_SHORT`. Fehlt der Kurztitel, wird der Titel der Unit angezeigt. `toolbar_unit_label` ersetzt `toolbar_show_unit_title`, das weiterhin ausgewertet wird, aber als veraltet gilt. Bisher wurde `labelshort` nur im Gruppen-Monitor angezeigt.
 - Die Dialogboxen zum Beenden des Tests und zum Abmelden sowie die Begrüßung auf der Starter-Seite lassen sich über neue Custom-Texts anpassen, etwa um in Befragungen eine andere Anrede als „du“ oder eine andere Bezeichnung als „Test“ zu verwenden. Bisher waren diese Texte fest vorgegeben. (#1633)
   - `booklet_warningEndTestTitle`: Titel der Dialogbox zum Beenden des Tests („Sicher, dass du den Test beenden möchtest?“)
@@ -18,10 +30,10 @@
 - Der Bestätigungsknopf im Bereich "Dateien" eines Workspace befindet sich nun oben und nicht mehr potentiell weit unten, nach der Liste der hochgeladenen Dateien.
 
 ## Fehlerbehebungen
-- Widgets, insbesondere der Moleküleditor, verwenden beim Öffnen eine begrenzte Ausgangsbreite. Ohne modellspezifische Vorgabe beträgt die Obergrenze 1100 Pixel. In schmaleren Browserfenstern passt sich die Arbeitsfläche an die verfügbare Breite an, ohne responsive Bedienelemente unnötig zu verkleinern. Eine Verkleinerung des gesamten Widgets erfolgt nur, wenn dessen Inhalt trotzdem zu breit oder zu hoch ist.
-- Widget-Fenster warten vor der einmaligen Größenberechnung auf das Laden des Widget-Dokuments, die Zustellung des Startkommandos und einen Darstellungsdurchlauf im Widget. Bisher konnte die leere Startseite oder die noch nicht fertig dargestellte Startansicht vermessen werden, sodass das Widget als schmaler Streifen erschien, unter anderem auf dem iPad. Die Startanzeige bleibt in Firefox nicht mehr unnötig rund zwei Sekunden lang stehen. (#1652)
 - Änderungen vorhandener gemeinsamer Player-Parameter werden wieder gespeichert. Auch leere Zeichenfolgen werden als Parameterwerte übernommen.
 - Verspätete Player-Antworten bleiben nach einem Aufgabenwechsel der ursprünglichen Aufgabe zugeordnet. Nach dem Warten auf ausstehende Speicherungen wird kein inzwischen ersetzter Player mehr gestartet.
+- Widgets, insbesondere der Moleküleditor, verwenden beim Öffnen eine begrenzte Ausgangsbreite. Ohne modellspezifische Vorgabe beträgt die Obergrenze 1100 Pixel. In schmaleren Browserfenstern passt sich die Arbeitsfläche an die verfügbare Breite an, ohne responsive Bedienelemente unnötig zu verkleinern. Eine Verkleinerung des gesamten Widgets erfolgt nur, wenn dessen Inhalt trotzdem zu breit oder zu hoch ist.
+- Widget-Fenster warten vor der einmaligen Größenberechnung auf das Laden des Widget-Dokuments, die Zustellung des Startkommandos und einen Darstellungsdurchlauf im Widget. Bisher konnte die leere Startseite oder die noch nicht fertig dargestellte Startansicht vermessen werden, sodass das Widget als schmaler Streifen erschien, unter anderem auf dem iPad. Die Startanzeige bleibt in Firefox nicht mehr unnötig rund zwei Sekunden lang stehen. (#1652)
 - Wird eine hochgeladene Datei abgelehnt, weil eine gleichnamige Datei mit anderer ID, anderem Verona-Modul oder inkompatibler Version existiert, bleibt auch der Eintrag in der Datenbank unverändert. Bisher wurde er trotz der Fehlermeldung mit den Daten der abgelehnten Datei überschrieben, bis der Arbeitsbereich neu eingelesen wurde.
 - „Test beenden“ im Unit-Menü und die Aufforderung einer Unit, den Test zu beenden, fragen jetzt nach, wie bereits das Logo. Mit `silent_mode` entfällt die Nachfrage auf allen drei Wegen, außer der Test oder ein Block wird dabei gesperrt. Bisher fragten Unit-Menü und Unit nicht nach, das Logo dagegen auch mit `silent_mode`. (#1651)
 - Ist der Brute-Force-Schutz (`BRUTE_FORCE_PROTECTION`) für eine Anmeldeart eingeschaltet, die Seite aber nicht über HTTPS aufgerufen, zeigt die Anmeldeseite einen entsprechenden Hinweis und sperrt die betroffene Anmeldung. Bisher blieb der Anmelde-Knopf nach dem ersten Versuch dauerhaft deaktiviert, weil Browser die für den Schutz nötige Verschlüsselungsfunktion nur über HTTPS bereitstellen.

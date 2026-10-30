@@ -28,6 +28,7 @@ import { PageService } from '../../services/page.service';
 import { VeronaAPIService } from '../../services/verona-api.service';
 import { MessageService } from '@app/shared/services/message.service';
 import { WidgetRuntimeService } from '../../services/widget-runtime.service';
+import { CalculatorService } from '../../services/calculator.service';
 
 @Component({
   templateUrl: './unithost.component.html',
@@ -58,7 +59,8 @@ export class UnithostComponent implements OnInit, OnDestroy {
               @Inject('FILE_SERVER_URL') private readonly fileServerUrl: string,
               public themeService: ThemeService,
               private messageService: MessageService,
-              private bs: BackendService, private route: ActivatedRoute, private widgets: WidgetRuntimeService) { }
+              private bs: BackendService, private route: ActivatedRoute, private widgets: WidgetRuntimeService,
+              private calculator: CalculatorService) { }
 
   ngOnInit(): void {
     this.iFrameItemplayer = null;
@@ -129,7 +131,9 @@ export class UnithostComponent implements OnInit, OnDestroy {
       case 'vopWidgetCall':
         this.widgets.open({
           call: msgData, source: messageEvent.source, playerIframe: this.iFrameItemplayer
-        });
+        }, widget => this.calculator.supports(widget.model) ?
+          this.calculator.createBehavior(widget.resourcePath) :
+          undefined);
         break;
     default:
       console.log(`processMessagePost ignored message: ${msgType}`);
