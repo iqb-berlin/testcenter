@@ -44,6 +44,7 @@ import { MessageService } from '@app/shared/services/message.service';
 
 export class UnithostComponent implements OnInit, OnDestroy {
   @ViewChild('iframeHost') private iFrameHostElement!: ElementRef;
+  private readonly playerSessions = new WeakMap<MessageEventSource, string>();
   private iFrameItemplayer: HTMLIFrameElement | null = null;
   private subscriptions: { [tag: string ]: Subscription } = {};
   clearCode: string = '';
@@ -91,12 +92,21 @@ export class UnithostComponent implements OnInit, OnDestroy {
       return;
     }
     const msgData = messageEvent.data;
+    if (msgData === null || typeof msgData !== 'object' || typeof msgData.type !== 'string' ||
+        !msgData.type.startsWith('vop')) return;
     const msgType = msgData.type;
-
-    this.apiService.postMessageTarget = messageEvent.source as Window;
-    const dontNeedSessionId = ['vopReadyNotification', 'vopWindowFocusChangedNotification'];
+    const currentPlayer = this.iFrameItemplayer?.contentWindow;
+    const source = messageEvent.source;
+    const latePlayerState = msgType === 'vopStateChangedNotification' && source !== null &&
+      this.playerSessions.get(source) === msgData.sessionId &&
+      Object.hasOwn(this.tcs.unitAliasMap, msgData.sessionId);
+    if (!latePlayerState && (!currentPlayer || source !== currentPlayer)) return;
+    const dontNeedSessionId = [
+      'vopReadyNotification', 'vopWindowFocusChangedNotification', 'vopRuntimeErrorNotification'
+    ];
     if ((!dontNeedSessionId.includes(msgType)) && (!(msgData.sessionId in this.tcs.unitAliasMap))) {
       console.warn('wrong player session id: ', msgData.sessionId, msgData, this.tcs.unitAliasMap);
+      return;
     }
 
     switch (msgType) {
@@ -166,7 +176,11 @@ export class UnithostComponent implements OnInit, OnDestroy {
       unitState.responseProgress = this.tcs.currentUnit.state.RESPONSE_PROGRESS;
     }
 
+    const playerWindow = this.iFrameItemplayer?.contentWindow;
+    const startingUnit = this.tcs.currentUnit;
     const navigation = await this.tcs.closeAllBuffers('handleReadyNotification');
+    if (!playerWindow || playerWindow !== this.iFrameItemplayer?.contentWindow ||
+        startingUnit !== this.tcs.currentUnit) return;
 
     const msg: VopStartCommand = {
       type: 'vopStartCommand',
@@ -176,7 +190,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
       unitState,
       playerConfig: this.getPlayerConfig(navigation)
     };
-    this.apiService.postMessageTarget.postMessage(msg, '*');
+    playerWindow.postMessage(msg, '*');
   }
 
   private handleStateChangedNotification(msg: VopStateChangedNotification): void {
@@ -396,6 +410,10 @@ export class UnithostComponent implements OnInit, OnDestroy {
     }
     this.iFrameItemplayer.setAttribute('class', 'unitHost');
     this.iFrameHostElement.nativeElement.appendChild(this.iFrameItemplayer);
+    const playerWindow = this.iFrameItemplayer.contentWindow;
+    if (!playerWindow) throw new Error('Player iframe has no window');
+    this.playerSessions.set(playerWindow, this.tcs.currentUnit.alias);
+    this.apiService.postMessageTarget = playerWindow;
     this.iFrameItemplayer.setAttribute('srcdoc', this.tcs.getPlayer(this.tcs.currentUnit.playerFileName));
   }
 
