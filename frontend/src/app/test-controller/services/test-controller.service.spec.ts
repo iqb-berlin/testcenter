@@ -11,7 +11,7 @@ import { TestControllerService } from './test-controller.service';
 import { BackendService } from './backend.service';
 import {
   KeyValuePairString, NavigationLeaveRestrictionValue, StateReportEntry, Testlet, Unit,
-  UnitDataParts, UnitNavigationTarget, UnitStateKey, UnitStateUpdate
+  UnitDataParts, UnitNavigationTarget, UnitStateKey, UnitStateUpdate, TestStateUpdate
 } from '../interfaces/test-controller.interfaces';
 import { MainDataService, TestMode } from '../../shared/shared.module';
 import { MessageService } from '../../shared/services/message.service';
@@ -25,6 +25,11 @@ const uploadedData: UnitDataParts[] = [];
 const uploadedStates: UnitStateUpdate[] = [];
 
 class MockBackendService {
+  // eslint-disable-next-line class-methods-use-this
+  patchTestState(update: TestStateUpdate): Observable<string> {
+    return of('ok');
+  }
+
   // eslint-disable-next-line class-methods-use-this
   updateDataParts(
     testId: string, unitDbKey: string, originalUnitId: string, dataParts: KeyValuePairString, unitStateDataType: string
@@ -124,6 +129,28 @@ describe('TestControllerService', () => {
   it('should be created', () => {
     expect(service).toBeTruthy();
   });
+
+  it('flushes changed shared parameters through the existing test-state persistence path', fakeAsync(() => {
+    const uploaded: TestStateUpdate[] = [];
+    const backend = TestBed.inject(BackendService);
+    spyOn(backend, 'patchTestState').and.callFake(update => {
+      uploaded.push(update);
+      return of('ok');
+    });
+    service.testId = 'shared-parameter-test';
+    service.testMode = new TestMode('run-hot-return');
+    service.sharedParameters = [{ key: 'selection', value: 'old' }];
+    service.setupTestStateBuffer();
+    service.addSharedParameters([{ key: 'selection', value: '' }]);
+    service.closeAllBuffers('shared-parameter-test');
+    tick();
+    expect(uploaded.length).toBe(1);
+    expect(uploaded[0].testId).toBe('shared-parameter-test');
+    expect(uploaded[0].state).toEqual([jasmine.objectContaining({
+      key: 'SHARED_PARAMETERS', content: JSON.stringify([{ key: 'selection', value: '' }])
+    })]);
+    discardPeriodicTasks();
+  }));
 
   it('should code aliased and derived variables in a subform with the current responses API', () => {
     service.units[1] = {
