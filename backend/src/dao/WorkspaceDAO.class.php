@@ -645,11 +645,14 @@ class WorkspaceDAO extends DAO {
 
   /**
    * @return list<array{name: string, verona_model: string}>
-   * Oldest modification first within each model; filename breaks timestamp ties.
+   * Ascending Version::compare order within each model; modification time, then filename break ties.
    */
   public function getWidgetResources(): array {
-    return $this->_(
-      "SELECT name, verona_model
+    /** @var list<array{name: string, verona_model: string, version: string}> $resources */
+    $resources = $this->_(
+      "SELECT name, verona_model,
+              COALESCE(version_mayor, 0) || '.' || COALESCE(version_minor, 0) || '.' ||
+              COALESCE(version_patch, 0) || '-' || COALESCE(version_label, '') AS version
        FROM files
        WHERE workspace_id = :ws_id
          AND type = 'Resource'
@@ -660,6 +663,18 @@ class WorkspaceDAO extends DAO {
       [':ws_id' => $this->workspaceId],
       true
     );
+    // PHP's stable sort preserves the query's modification-time/filename order for equal versions.
+    usort($resources, /**
+     * @param array{name: string, verona_model: string, version: string} $left
+     * @param array{name: string, verona_model: string, version: string} $right
+     */ static function (array $left, array $right): int {
+      return strcmp($left['verona_model'], $right['verona_model'])
+        ?: Version::compare($left['version'], $right['version']);
+    });
+    return array_map(static fn(array $resource): array => [
+      'name' => $resource['name'],
+      'verona_model' => $resource['verona_model']
+    ], $resources);
   }
 
   public function getWorkspaceHash(): string

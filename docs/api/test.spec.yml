@@ -14,9 +14,10 @@ paths:
         `laststate` is an array of key-value-pairs stored for this test.
         `widgets` maps Verona models to arrays of resource paths for valid uploaded widgets in the
         current workspace, independent of unit dependencies. It is an empty object when none exist.
-        Paths are ordered by file modification time ascending, then filename in bytewise order.
-        The temporary selection policy is to use the last path per model. Modification time is not
-        upload time, especially for ZIP imports. Multiple-file selection will be reconsidered later.
+        Paths are ordered by metadata version ascending using the backend Version::compare helper,
+        then file modification time ascending, then filename in bytewise order.
+        The last path per model is selected, giving preference to the highest metadata version.
+        Modification time is not upload time, especially for ZIP imports.
         The test-mode is basically a string to be interpretated by the frontend. For more details
         about that see: https://pages.cms.hu-berlin.de/iqb/testcenter/pages/test-mode.html
 

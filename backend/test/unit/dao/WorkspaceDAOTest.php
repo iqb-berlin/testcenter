@@ -177,6 +177,36 @@ class WorkspaceDAOTest extends TestCase {
     $this->assertSame($expected, $this->dbc->getWidgetResources());
   }
 
+  public function test_getWidgetResourcesOrdersMetadataVersionsUsingVersionCompare(): void {
+    $versions = ['2.0.0', '1.10.0', '1.9.0', '1.10.1', '2.0.0-beta', '2.0.0-alpha', '0.0.0'];
+    foreach ($versions as $index => $version) {
+      $parts = Version::split($version);
+      $this->dbc->storeFile(new ResourceFile(new FileData(
+        path: "/data_dir/ws_1/Resource/widget-$index.html",
+        type: 'Resource',
+        id: "widget-$index",
+        modificationTime: 1000 - $index,
+        veronaModuleType: 'widget',
+        veronaModel: 'PERIODIC_TABLE',
+        veronaVersion: '99.0.0',
+        versionMayor: $parts['major'],
+        versionMinor: $parts['minor'],
+        versionPatch: $parts['patch'],
+        versionLabel: $parts['label']
+      )));
+    }
+    $resources = $this->dbc->getWidgetResources();
+    $expected = array_keys($versions);
+    usort($expected, static fn(int $left, int $right): int => Version::compare($versions[$left], $versions[$right]));
+    $this->assertSame(
+      array_map(static fn(int $index): string => "widget-$index.html", $expected),
+      array_column($resources, 'name')
+    );
+    // Numeric components must take precedence over upload time and lexical version order.
+    $names = array_column($resources, 'name');
+    $this->assertLessThan(array_search('widget-1.html', $names), array_search('widget-2.html', $names));
+  }
+
   public function test_addLoginSource(): void {
     $logins = new LoginArray(
       new Login('first', 'some', 'run-hot-return', 'grp', 'Grp', [], 1, 1000000, 200000, 0, (object) ['some' => 'thing']),

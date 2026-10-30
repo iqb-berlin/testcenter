@@ -348,7 +348,7 @@ export class TestControllerService {
   getWidgetResourcePath(model: string): string | undefined {
     for (const candidate of widgetModelCandidates(model)) {
       const paths = Object.prototype.hasOwnProperty.call(this.widgets, candidate) ? this.widgets[candidate] : undefined;
-      // Temporary policy: the backend orders candidates by modification time, then filename.
+      // The backend orders candidates by version, then modification time and filename.
       const path = paths?.[paths.length - 1];
       if (path !== undefined) return path;
     }
