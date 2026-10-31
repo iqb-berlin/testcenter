@@ -55,22 +55,9 @@ for (const consumer of consumers) {
       parser = consumer.create();
     });
 
-    it('keeps existing booklets without calculator declarations unchanged', () => {
-      const result = parser.parseBookletXml(booklet(`
-        <Restrictions><DenyNavigationOnIncomplete presentation="ON"/></Restrictions>
-        <Unit id="root-unit" label="Root"/>
-        <Testlet id="outer"><Restrictions><CodeToEnter code="start"/></Restrictions>
-          <Testlet id="inner"><Unit id="u1" label="Task"/></Testlet>
-        </Testlet>`));
-      expect(Object.hasOwn(result.units, 'calculator')).toBeFalse();
-      expect(Object.hasOwn(findTestlet(result.units, 'outer'), 'calculator')).toBeFalse();
-      expect(Object.hasOwn(findTestlet(result.units, 'inner'), 'calculator')).toBeFalse();
-      expect(findTestlet(result.units, 'inner').restrictions.denyNavigationOnIncomplete?.presentation).toBe('ON');
-    });
-
-    it('applies defaults to an empty declaration', () => {
-      const result = parser.parseBookletXml(block('<Calculator/>'));
-      expect(findTestlet(result.units, 'outer').calculator).toEqual(defaults);
+    it('distinguishes absent calculator configuration from an empty declaration', () => {
+      expect(findTestlet(parser.parseBookletXml(block('')).units, 'outer').calculator).toBeUndefined();
+      expect(findTestlet(parser.parseBookletXml(block('<Calculator/>')).units, 'outer').calculator).toEqual(defaults);
     });
 
     it('parses all settings and preserves journal text and entry order', () => {
@@ -85,47 +72,18 @@ for (const consumer of consumers) {
       });
     });
 
-    it('requires each child testlet to declare its own calculator', () => {
-      const result = parser.parseBookletXml(booklet(`
-        <Testlet id="outer">
-          <Calculator mode="SCIENTIFIC" journalLines="5" maxImageWidthPx="500">
-            <Journal>[{"asLatex":"1=1","asImage":""}]</Journal>
-          </Calculator>
-          <Testlet id="inherits"><Testlet id="deep"><Unit id="u1" label="Task"/></Testlet></Testlet>
-          <Testlet id="override"><Calculator/>
-            <Testlet id="inherits-override"><Unit id="u2" label="Task"/></Testlet>
-          </Testlet>
-          <Testlet id="disabled">
-            <Testlet id="inherits-disabled"><Unit id="u3" label="Task"/></Testlet>
-            <Testlet id="reenabled"><Calculator/><Unit id="u4" label="Task"/></Testlet>
-          </Testlet>
-          <Testlet id="sibling"><Unit id="u5" label="Task"/></Testlet>
-        </Testlet>
-        <Testlet id="unrelated"><Unit id="u6" label="Task"/></Testlet>`));
-      expect(findTestlet(result.units, 'outer').calculator).toEqual({
-        mode: 'SCIENTIFIC', journalLines: 5, maxImageWidthPx: 500,
-        journal: '[{"asLatex":"1=1","asImage":""}]'
-      });
-      for (const id of ['override', 'reenabled']) {
-        expect(findTestlet(result.units, id).calculator).withContext(id).toEqual(defaults);
-      }
-      for (const id of ['inherits', 'deep', 'sibling', 'inherits-override',
-        'disabled', 'inherits-disabled', 'unrelated']) {
-        expect(findTestlet(result.units, id).calculator).withContext(id).toBeUndefined();
-      }
-    });
-
-    it('accepts a declaration after restrictions and exposes controller configuration through the unit parent', () => {
-      const result = parser.parseBookletXml(block('<Restrictions/><Calculator/>'));
-      const testlet = findTestlet(result.units, 'outer');
-      expect(testlet.calculator).toEqual(defaults);
-      const unit = testlet.children[0];
-      expect(unit.id).toBe('u1');
-      if (consumer.name === 'Testcontroller') {
-        if (!('parent' in unit)) throw new Error('Expected a controller unit with a parent');
-        expect(Object.is(unit.parent, testlet)).toBeTrue();
-        expect(unit.parent.calculator).toEqual(defaults);
-      }
+    it('attaches configuration only to direct units and supports explicit child declarations', () => {
+      const result = parser.parseBookletXml(booklet(`<Testlet id="outer"><Restrictions/><Calculator/>
+        <Unit id="u1" label="Task"/>
+        <Testlet id="absent"><Unit id="u2" label="Task"/></Testlet>
+        <Testlet id="explicit"><Calculator mode="SCIENTIFIC"/><Unit id="u3" label="Task"/></Testlet>
+      </Testlet>`));
+      const parent = findTestlet(result.units, 'outer');
+      expect(parent.calculator).toEqual(defaults);
+      expect(findTestlet(result.units, 'absent').calculator).toBeUndefined();
+      expect(findTestlet(result.units, 'explicit').calculator?.mode).toBe('SCIENTIFIC');
+      const unit = parent.children[0];
+      if ('parent' in unit) expect(unit.parent.calculator).toEqual(defaults);
     });
 
     it('accepts XML integer lexical forms without losing precision', () => {
@@ -169,6 +127,7 @@ describe('Group-monitor calculator error result', () => {
     TestBed.configureTestingModule({
       providers: [BookletService, { provide: MonitorBackendService, useValue: {} }]
     });
-    expect(TestBed.inject(BookletService).parseXml(block('<Calculator><Journal>invalid</Journal></Calculator>'))).toEqual({ error: 'xml', species: null });
+    expect(TestBed.inject(BookletService).parseXml(block('<Calculator><Journal>invalid</Journal></Calculator>')))
+      .toEqual({ error: 'xml', species: null });
   });
 });

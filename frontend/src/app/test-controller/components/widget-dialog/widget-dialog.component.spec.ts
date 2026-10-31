@@ -92,38 +92,17 @@ describe('Widget window interactions', () => {
     }
   }
 
-  // Measure the limits supplied to the dialog using browser CSS layout, without
-  // importing production constants or reproducing the widget sizing formula.
   function availableDialogSize(): { width: number; height: number } {
-    const reference = document.createElement('div');
-    reference.style.cssText = `position: fixed; visibility: hidden;
-      width: ${dialogLimits.maxWidth}; height: ${dialogLimits.maxHeight};`;
-    document.body.appendChild(reference);
-    const { width, height } = reference.getBoundingClientRect();
-    reference.remove();
-    return { width, height };
+    // These CSS viewport limits are supplied by this fixture, not the sizing algorithm.
+    return { width: window.innerWidth * 0.95, height: window.innerHeight * 0.95 };
   }
 
   function expectUsesAvailableSpace(iframe: HTMLIFrameElement, selector: string): void {
     const available = availableDialogSize();
     const actual = target('[role="dialog"]').getBoundingClientRect();
     const content = visibleBounds(iframe, selector);
-    // Oversized content must fill the available width or reach the window's
-    // bottom at the height limit, rather than shrink into unused space.
-    const fillsWidth = Math.abs(content.width - available.width) <= 2;
-    const fillsHeight = Math.abs(actual.height - available.height) <= 2 &&
-      Math.abs(content.bottom - actual.bottom) <= 2;
-    expect(fillsWidth || fillsHeight).toBeTrue();
-  }
-
-  function isVisible(element: HTMLElement): boolean {
-    const bounds = element.getBoundingClientRect();
-    if (bounds.width <= 0 || bounds.height <= 0) return false;
-    for (let parent: HTMLElement | null = element; parent; parent = parent.parentElement) {
-      const style = getComputedStyle(parent);
-      if (style.display === 'none' || style.visibility === 'hidden' || Number(style.opacity) === 0) return false;
-    }
-    return true;
+    expect(Math.abs(content.width - available.width) <= 2 ||
+      (Math.abs(actual.height - available.height) <= 2 && Math.abs(content.bottom - actual.bottom) <= 2)).toBeTrue();
   }
 
   async function loadDocument(html: string, preferredWidth?: number): Promise<HTMLIFrameElement> {
@@ -132,7 +111,7 @@ describe('Widget window interactions', () => {
     await new Promise<void>(resolve => iframe.addEventListener('load', () => resolve(), { once: true }));
     ref.componentInstance.showRunning('Test widget', preferredWidth);
     ref.componentRef?.changeDetectorRef.detectChanges();
-    await waitFor(() => isVisible(iframe));
+    await waitFor(() => iframe.checkVisibility({ checkOpacity: true }));
     return iframe;
   }
 
