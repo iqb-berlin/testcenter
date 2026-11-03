@@ -146,7 +146,6 @@ Direct disk access left in `backend/src` and `initialize.php`:
 | Area | Where | What |
 |---|---|---|
 | Workspace folder | `Workspace::getOrCreateWorkspacePath`, `getOrCreateSubFolderPath`, `$workspacePath`, `getWorkspacePath()` | constructor still creates `ws_N/` |
-| Assets | `AssetController` (upload `moveTo`, delete), `AssetStorage::getDir()` | `DATA_DIR/public/uploaded_assets`; the file-server serves it via `alias` (1.3) |
 | Sample data | `WorkspaceInitializer::importSampleFiles` (`copy`), `createSampleScanImage` | |
 | Test setup | `TestEnvironment` (`createPath`, reset of `DATA_DIR`, `touch` for static dates) | `touch` cannot work on S3 – note for 1.2e |
 | Data dir | `initialize.php:115` creates `DATA_DIR` | belongs to the filesystem driver's setup |
@@ -160,14 +159,15 @@ Remaining commits:
    overwrite) via `delete`/`deleteDirectory`.~~ Done. Invalid paths now land in `incorrect_path`,
    failed storage deletes in `not_allowed` (logged).
 2. ~~Sys-check reports: save through the driver.~~ Done.
-3. Assets (`uploaded_assets`) through the driver.
+3. ~~Assets (`uploaded_assets`) through the driver.~~ Done; path stays `public/uploaded_assets/`
+   (no migration for existing installations, file-server `alias` unchanged). How assets reach
+   the browser in S3 mode is part of 1.3.
 4. Sample data and `TestEnvironment`.
 5. Remove leftovers (`$workspacePath`, `getWorkspacePath`, `getOrCreate…Path`, `isPathLegal`),
    check that nothing outside `FilesystemDriver` touches `DATA_DIR`. Bring the branch's new code
    in line with master's Mago rules (e.g. `$this->assert…` in the storage tests). Merge to master.
 
 Open questions:
-- Path of assets in storage (keep `public/uploaded_assets/`?) and what the file-server needs.
 - Where creating `DATA_DIR` belongs once nothing else knows the disk.
 
 Done when nothing outside `FilesystemDriver` touches the disk. Merge to master: keep the
