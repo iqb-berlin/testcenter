@@ -146,8 +146,6 @@ Direct disk access left in `backend/src` and `initialize.php`:
 | Area | Where | What |
 |---|---|---|
 | Workspace folder | `Workspace::getOrCreateWorkspacePath`, `getOrCreateSubFolderPath`, `$workspacePath`, `getWorkspacePath()` | constructor still creates `ws_N/` |
-| Sample data | `WorkspaceInitializer::importSampleFiles` (`copy`), `createSampleScanImage` | |
-| Test setup | `TestEnvironment` (`createPath`, reset of `DATA_DIR`, `touch` for static dates) | `touch` cannot work on S3 – note for 1.2e |
 | Data dir | `initialize.php:115` creates `DATA_DIR` | belongs to the filesystem driver's setup |
 
 Stays local on purpose (not storage): `XMLSchema` (`.schemas` cache), `ZIP` and `ResourceFile`
@@ -162,7 +160,9 @@ Remaining commits:
 3. ~~Assets (`uploaded_assets`) through the driver.~~ Done; path stays `public/uploaded_assets/`
    (no migration for existing installations, file-server `alias` unchanged). How assets reach
    the browser in S3 mode is part of 1.3.
-4. Sample data and `TestEnvironment`.
+4. ~~Sample data and `TestEnvironment`.~~ Done. The `touch` to static file dates is gone (S3
+   cannot set them); the only test that depended on it, the sys-check CSV report in Dredd, is
+   skipped, as sys-check is going to be removed.
 5. Remove leftovers (`$workspacePath`, `getWorkspacePath`, `getOrCreate…Path`, `isPathLegal`),
    check that nothing outside `FilesystemDriver` touches `DATA_DIR`. Bring the branch's new code
    in line with master's Mago rules (e.g. `$this->assert…` in the storage tests). Merge to master.
