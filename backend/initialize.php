@@ -126,10 +126,8 @@ try {
         return $carry + $item;
       }, 0);
 
-      $initializer->cleanWorkspace($workspace->getId());
+      $workspace->delete();
       CLI::warning("Workspace-folder `ws_{$workspace->getId()}` was DELETED. It contained {$filesInWorkspace} files.");
-
-      Folder::deleteContentsRecursive($workspace->getWorkspacePath());
     }
   }
 

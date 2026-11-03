@@ -111,6 +111,9 @@ class WorkspaceTest extends TestCase {
     $voDataDir = $this->vfs->getChild('data')->getChild('ws_1')->getChild('SysCheck');
     $voDataDir->chmod(0o444);
     file_put_contents(DATA_DIR . '/ws_1/Resource/somePlayer.HTML', 'player content');
+    // in a separate process PHPUnit treats anything on stderr as an error
+    $errorLog = tempnam(sys_get_temp_dir(), 'error-log');
+    ini_set('error_log', $errorLog);
 
     $this->workspaceDaoMock
       ->expects('getFiles')
@@ -132,7 +135,9 @@ class WorkspaceTest extends TestCase {
       'Resource/somePlayer.HTML',
       'SysCheck/SAMPLE_SYSCHECK.XML',
       'i_dont/even.exist',
-      "SysCheck/reports/SAMPLE_SYSCHECK-REPORT.JSON"
+      "SysCheck/reports/SAMPLE_SYSCHECK-REPORT.JSON",
+      'Resource/../Unit/SAMPLE_UNIT.XML',
+      'no-type'
     ]);
     $expectation = new FileDeletionReport(
       deleted: [
@@ -141,7 +146,8 @@ class WorkspaceTest extends TestCase {
       ],
       did_not_exist: ['i_dont/even.exist'],
       not_allowed: ['SysCheck/SAMPLE_SYSCHECK.XML'],
-      was_used: ['Resource/verona-player-simple-6.0.html']
+      was_used: ['Resource/verona-player-simple-6.0.html'],
+      incorrect_path: ['Resource/../Unit/SAMPLE_UNIT.XML', 'no-type']
     );
     static::assertEquals($expectation, $result);
 
@@ -155,6 +161,17 @@ class WorkspaceTest extends TestCase {
       'verona-player-simple-6.0.html'
     ];
     static::assertEquals($resourcesLeftExpected, $resourcesLeft);
+    static::assertFileExists(DATA_DIR . '/ws_1/Unit/SAMPLE_UNIT.XML');
+    static::assertStringContainsString('Could not delete `ws_1/SysCheck/SAMPLE_SYSCHECK.XML`', file_get_contents($errorLog));
+    unlink($errorLog);
+  }
+
+  function test_delete(): void {
+    file_put_contents(DATA_DIR . '/ws_1.txt', 'shares the prefix, but is not part of ws_1');
+
+    (new Workspace(1))->delete();
+
+    static::assertEquals(['.', '..', 'ws_1.txt'], scandir(vfsStream::url('root/data')));
   }
 
   function test_deleteFiles_rejectIfDependencies() {

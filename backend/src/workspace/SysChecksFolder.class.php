@@ -51,7 +51,7 @@ class SysChecksFolder extends Workspace {
    * @return SysCheckReportFile[]
    */
   public function collectSysCheckReports(?array $filterCheckIds = null): array {
-    $directory = $this->storageDirectory->createSubdirectory('SysCheck', 'reports');
+    $directory = $this->getReportsDirectory();
     $reports = [];
 
     foreach (Storage::getDriver()->listFiles($directory) as $reportFileName => $fileInfo) {
@@ -71,6 +71,10 @@ class SysChecksFolder extends Workspace {
     }
 
     return $reports;
+  }
+
+  private function getReportsDirectory(): StorageDirectory {
+    return $this->storageDirectory->createSubdirectory('SysCheck', 'reports');
   }
 
   private function getSysCheckReportsPath(): string {
@@ -93,9 +97,8 @@ class SysChecksFolder extends Workspace {
 
     /** @var SysCheckReportFile $report */
     foreach ($reports as $report) {
-      $fullPath = "$this->workspacePath/SysCheck/reports/{$report->getFileName()}";
-      $fieldName = $this->deleteFileFromFs($fullPath);
-      $deletionReport->$fieldName[] = $report->getCheckId();
+      $path = $this->getReportsDirectory()->createFilePath($report->getFileName());
+      self::deleteFromStorage($path, $deletionReport, $report->getCheckId());
     }
 
     return $deletionReport;
