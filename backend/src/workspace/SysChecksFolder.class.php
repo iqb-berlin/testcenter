@@ -77,18 +77,6 @@ class SysChecksFolder extends Workspace {
     return $this->storageDirectory->createSubdirectory('SysCheck', 'reports');
   }
 
-  private function getSysCheckReportsPath(): string {
-    $sysCheckPath = $this->workspacePath . '/SysCheck';
-    if (!file_exists($sysCheckPath)) {
-      mkdir($sysCheckPath);
-    }
-    $sysCheckReportsPath = $sysCheckPath . '/reports';
-    if (!file_exists($sysCheckReportsPath)) {
-      mkdir($sysCheckReportsPath);
-    }
-    return $sysCheckReportsPath;
-  }
-
   // TODO unit test
   public function deleteSysCheckReports(array $checkIds): FileDeletionReport {
     $reports = $this->collectSysCheckReports($checkIds);
@@ -104,13 +92,11 @@ class SysChecksFolder extends Workspace {
     return $deletionReport;
   }
 
-  // TODO unit test
   public function saveSysCheckReport(SysCheckReport $report): void {
-    $reportFilename = $this->getSysCheckReportsPath() . '/' . uniqid('report_', true) . '.json';
-
-    if (!file_put_contents($reportFilename, json_encode((array) $report))) {
-      throw new Exception("Could not write to file `$reportFilename`");
-    }
+    Storage::getDriver()->putContents(
+      $this->getReportsDirectory()->createFilePath(uniqid('report_', true) . '.json'),
+      json_encode((array) $report, JSON_THROW_ON_ERROR)
+    );
   }
 
 }

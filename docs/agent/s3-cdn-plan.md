@@ -146,7 +146,6 @@ Direct disk access left in `backend/src` and `initialize.php`:
 | Area | Where | What |
 |---|---|---|
 | Workspace folder | `Workspace::getOrCreateWorkspacePath`, `getOrCreateSubFolderPath`, `$workspacePath`, `getWorkspacePath()` | constructor still creates `ws_N/` |
-| Sys-check reports | `SysChecksFolder::saveSysCheckReport`, `getSysCheckReportsPath` | write |
 | Assets | `AssetController` (upload `moveTo`, delete), `AssetStorage::getDir()` | `DATA_DIR/public/uploaded_assets`; the file-server serves it via `alias` (1.3) |
 | Sample data | `WorkspaceInitializer::importSampleFiles` (`copy`), `createSampleScanImage` | |
 | Test setup | `TestEnvironment` (`createPath`, reset of `DATA_DIR`, `touch` for static dates) | `touch` cannot work on S3 – note for 1.2e |
@@ -160,7 +159,7 @@ Remaining commits:
 1. ~~Deletes: files (`deleteFiles`, incl. sys-check reports), workspaces (`delete`, `initialize.php`
    overwrite) via `delete`/`deleteDirectory`.~~ Done. Invalid paths now land in `incorrect_path`,
    failed storage deletes in `not_allowed` (logged).
-2. Sys-check reports: save through the driver.
+2. ~~Sys-check reports: save through the driver.~~ Done.
 3. Assets (`uploaded_assets`) through the driver.
 4. Sample data and `TestEnvironment`.
 5. Remove leftovers (`$workspacePath`, `getWorkspacePath`, `getOrCreate…Path`, `isPathLegal`),
