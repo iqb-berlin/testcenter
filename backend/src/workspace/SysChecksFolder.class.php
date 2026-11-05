@@ -6,8 +6,12 @@ class SysChecksFolder extends Workspace {
   public function findAvailableSysChecks(): array {
     $sysChecks = [];
 
-    foreach (Folder::glob($this->getOrCreateSubFolderPath('SysCheck'), "*.[xX][mM][lL]") as $fullFilePath) {
-      $xFile = new XMLFileSysCheck($fullFilePath);
+    $directory = $this->storageDirectory->createSubdirectory('SysCheck');
+    foreach (array_keys(Storage::getDriver()->listFiles($directory)) as $fileName) {
+      if (!fnmatch("*.[xX][mM][lL]", $fileName)) {
+        continue;
+      }
+      $xFile = new XMLFileSysCheck($directory->createFilePath($fileName));
 
       if ($xFile->isValid()) {
         $sysChecks[] = $xFile;
@@ -47,18 +51,19 @@ class SysChecksFolder extends Workspace {
    * @return SysCheckReportFile[]
    */
   public function collectSysCheckReports(?array $filterCheckIds = null): array {
-    $reportFolderName = $this->getSysCheckReportsPath();
-    $reportDir = opendir($reportFolderName);
+    $directory = $this->getReportsDirectory();
     $reports = [];
 
-    while (($reportFileName = readdir($reportDir)) !== false) {
-      $reportFilePath = $reportFolderName . '/' . $reportFileName;
-
-      if (!is_file($reportFilePath) or !(strtoupper(substr($reportFileName, -5)) == '.JSON')) {
+    foreach (Storage::getDriver()->listFiles($directory) as $reportFileName => $fileInfo) {
+      if (strtoupper(substr($reportFileName, -5)) != '.JSON') {
         continue;
       }
 
-      $report = new SysCheckReportFile($reportFilePath);
+      $report = new SysCheckReportFile(
+        $reportFileName,
+        Storage::getDriver()->get($directory->createFilePath($reportFileName)),
+        $fileInfo->modificationTime
+      );
 
       if (($filterCheckIds === null) or (in_array($report->getCheckId(), $filterCheckIds))) {
         $reports[] = $report;
@@ -68,16 +73,8 @@ class SysChecksFolder extends Workspace {
     return $reports;
   }
 
-  private function getSysCheckReportsPath(): string {
-    $sysCheckPath = $this->workspacePath . '/SysCheck';
-    if (!file_exists($sysCheckPath)) {
-      mkdir($sysCheckPath);
-    }
-    $sysCheckReportsPath = $sysCheckPath . '/reports';
-    if (!file_exists($sysCheckReportsPath)) {
-      mkdir($sysCheckReportsPath);
-    }
-    return $sysCheckReportsPath;
+  private function getReportsDirectory(): StorageDirectory {
+    return $this->storageDirectory->createSubdirectory('SysCheck', 'reports');
   }
 
   // TODO unit test
@@ -88,21 +85,18 @@ class SysChecksFolder extends Workspace {
 
     /** @var SysCheckReportFile $report */
     foreach ($reports as $report) {
-      $fullPath = "$this->workspacePath/SysCheck/reports/{$report->getFileName()}";
-      $fieldName = $this->deleteFileFromFs($fullPath);
-      $deletionReport->$fieldName[] = $report->getCheckId();
+      $path = $this->getReportsDirectory()->createFilePath($report->getFileName());
+      self::deleteFromStorage($path, $deletionReport, $report->getCheckId());
     }
 
     return $deletionReport;
   }
 
-  // TODO unit test
   public function saveSysCheckReport(SysCheckReport $report): void {
-    $reportFilename = $this->getSysCheckReportsPath() . '/' . uniqid('report_', true) . '.json';
-
-    if (!file_put_contents($reportFilename, json_encode((array) $report))) {
-      throw new Exception("Could not write to file `$reportFilename`");
-    }
+    Storage::getDriver()->putContents(
+      $this->getReportsDirectory()->createFilePath(uniqid('report_', true) . '.json'),
+      json_encode((array) $report, JSON_THROW_ON_ERROR)
+    );
   }
 
 }

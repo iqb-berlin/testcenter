@@ -18,7 +18,7 @@ class WorkspaceDAOTest extends TestCase {
     require_once "test/unit/TestDB.class.php";
 
     TestDB::setUp();
-    $this->dbc = new WorkspaceDAO(1, '/data_dir/ws_1');
+    $this->dbc = new WorkspaceDAO(1);
     $this->dbc->runFile(ROOT_DIR . '/backend/test/unit/testdata.sql');
   }
 
@@ -105,5 +105,31 @@ class WorkspaceDAOTest extends TestCase {
     $this->dbc->addLoginSource('unit-test', $logins);
     $insertedLogins = $this->dbc->_("select count(*) as count from logins where source='unit-test'")['count'];
     static::assertEquals(4, $insertedLogins);
+  }
+
+  public function test_lockWorkspace(): void {
+    $lockedAt = $this->dbc->lockWorkspace();
+    $this->assertNotNull($lockedAt);
+    $this->assertNull($this->dbc->lockWorkspace());
+
+    $this->dbc->unlockWorkspace($lockedAt);
+    $this->assertNotNull($this->dbc->lockWorkspace());
+  }
+
+  public function test_lockWorkspace_takesOverAbandonedLock(): void {
+    $this->dbc->_("UPDATE workspaces SET locked_at = now() - INTERVAL '13 minutes' WHERE id = 1");
+
+    $this->assertNotNull($this->dbc->lockWorkspace());
+  }
+
+  public function test_unlockWorkspace_leavesLockTakenOverByAnotherRequest(): void {
+    $abandonedAt = $this->dbc->_(
+      "UPDATE workspaces SET locked_at = now() - INTERVAL '13 minutes' WHERE id = 1 RETURNING locked_at"
+    )['locked_at'];
+    $this->dbc->lockWorkspace();
+
+    $this->dbc->unlockWorkspace($abandonedAt);
+
+    $this->assertNull($this->dbc->lockWorkspace());
   }
 }

@@ -20,20 +20,17 @@ class IsWorkspaceBlocked {
       throw new HttpNotFoundException($request, "No valid workspace: `{$params['ws_id']}`");
     }
 
-    $workspace = new Workspace((int) $params['ws_id']);
+    $workspaceDAO = new WorkspaceDAO((int) $params['ws_id']);
+    $lockedAt = $workspaceDAO->lockWorkspace();
 
-    if (
-      file_exists($workspace->getWorkspacePath() . '/.lock')
-      and (time() - filemtime($workspace->getWorkspacePath() . '/.lock') < 60 * 12)
-    ) {
+    if ($lockedAt === null) {
       throw new HttpException($request, 'Workspace blocked by another upload or deletion action.', 409);
     }
 
-    file_put_contents($workspace->getWorkspacePath() . '/.lock', '.');
-    register_shutdown_function(static function() use ($workspace) {
-      unlink($workspace->getWorkspacePath() . '/.lock');
-    });
-
-    return $handler->handle($request);
+    try {
+      return $handler->handle($request);
+    } finally {
+      $workspaceDAO->unlockWorkspace($lockedAt);
+    }
   }
 }

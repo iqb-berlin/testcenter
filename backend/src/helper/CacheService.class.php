@@ -46,18 +46,20 @@ class CacheService {
     self::$redis->del('group-token:' . $personSession->getPerson()->getToken());
   }
 
-  public static function storeFile(string $filePath): void {
+  public static function storeFile(StoragePath $filePath): void {
     if (!SystemConfig::$cacheServer_includeFiles) {
       return;
     }
     if (!self::connect()) {
       return;
     }
-    if (self::$redis->exists("file:$filePath")) {
-      self::$redis->expire("file:$filePath", 24 * 60 * 60);
+    // the file-server looks files up by their URL path, which starts with a slash
+    $key = "file:/$filePath";
+    if (self::$redis->exists($key)) {
+      self::$redis->expire($key, 24 * 60 * 60);
     } else {
       try {
-        self::$redis->set("file:$filePath", file_get_contents(DATA_DIR . $filePath), 24 * 60 * 60);
+        self::$redis->set($key, Storage::getDriver()->get($filePath), 24 * 60 * 60);
       } catch (RedisException $e) {
         error_log('Cache exhausted: ' . $filePath);
       }

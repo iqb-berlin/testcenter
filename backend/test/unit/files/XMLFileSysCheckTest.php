@@ -20,21 +20,21 @@ class XMLFileSysCheckTest extends TestCase {
   // crossValidate is implicitly tested by WorkspaceValidatorTest -> validate
 
   function test_getUnitId() {
-    $xmlFile = new XMLFileSysCheck(DATA_DIR . '/ws_1/SysCheck/SAMPLE_SYSCHECK.XML');
+    $xmlFile = new XMLFileSysCheck(StoragePath::fromString('ws_1/SysCheck/SAMPLE_SYSCHECK.XML'));
     $expected = 'UNIT.SAMPLE';
     $result = $xmlFile->getUnitId();
     static::assertEquals($expected, $result);
   }
 
   function test_getSaveKey() {
-    $xmlFile = new XMLFileSysCheck(DATA_DIR . '/ws_1/SysCheck/SAMPLE_SYSCHECK.XML');
+    $xmlFile = new XMLFileSysCheck(StoragePath::fromString('ws_1/SysCheck/SAMPLE_SYSCHECK.XML'));
     $expected = 'SAVEME';
     $result = $xmlFile->getSaveKey();
     static::assertEquals($expected, $result);
   }
 
   function test_hasSaveKey() {
-    $xmlFile = new XMLFileSysCheck(DATA_DIR . '/ws_1/SysCheck/SAMPLE_SYSCHECK.XML');
+    $xmlFile = new XMLFileSysCheck(StoragePath::fromString('ws_1/SysCheck/SAMPLE_SYSCHECK.XML'));
     $result = $xmlFile->hasSaveKey();
     static::assertTrue($result);
 
@@ -44,7 +44,7 @@ class XMLFileSysCheckTest extends TestCase {
   }
 
   function test_hasUnit() {
-    $xmlFile = new XMLFileSysCheck(DATA_DIR . '/ws_1/SysCheck/SAMPLE_SYSCHECK.XML');
+    $xmlFile = new XMLFileSysCheck(StoragePath::fromString('ws_1/SysCheck/SAMPLE_SYSCHECK.XML'));
     $result = $xmlFile->hasUnit();
     static::assertTrue($result);
 
@@ -67,7 +67,7 @@ class XMLFileSysCheckTest extends TestCase {
   }
 
   function test_getSkipNetwork() {
-    $xmlFile = new XMLFileSysCheck(DATA_DIR . '/ws_1/SysCheck/SAMPLE_SYSCHECK.XML');
+    $xmlFile = new XMLFileSysCheck(StoragePath::fromString('ws_1/SysCheck/SAMPLE_SYSCHECK.XML'));
     $result = $xmlFile->getSkipNetwork();
     static::assertFalse($result);
 
@@ -120,7 +120,7 @@ class XMLFileSysCheckTest extends TestCase {
   }
 
   function test_getSpeedtestUploadParams() {
-    $xmlFile = new XMLFileSysCheck(DATA_DIR . '/ws_1/SysCheck/SAMPLE_SYSCHECK.XML');
+    $xmlFile = new XMLFileSysCheck(StoragePath::fromString('ws_1/SysCheck/SAMPLE_SYSCHECK.XML'));
     $result = $xmlFile->getSpeedtestUploadParams();
     $expectation = [
       "min" => 1024,

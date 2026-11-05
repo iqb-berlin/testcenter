@@ -1,32 +1,53 @@
 <?php
 /** @noinspection PhpUnhandledExceptionInspection */
 
+// ZipArchive only opens local files, so archives given as content are written to a temp file first.
 class ZIP {
-  static function extract(string $zipPath, string $extractionPath): void {
-    $zip = new ZipArchive;
-    if ($errorCode = $zip->open($zipPath) !== true) {
-      throw new Exception('Could not extract archive:' . ZIP::getErrorMessageText($errorCode));
-    }
-    $zip->extractTo($extractionPath . '/');
-    $zip->close(); // TODO wrap inside finally block
+  static function extract(string $zipContent, string $extractionPath): void {
+    self::useTempFile($zipContent, function(string $zipPath) use ($extractionPath): void {
+      $zip = self::open($zipPath, 'extract');
+      try {
+        if (!$zip->extractTo($extractionPath . '/')) {
+          throw new Exception('Could not extract archive.');
+        }
+      } finally {
+        $zip->close();
+      }
+    });
   }
 
-  static function readMeta(string $zipPath): array {
+  static function readMeta(string $zipContent): array {
+    return self::useTempFile($zipContent, function(string $zipPath): array {
+      $zip = self::open($zipPath, 'read');
+      try {
+        return [
+          "comment" => $zip->getArchiveComment(ZipArchive::FL_UNCHANGED),
+          "count" => $zip->numFiles,
+        ];
+      } finally {
+        $zip->close();
+      }
+    });
+  }
+
+  private static function open(string $zipPath, string $purpose): ZipArchive {
     $zip = new ZipArchive;
-    // ZIP can not be extracted in VFS-mode (api-tests), but with ZipArchive::CREATE an empty ZIP gets created instead
-    if ($errorCode = $zip->open($zipPath, ZipArchive::CREATE) !== true) {
-      throw new Exception('Could not read archive:' . ZIP::getErrorMessageText($errorCode));
+    $result = $zip->open($zipPath);
+    if ($result !== true) {
+      throw new Exception("Could not $purpose archive: " . ZIP::getErrorMessageText($result));
     }
+    return $zip;
+  }
 
+  private static function useTempFile(string $content, Closure $use): mixed {
+    $tempPath = tempnam(sys_get_temp_dir(), 'zip-');
     try {
-      return [
-        "comment" => $zip->getArchiveComment(ZipArchive::FL_UNCHANGED),
-        "count" => $zip->numFiles,
-      ];
-
-    } catch (Exception $exception) {
-      $zip->close();
-      throw $exception;
+      if (file_put_contents($tempPath, $content) === false) {
+        throw new Exception("Could not write temp file `$tempPath`.");
+      }
+      return $use($tempPath);
+    } finally {
+      unlink($tempPath);
     }
   }
 

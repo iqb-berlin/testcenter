@@ -136,7 +136,7 @@ class TestController extends Controller {
 
     [$type, $fileName] = explode('/', $path, 2);
     $filePath = (new Workspace($workspaceId))->getFilePath($type, $fileName);
-    if ($filePath === null) {
+    if (!$filePath) {
       throw new HttpNotFoundException($request, "File not found: `$path`");
     }
 

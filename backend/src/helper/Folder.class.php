@@ -68,6 +68,20 @@ class Folder {
     return $list;
   }
 
+  /** Runs $use with a new, empty directory in the system temp dir and deletes it with everything in it afterwards. */
+  static function useTempDirectory(string $prefix, Closure $use): mixed {
+    $path = sys_get_temp_dir() . '/' . uniqid($prefix, true);
+    if (!mkdir($path)) {
+      throw new Exception("Could not create `$path`.");
+    }
+    try {
+      return $use($path);
+    } finally {
+      Folder::deleteContentsRecursive($path);
+      rmdir($path);
+    }
+  }
+
   // TODO unit-test
   static function deleteContentsRecursive(string $path): void {
     if (!is_dir($path)) {
@@ -101,9 +115,6 @@ class Folder {
    * this functions creates ws_5 and ws_5/Testtakers in /var/www/html/vo_data
    * Note: dont' use paths containing filenames!
    *
-   * difference to getOrCreateSubFolderPath -> can also create workspace-dir itself as well
-   * as sub-sub dirs like SysCheck/reports
-   *
    * @param $dirPath - a full path
    * @return string - the path, again
    * @throws Exception
@@ -121,28 +132,5 @@ class Folder {
       return $agg;
     }, isset($pathParts['scheme']) ? "{$pathParts['scheme']}://{$pathParts['host']}" : '');
 
-  }
-
-  /**
-   * Resolves $relativePath against $baseDir and returns the canonical absolute path,
-   * but only if it stays inside $baseDir; returns null otherwise. realpath resolves
-   * `..` and symlinks first, so neither can escape. A non-existent path is null too.
-   */
-  static function getContainedRealPath(string $baseDir, string $relativePath): ?string {
-    $baseReal = realpath($baseDir);
-    if ($baseReal === false) {
-      return null;
-    }
-
-    $candidateReal = realpath($baseDir . DIRECTORY_SEPARATOR . $relativePath);
-    if ($candidateReal === false) {
-      return null;
-    }
-
-    if (!str_starts_with($candidateReal, $baseReal . DIRECTORY_SEPARATOR)) {
-      return null;
-    }
-
-    return $candidateReal;
   }
 }

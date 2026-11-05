@@ -6,19 +6,16 @@ declare(strict_types=1);
 class AttachmentFiles {
   protected static $_testDAO;
 
-  public static function importFiles(int $workspaceId, array $uploadedFiles, Attachment $attachment, string $type): void {
-    $workspace = new Workspace($workspaceId);
-    $workspacePath = $workspace->getWorkspacePath();
+  /** @param string[] $localFilePaths */
+  public static function importFiles(int $workspaceId, array $localFilePaths, Attachment $attachment, string $type): void {
+    $attachmentDirectory = Workspace::getStorageDirectoryOf($workspaceId)->createSubdirectory('UnitAttachments');
 
     $dataParts = [];
-    foreach ($uploadedFiles as $originalFileName) {
-      $dst = "$workspacePath/UnitAttachments/";
-      Folder::createPath($dst);
+    foreach ($localFilePaths as $localFilePath) {
       $attachmentCode = Random::string(32, false);
-      $extension = FileExt::get($originalFileName);
+      $extension = FileExt::get(basename($localFilePath));
       $attachmentFileId = "$type:$attachmentCode.$extension";
-      copy("$workspacePath/$originalFileName", "$dst/$attachmentCode.$extension");
-      unlink("$workspacePath/$originalFileName");
+      Storage::getDriver()->put($attachmentDirectory->createFilePath("$attachmentCode.$extension"), $localFilePath);
       $attachmentFileIds = [...$attachment->attachmentFileIds, $attachmentFileId];
       $dataParts[$attachment->attachmentId] = self::stringifyDataChunk($attachment->variableId, $attachmentFileIds);
     }
@@ -55,10 +52,7 @@ class AttachmentFiles {
       self::testDAO()->deleteAttachmentDataPart($attachment->attachmentId);
     }
 
-    $filePath = self::getAttachmentFilePath($workspaceId, $attachmentFileId, $attachment);
-    if (file_exists($filePath)) {
-      unlink($filePath);
-    }
+    Storage::getDriver()->delete(self::getAttachmentFilePath($workspaceId, $attachmentFileId, $attachment));
   }
 
   protected static function testDAO(): TestDAO {
@@ -69,15 +63,17 @@ class AttachmentFiles {
     return self::$_testDAO;
   }
 
-  public static function getAttachmentFilePath(int $workspaceId, string $attachmentFileId, Attachment $attachment): string {
+  public static function getAttachmentFilePath(int $workspaceId, string $attachmentFileId, Attachment $attachment): StoragePath {
     list($dataType, $fileName) = explode(':', $attachmentFileId);
     if (!in_array($attachmentFileId, $attachment->attachmentFileIds)) {
       throw new HttpError("AttachmentId `$attachmentFileId` not found in attachment `$attachment->attachmentId`", 404);
     }
 
-    $filePath = DATA_DIR . "/ws_$workspaceId/UnitAttachments/$fileName";
+    $filePath = Workspace::getStorageDirectoryOf($workspaceId)
+      ->createSubdirectory('UnitAttachments')
+      ->createFilePath($fileName);
 
-    if (!file_exists($filePath)) {
+    if (!Storage::getDriver()->getFileInfo($filePath)) {
       throw new HttpError("File not found:`$attachment->attachmentId`", 404);
     }
 

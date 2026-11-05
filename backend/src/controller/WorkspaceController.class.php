@@ -126,7 +126,7 @@ class WorkspaceController extends Controller {
     $filename = (string) $request->getAttribute('filename', '');
 
     $filePath = (new Workspace($workspaceId))->getFilePath($fileType, $filename);
-    if ($filePath === null) {
+    if (!$filePath) {
       throw new HttpNotFoundException($request, "File not found: $fileType/$filename");
     }
 
@@ -140,9 +140,13 @@ class WorkspaceController extends Controller {
     $workspaceId = (int) $request->getAttribute('ws_id');
     $workspace = new Workspace($workspaceId);
 
-    $filesToImport = UploadedFilesHandler::handleUploadedFiles($request, 'fileforvo', $workspace->getWorkspacePath());
-
-    $importedFilesReports = $workspace->importUncategorizedFiles($filesToImport);
+    $importedFilesReports = Folder::useTempDirectory(
+      'upload-',
+      static function(string $stagingPath) use ($request, $workspace): array {
+        $filesToImport = UploadedFilesHandler::handleUploadedFiles($request, 'fileforvo', $stagingPath);
+        return $workspace->importUncategorizedFiles($stagingPath, $filesToImport);
+      }
+    );
     $workspace->setWorkspaceHash();
 
     $loginsAffected = false;

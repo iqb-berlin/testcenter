@@ -17,15 +17,15 @@ class FileTest extends TestCase {
   }
 
   function test_get() {
-    $file = File::get(DATA_DIR . '/ws_1/Booklet/SAMPLE_BOOKLET.XML', 'Booklet');
+    $file = File::get(StoragePath::fromString('ws_1/Booklet/SAMPLE_BOOKLET.XML'), 'Booklet');
     static::assertEquals('XMLFileBooklet', get_class($file));
 
-    $file = File::get(DATA_DIR . '/ws_1/Resource/verona-player-simple-6.0.html', 'Resource');
+    $file = File::get(StoragePath::fromString('ws_1/Resource/verona-player-simple-6.0.html'), 'Resource');
     static::assertEquals('ResourceFile', get_class($file));
   }
 
   function test_Report() {
-    $file = File::get(DATA_DIR . '/ws_1/Booklet/SAMPLE_BOOKLET.XML', 'Booklet');
+    $file = File::get(StoragePath::fromString('ws_1/Booklet/SAMPLE_BOOKLET.XML'), 'Booklet');
 
     $file->report('error', '1st error');
     $file->report('error', '2nd error');
