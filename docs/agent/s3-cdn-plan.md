@@ -163,12 +163,18 @@ Remaining commits:
 4. ~~Sample data and `TestEnvironment`.~~ Done. The `touch` to static file dates is gone (S3
    cannot set them); the only test that depended on it, the sys-check CSV report in Dredd, is
    skipped, as sys-check is going to be removed.
-5. Remove leftovers (`$workspacePath`, `getWorkspacePath`, `getOrCreate…Path`, `isPathLegal`),
-   check that nothing outside `FilesystemDriver` touches `DATA_DIR`. Bring the branch's new code
-   in line with master's Mago rules (e.g. `$this->assert…` in the storage tests). Merge to master.
+5. ~~Remove leftovers (`$workspacePath`, `getWorkspacePath`, `getOrCreate…Path`, `isPathLegal`),
+   check that nothing outside `FilesystemDriver` touches `DATA_DIR`.~~ Done. `new Workspace()`
+   no longer creates `ws_N/`, so `Workspace::getAll()` only finds workspaces that have files –
+   fine, as a workspace without files has nothing to rescan. `DATA_DIR` outside the driver:
+   only `Storage` (driver root), `XMLSchema` (`.schemas`, local on purpose) and `TestEnvironment`
+   (defines it).
+6. ~~Bring the branch's new code in line with master's Mago rules.~~ Skipped (decided
+   2026-11-05): the branch adds ~235 findings on its lines (141 lint, 94 analyzer), not worth it now.
+7. Merge to master.
 
-Open questions:
-- Where creating `DATA_DIR` belongs once nothing else knows the disk.
+Creating `DATA_DIR`: belongs nowhere – the driver creates its root on the first write and lists a
+missing root as empty, so `initialize.php` no longer creates it.
 
 Done when nothing outside `FilesystemDriver` touches the disk. Merge to master: keep the
 individual commits (merge commit) or squash – decide then; recommendation was to keep them.

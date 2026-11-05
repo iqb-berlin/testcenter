@@ -112,11 +112,6 @@ try {
 
   CLI::h2("Workspaces");
 
-  if (!file_exists(DATA_DIR)) {
-    mkdir(DATA_DIR);
-    CLI::success("Data-Directory created: `" . DATA_DIR . "`");
-  }
-
   $initializer = new WorkspaceInitializer();
 
   if ($args['overwrite_existing_installation']) {

@@ -89,21 +89,10 @@ class WorkspaceTest extends TestCase {
     unset($this->vfs);
   }
 
-  function test___construct() {
-    $workspaceDirectories = scandir(vfsStream::url('root/data'));
-    $expectation = ['.', '..', 'ws_1'];
-    static::assertEquals($expectation, $workspaceDirectories);
+  function test___construct_writesNothingToStorage() {
+    new Workspace(3);
 
-    $workspace1Directories = scandir(vfsStream::url('root/data/ws_1'));
-    $expectation = ['.', '..', 'Booklet', 'Resource', 'SysCheck', 'Testtakers', 'Unit'];
-    static::assertEquals($expectation, $workspace1Directories);
-  }
-
-  function test_getWorkspacePath() {
-    $workspace = new Workspace(1);
-    $result = $workspace->getWorkspacePath();
-    $expectation = 'vfs://root/data/ws_1';
-    static::assertEquals($expectation, $result);
+    static::assertEquals(['.', '..', 'ws_1'], scandir(vfsStream::url('root/data')));
   }
 
   function test_deleteFiles() {
@@ -682,19 +671,19 @@ class WorkspaceTest extends TestCase {
     static::assertCount(3, $errors);
 
     static::assertFalse(
-      file_exists($workspace->getWorkspacePath() . '/Unit/valid_unit.xml'),
+      file_exists(DATA_DIR . '/ws_1/Unit/valid_unit.xml'),
       'don\'t import invalid Unit from ZIP'
     );
     static::assertFalse(
-      file_exists($workspace->getWorkspacePath() . '/Booklet/valid_booklet.xml'),
+      file_exists(DATA_DIR . '/ws_1/Booklet/valid_booklet.xml'),
       'don\'t import Booklet dependant of invalid unit from ZIP'
     );
     static::assertTrue(
-      file_exists($workspace->getWorkspacePath() . '/Resource/P.html'),
+      file_exists(DATA_DIR . '/ws_1/Resource/P.html'),
       'import resource from ZIP'
     );
     static::assertFalse(
-      file_exists($workspace->getWorkspacePath() . '/Testtakers/valid_testtakers.xml'),
+      file_exists(DATA_DIR . '/ws_1/Testtakers/valid_testtakers.xml'),
       'don\'t import Testtakers dependant of invalid unit from ZIP'
     );
   }
@@ -847,23 +836,23 @@ class WorkspaceTest extends TestCase {
     static::assertCount(1, $errors);
 
     static::assertFalse(
-      file_exists($workspace->getWorkspacePath() . '/Unit/invalid_unit.xml'),
+      file_exists(DATA_DIR . '/ws_1/Unit/invalid_unit.xml'),
       'don\'t import invalid Unit from ZIP'
     );
     static::assertTrue(
-      file_exists($workspace->getWorkspacePath() . '/Unit/valid_unit.xml'),
+      file_exists(DATA_DIR . '/ws_1/Unit/valid_unit.xml'),
       'import valid Unit from ZIP'
     );
     static::assertTrue(
-      file_exists($workspace->getWorkspacePath() . '/Booklet/valid_booklet.xml'),
+      file_exists(DATA_DIR . '/ws_1/Booklet/valid_booklet.xml'),
       'import Booklet dependant of invalid unit from ZIP'
     );
     static::assertTrue(
-      file_exists($workspace->getWorkspacePath() . '/Resource/P.html'),
+      file_exists(DATA_DIR . '/ws_1/Resource/P.html'),
       'import resource from ZIP'
     );
     static::assertTrue(
-      file_exists($workspace->getWorkspacePath() . '/Testtakers/valid_testtakers.xml'),
+      file_exists(DATA_DIR . '/ws_1/Testtakers/valid_testtakers.xml'),
       'import Testtakers dependant of invalid unit from ZIP'
     );
   }

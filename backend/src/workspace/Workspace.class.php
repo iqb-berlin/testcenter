@@ -5,7 +5,6 @@ declare(strict_types=1);
 
 class Workspace {
   protected int $workspaceId = 0;
-  protected string $workspacePath = '';
   protected StorageDirectory $storageDirectory;
   public WorkspaceDAO $workspaceDAO;
 
@@ -42,46 +41,12 @@ class Workspace {
 
   function __construct(int $workspaceId) {
     $this->workspaceId = $workspaceId;
-    $this->workspacePath = $this->getOrCreateWorkspacePath();
     $this->storageDirectory = self::getStorageDirectoryOf($workspaceId);
     $this->workspaceDAO = new WorkspaceDAO($this->workspaceId);
   }
 
-  protected function getOrCreateWorkspacePath(): string {
-    $workspacePath = DATA_DIR . '/ws_' . $this->workspaceId;
-    if (file_exists($workspacePath) and !is_dir($workspacePath)) {
-      throw new Exception("Workspace dir $this->workspaceId seems not to be a proper directory!");
-    }
-    if (!file_exists($workspacePath)) {
-      if (!mkdir($workspacePath)) {
-        throw new Exception("Could not create workspace dir $this->workspaceId");
-      }
-    }
-    return $workspacePath;
-  }
-
-  public function getOrCreateSubFolderPath(string $type): string {
-    $subFolderPath = $this->workspacePath . '/' . $type;
-    if (!in_array($type, $this::subFolders)) {
-      throw new Exception("Invalid type `$type`!");
-    }
-    if (file_exists($subFolderPath) and !is_dir($subFolderPath)) {
-      throw new Exception("Workspace dir `$subFolderPath` seems not to be a proper directory!");
-    }
-    if (!file_exists($subFolderPath)) {
-      if (!mkdir($subFolderPath)) {
-        throw new Exception("Could not create workspace dir `$subFolderPath`");
-      }
-    }
-    return $subFolderPath;
-  }
-
   public function getId(): int {
     return $this->workspaceId;
-  }
-
-  public function getWorkspacePath(): string {
-    return $this->workspacePath;
   }
 
   public function getStorageDirectory(): StorageDirectory {
