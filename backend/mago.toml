@@ -14,8 +14,19 @@ excludes = []
 [source.glob]
 literal-separator = true
 
+# describes the house style for `mago fmt --dry-run` (see `make test-backend-lint`); the code is not
+# auto-formatted, deviations are only reported
 [formatter]
 preset = "default"
+tab-width = 2
+function-brace-style = "same_line"
+method-brace-style = "same_line"
+classlike-brace-style = "same_line"
+trailing-comma = false
+empty-line-after-opening-tag = false
+empty-line-after-declare = false
+sort-uses = "none"
+line-before-binary-operator = false
 
 [linter]
 integrations = ["phpunit"]

@@ -67,6 +67,8 @@ scan-db:
 
 test-backend-static-analysis:
 	$(MAKE) -f $(MK_FILE_DIR)/dev-test.mk -C $(MK_FILE_DIR) $@
+test-backend-lint:
+	$(MAKE) -f $(MK_FILE_DIR)/dev-test.mk -C $(MK_FILE_DIR) $@
 test-backend-unit:
 	$(MAKE) -f $(MK_FILE_DIR)/dev-test.mk -C $(MK_FILE_DIR) $@
 test-backend-unit-coverage:

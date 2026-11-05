@@ -51,10 +51,12 @@ Other folders:
 
 | Code                          | Command                                                           | Tool   |
 |-------------------------------|-------------------------------------------------------------------|--------|
-| Backend                       | `make test-backend-static-analysis args=lint` (or `args=analyze`) | Mago   |
+| Backend                       | `make test-backend-lint`                                          | Mago   |
+| Backend, static analysis      | `make test-backend-static-analysis args=analyze`                  | Mago   |
 | All JavaScript and TypeScript | `npx eslint <path>` in the repository root                        | ESLint |
 
-Existing code may have findings, so check that your change adds none.
+`make test-backend-lint` runs the linter and prints formatting deviations from the house style as a diff; it does not
+change any file. Existing code may have findings, so check that your change adds none.
 
 ## Database changes
 
