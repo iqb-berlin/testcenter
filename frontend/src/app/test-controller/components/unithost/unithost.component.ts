@@ -93,7 +93,6 @@ export class UnithostComponent implements OnInit, OnDestroy {
     const msgData = messageEvent.data;
     const msgType = msgData.type;
 
-    this.apiService.postMessageTarget = messageEvent.source as Window;
     const dontNeedSessionId = ['vopReadyNotification', 'vopWindowFocusChangedNotification'];
     if ((!dontNeedSessionId.includes(msgType)) && (!(msgData.sessionId in this.tcs.unitAliasMap))) {
       console.warn('wrong player session id: ', msgData.sessionId, msgData, this.tcs.unitAliasMap);
@@ -101,7 +100,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
 
     switch (msgType) {
     case 'vopReadyNotification':
-      await this.handleReadyNotification(msgData);
+      await this.handleReadyNotification(msgData, messageEvent.source);
       break;
     case 'vopStateChangedNotification':
       this.handleStateChangedNotification(msgData);
@@ -121,7 +120,8 @@ export class UnithostComponent implements OnInit, OnDestroy {
     }
   }
 
-  private async handleReadyNotification(msgData: any): Promise<void> {
+  private async handleReadyNotification(msgData: any, source: MessageEventSource | null): Promise<void> {
+    if (source !== this.iFrameItemplayer?.contentWindow) return;
     const playerApiVersion = msgData.apiVersion || msgData.metadata?.specVersion;
     if (typeof playerApiVersion !== 'string') {
       throw new AppError({
@@ -167,6 +167,9 @@ export class UnithostComponent implements OnInit, OnDestroy {
     }
 
     const navigation = await this.tcs.closeAllBuffers('handleReadyNotification');
+
+    // Meanwhile the testee may have navigated on, replacing the player that reported ready.
+    if (source !== this.iFrameItemplayer?.contentWindow) return;
 
     const msg: VopStartCommand = {
       type: 'vopStartCommand',
@@ -396,6 +399,8 @@ export class UnithostComponent implements OnInit, OnDestroy {
     }
     this.iFrameItemplayer.setAttribute('class', 'unitHost');
     this.iFrameHostElement.nativeElement.appendChild(this.iFrameItemplayer);
+    if (!this.iFrameItemplayer.contentWindow) throw new Error('Player iframe has no window');
+    this.apiService.postMessageTarget = this.iFrameItemplayer.contentWindow;
     this.iFrameItemplayer.setAttribute('srcdoc', this.tcs.getPlayer(this.tcs.currentUnit.playerFileName));
   }
 
