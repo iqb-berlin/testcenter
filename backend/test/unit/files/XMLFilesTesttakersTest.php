@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 use PHPUnit\Framework\TestCase;
 
@@ -645,7 +646,7 @@ END;
   }
 
   function test_getAllLoginNames() {
-    $xmlFile = XMLFileTesttakers::fromString($this->exampleXML2, false);
+    $xmlFile = XMLFileTesttakers::fromString($this->exampleXML2);
 
     $expected = [
       'noDuplicate',
@@ -658,7 +659,7 @@ END;
   }
 
   function test_getCustomTexts() {
-    $xmlFile = XMLFileTesttakers::fromString($this->exampleXML1, false);
+    $xmlFile = XMLFileTesttakers::fromString($this->exampleXML1);
 
     $expected = (object) [
       'first_key' => 'first_value',

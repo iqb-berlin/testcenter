@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 define('ROOT_DIR', realpath(__DIR__ . '/../../..'));
 set_include_path(realpath(__DIR__ . '/..'));

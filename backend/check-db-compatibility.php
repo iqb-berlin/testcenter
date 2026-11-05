@@ -1,5 +1,6 @@
 #!/usr/bin/env php
 <?php
+declare(strict_types=1);
 /**
  * Verifies that the database holds the schema this release expects.
  *

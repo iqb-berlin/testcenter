@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /** @noinspection PhpUnhandledExceptionInspection */
 
 class SystemConfig {
@@ -12,7 +13,7 @@ class SystemConfig {
   public static string $cacheServer_host = "";
   public static int $cacheServer_port;
   public static string $cacheServer_password = "";
-  public static string $cacheServer_includeFiles = "";
+  public static bool $cacheServer_includeFiles = false;
   public static array $bruteForceProtection_sessions = [];
   public static string $password_salt = "t";
   public static string $system_version;
@@ -74,13 +75,13 @@ class SystemConfig {
   }
 
   /**
-   * @return array<string, string> key => value of the `database` section
+   * @return array{name: string, host: string, port: int, user: string, password: string} the `database` section
    */
   public static function readDatabaseEnvironment(): array {
     return [
       'name' => self::stringEnv('DB_DATABASE'),
       'host' => self::stringEnv('DB_HOST'),
-      'port' => self::stringEnv('DB_PORT'),
+      'port' => (int) self::stringEnv('DB_PORT'),
       'user' => self::stringEnv('DB_USER'),
       'password' => self::stringEnv('DB_PASSWORD')
     ];
@@ -106,7 +107,7 @@ class SystemConfig {
     }
 
     $config['cacheServer']['host'] = self::stringEnv('REDIS_HOST');
-    $config['cacheServer']['port'] = self::stringEnv('REDIS_PORT');
+    $config['cacheServer']['port'] = (int) self::stringEnv('REDIS_PORT');
     $config['cacheServer']['password'] = self::stringEnv('REDIS_PASSWORD');
     $config['cacheServer']['includeFiles'] = self::boolEnv('REDIS_CACHE_FILES');
 
@@ -156,8 +157,8 @@ class SystemConfig {
 
   private static function stringEnv(string $name): string {
     $value = getEnv($name);
-    if (!isset($value)) {
-        throw new Exception("Environment-variable missing: `$name`.");
+    if ($value === false) {
+      throw new Exception("Environment-variable missing: `$name`.");
     }
     return $value;
   }

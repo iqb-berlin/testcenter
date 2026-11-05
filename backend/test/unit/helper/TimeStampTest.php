@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /** @noinspection PhpUnhandledExceptionInspection */
 
 use PHPUnit\Framework\TestCase;
@@ -106,8 +107,8 @@ class TimeStampTest extends TestCase {
     static::assertEquals(1627552800, TimeStamp::fromSQLFormat('2021-07-29 10:00:00+00'));
     static::assertEquals(1627545600, TimeStamp::fromSQLFormat('2021-07-29 10:00:00+02'));
     static::assertEquals(1627552800, TimeStamp::fromSQLFormat('2021-07-29 10:00:00.744751+00'));
-    static::assertEquals(0, TimeStamp::fromSQLFormat(false));
-    static::assertEquals(1627545600, TimeStamp::fromSQLFormat(1627545600));
+    static::assertEquals(0, TimeStamp::fromSQLFormat(null));
+    static::assertEquals(1627545600, TimeStamp::fromSQLFormat('1627545600'));
   }
 
   function test_fromSQLFormatRejectsUnreadableValue() {

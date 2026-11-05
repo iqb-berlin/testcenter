@@ -1,4 +1,5 @@
 <?php /** @noinspection PhpUnhandledExceptionInspection */
+declare(strict_types=1);
 
 class InstallationArguments extends DataCollection {
   public string $user_name = 'super';

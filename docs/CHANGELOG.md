@@ -28,6 +28,7 @@
 ## Technisches
 - Der Brute-Force-Schutz (`BRUTE_FORCE_PROTECTION` in `.env.prod-template`) ist bei Neuinstallationen via docker-compose ausgeschaltet.
 - Die Umgebungsvariable `DOCKER_DAEMON_MTU` entfällt; das Update-Skript entfernt sie aus der `.env.prod`. Die MTU des Docker-Netzwerks wird nicht mehr in den Compose-Dateien gesetzt, sondern folgt der Voreinstellung des Docker-Daemons des Hosts.
+- Das Backend startet nicht mehr, wenn eine der Pflicht-Umgebungsvariablen (`DB_DATABASE`, `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD`, `REDIS_HOST`, `REDIS_PORT`, `REDIS_PASSWORD`, `PASSWORD_SALT`, `PASSWORD_MIN_LENGTH`, `PASSWORD_PATTERN`, `ADMIN_INIT_PASSWORD`, `SERVER_KEY`, `BRUTE_FORCE_PROTECTION`) nicht gesetzt ist, sondern meldet die fehlende Variable. Bisher wurde sie stillschweigend als leerer Wert übernommen. Eine leer gesetzte Variable ist weiterhin erlaubt; mit den mitgelieferten Compose-Dateien ändert sich nichts.
 - Die Datei `config/traefik/tls-options.yml` entfällt; Traefik verwendet seine eigenen TLS-Voreinstellungen. Bei Installationen via docker-compose wurde die Datei nie geladen, dort ändert sich nichts. Neue Installationen über Helm setzen keine eigene Liste von Cipher-Suites mehr.
 
 # 19.0.0

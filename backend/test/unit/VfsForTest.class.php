@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /** @noinspection PhpUnhandledExceptionInspection */
 
 require_once "src/data-collection/DataCollection.class.php";

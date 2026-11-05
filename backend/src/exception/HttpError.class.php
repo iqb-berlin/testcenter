@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 class HttpError extends Exception {
   private string $title = '';

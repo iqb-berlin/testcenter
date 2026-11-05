@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 require_once "cli.php";
 
 runCli(function() {

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 function runCli(callable $callback): void {
   if (php_sapi_name() !== 'cli') {
     header('HTTP/1.0 403 Forbidden');

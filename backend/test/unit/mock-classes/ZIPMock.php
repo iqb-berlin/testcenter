@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 // Zip-Archive import can not be tested, because
 // ext/zip does not support userland stream wrappers - so no vfs-support

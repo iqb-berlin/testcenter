@@ -1,4 +1,5 @@
 <?php /** @noinspection PhpUnhandledExceptionInspection */
+declare(strict_types=1);
 
 use PHPUnit\Framework\TestCase;
 
@@ -121,10 +122,10 @@ class SuperAdminDAOTest extends TestCase {
     $this->dbc->setPassword(1, "new_password");
 
     $result = $this->dbc->checkPassword(1, "wrong_password");
-    static::assertNotNull(false, $result);
+    static::assertFalse($result);
 
     $result = $this->dbc->checkPassword(1, "new_password");
-    static::assertNotNull(true, $result);
+    static::assertTrue($result);
   }
 
   public function test_addUser() {

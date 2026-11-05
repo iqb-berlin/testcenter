@@ -67,6 +67,11 @@ services:
       DB_HOST: initialization-test-db
       DB_PORT: 5432
       PASSWORD_SALT: 't'
+      PASSWORD_MIN_LENGTH: 7
+      PASSWORD_PATTERN: '^.*$$'
+      ADMIN_INIT_PASSWORD: 'user123'
+      SERVER_KEY: 'Secret'
+      BRUTE_FORCE_PROTECTION: ''
     volumes:
       - ../../../backend/.htaccess:/var/www/testcenter/backend/.htaccess
       - ../../../backend/index.php:/var/www/testcenter/backend/index.php

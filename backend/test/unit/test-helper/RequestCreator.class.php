@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 use Slim\Psr7\Environment;
 use Slim\Psr7\Factory\UriFactory;

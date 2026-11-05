@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * Create large testcenter datasets for performance and migration tests.
  *
