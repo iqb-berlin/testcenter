@@ -11,7 +11,7 @@ import { TestControllerService } from './test-controller.service';
 import { BackendService } from './backend.service';
 import {
   KeyValuePairString, NavigationLeaveRestrictionValue, StateReportEntry, Testlet, Unit,
-  UnitDataParts, UnitNavigationTarget, UnitStateKey, UnitStateUpdate
+  UnitDataParts, UnitNavigationTarget, UnitStateKey, UnitStateUpdate, TestStateUpdate
 } from '../interfaces/test-controller.interfaces';
 import { MainDataService, TestMode } from '../../shared/shared.module';
 import { MessageService } from '../../shared/services/message.service';
@@ -25,6 +25,13 @@ const uploadedData: UnitDataParts[] = [];
 const uploadedStates: UnitStateUpdate[] = [];
 
 class MockBackendService {
+  readonly uploadedTestStates: TestStateUpdate[] = [];
+
+  patchTestState(update: TestStateUpdate): Observable<string> {
+    this.uploadedTestStates.push(update);
+    return of('ok');
+  }
+
   // eslint-disable-next-line class-methods-use-this
   updateDataParts(
     testId: string, unitDbKey: string, originalUnitId: string, dataParts: KeyValuePairString, unitStateDataType: string
@@ -43,6 +50,7 @@ class MockBackendService {
 }
 
 let service: TestControllerService;
+let backend: MockBackendService;
 
 class MockMessageService {
   // eslint-disable-next-line class-methods-use-this
@@ -63,6 +71,7 @@ class MockMessageService {
 
 describe('TestControllerService', () => {
   beforeEach(() => {
+    backend = new MockBackendService();
     TestBed.configureTestingModule({
     imports: [RouterTestingModule,
         MatDialogModule],
@@ -70,7 +79,7 @@ describe('TestControllerService', () => {
         TestControllerService,
         {
           provide: BackendService,
-          useValue: new MockBackendService()
+          useValue: backend
         },
         {
           provide: MessageService,
@@ -123,6 +132,41 @@ describe('TestControllerService', () => {
 
   it('should be created', () => {
     expect(service).toBeTruthy();
+  });
+
+  describe('addSharedParameters', () => {
+    beforeEach(() => {
+      service.testId = 'test';
+      service.testMode = new TestMode('run-hot-return');
+      service.sharedParameters = [{ key: 'selection', value: 'old' }];
+    });
+
+    // Must run inside fakeAsync, so the buffer's timers are faked as well.
+    function addAndSave(value: string): TestStateUpdate['state'] {
+      service.setupTestStateBuffer();
+      service.addSharedParameters([{ key: 'selection', value }]);
+      service.closeAllBuffers('test');
+      tick();
+      discardPeriodicTasks();
+      return backend.uploadedTestStates.flatMap(update => update.state);
+    }
+
+    it('saves a changed value of an existing parameter', fakeAsync(() => {
+      expect(addAndSave('new')).toEqual([jasmine.objectContaining({
+        key: 'SHARED_PARAMETERS', content: JSON.stringify([{ key: 'selection', value: 'new' }])
+      })]);
+    }));
+
+    it('accepts an empty string as value', fakeAsync(() => {
+      expect(addAndSave('')).toEqual([jasmine.objectContaining({
+        key: 'SHARED_PARAMETERS', content: JSON.stringify([{ key: 'selection', value: '' }])
+      })]);
+      expect(service.sharedParameters).toEqual([{ key: 'selection', value: '' }]);
+    }));
+
+    it('saves nothing if the value is unchanged', fakeAsync(() => {
+      expect(addAndSave('old')).toEqual([]);
+    }));
   });
 
   it('should code aliased and derived variables in a subform with the current responses API', () => {
