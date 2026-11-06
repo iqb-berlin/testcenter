@@ -506,6 +506,40 @@ class WorkspaceTest extends TestCase {
     static::assertTrue(file_exists(DATA_DIR . '/ws_1/Testtakers/valid_testtakers.xml'), 'import testtakers');
   }
 
+  function test_importUncategorizedFiles_rejectDuplicateResourceIdUploadedWithUnit() {
+    $player = '<html lang="de"><head><script type="application/ld+json">'
+      . '{"type": "PLAYER", "id": "dup-player", "name": [{"lang": "de", "value": "Player"}], "version": "1.0.0", '
+      . '"specVersion": "6.0", "metadataVersion": "3.1"}'
+      . '</script></head><body>!</body></html>';
+    file_put_contents(DATA_DIR . '/ws_1/Resource/dup-player-1.0.html', $player);
+    file_put_contents(DATA_DIR . '/ws_1/dup-player-copy.html', $player);
+    file_put_contents(DATA_DIR . '/ws_1/valid_unit.xml', self::validUnit);
+
+    $getAllFilesWhereCalled = -1;
+    $this->workspaceDaoMock
+      ->shouldReceive('getAllFilesWhere')
+      ->andReturnUsing(static function () use (&$getAllFilesWhereCalled) {
+        $getAllFilesWhereCalled++;
+        return match ($getAllFilesWhereCalled) {
+          0 => [], // Unit
+          1 => ['Resource' => ['DUP-PLAYER-1.0' => new ResourceFile(DATA_DIR . '/ws_1/Resource/dup-player-1.0.html')]]
+        };
+      });
+    $this->workspaceDaoMock->allows('storeFile');
+    $this->workspaceDaoMock->allows('storeRelations');
+    $this->workspaceDaoMock->allows('getDependentFilesByTypes')->andReturn([]);
+    $this->workspaceDaoMock->expects('updateContentTypeBasedOnRemainingTesttakers');
+
+    $workspace = new Workspace(1);
+    $result = $workspace->importUncategorizedFiles(['dup-player-copy.html', 'valid_unit.xml']);
+
+    static::assertContains(
+      'Duplicate Resource-Id: `DUP-PLAYER-1.0` (dup-player-1.0.html)',
+      $result['dup-player-copy.html']['error'] ?? []
+    );
+    static::assertFalse(file_exists(DATA_DIR . '/ws_1/Resource/dup-player-copy.html'));
+  }
+
   function test_importUncategorizedFiles_multipleFilesWithMissingDependencies() {
     file_put_contents(DATA_DIR . '/ws_1/valid_testtakers.xml', self::validTesttakers);
     file_put_contents(DATA_DIR . '/ws_1/valid_booklet.xml', self::validBooklet);

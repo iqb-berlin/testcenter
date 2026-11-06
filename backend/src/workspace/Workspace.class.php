@@ -274,7 +274,13 @@ class Workspace {
       $filesPerType[$localFilePath] = $file;
     }
 
-    $workspaceCache->validate($highestTypeAmongFiles->value);
+    // Resources uploaded together with units come in as one category (see sortAndValidateToplevelFiles), but each
+    // type needs its own cross-validation, e.g. against duplicate ids. Dependencies first.
+    $uploadedTypes = array_map(static fn(File $file): string => $file->getType(), $filesPerType);
+    $typesToValidate = array_reverse(FileType::getDependenciesOfType($highestTypeAmongFiles));
+    foreach (array_intersect($typesToValidate, $uploadedTypes) as $type) {
+      $workspaceCache->validate($type);
+    }
 
     return $filesPerType;
   }

@@ -25,6 +25,7 @@
 - `make testcenter-update` endet, wenn man nach einem fehlgeschlagenen Daten-Backup oder nach übersprungenen Migrationsskripten das Fortfahren ablehnt. Bisher meldete das Skript zwar „update script finished“, spielte die neue Version aber trotzdem ein.
 - API: Berichte (`GET /workspace/{ws_id}/report/{type}`) ohne den optionalen Parameter `dataIds` umfassen alle Gruppen bzw. alle System-Checks des Arbeitsbereichs. Bisher brachen Log-, Antwort- und Review-Berichte mit einem SQL-Fehler ab, und der System-Check-Bericht war leer. (#1614)
 - Verona-Module mit Metadaten im Format 3 (z. B. der Aspect-Player 3.1) werden beim Hochladen erkannt. Bisher wurden ihre Metadaten mit der Warnung „Wrong metadata-schema“ verworfen, Version und ID aus dem Dateinamen geraten und die Verona-Version der Player nicht geprüft.
+- Eine Ressource, deren ID bereits vergeben ist, wird beim Hochladen auch dann abgelehnt, wenn sie zusammen mit Units hochgeladen wird (etwa in einem ZIP-Archiv). Bisher wurde sie in diesem Fall nicht gegen die vorhandenen Ressourcen geprüft und gespeichert.
 
 ## Technisches
 - Der Brute-Force-Schutz (`BRUTE_FORCE_PROTECTION` in `.env.prod-template`) ist bei Neuinstallationen via docker-compose ausgeschaltet.
