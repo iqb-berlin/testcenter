@@ -254,7 +254,8 @@ export class FilesComponent implements OnInit, OnDestroy {
   }
 
   private addFrontendChecksToFile(file: IQBFile): IQBFile {
-    if (file.info.veronaVersion) {
+    // The supported range applies to the player interface; other module types have their own Verona versions.
+    if (file.info.veronaModuleType === 'player' && file.info.veronaVersion) {
       const fileMayor = parseInt(file.info.veronaVersion.toString().split('.').shift() ?? '', 10);
       if (typeof file.report.error === 'undefined') {
         // eslint-disable-next-line no-param-reassign

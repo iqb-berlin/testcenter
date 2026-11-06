@@ -112,6 +112,81 @@ class ResourceFileTest extends TestCase {
     // TODO write test for verona3.5 format
   }
 
+  function test_readMetadataV3(): void {
+    $player = $this->createPlayerStubV4('iqb-player-aspect-3.1.html', $this->createMetadataV3([
+      'type' => 'PLAYER',
+      'id' => 'iqb-player-aspect',
+      'version' => '3.1.1',
+      'specVersion' => '6.0'
+    ]));
+
+    static::assertEquals('iqb-player-aspect', $player->getVeronaModuleId());
+    static::assertEquals('3.1.1', $player->getVersion());
+    static::assertEquals('player', $player->getVeronaModuleType());
+    static::assertEquals('6.0', $player->getVeronaVersion());
+    static::assertEquals('Aspect', $player->getLabel());
+    static::assertEquals('', $player->getDescription());
+    static::assertArrayNotHasKey('error', $player->getValidationReport());
+    static::assertArrayNotHasKey('warning', $player->getValidationReport());
+
+    $widget = $this->createPlayerStubV4('periodic-system-select-widget-1.1.html', $this->createMetadataV3([
+      '$schema' => 'https://raw.githubusercontent.com/verona-interfaces/verona-module-metadata/85175cbc51a5d40e77b4e6f2ddab944ac0179dd1/verona-module-metadata.schema.json',
+      'type' => 'WIDGET',
+      'id' => 'periodic-system-select-widget',
+      'version' => '1.1.0',
+      'specVersion' => '1.0'
+    ]));
+
+    static::assertEquals('widget', $widget->getVeronaModuleType());
+    static::assertEquals('1.1.0', $widget->getVersion());
+    static::assertArrayNotHasKey('warning', $widget->getValidationReport());
+  }
+
+  function test_readMetadataV3AcceptsAnyReferenceIntoTheRepository(): void {
+    foreach (['refs/heads/master', 'v3.1', '85175cb'] as $reference) {
+      $player = $this->createPlayerStubV4('iqb-player-aspect-3.1.html', $this->createMetadataV3([
+        '$schema' => "https://raw.githubusercontent.com/verona-interfaces/verona-module-metadata/$reference/verona-module-metadata.schema.json"
+      ]));
+
+      static::assertEquals('player', $player->getVeronaModuleType(), $reference);
+      static::assertArrayNotHasKey('warning', $player->getValidationReport(), $reference);
+    }
+  }
+
+  function test_readMetadataV3RejectsUnsupportedFormats(): void {
+    $cases = [
+      'Unsupported metadata version: `4.0`' => ['metadataVersion' => '4.0'],
+      'Could not read metadata: metadataVersion missing' => ['metadataVersion' => null],
+      'Wrong metadata-schema: https://example.com/verona-module-metadata.schema.json' =>
+        ['$schema' => 'https://example.com/verona-module-metadata.schema.json']
+    ];
+    foreach ($cases as $expectedWarning => $override) {
+      $player = $this->createPlayerStubV4('iqb-player-aspect-3.1.html', $this->createMetadataV3($override));
+
+      static::assertEquals('', $player->getVeronaModuleType(), $expectedWarning);
+      static::assertEquals('', $player->getVeronaVersion(), $expectedWarning);
+      static::assertContains($expectedWarning, $player->getValidationReport()['warning']);
+      static::assertContains('Metadata missing. Version guessed from Filename.', $player->getValidationReport()['warning']);
+    }
+  }
+
+  /** @param array<string, string|null> $override */
+  private function createMetadataV3(array $override = []): string {
+    $metadata = array_merge(
+      [
+        '$schema' => 'https://raw.githubusercontent.com/verona-interfaces/verona-module-metadata/master/verona-module-metadata.schema.json',
+        'type' => 'PLAYER',
+        'id' => 'iqb-player-aspect',
+        'name' => [['lang' => 'de', 'value' => 'Aspect']],
+        'version' => '3.1.1',
+        'specVersion' => '6.0',
+        'metadataVersion' => '3.1'
+      ],
+      $override
+    );
+    return json_encode(array_filter($metadata, fn($value) => $value !== null), JSON_THROW_ON_ERROR);
+  }
+
   private function createPlayerStubV3(string $fileName, string $title, array $meta = []): ResourceFile {
     $metaTag = '';
     if (count($meta)) {

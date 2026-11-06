@@ -7,6 +7,15 @@ class ResourceFile extends File {
   const bool canBeRelationSubject = false;
   const bool canBeRelationObject = true;
 
+  // Metadata 2.x names exactly this schema. Its repository has since been renamed, so the URL no longer resolves,
+  // but it still identifies the format.
+  private const string METADATA_V2_SCHEMA =
+    'https://raw.githubusercontent.com/verona-interfaces/metadata/master/verona-module-metadata.json';
+  // Metadata 3.x refers to the renamed repository with any git reference (branch, tag or commit). The reference
+  // says nothing about the format version, `metadataVersion` does.
+  private const string METADATA_REPOSITORY = 'verona-interfaces/verona-module-metadata/';
+  private const int SUPPORTED_METADATA_MAJOR_VERSION = 3;
+
   protected function validate(): void {
     parent::validate();
 
@@ -171,11 +180,11 @@ class ResourceFile extends File {
     if (!isset($meta['$schema'])) {
       return "Could not read metadata: \$schema missing";
     }
-    if ($meta['$schema'] !== "https://raw.githubusercontent.com/verona-interfaces/metadata/master/verona-module-metadata.json") {
-      return "Wrong metadata-schema: {$meta['$schema']}";
+    if ($formatProblem = self::checkMetadataFormat($meta)) {
+      return $formatProblem;
     }
     $this->label = $this->getPreferredTranslationV4($meta['name']);
-    $this->description = $this->getPreferredTranslationV4($meta['description']);
+    $this->description = $this->getPreferredTranslationV4($meta['description'] ?? null);
     $this->veronaModuleId = $meta['id'];
     $this->veronaVersion = $meta['specVersion'];
     list(
@@ -184,7 +193,30 @@ class ResourceFile extends File {
       $this->versionPatch,
       $this->versionLabel
       ) = array_values(Version::split($meta['version']));
-    $this->veronaModuleType = $meta['type'];
+    // Metadata 3.x writes the type in upper case (`PLAYER`), 2.x in lower case.
+    $this->veronaModuleType = strtolower($meta['type']);
+    return null;
+  }
+
+  /** @param array<string, mixed> $meta */
+  private static function checkMetadataFormat(array $meta): ?string {
+    $schema = $meta['$schema'];
+    if ($schema === self::METADATA_V2_SCHEMA) {
+      return null;
+    }
+    if (!is_string($schema)) {
+      return "Could not read metadata: \$schema is not a string";
+    }
+    if (!str_contains($schema, self::METADATA_REPOSITORY)) {
+      return "Wrong metadata-schema: $schema";
+    }
+    $metadataVersion = $meta['metadataVersion'] ?? null;
+    if (!is_string($metadataVersion) or !$metadataVersion) {
+      return "Could not read metadata: metadataVersion missing";
+    }
+    if ((int) explode('.', $metadataVersion)[0] !== self::SUPPORTED_METADATA_MAJOR_VERSION) {
+      return "Unsupported metadata version: `$metadataVersion`";
+    }
     return null;
   }
 

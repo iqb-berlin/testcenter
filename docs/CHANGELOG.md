@@ -24,11 +24,13 @@
 - Bei der Anmeldung mit Kennwort, als Administrator:in und mit Code bleibt die Anmeldeschaltfläche während der gesamten ALTCHA-Prüfung deaktiviert, bis der Server die Prüfung abgeschlossen hat. Mehrfaches Absenden während der Prüfung wird verhindert.
 - `make testcenter-update` endet, wenn man nach einem fehlgeschlagenen Daten-Backup oder nach übersprungenen Migrationsskripten das Fortfahren ablehnt. Bisher meldete das Skript zwar „update script finished“, spielte die neue Version aber trotzdem ein.
 - API: Berichte (`GET /workspace/{ws_id}/report/{type}`) ohne den optionalen Parameter `dataIds` umfassen alle Gruppen bzw. alle System-Checks des Arbeitsbereichs. Bisher brachen Log-, Antwort- und Review-Berichte mit einem SQL-Fehler ab, und der System-Check-Bericht war leer. (#1614)
+- Verona-Module mit Metadaten im Format 3 (z. B. der Aspect-Player 3.1) werden beim Hochladen erkannt. Bisher wurden ihre Metadaten mit der Warnung „Wrong metadata-schema“ verworfen, Version und ID aus dem Dateinamen geraten und die Verona-Version der Player nicht geprüft.
 
 ## Technisches
 - Der Brute-Force-Schutz (`BRUTE_FORCE_PROTECTION` in `.env.prod-template`) ist bei Neuinstallationen via docker-compose ausgeschaltet.
 - Die Umgebungsvariable `DOCKER_DAEMON_MTU` entfällt; das Update-Skript entfernt sie aus der `.env.prod`. Die MTU des Docker-Netzwerks wird nicht mehr in den Compose-Dateien gesetzt, sondern folgt der Voreinstellung des Docker-Daemons des Hosts.
 - Das Backend startet nicht mehr, wenn eine der Pflicht-Umgebungsvariablen (`DB_DATABASE`, `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD`, `REDIS_HOST`, `REDIS_PORT`, `REDIS_PASSWORD`, `PASSWORD_SALT`, `PASSWORD_MIN_LENGTH`, `PASSWORD_PATTERN`, `ADMIN_INIT_PASSWORD`, `SERVER_KEY`, `BRUTE_FORCE_PROTECTION`) nicht gesetzt ist, sondern meldet die fehlende Variable. Bisher wurde sie stillschweigend als leerer Wert übernommen. Eine leer gesetzte Variable ist weiterhin erlaubt; mit den mitgelieferten Compose-Dateien ändert sich nichts.
+- Datenbank: Der Typ `verona_module_type` kennt zusätzlich den Wert `widget`. Das Update leert außerdem die Prüfsummen aller Arbeitsbereiche (`workspaces.workspace_hash`), damit bereits hochgeladene Module mit Metadaten im Format 3 neu eingelesen werden; der erste Start nach dem Update liest deshalb alle Arbeitsbereiche neu ein und dauert bei großen Installationen länger.
 - Die Datei `config/traefik/tls-options.yml` entfällt; Traefik verwendet seine eigenen TLS-Voreinstellungen. Bei Installationen via docker-compose wurde die Datei nie geladen, dort ändert sich nichts. Neue Installationen über Helm setzen keine eigene Liste von Cipher-Suites mehr.
 
 # 19.0.0

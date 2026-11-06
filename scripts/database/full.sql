@@ -62,7 +62,7 @@ CREATE TYPE file_type AS ENUM (
 );
 
 CREATE TYPE verona_module_type AS ENUM (
-  'player', 'schemer', 'editor', ''
+  'player', 'schemer', 'editor', 'widget', ''
 );
 
 CREATE TYPE file_relationship_type AS ENUM (
