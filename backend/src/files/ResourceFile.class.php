@@ -11,9 +11,8 @@ class ResourceFile extends File {
   // but it still identifies the format.
   private const string METADATA_V2_SCHEMA =
     'https://raw.githubusercontent.com/verona-interfaces/metadata/master/verona-module-metadata.json';
-  // Metadata 3.x refers to the renamed repository with any git reference (branch, tag or commit). The reference
-  // says nothing about the format version, `metadataVersion` does.
-  private const string METADATA_REPOSITORY = 'verona-interfaces/verona-module-metadata/';
+  // Metadata 3.x is identified by its required `metadataVersion` alone. The spec doesn't define `$schema`, so
+  // modules point it anywhere (old or new repository, any git reference).
   private const int SUPPORTED_METADATA_MAJOR_VERSION = 3;
 
   protected function validate(): void {
@@ -177,9 +176,6 @@ class ResourceFile extends File {
     } catch (Exception $e) {
       return "Could not read metadata: {$e->getMessage()}";
     }
-    if (!isset($meta['$schema'])) {
-      return "Could not read metadata: \$schema missing";
-    }
     if ($formatProblem = self::checkMetadataFormat($meta)) {
       return $formatProblem;
     }
@@ -200,15 +196,8 @@ class ResourceFile extends File {
 
   /** @param array<string, mixed> $meta */
   private static function checkMetadataFormat(array $meta): ?string {
-    $schema = $meta['$schema'];
-    if ($schema === self::METADATA_V2_SCHEMA) {
+    if (($meta['$schema'] ?? null) === self::METADATA_V2_SCHEMA) {
       return null;
-    }
-    if (!is_string($schema)) {
-      return "Could not read metadata: \$schema is not a string";
-    }
-    if (!str_contains($schema, self::METADATA_REPOSITORY)) {
-      return "Wrong metadata-schema: $schema";
     }
     $metadataVersion = $meta['metadataVersion'] ?? null;
     if (!is_string($metadataVersion) or !$metadataVersion) {

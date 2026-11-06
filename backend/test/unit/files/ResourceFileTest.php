@@ -142,23 +142,26 @@ class ResourceFileTest extends TestCase {
     static::assertArrayNotHasKey('warning', $widget->getValidationReport());
   }
 
-  function test_readMetadataV3AcceptsAnyReferenceIntoTheRepository(): void {
-    foreach (['refs/heads/master', 'v3.1', '85175cb'] as $reference) {
-      $player = $this->createPlayerStubV4('iqb-player-aspect-3.1.html', $this->createMetadataV3([
-        '$schema' => "https://raw.githubusercontent.com/verona-interfaces/verona-module-metadata/$reference/verona-module-metadata.schema.json"
-      ]));
+  function test_readMetadataV3IgnoresSchema(): void {
+    $schemas = [
+      'https://raw.githubusercontent.com/verona-interfaces/verona-module-metadata/refs/heads/master/verona-module-metadata.schema.json',
+      'https://raw.githubusercontent.com/verona-interfaces/verona-module-metadata/85175cb/verona-module-metadata.schema.json',
+      'https://raw.githubusercontent.com/iqb-specifications/plugin-metadata/main/plugin-metadata.schema.json',
+      'https://iqb-specifications.github.io/plugin-metadata/plugin-metadata.schema.json',
+      null
+    ];
+    foreach ($schemas as $schema) {
+      $player = $this->createPlayerStubV4('iqb-player-aspect-3.1.html', $this->createMetadataV3(['$schema' => $schema]));
 
-      static::assertEquals('player', $player->getVeronaModuleType(), $reference);
-      static::assertArrayNotHasKey('warning', $player->getValidationReport(), $reference);
+      static::assertEquals('player', $player->getVeronaModuleType(), (string) $schema);
+      static::assertArrayNotHasKey('warning', $player->getValidationReport(), (string) $schema);
     }
   }
 
   function test_readMetadataV3RejectsUnsupportedFormats(): void {
     $cases = [
       'Unsupported metadata version: `4.0`' => ['metadataVersion' => '4.0'],
-      'Could not read metadata: metadataVersion missing' => ['metadataVersion' => null],
-      'Wrong metadata-schema: https://example.com/verona-module-metadata.schema.json' =>
-        ['$schema' => 'https://example.com/verona-module-metadata.schema.json']
+      'Could not read metadata: metadataVersion missing' => ['metadataVersion' => null]
     ];
     foreach ($cases as $expectedWarning => $override) {
       $player = $this->createPlayerStubV4('iqb-player-aspect-3.1.html', $this->createMetadataV3($override));
