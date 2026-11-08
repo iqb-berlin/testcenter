@@ -29,6 +29,14 @@ export interface UnitDef {
   readonly alias: string;
   readonly label: string;
   readonly labelShort: string;
+  // the toolbar widgets offered in this unit
+  readonly widgets: BookletWidget[];
+}
+
+// A toolbar widget as the booklet configures it. The parameters go to the widget unchanged.
+export interface BookletWidget {
+  readonly model: string;
+  readonly parameters: { readonly key: string; readonly value: string }[];
 }
 
 export interface BookletStateDef<BookletStateOption extends BookletStateOptionDef> {
@@ -123,8 +131,11 @@ export interface ContextInBooklet<TestletType> {
   // globalIndex: number;
   localUnitIndex: number;
   localTestletIndex: number;
+  // the widgets the enclosing elements offer
+  widgets: BookletWidget[];
   global: {
     unitIndex: number;
     config: BookletConfig;
+    widgetsById: { [id: string]: BookletWidget };
   };
 }

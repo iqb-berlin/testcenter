@@ -27,12 +27,13 @@ import { PageService } from '../../services/page.service';
 import { VeronaAPIService } from '../../services/verona-api.service';
 import { MessageService } from '@shared/services/message.service';
 import { WidgetRuntimeService } from '../../services/widget-runtime.service';
+import { ToolbarWidgetService } from '../../services/toolbar-widget.service';
 
 @Component({
   templateUrl: './test-controller.component.html',
   styleUrls: ['./test-controller.component.css'],
   standalone: false,
-  providers: [WidgetRuntimeService]
+  providers: [WidgetRuntimeService, ToolbarWidgetService]
 })
 export class TestControllerComponent implements OnInit, OnDestroy {
   @ViewChild(ReviewPanelComponent) reviewComponent?: ReviewPanelComponent;
@@ -84,6 +85,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
               public pageService: PageService,
               private apiService: VeronaAPIService,
               private messageService: MessageService,
+              public toolbarWidgets: ToolbarWidgetService,
               @Inject('IS_PRODUCTION_MODE') public isProductionMode: boolean) { }
 
   // Whether there is currently nothing ready to show to the testee yet: either the test itself is

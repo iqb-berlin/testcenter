@@ -7,6 +7,7 @@ import {
   BlockConditionSourceTypes,
   BookletDef,
   BookletMetadata,
+  BookletWidget,
   ContextInBooklet,
   Restrictions,
   TestletDef,
@@ -78,12 +79,14 @@ export abstract class BookletParserService<
 
     const globalContext = {
       unitIndex: 0,
-      config
+      config,
+      widgetsById: this.parseWidgets(bookletElement)
     };
     const rootContext: ContextInBooklet<Testlet> = {
       localUnitIndex: 0,
       localTestletIndex: 0,
       parents: [],
+      widgets: [],
       global: globalContext
     };
     const units = this.parseTestlet(unitsElement, rootContext);
@@ -152,6 +155,7 @@ export abstract class BookletParserService<
   }
 
   private parseTestlet(testletElement: Element, context: ContextInBooklet<Testlet>): Testlet {
+    const widgets = this.getOfferedWidgets(testletElement, context);
     let testletCount = 0;
     let unitCount = 0;
     const genericTestletId = `${context.parents.map(p => p.id).join('>')}[${testletCount}]`;
@@ -173,6 +177,7 @@ export abstract class BookletParserService<
             localTestletIndex: (item.tagName === 'Testlet') ? testletCount++ : testletCount,
             global: context.global,
             parents: [testlet, ...context.parents],
+            widgets,
             // eslint-disable-next-line no-plusplus
             localUnitIndex: (item.tagName === 'Unit') ? unitCount++ : unitCount
           })
@@ -190,13 +195,42 @@ export abstract class BookletParserService<
           id: element.getAttribute('id') || '',
           alias: element.getAttribute('alias') || element.getAttribute('id') || '',
           label: element.getAttribute('label') || '',
-          labelShort: element.getAttribute('labelshort') || ''
+          labelShort: element.getAttribute('labelshort') || '',
+          widgets: this.getOfferedWidgets(element, context)
         },
         element,
         context
       );
     }
     return this.parseTestlet(element, context);
+  }
+
+  private parseWidgets(bookletElement: Element): { [id: string]: BookletWidget } {
+    const widgetsElement = this.xmlGetChildIfExists(bookletElement, 'Widgets', true);
+    if (!widgetsElement) return {};
+    return Object.fromEntries(this.xmlGetDirectChildrenByTagName(widgetsElement, ['Widget'])
+      .map(widgetElement => [
+        widgetElement.getAttribute('id') || '',
+        {
+          model: widgetElement.getAttribute('model') || '',
+          parameters: this.xmlGetDirectChildrenByTagName(widgetElement, ['Parameter'])
+            .map(parameterElement => ({
+              key: parameterElement.getAttribute('key') || '',
+              value: parameterElement.textContent || ''
+            }))
+        }
+      ]));
+  }
+
+  // An element's widgets attribute replaces the widgets of the enclosing elements; an empty one offers none.
+  private getOfferedWidgets(element: Element, context: ContextInBooklet<Testlet>): BookletWidget[] {
+    const ids = element.getAttribute('widgets');
+    if (ids === null) return context.widgets;
+    return ids.split(/\s+/)
+      .filter(id => id !== '')
+      // the backend rejects booklets with undefined ids
+      .filter(id => Object.hasOwn(context.global.widgetsById, id))
+      .map(id => context.global.widgetsById[id]);
   }
 
   parseRestrictions(testletElement: Element, context: ContextInBooklet<Testlet>): Restrictions {
