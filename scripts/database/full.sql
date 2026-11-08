@@ -36,6 +36,8 @@ CREATE COLLATION IF NOT EXISTS german2_ci (
 --      are generated ids, client-supplied part ids, XML slot names and code literals, and PHP
 --      already compares them case-sensitively (see WorkspaceCache::hasAsset()). Case-sensitive is
 --      the intended state here; do not "restore" the inherited collation.
+--      files.verona_model, added after the move to PostgreSQL, belongs here too: it holds the model
+--      from a Verona module's metadata (e.g. PERIODIC_TABLE), which is matched exactly.
 --
 --   3. Secrets, tokens and hashes, declared COLLATE "C": users.password, logins.password, the four
 --      token columns and workspaces.workspace_hash. These carried german2_ci under MySQL, but none
@@ -423,6 +425,7 @@ CREATE TABLE files (
   verona_module_type verona_module_type DEFAULT NULL,
   verona_version     varchar(12) COLLATE german2_ci DEFAULT NULL,
   verona_module_id   varchar(50) COLLATE german2_ci DEFAULT NULL,
+  verona_model       text NOT NULL DEFAULT '',
   is_valid           boolean NOT NULL,
   validation_report  text COLLATE german2_ci,
   modification_ts    timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
