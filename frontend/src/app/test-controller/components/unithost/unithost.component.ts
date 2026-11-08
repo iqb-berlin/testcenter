@@ -8,7 +8,7 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Params } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { distinctUntilChanged, map, withLatestFrom } from 'rxjs/operators';
-import { CustomtextPipe, MainDataService } from '@shared/shared.module';
+import { CustomtextPipe, CustomtextService, MainDataService } from '@shared/shared.module';
 import { AppError, AuthData, CodeInputType } from '@app/app.interfaces';
 import { ThemeService } from '@shared/services/theme.service';
 import { CodeInputComponent } from '@shared/components/code-input/code-input.component';
@@ -28,6 +28,11 @@ import {
 import { PageService } from '../../services/page.service';
 import { VeronaAPIService } from '../../services/verona-api.service';
 import { MessageService } from '@app/shared/services/message.service';
+import { WidgetDeliveryService } from '../../services/widget-delivery.service';
+import { WidgetRuntimeService } from '../../services/widget-runtime.service';
+import { VopWidgetCall, VopWidgetReturn } from '../../interfaces/widget.interfaces';
+import { parseVopWidgetCall } from '../../util/widget-message.util';
+import { getWidgetTitle } from '../../util/widget-model.util';
 
 @Component({
   templateUrl: './unithost.component.html',
@@ -57,7 +62,10 @@ export class UnithostComponent implements OnInit, OnDestroy {
               @Inject('FILE_SERVER_URL') private readonly fileServerUrl: string,
               public themeService: ThemeService,
               private messageService: MessageService,
-              private bs: BackendService, private route: ActivatedRoute) { }
+              private bs: BackendService, private route: ActivatedRoute,
+              private cts: CustomtextService,
+              private widgetDelivery: WidgetDeliveryService,
+              private widgetRuntime: WidgetRuntimeService) { }
 
   ngOnInit(): void {
     this.iFrameItemplayer = null;
@@ -113,6 +121,9 @@ export class UnithostComponent implements OnInit, OnDestroy {
       break;
     case 'vopRuntimeErrorNotification':
       this.handleRuntimeError(msgData);
+      break;
+    case 'vopWidgetCall':
+      this.handleWidgetCall(msgData, messageEvent.source);
       break;
     default:
       console.log(`processMessagePost ignored message: ${msgType}`);
@@ -180,6 +191,44 @@ export class UnithostComponent implements OnInit, OnDestroy {
       playerConfig: this.getPlayerConfig(navigation)
     };
     this.apiService.postMessageTarget.postMessage(msg, '*');
+  }
+
+  private handleWidgetCall(msgData: object, source: MessageEventSource | null): void {
+    const player = this.iFrameItemplayer?.contentWindow;
+    // Widgets post to the same window, and a replaced player may still be sending.
+    if (!player || source !== player) return;
+    let call: VopWidgetCall;
+    try {
+      call = parseVopWidgetCall(msgData);
+    } catch (error) {
+      console.error('Invalid widget call from the player:', error, msgData);
+      return;
+    }
+
+    const widget = this.widgetDelivery.findWidget(call.widgetType);
+    const title = getWidgetTitle(call.widgetType, widget?.title, this.cts);
+    if (!widget) {
+      this.widgetRuntime.showUnavailable(title);
+      return;
+    }
+    this.widgetRuntime.open({
+      title,
+      html: widget.html,
+      parameters: call.parameters,
+      state: call.state,
+      // the player waits for the result
+      losesWorkOnClose: true,
+      onReturn: (state, saveState) => {
+        if (!saveState) return;
+        const widgetReturn: VopWidgetReturn = {
+          type: 'vopWidgetReturn',
+          sessionId: call.sessionId,
+          ...(call.callId !== undefined ? { callId: call.callId } : {}),
+          ...(state !== undefined ? { state } : {})
+        };
+        player.postMessage(widgetReturn, '*');
+      }
+    });
   }
 
   private handleStateChangedNotification(msg: VopStateChangedNotification): void {

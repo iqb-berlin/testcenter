@@ -13,6 +13,7 @@ export class MockBackendService {
       mode: 'run-hot-return',
       laststate: TestTestState,
       resources: TestResources,
+      widgets: {},
       firstStart: false,
       workspaceId: Object.keys(TestBookletXmlVariants).indexOf(testId),
       presetBookletStates: { }

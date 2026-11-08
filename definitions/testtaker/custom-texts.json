@@ -204,6 +204,42 @@
     "label": "Hauptmenü: Beschriftung für den Knopf bei gesperrtem Test",
     "defaultvalue": "Fertig"
   },
+  "booklet_widgetClose" : {
+    "label": "Widget-Fenster: Beschriftung des Knopfs zum Schließen (für Screenreader)",
+    "defaultvalue": "Widget schließen"
+  },
+  "booklet_widgetLoading" : {
+    "label": "Widget-Fenster: Anzeige, während das Widget geladen wird",
+    "defaultvalue": "Widget wird geladen …"
+  },
+  "booklet_widgetStarting" : {
+    "label": "Widget-Fenster: Anzeige, während das Widget startet",
+    "defaultvalue": "Widget wird gestartet …"
+  },
+  "booklet_widgetDownloadError" : {
+    "label": "Widget-Fenster: Fehlermeldung, wenn das Widget nicht geladen werden konnte",
+    "defaultvalue": "Das Widget konnte nicht geladen werden."
+  },
+  "booklet_widgetStartupError" : {
+    "label": "Widget-Fenster: Fehlermeldung, wenn das Widget nicht gestartet werden konnte",
+    "defaultvalue": "Das Widget konnte nicht gestartet werden."
+  },
+  "booklet_widgetUnavailable" : {
+    "label": "Widget-Fenster: Anzeige, wenn das von der Aufgabe angeforderte Widget im Arbeitsbereich fehlt",
+    "defaultvalue": "Das Widget ist nicht verfügbar."
+  },
+  "booklet_widgetTitleCalculator" : {
+    "label": "Widget-Fenster und Werkzeugleiste: Titel des Taschenrechners",
+    "defaultvalue": "Taschenrechner"
+  },
+  "booklet_widgetTitlePeriodicTable" : {
+    "label": "Widget-Fenster: Titel des Periodensystems",
+    "defaultvalue": "Periodensystem"
+  },
+  "booklet_widgetTitleMoleculeEditor" : {
+    "label": "Widget-Fenster: Titel des Molekül-Editors",
+    "defaultvalue": "Molekül-Editor"
+  },
   "syscheck_unitPrompt" : {
     "label" : "Titelzeile über der Aufgabe",
     "defaultvalue" : "Bitte prüfen Sie die folgenden Aufgaben-Elemente"

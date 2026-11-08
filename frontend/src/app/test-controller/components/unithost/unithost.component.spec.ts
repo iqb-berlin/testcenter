@@ -15,6 +15,8 @@ import { VeronaNavigationDeniedReason } from '../../interfaces/verona.interfaces
 import { NavigationState } from '../../interfaces/test-controller.interfaces';
 import { MessageService } from '../../../shared/services/message.service';
 import { getTestData } from '../../test/test-data';
+import { WidgetDeliveryService } from '../../services/widget-delivery.service';
+import { WidgetRequest, WidgetRuntimeService } from '../../services/widget-runtime.service';
 
 const bookletConfig = new BookletConfig();
 bookletConfig.setFromKeyValuePairs({
@@ -69,8 +71,19 @@ const MockAssetService = {
 describe('UnithostComponent', () => {
   let component: UnithostComponent;
   let fixture: ComponentFixture<UnithostComponent>;
+  let widgetDelivery: { findWidget: jasmine.Spy };
+  let widgetRuntime: { open: jasmine.Spy; showUnavailable: jasmine.Spy };
 
   beforeEach(fakeAsync(() => {
+    widgetDelivery = {
+      findWidget: jasmine.createSpy('findWidget').and.callFake((model: string) => (model === 'PERIODIC_TABLE' ?
+        { title: 'IQB Widget Periodensystem Auswahl', html: of('<html></html>') } :
+        undefined))
+    };
+    widgetRuntime = {
+      open: jasmine.createSpy('open').and.returnValue(true),
+      showUnavailable: jasmine.createSpy('showUnavailable')
+    };
     TestBed.configureTestingModule({
       imports: [
         UnithostComponent,
@@ -85,7 +98,9 @@ describe('UnithostComponent', () => {
         { provide: MainDataService, useValue: MockMainDataService },
         { provide: ActivatedRoute, useValue: MockActivatedRoute },
         { provide: MessageService, useValue: {} },
-        { provide: 'FILE_SERVER_URL', useValue: '/files/' }
+        { provide: 'FILE_SERVER_URL', useValue: '/files/' },
+        { provide: WidgetDeliveryService, useValue: widgetDelivery },
+        { provide: WidgetRuntimeService, useValue: widgetRuntime }
       ]
     });
     fixture = TestBed.createComponent(UnithostComponent);
@@ -142,4 +157,75 @@ describe('UnithostComponent', () => {
     expect(sendToPrevious).not.toHaveBeenCalled();
     expect(sendToCurrent).not.toHaveBeenCalled();
   }));
+
+  describe('widget calls', () => {
+    const call = {
+      type: 'vopWidgetCall',
+      sessionId: 'u1',
+      callId: 'periodic-1',
+      widgetType: 'PERIODIC_TABLE',
+      parameters: [{ key: 'MAX_NUMBER_OF_SELECTIONS', value: '1' }],
+      state: 'H'
+    };
+
+    function openedRequest(): WidgetRequest {
+      return widgetRuntime.open.calls.mostRecent().args[0] as WidgetRequest;
+    }
+
+    it('opens the widget the player calls, titled for test takers', () => {
+      receive(currentPlayer(), call);
+
+      expect(widgetDelivery.findWidget).toHaveBeenCalledOnceWith('PERIODIC_TABLE');
+      expect(openedRequest()).toEqual(jasmine.objectContaining({
+        title: 'Periodensystem',
+        parameters: [{ key: 'MAX_NUMBER_OF_SELECTIONS', value: '1' }],
+        state: 'H',
+        losesWorkOnClose: true
+      }));
+    });
+
+    it('sends the result back to the player', () => {
+      const player = currentPlayer();
+      receive(player, call);
+      const send = spyOn(player, 'postMessage');
+      openedRequest().onReturn?.('He', true);
+
+      expect(send).toHaveBeenCalledOnceWith({
+        type: 'vopWidgetReturn', sessionId: 'u1', callId: 'periodic-1', state: 'He'
+      }, '*');
+    });
+
+    it('sends nothing back when the widget returns without saving', () => {
+      const player = currentPlayer();
+      receive(player, call);
+      const send = spyOn(player, 'postMessage');
+      openedRequest().onReturn?.('He', false);
+
+      expect(send).not.toHaveBeenCalled();
+    });
+
+    it('shows that a widget the workspace lacks is unavailable', () => {
+      receive(currentPlayer(), { ...call, widgetType: 'MOLECULE_EDITOR' });
+
+      expect(widgetRuntime.showUnavailable).toHaveBeenCalledOnceWith('Molekül-Editor');
+      expect(widgetRuntime.open).not.toHaveBeenCalled();
+    });
+
+    it('ignores calls from anything but the current player', () => {
+      const previousPlayer = currentPlayer();
+      MockActivatedRoute.params.next({ u: 1 });
+      receive(previousPlayer, call);
+      receive(window, call);
+
+      expect(widgetRuntime.open).not.toHaveBeenCalled();
+    });
+
+    it('ignores an invalid call', () => {
+      spyOn(console, 'error');
+      receive(currentPlayer(), { ...call, parameters: 'MAX_NUMBER_OF_SELECTIONS=1' });
+
+      expect(widgetRuntime.open).not.toHaveBeenCalled();
+      expect(widgetRuntime.showUnavailable).not.toHaveBeenCalled();
+    });
+  });
 });
