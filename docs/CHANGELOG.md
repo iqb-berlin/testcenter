@@ -1,5 +1,41 @@
 # next
 
+## Widgets
+
+Widgets sind kleine Werkzeuge nach der Verona-Spezifikation, etwa ein Taschenrechner, ein Periodensystem oder ein Molekül-Editor. Das Testcenter öffnet sie auf zwei Wegen: auf Anforderung eines Players oder über einen Knopf in der Werkzeugleiste, den das Booklet anbietet. Widgets erscheinen in einem verschiebbaren Fenster, das die Unit nicht sperrt.
+
+- Widgets für Player: Fordert ein Player ein Widget an, etwa der Aspect-Player ein Periodensystem oder einen Molekül-Editor, öffnet das Testcenter es mit den Parametern und dem Zustand vom Player und gibt das Ergebnis an den Player zurück. Schließt die Testperson das Fenster ohne Übernahme, erhält der Player nichts.
+- Widgets in der Werkzeugleiste: Booklets ab Booklet-XSD 18.1 konfigurieren ein Widget einmal unter `<Widgets>` und bieten es über das Attribut `widgets` an `<Units>`, `<Testlet>` oder `<Unit>` an. Es gilt für alle Units darin, bis ein inneres Element selbst `widgets` setzt; `widgets=""` bietet keines an. Mehrere Widgets werden durch Leerzeichen getrennt, pro Modell höchstens eines. Die Parameter gehen unverändert an das Widget.
+  ```xml
+  <Widgets>
+    <Widget id="calc" model="CALCULATOR">
+      <Parameter key="JOURNAL_LINES">2</Parameter>
+    </Widget>
+    <Widget id="calcNoJournal" model="CALCULATOR">
+      <Parameter key="JOURNAL_LINES">0</Parameter>
+    </Widget>
+  </Widgets>
+  <Units widgets="calc">
+    <Unit id="aufgabe1" label="Aufgabe 1"/>                            <!-- calc -->
+    <Testlet id="teil2" widgets="calcNoJournal">
+      <Unit id="aufgabe2" label="Aufgabe 2"/>                          <!-- calcNoJournal -->
+      <Unit id="aufgabe3" label="Aufgabe 3" widgets="calc"/>           <!-- calc -->
+    </Testlet>
+    <Testlet id="ohneHilfsmittel" widgets="">
+      <Unit id="aufgabe4" label="Aufgabe 4"/>                          <!-- keines -->
+    </Testlet>
+  </Units>
+  ```
+- Der Zustand eines Werkzeugleisten-Widgets, beim Taschenrechner die letzten Rechnungen, bleibt pro Unit erhalten, bis die Seite neu geladen wird.
+- Widgets werden wie andere Ressourcen in den Arbeitsbereich hochgeladen. Pro Modell (z. B. `CALCULATOR`) ist nur ein Widget erlaubt; ein anderes Widget mit demselben Modell, etwa ein Taschenrechner eines anderen Anbieters, wird beim Hochladen abgelehnt. Neue Versionen desselben Widgets lassen sich dagegen neben den alten hochladen (z. B. `iqb-widget-calc-1.1.html` neben `iqb-widget-calc-1.0.html`); verwendet wird die höchste.
+- Die Nutzung von Widgets in der Werkzeugleiste wird in den Logs festgehalten, beim Taschenrechner auch jede einzelne Rechnung (`WIDGET_OPENED`, `WIDGET_CLOSED`, `CALCULATOR_CALCULATION`).
+- Neue Custom-Texts:
+  - `booklet_widgetTitleCalculator`, `booklet_widgetTitlePeriodicTable`, `booklet_widgetTitleMoleculeEditor`: Fenstertitel und Beschriftung in der Werkzeugleiste („Taschenrechner“, „Periodensystem“, „Molekül-Editor“); andere Widgets tragen ihren Namen aus den Metadaten
+  - `booklet_widgetClose`: Beschriftung des Schließen-Knopfs für Screenreader („Widget schließen“)
+  - `booklet_widgetLoading`, `booklet_widgetStarting`: Anzeige, während das Widget lädt bzw. startet
+  - `booklet_widgetUnavailable`: Anzeige, wenn das angeforderte Widget im Arbeitsbereich fehlt („Das Widget ist nicht verfügbar.“)
+  - `booklet_widgetDownloadError`, `booklet_widgetStartupError`: Anzeige, wenn das Widget nicht geladen bzw. nicht gestartet werden konnte
+
 ## Neue Funktionen
 - Der Kurztitel einer Unit (Attribut `labelshort` im Booklet) lässt sich während des Tests anzeigen: im Kopfbereich über `header_content` = `UNIT_LABEL_SHORT`, auf der Navigationsleiste über `navbar_unit_label` = `LABEL_SHORT` und auf der Werkzeugleiste über den neuen Booklet-Parameter `toolbar_unit_label` = `LABEL_SHORT`. Fehlt der Kurztitel, wird der Titel der Unit angezeigt. `toolbar_unit_label` ersetzt `toolbar_show_unit_title`, das weiterhin ausgewertet wird, aber als veraltet gilt. Bisher wurde `labelshort` nur im Gruppen-Monitor angezeigt.
 - Die Dialogboxen zum Beenden des Tests und zum Abmelden sowie die Begrüßung auf der Starter-Seite lassen sich über neue Custom-Texts anpassen, etwa um in Befragungen eine andere Anrede als „du“ oder eine andere Bezeichnung als „Test“ zu verwenden. Bisher waren diese Texte fest vorgegeben. (#1633)
@@ -32,6 +68,8 @@
 - Die Umgebungsvariable `DOCKER_DAEMON_MTU` entfällt; das Update-Skript entfernt sie aus der `.env.prod`. Die MTU des Docker-Netzwerks wird nicht mehr in den Compose-Dateien gesetzt, sondern folgt der Voreinstellung des Docker-Daemons des Hosts.
 - Das Backend startet nicht mehr, wenn eine der Pflicht-Umgebungsvariablen (`DB_DATABASE`, `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD`, `REDIS_HOST`, `REDIS_PORT`, `REDIS_PASSWORD`, `PASSWORD_SALT`, `PASSWORD_MIN_LENGTH`, `PASSWORD_PATTERN`, `ADMIN_INIT_PASSWORD`, `SERVER_KEY`, `BRUTE_FORCE_PROTECTION`) nicht gesetzt ist, sondern meldet die fehlende Variable. Bisher wurde sie stillschweigend als leerer Wert übernommen. Eine leer gesetzte Variable ist weiterhin erlaubt; mit den mitgelieferten Compose-Dateien ändert sich nichts.
 - Datenbank: Der Typ `verona_module_type` kennt zusätzlich den Wert `widget`. Das Update leert außerdem die Prüfsummen aller Arbeitsbereiche (`workspaces.workspace_hash`), damit bereits hochgeladene Module mit Metadaten im Format 3 neu eingelesen werden; der erste Start nach dem Update liest deshalb alle Arbeitsbereiche neu ein und dauert bei großen Installationen länger.
+- Datenbank und API: Die Tabelle `files` hat die neue Spalte `verona_model` mit dem Modell aus den Verona-Metadaten 3.1, bei Widgets z. B. `PERIODIC_TABLE`, bei Playern der unterstützte Definitionstyp. Die Dateiliste eines Arbeitsbereichs (`GET /workspace/{ws_id}/files`) liefert es als `info.veronaModel` (siehe Widgets).
+- API: `GET /test/{test_id}` liefert zusätzlich `widgets`: für jedes Widget-Modell des Arbeitsbereichs Pfad und Name des Widgets mit der höchsten gültigen Version (siehe Widgets).
 - Die Datei `config/traefik/tls-options.yml` entfällt; Traefik verwendet seine eigenen TLS-Voreinstellungen. Bei Installationen via docker-compose wurde die Datei nie geladen, dort ändert sich nichts. Neue Installationen über Helm setzen keine eigene Liste von Cipher-Suites mehr.
 
 # 19.0.0

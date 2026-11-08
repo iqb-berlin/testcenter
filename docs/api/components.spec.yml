@@ -281,6 +281,27 @@ components:
         typelabel:
           type: string
           description: Testtakers | Booklet | Resource | Unit | SysCheck
+        info:
+          type: object
+          description: Further information about the file. The Verona fields exist only for Verona modules.
+          properties:
+            veronaModuleType:
+              type: string
+              description: player | editor | schemer | widget
+            veronaVersion:
+              type: string
+              description: Version of the Verona interface the module implements
+              example: '6.0'
+            version:
+              type: string
+              description: Version of the module
+              example: 3.1.1
+            veronaModel:
+              type: string
+              description: |-
+                Model from the module's metadata (Verona metadata 3.1): a widget's model, or the definition type
+                a player supports. Omitted when the metadata has none.
+              example: PERIODIC_TABLE
 
     file_list:
       type: array
