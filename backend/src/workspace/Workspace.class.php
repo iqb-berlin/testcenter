@@ -608,6 +608,20 @@ class Workspace {
 
   }
 
+  /**
+   * Temporary: neither units nor booklets name a widget by id and version yet, so widgets are found by model alone.
+   * A test therefore gets one widget per model of its workspace, and the workspace may hold only one widget per model
+   * (see WorkspaceCache::rejectSecondWidgetsForAModel).
+   * @return array<string, array{path: string, label: string}> model => widget
+   */
+  public function getWidgets(): array {
+    $widgets = $this->workspaceDAO->getWidgets();
+    foreach ($widgets as $widget) {
+      CacheService::storeFile("/ws_{$this->workspaceId}/{$widget['path']}");
+    }
+    return $widgets;
+  }
+
   public function getBookletResourcePaths(string $bookletId): array {
     $resourceList = $this->workspaceDAO->getBookletResourcePaths($bookletId);
     $resourceListStructured = [];

@@ -108,6 +108,8 @@ class ResourceFileTest extends TestCase {
     static::assertEquals('4.0', $playerWithVerona4Meta->getVeronaVersion());
     static::assertArrayNotHasKey('error', $playerWithVerona4Meta->getValidationReport());
     static::assertArrayNotHasKey('warning', $playerWithVerona4Meta->getValidationReport());
+    static::assertEquals('', $playerWithVerona4Meta->getVeronaModel());
+    static::assertArrayNotHasKey('veronaModel', $playerWithVerona4Meta->jsonSerialize()['info']);
 
     // TODO write test for verona3.5 format
   }
@@ -117,7 +119,8 @@ class ResourceFileTest extends TestCase {
       'type' => 'PLAYER',
       'id' => 'iqb-player-aspect',
       'version' => '3.1.1',
-      'specVersion' => '6.0'
+      'specVersion' => '6.0',
+      'model' => 'aspect-unit-definition@>=4.0 <=4.13'
     ]));
 
     static::assertEquals('iqb-player-aspect', $player->getVeronaModuleId());
@@ -126,6 +129,7 @@ class ResourceFileTest extends TestCase {
     static::assertEquals('6.0', $player->getVeronaVersion());
     static::assertEquals('Aspect', $player->getLabel());
     static::assertEquals('', $player->getDescription());
+    static::assertEquals('aspect-unit-definition@>=4.0 <=4.13', $player->getVeronaModel());
     static::assertArrayNotHasKey('error', $player->getValidationReport());
     static::assertArrayNotHasKey('warning', $player->getValidationReport());
 
@@ -134,12 +138,38 @@ class ResourceFileTest extends TestCase {
       'type' => 'WIDGET',
       'id' => 'periodic-system-select-widget',
       'version' => '1.1.0',
-      'specVersion' => '1.0'
+      'specVersion' => '1.0',
+      'model' => 'PERIODIC_TABLE'
     ]));
 
     static::assertEquals('widget', $widget->getVeronaModuleType());
     static::assertEquals('1.1.0', $widget->getVersion());
+    static::assertEquals('PERIODIC_TABLE', $widget->getVeronaModel());
+    static::assertEquals('PERIODIC_TABLE', $widget->jsonSerialize()['info']['veronaModel']);
+    static::assertArrayNotHasKey('error', $widget->getValidationReport());
     static::assertArrayNotHasKey('warning', $widget->getValidationReport());
+  }
+
+  function test_checkWidget(): void {
+    $cases = [
+      'Widget without model.' => ['model' => null],
+      'Verona widget version `2.0` is not supported (only 1 to 1).' => ['specVersion' => '2.0'],
+      'Verona widget version `0.9` is not supported (only 1 to 1).' => ['specVersion' => '0.9']
+    ];
+    foreach ($cases as $expectedError => $override) {
+      $widget = $this->createPlayerStubV4('periodic-system-select-widget-1.1.html', $this->createMetadataV3(array_merge(
+        ['type' => 'WIDGET', 'id' => 'periodic-system-select-widget', 'version' => '1.1.0', 'specVersion' => '1.0', 'model' => 'PERIODIC_TABLE'],
+        $override
+      )));
+
+      static::assertFalse($widget->isValid(), $expectedError);
+      static::assertEquals([$expectedError], $widget->getValidationReport()['error'], $expectedError);
+    }
+
+    $laterMinorVersion = $this->createPlayerStubV4('periodic-system-select-widget-1.1.html', $this->createMetadataV3(
+      ['type' => 'WIDGET', 'id' => 'periodic-system-select-widget', 'version' => '1.1.0', 'specVersion' => '1.3', 'model' => 'PERIODIC_TABLE']
+    ));
+    static::assertTrue($laterMinorVersion->isValid());
   }
 
   function test_readMetadataV3IgnoresSchema(): void {
@@ -161,19 +191,21 @@ class ResourceFileTest extends TestCase {
   function test_readMetadataV3RejectsUnsupportedFormats(): void {
     $cases = [
       'Unsupported metadata version: `4.0`' => ['metadataVersion' => '4.0'],
-      'Could not read metadata: metadataVersion missing' => ['metadataVersion' => null]
+      'Could not read metadata: metadataVersion missing' => ['metadataVersion' => null],
+      'Could not read metadata: model is not a string' => ['model' => 42]
     ];
     foreach ($cases as $expectedWarning => $override) {
       $player = $this->createPlayerStubV4('iqb-player-aspect-3.1.html', $this->createMetadataV3($override));
 
       static::assertEquals('', $player->getVeronaModuleType(), $expectedWarning);
       static::assertEquals('', $player->getVeronaVersion(), $expectedWarning);
+      static::assertEquals('', $player->getVeronaModel(), $expectedWarning);
       static::assertContains($expectedWarning, $player->getValidationReport()['warning']);
       static::assertContains('Metadata missing. Version guessed from Filename.', $player->getValidationReport()['warning']);
     }
   }
 
-  /** @param array<string, string|null> $override */
+  /** @param array<string, mixed> $override */
   private function createMetadataV3(array $override = []): string {
     $metadata = array_merge(
       [

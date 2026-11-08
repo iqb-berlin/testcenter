@@ -82,6 +82,8 @@ class TestController extends Controller {
       'laststate' => (array) $test->state,
       'xml' => $bookletFile->getContent(),
       'resources' => $workspace->getBookletResourcePaths($bookletFile->getName()),
+      // an object even when empty, so the frontend always gets a map
+      'widgets' => (object) $workspace->getWidgets(),
       'firstStart' => !$test->running,
       'workspaceId' => $workspace->getId(),
       'presetBookletStates' => $testName->states
