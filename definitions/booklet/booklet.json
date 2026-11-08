@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "Booklet 18.0",
-  "schema_version": "18.0",
+  "title": "Booklet 18.1",
+  "schema_version": "18.1",
   "additionalProperties": false,
   "description": "Testheft Konfiguration und Organisation von Units und Testlets. **Hier sind beispielhafte Booklet-XML's zu finden: [Booklet adaptives Testen](https://iqb-berlin.github.io/tba-info/study-run/preparation/adaptive/#Beispielkonfiguration), [Booklet ohne adaptives Testen](https://iqb-berlin.github.io/tba-info/study-run/preparation/test-files/booklet-xml.html#aufbau)**",
   "type": "object",
@@ -9,7 +9,7 @@
     "Metadata",
     "Units"
   ],
-
+  
   "properties": {
     "$schema": {
       "type": "string",
@@ -60,12 +60,18 @@
         }
       }
     },
+    "Widgets": {
+      "$ref": "#/$defs/Widgets"
+    },
     "Units": {
       "type": "object",
       "description": "Hier werden Units und Testlets definiert. **Zu beachten ist, dass mindestens eines von beiden angelegt sein muss!**",
       "additionalProperties": false,
       "minProperties": 1,
       "properties": {
+        "widgets": {
+          "$ref": "#/$defs/WidgetIds"
+        },
         "Testlet": {
           "type": "array",
           "description": "Liste von Testlets auf oberster Ebene (Mindestens 'unit' oder 'testlet' erforderlich).",
@@ -89,13 +95,16 @@
       "required": ["id"],
       "additionalProperties": false,
       "properties": {
-        "id": {
+        "id": { 
           "type": "string",
           "description": "Eindeutige Identifikation des Testlets."
         },
-        "label": {
+        "label": { 
           "type": "string",
           "description": "Anzeigename des Testlets."
+        },
+        "widgets": {
+          "$ref": "#/$defs/WidgetIds"
         },
         "Restrictions": {
           "$ref": "#/$defs/Restrictions"
@@ -132,13 +141,16 @@
       "properties": {
         "id": { "type": "string" },
         "label": { "type": "string" },
-        "labelshort": {
+        "labelshort": { 
           "type": "string",
           "description": "Optionaler Kurzname der Unit. Wird im Gruppen-Monitor angezeigt und kann über die Booklet-Parameter header_content, navbar_unit_label und toolbar_unit_label auch während des Tests angezeigt werden."},
-        "alias": {
+        "alias": { 
           "type": "string",
           "description": "Da im Booklet keine Unit-Id Duplikate zulässig sind, kann manuell ein Alias vergeben werden. Wird ein Booklet in das Testcenter geladen mit Unit-Id Duplikaten, wird automatisch ein Alias vergeben.",
-          "default": "alias"
+          "default": "alias" 
+        },
+        "widgets": {
+          "$ref": "#/$defs/WidgetIds"
         }
       }
     },
@@ -148,19 +160,73 @@
       "properties": {
         "CodeToEnter": { "$ref": "#/$defs/CodeToEnter" },
         "TimeMax": { "$ref": "#/$defs/TimeMax" },
-        "show": {
+        "Show": {
           "type": "array",
           "items": { "$ref": "#/$defs/Show" }
         },
-        "denyNavigationOnIncomplete": { "$ref": "#/$defs/DenyNavigationOnIncomplete" },
-        "lockAfterLeaving": { "$ref": "#/$defs/LockAfterLeaving" }
+        "DenyNavigationOnIncomplete": { "$ref": "#/$defs/DenyNavigationOnIncomplete" },
+        "LockAfterLeaving": { "$ref": "#/$defs/LockAfterLeaving" }
+      }
+    },
+    "Widgets": {
+      "type": "object",
+      "required": ["Widget"],
+      "additionalProperties": false,
+      "description": "Widgets, die Testpersonen über die Werkzeugleiste öffnen können. Jedes Widget wird hier einmal konfiguriert und über das Attribut `widgets` von Units, Testlet oder Unit in Units angeboten.",
+      "properties": {
+        "Widget": {
+          "type": "array",
+          "minItems": 1,
+          "description": "Jede Id darf nur einmal vorkommen.",
+          "items": { "$ref": "#/$defs/Widget" }
+        }
+      }
+    },
+    "Widget": {
+      "type": "object",
+      "required": ["id", "model"],
+      "additionalProperties": false,
+      "description": "Ein Verona-Widget, identifiziert über das Modell in seinen Metadaten. Beispiel: `<Widget id=\"calc\" model=\"CALCULATOR\"><Parameter key=\"JOURNAL_LINES\">2</Parameter></Widget>`",
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[A-Za-z_][A-Za-z0-9._-]*$",
+          "description": "Name, unter dem das Widget im Attribut `widgets` angegeben wird, z. B. 'calc'. Ohne Leerzeichen."
+        },
+        "model": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Modell aus den Metadaten des Widgets, z. B. 'CALCULATOR'."
+        },
+        "Parameter": {
+          "type": "array",
+          "description": "Parameter, die unverändert an das Widget übergeben werden. Welche Parameter es gibt, legt das Widget fest. Jeder Schlüssel darf pro Widget nur einmal vorkommen.",
+          "items": { "$ref": "#/$defs/WidgetParameter" }
+        }
+      }
+    },
+    "WidgetIds": {
+      "type": "string",
+      "description": "Ids der Widgets (siehe Widgets), die in den Units dieses Elements angeboten werden, durch Leerzeichen getrennt, z. B. `widgets=\"calc periodic\"`. Wird vererbt: Eine Unit bietet die Widgets des nächsten Elements an, das dieses Attribut setzt – sie selbst, ihr Testlet oder ein umgebendes Testlet. Ein leerer Wert schaltet alle Widgets ab. Höchstens ein Widget pro Modell."
+    },
+    "WidgetParameter": {
+      "type": "object",
+      "required": ["key"],
+      "additionalProperties": false,
+      "description": "Ein Parameter des Widgets. Der Wert steht als Text im Element, z. B. `<Parameter key=\"JOURNAL_LINES\">2</Parameter>`.",
+      "properties": {
+        "key": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Name des Parameters, z. B. 'JOURNAL_LINES'."
+        }
       }
     },
     "CodeToEnter": {
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "code": {
+        "code": { 
           "type": "string",
           "description": "Code, der eingegeben werden muss, um den Block zu betreten."}
       }
@@ -170,11 +236,11 @@
       "additionalProperties": false,
       "description": "Bedingte Anzeige eines Testlets in Abhängigkeit der State-Id und der Options-Id.",
       "properties": {
-        "if": {
+        "if": { 
           "type": "string",
-          "description": "State-Id, die geprüft werden soll."
+          "description": "State-Id, die geprüft werden soll." 
         },
-        "is": {
+        "is": { 
           "type": "string",
           "description": "Options-Id."}
       }
@@ -183,11 +249,11 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "minutes": {
+        "minutes": { 
           "type": "number",
           "description": "Maximale Dauer in Minuten für einen Block. Sekunden können als Teil einer Minute angegeben werden. So entspricht eine Eingabe von bspw. 0.2 Minuten 12 Sekunden."},
-        "leave": {
-          "type": "string", "enum": ["forbidden", "confirm", "allowed"],
+        "leave": { 
+          "type": "string", "enum": ["forbidden", "confirm", "allowed"], 
           "description": "Verhalten beim Verlassen des Zeitblocks. Wenn 'confirm' oder 'allowed' gewählt wird, wird der Zeitblock nach dem Verlassen gesperrt und kann nicht mehr betreten werden. Bei 'forbidden' kann der Zeitblock nicht verlassen werden." }
       }
     },
@@ -196,12 +262,12 @@
       "additionalProperties": false,
       "description": "Testlet interne Navigationsbeschränkungen. **Diese sind unabhängig von gesetzten Navigationsbeschränkungen in der Booklet-Konfiguration.**",
       "properties": {
-        "presentation": {
-          "type": "string",
+        "presentation": { 
+          "type": "string", 
           "enum": ["ON", "OFF", "ALWAYS"],
           "description": "'ON' Kontrolle bei Aufgabennavigation vorwärts. 'ALWAYS' Kontrolle bei Aufgabennavigation vorwärts und rückwärts." },
-        "response": {
-          "type": "string",
+        "response": { 
+          "type": "string", 
           "enum": ["ON", "OFF", "ALWAYS"],
           "description": "'ON' Kontrolle bei Aufgabennavigation vorwärts. 'ALWAYS' Kontrolle bei Aufgabennavigation vorwärts und rückwärts." }
       }
@@ -260,11 +326,11 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "of": {
+        "of": { 
           "type": "string",
           "description": "Name der Variable, die zur Berechnung genutzt werden soll."
         },
-        "from": {
+        "from": { 
           "type": "string",
           "description": "Name der Unit, aus der die Variable bezogen werden soll."
         }
@@ -314,15 +380,15 @@
       "type": "object",
       "required": ["of", "from"],
       "properties": {
-        "of": {
+         "of": { 
           "type": "string",
           "description": "Name der Variable, die zur Berechnung genutzt werden soll."
         },
-        "from": {
+        "from": { 
           "type": "string",
           "description": "Name der Unit, aus der die Variable bezogen werden soll."
         },
-        "or": {
+        "or": { 
           "type": "number",
           "description": "Optionaler Wert, der als Ersatzwert genutzt wird, falls die Variable nicht gesetzt ist."}
       }
