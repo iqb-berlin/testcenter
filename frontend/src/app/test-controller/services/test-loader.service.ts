@@ -34,6 +34,7 @@ import {
 import { EnvironmentData } from '../classes/test-controller.classes';
 import { TestControllerService } from './test-controller.service';
 import { BackendService } from './backend.service';
+import { WidgetDeliveryService } from './widget-delivery.service';
 import { AppError } from '../../app.interfaces';
 import { BookletParserService } from '../../shared/services/booklet-parser.service';
 import { IQBVariable } from '../interfaces/iqb.interfaces';
@@ -53,7 +54,8 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
   constructor(
     public tcs: TestControllerService,
     private bs: BackendService,
-    private cts: CustomtextService
+    private cts: CustomtextService,
+    private widgetDelivery: WidgetDeliveryService
   ) {
     super();
     this.environment = new EnvironmentData();
@@ -71,6 +73,7 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
     }
 
     this.tcs.workspaceId = testData.workspaceId;
+    this.widgetDelivery.setWidgets(testData.workspaceId, testData.widgets);
     this.tcs.testMode = new TestMode(testData.mode);
     this.presetBookletStates = testData.presetBookletStates;
 
