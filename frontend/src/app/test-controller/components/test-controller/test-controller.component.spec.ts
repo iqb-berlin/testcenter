@@ -25,6 +25,8 @@ import { AppError } from '../../../app.interfaces';
 import { TimerData } from '../../classes/test-controller.classes';
 import { MatMenu, MatMenuTrigger } from '@angular/material/menu';
 import { NavigationComponent } from '../navigation/navigation.component';
+import { WidgetRuntimeService } from '../../services/widget-runtime.service';
+import { ToolbarWidgetService } from '../../services/toolbar-widget.service';
 
 const testData$ = new Subject<boolean | TestData>();
 const command$ = new Subject<Command>();
@@ -115,6 +117,15 @@ describe('TestControllerComponent', () => {
         provideHttpClient(withInterceptorsFromDi())
       ]
     })
+      // the component provides the widget services itself
+      .overrideComponent(TestControllerComponent, {
+        set: {
+          providers: [
+            { provide: WidgetRuntimeService, useValue: {} },
+            { provide: ToolbarWidgetService, useValue: { widgets: new BehaviorSubject([]), open: () => {} } }
+          ]
+        }
+      })
       .compileComponents();
   }));
 
