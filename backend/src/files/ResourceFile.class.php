@@ -64,6 +64,9 @@ class ResourceFile extends File {
 
     $this->applyMeta();
     $this->analyzeMeta();
+    if ($this->veronaModuleType === 'widget') {
+      $this->checkWidget();
+    }
   }
 
   /**
@@ -179,6 +182,10 @@ class ResourceFile extends File {
     if ($formatProblem = self::checkMetadataFormat($meta)) {
       return $formatProblem;
     }
+    $model = $meta['model'] ?? '';
+    if (!is_string($model)) {
+      return "Could not read metadata: model is not a string";
+    }
     $this->label = $this->getPreferredTranslationV4($meta['name']);
     $this->description = $this->getPreferredTranslationV4($meta['description'] ?? null);
     $this->veronaModuleId = $meta['id'];
@@ -191,6 +198,8 @@ class ResourceFile extends File {
       ) = array_values(Version::split($meta['version']));
     // Metadata 3.x writes the type in upper case (`PLAYER`), 2.x in lower case.
     $this->veronaModuleType = strtolower($meta['type']);
+    // Since metadata 3.1: a widget's model (e.g. PERIODIC_TABLE) or the definition type a player supports.
+    $this->veronaModel = $model;
     return null;
   }
 
@@ -252,6 +261,19 @@ class ResourceFile extends File {
       if ($recommendedFilename != $this->name) {
         $this->report('warning', "Non-Standard-Filename: `$this->veronaModuleId-{$this->getVersionMayorMinor()}.html` expected.");
       }
+    }
+  }
+
+  // A widget the Testcenter can't run is invalid, so it is neither stored at upload nor delivered to a test.
+  private function checkWidget(): void {
+    if (!$this->veronaModel) {
+      $this->report('error', 'Widget without model.');
+    }
+    $min = SystemConfig::$system_veronaWidgetMin;
+    $max = SystemConfig::$system_veronaWidgetMax;
+    $major = (int) explode('.', $this->veronaVersion)[0];
+    if ($major < $min or $major > $max) {
+      $this->report('error', "Verona widget version `$this->veronaVersion` is not supported (only $min to $max).");
     }
   }
 

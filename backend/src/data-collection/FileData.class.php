@@ -20,6 +20,7 @@ class FileData extends DataCollectionTypeSafe {
   protected int $versionPatch;
   protected string $versionLabel;
   protected string $veronaVersion;
+  protected string $veronaModel;
 
   public function __construct(
     string $path = '',
@@ -39,7 +40,8 @@ class FileData extends DataCollectionTypeSafe {
     int    $versionMinor = 0,
     int    $versionPatch = 0,
     string $versionLabel = "",
-    string $veronaVersion = ""
+    string $veronaVersion = "",
+    string $veronaModel = ""
   ) {
     $this->path = $path;
     $this->type = $type;
@@ -59,6 +61,7 @@ class FileData extends DataCollectionTypeSafe {
     $this->versionPatch = $versionPatch;
     $this->versionLabel = $versionLabel;
     $this->veronaVersion = $veronaVersion;
+    $this->veronaModel = $veronaModel;
   }
 
   public function getType(): string {
@@ -143,6 +146,10 @@ class FileData extends DataCollectionTypeSafe {
 
   public function getVeronaVersion(): string {
     return $this->veronaVersion;
+  }
+
+  public function getVeronaModel(): string {
+    return $this->veronaModel;
   }
 
   /**

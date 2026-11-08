@@ -19,6 +19,8 @@ class SystemConfig {
   public static string $system_version;
   public static int $system_veronaMax;
   public static int $system_veronaMin;
+  public static int $system_veronaWidgetMax;
+  public static int $system_veronaWidgetMin;
   public static int $system_iqbStandardResponseMax;
   public static int $system_iqbStandardResponseMin;
   /** @var array<string, array{repo: string, min: int, max: int}> file type => schema repo and supported major versions */
@@ -58,7 +60,9 @@ class SystemConfig {
     if (
       (!isset(self::$system_version) or !self::$system_version) or
       (!isset(self::$system_veronaMax) or !self::$system_veronaMax) or
-      (!isset(self::$system_veronaMin) or !self::$system_veronaMin)
+      (!isset(self::$system_veronaMin) or !self::$system_veronaMin) or
+      (!isset(self::$system_veronaWidgetMax) or !self::$system_veronaWidgetMax) or
+      (!isset(self::$system_veronaWidgetMin) or !self::$system_veronaWidgetMin)
     ) {
       self::applyVersionFromPackageJson();
     }
@@ -135,6 +139,9 @@ class SystemConfig {
     $v = "verona-player-api-versions";
     self::$system_veronaMax = $packageJson->iqb->$v->max;
     self::$system_veronaMin = $packageJson->iqb->$v->min;
+    $v = "verona-widget-api-versions";
+    self::$system_veronaWidgetMax = $packageJson->iqb->$v->max;
+    self::$system_veronaWidgetMin = $packageJson->iqb->$v->min;
     $v = "iqb-standard-response-type";
     self::$system_iqbStandardResponseMax = $packageJson->iqb->$v->max;
     self::$system_iqbStandardResponseMin = $packageJson->iqb->$v->min;

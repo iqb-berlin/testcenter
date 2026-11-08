@@ -66,6 +66,7 @@ class WorkspaceDAOTest extends TestCase {
         'verona_module_type' => null,
         'verona_version' => null,
         'verona_module_id' => null,
+        'verona_model' => '',
         'is_valid' => false,
         'validation_report' => 'ignore',
         'modification_ts' => '2023-01-16 08:00:00+00',
@@ -86,6 +87,7 @@ class WorkspaceDAOTest extends TestCase {
         'verona_module_type' => '',
         'verona_version' => '',
         'verona_module_id' => '',
+        'verona_model' => '',
         'is_valid' => false,
         'validation_report' => 'ignore',
         'modification_ts' => '1970-01-01 00:00:01+00',
@@ -94,6 +96,58 @@ class WorkspaceDAOTest extends TestCase {
       ]
     ];
     static::assertEquals($expectation, $files);
+  }
+
+  public function test_storeAndRestoreVeronaModel(): void {
+    $this->dbc->storeFile(new ResourceFile(new FileData(
+      path: '/data_dir/ws_1/Resource/periodic-system-select-widget-1.1.html',
+      type: 'Resource',
+      id: 'PERIODIC-SYSTEM-SELECT-WIDGET-1.1',
+      veronaModuleType: 'widget',
+      veronaModuleId: 'periodic-system-select-widget',
+      veronaModel: 'PERIODIC_TABLE'
+    )));
+
+    $stored = $this->dbc->getFileById('PERIODIC-SYSTEM-SELECT-WIDGET-1.1', 'Resource');
+
+    static::assertEquals('widget', $stored->getVeronaModuleType());
+    static::assertEquals('PERIODIC_TABLE', $stored->getVeronaModel());
+  }
+
+  public function test_getWidgets(): void {
+    $storeWidget = function (string $name, string $model, int $major, int $minor, array $errors = []): void {
+      $this->dbc->storeFile(new ResourceFile(new FileData(
+        path: "/data_dir/ws_1/Resource/$name",
+        type: 'Resource',
+        id: strtoupper($name),
+        label: "Label of $name",
+        validationReport: ['error' => $errors],
+        veronaModuleType: 'widget',
+        veronaModuleId: $model,
+        versionMayor: $major,
+        versionMinor: $minor,
+        veronaModel: $model
+      )));
+    };
+    $storeWidget('periodic-1.9.html', 'PERIODIC_TABLE', 1, 9);
+    $storeWidget('periodic-1.10.html', 'PERIODIC_TABLE', 1, 10);
+    $storeWidget('periodic-2.0.html', 'PERIODIC_TABLE', 2, 0, ['an error']);
+    $storeWidget('molecules-1.0.html', 'MOLECULE_EDITOR', 1, 0);
+    $this->dbc->storeFile(new ResourceFile(new FileData(
+      path: '/data_dir/ws_1/Resource/iqb-player-aspect-3.1.html',
+      type: 'Resource',
+      id: 'IQB-PLAYER-ASPECT-3.1',
+      veronaModuleType: 'player',
+      veronaModel: 'aspect-unit-definition@>=4.0 <=4.13'
+    )));
+
+    static::assertEquals(
+      [
+        'MOLECULE_EDITOR' => ['path' => 'Resource/molecules-1.0.html', 'label' => 'Label of molecules-1.0.html'],
+        'PERIODIC_TABLE' => ['path' => 'Resource/periodic-1.10.html', 'label' => 'Label of periodic-1.10.html']
+      ],
+      $this->dbc->getWidgets()
+    );
   }
 
   public function test_addLoginSource(): void {
