@@ -47,9 +47,10 @@ const DEFAULT_WIDGET_WINDOW_SIZE = {
 };
 
 // A widget window keeps a margin to the edges of the browser window, so its title bar stays visible for dragging.
+// Dynamic viewport units, because on iPads vh/vw include the space behind Safari's toolbars.
 const WIDGET_WINDOW_MAX_SIZE = {
-  width: '95vw',
-  height: '95vh'
+  width: '95dvw',
+  height: '95dvh'
 };
 
 // Opens widgets in a window and runs them until they return or the situation changes. One widget at a time.
