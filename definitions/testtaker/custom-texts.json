@@ -236,6 +236,14 @@
     "label": "Widget-Fenster: Titel des Molekül-Editors",
     "defaultvalue": "Molekül-Editor"
   },
+  "booklet_calculatorPeekTitle" : {
+    "label": "Letzte Rechnung: Titel der Anzeige, die nach dem Schließen des Taschenrechners dessen letzte Rechnung zeigt",
+    "defaultvalue": "Letzte Rechnung"
+  },
+  "booklet_calculatorPeekClose" : {
+    "label": "Letzte Rechnung: Beschriftung des Knopfs zum Schließen (für Screenreader)",
+    "defaultvalue": "Letzte Rechnung schließen"
+  },
   "syscheck_unitPrompt" : {
     "label" : "Titelzeile über der Aufgabe",
     "defaultvalue" : "Bitte prüfen Sie die folgenden Aufgaben-Elemente"

@@ -122,7 +122,10 @@ describe('TestControllerComponent', () => {
         set: {
           providers: [
             { provide: WidgetRuntimeService, useValue: {} },
-            { provide: ToolbarWidgetService, useValue: { widgets: new BehaviorSubject([]), open: () => {} } }
+            {
+              provide: ToolbarWidgetService,
+              useValue: { widgets: new BehaviorSubject([]), open: () => {}, calculatorPeek: () => undefined }
+            }
           ]
         }
       })

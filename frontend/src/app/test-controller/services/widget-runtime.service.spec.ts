@@ -124,16 +124,30 @@ describe('WidgetRuntimeService', () => {
     expect(tcs.addSharedParameters).toHaveBeenCalledOnceWith([{ key: 'SHARED', value: 'no' }]);
   }));
 
-  it('closes the window on return', fakeAsync(() => {
+  it('closes the window on return, reporting the return before the closing', fakeAsync(() => {
     const onReturn = jasmine.createSpy('onReturn');
-    service.open(createRequest({ onReturn }));
+    const onClosed = jasmine.createSpy('onClosed');
+    service.open(createRequest({ onReturn, onClosed }));
     settle();
     const { sessionId } = startWidget();
     receive({ type: 'vowReturnRequested', sessionId, timeStamp: '2026-11-06T12:00:00Z', state: 'Li' });
     settle();
 
     expect(onReturn).toHaveBeenCalledOnceWith('Li', true);
+    expect(onClosed).toHaveBeenCalledOnceWith('widget');
+    expect(onReturn).toHaveBeenCalledBefore(onClosed);
     expect(findWindows().length).toBe(0);
+  }));
+
+  it('reports that the test taker closed the window', fakeAsync(() => {
+    const onClosed = jasmine.createSpy('onClosed');
+    service.open(createRequest({ onClosed }));
+    settle();
+    document.querySelector<HTMLButtonElement>('.widget-window header button')?.click();
+    settle();
+
+    expect(findWindows().length).toBe(0);
+    expect(onClosed).toHaveBeenCalledOnceWith('testTaker');
   }));
 
   it('shows an error when the widget could not be loaded', fakeAsync(() => {
@@ -225,7 +239,7 @@ describe('WidgetRuntimeService', () => {
     tcs.currentUnitSequenceId$.next(2);
     settle();
 
-    expect(onClosed).toHaveBeenCalledTimes(1);
+    expect(onClosed).toHaveBeenCalledOnceWith('testcenter');
   }));
 
   it('only focuses the open widget when it is requested again', fakeAsync(() => {

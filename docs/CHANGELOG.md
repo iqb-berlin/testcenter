@@ -27,6 +27,7 @@ Widgets sind kleine Werkzeuge nach der Verona-Spezifikation, etwa ein Taschenrec
   </Units>
   ```
 - Der Zustand eines Werkzeugleisten-Widgets, beim Taschenrechner die letzten Rechnungen, bleibt pro Unit erhalten, bis die Seite neu geladen wird.
+- Schließt die Testperson den Taschenrechner aus der Werkzeugleiste, zeigt eine kleine, verschiebbare Anzeige oben rechts seine letzte Rechnung als Bild. Sie verschwindet, wenn die Testperson sie schließt, den Taschenrechner wieder öffnet oder die Unit wechselt, und wenn der Test pausiert oder endet. Ohne Journal (`JOURNAL_LINES` = 0) gibt es keine Anzeige.
 - Widgets werden wie andere Ressourcen in den Arbeitsbereich hochgeladen. Pro Modell (z. B. `CALCULATOR`) ist nur ein Widget erlaubt; ein anderes Widget mit demselben Modell, etwa ein Taschenrechner eines anderen Anbieters, wird beim Hochladen abgelehnt. Neue Versionen desselben Widgets lassen sich dagegen neben den alten hochladen (z. B. `iqb-widget-calc-1.1.html` neben `iqb-widget-calc-1.0.html`); verwendet wird die höchste.
 - Die Nutzung von Widgets in der Werkzeugleiste wird in den Logs festgehalten, beim Taschenrechner auch jede einzelne Rechnung (`WIDGET_OPENED`, `WIDGET_CLOSED`, `CALCULATOR_CALCULATION`).
 - Neue Custom-Texts:
@@ -35,6 +36,8 @@ Widgets sind kleine Werkzeuge nach der Verona-Spezifikation, etwa ein Taschenrec
   - `booklet_widgetLoading`, `booklet_widgetStarting`: Anzeige, während das Widget lädt bzw. startet
   - `booklet_widgetUnavailable`: Anzeige, wenn das angeforderte Widget im Arbeitsbereich fehlt („Das Widget ist nicht verfügbar.“)
   - `booklet_widgetError`: Anzeige, wenn das Widget fehlschlägt („Im Widget ist ein Fehler aufgetreten.“)
+  - `booklet_calculatorPeekTitle`: Titel der Anzeige der letzten Rechnung („Letzte Rechnung“)
+  - `booklet_calculatorPeekClose`: Beschriftung des Knopfs zum Schließen der Anzeige der letzten Rechnung für Screenreader („Letzte Rechnung schließen“)
 
 ## Neue Funktionen
 - Der Kurztitel einer Unit (Attribut `labelshort` im Booklet) lässt sich während des Tests anzeigen: im Kopfbereich über `header_content` = `UNIT_LABEL_SHORT`, auf der Navigationsleiste über `navbar_unit_label` = `LABEL_SHORT` und auf der Werkzeugleiste über den neuen Booklet-Parameter `toolbar_unit_label` = `LABEL_SHORT`. Fehlt der Kurztitel, wird der Titel der Unit angezeigt. `toolbar_unit_label` ersetzt `toolbar_show_unit_title`, das weiterhin ausgewertet wird, aber als veraltet gilt. Bisher wurde `labelshort` nur im Gruppen-Monitor angezeigt.

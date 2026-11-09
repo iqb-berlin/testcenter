@@ -12,6 +12,10 @@ import { WidgetSession } from '../classes/widget-session.class';
 import { WidgetParameter } from '../interfaces/widget.interfaces';
 import { TestControllerService } from './test-controller.service';
 
+// Who closed the widget window: the test taker (close button, Escape), the widget by returning, or the Testcenter
+// (unit change, pause, logout, replaced by another widget).
+export type WidgetCloseReason = 'testTaker' | 'widget' | 'testcenter';
+
 export interface WidgetRequest {
   id?: string;
   title: string;
@@ -26,15 +30,15 @@ export interface WidgetRequest {
   losesWorkOnClose: boolean;
   onStateChanged?: (state: string) => void;
   onReturn?: (state: string | undefined, saveState: boolean) => void;
-  // called once when the window closes, for whatever reason
-  onClosed?: () => void;
+  // called once when the window closes, after onReturn if the widget returned
+  onClosed?: (reason: WidgetCloseReason) => void;
 }
 
 interface CurrentWidget {
   id?: string;
   losesWorkOnClose: boolean;
   ref: MatDialogRef<WidgetWindowComponent>;
-  stop: () => void;
+  stop: (reason: WidgetCloseReason) => void;
 }
 
 const DEFAULT_WIDGET_WINDOW_SIZE = {
@@ -85,13 +89,13 @@ export class WidgetRuntimeService implements OnDestroy {
       id: request.id,
       losesWorkOnClose: request.losesWorkOnClose,
       ref,
-      stop: () => {
+      stop: (reason) => {
         loading.unsubscribe();
         session?.close();
-        // the window stops both on closing and once its closing starts
+        // the window stops both on closing and once its closing starts; the first one knows the reason
         if (closed) return;
         closed = true;
-        request.onClosed?.();
+        request.onClosed?.(reason);
       }
     };
     this.setCurrentWidget(widget);
@@ -119,8 +123,9 @@ export class WidgetRuntimeService implements OnDestroy {
             if (state !== undefined) request.onStateChanged?.(state);
           },
           onReturn: (state, saveState) => {
-            ref.close();
             request.onReturn?.(state, saveState);
+            widget.stop('widget');
+            ref.close();
           },
           onError: fail
         });
@@ -142,7 +147,7 @@ export class WidgetRuntimeService implements OnDestroy {
 
   close(): void {
     // stops the widget right away; the window reports its closing only once its animation starts
-    this.currentWidget?.stop();
+    this.currentWidget?.stop('testcenter');
     this.currentWidget?.ref.close();
     this.currentWidget = undefined;
   }
@@ -187,9 +192,9 @@ export class WidgetRuntimeService implements OnDestroy {
 
   private setCurrentWidget(widget: CurrentWidget): void {
     this.currentWidget = widget;
-    // closed by the test taker (close button, Escape)
+    // closed by the test taker (close button, Escape); the other ways to close stop the widget before
     widget.ref.beforeClosed().subscribe(() => {
-      widget.stop();
+      widget.stop('testTaker');
       if (this.currentWidget === widget) this.currentWidget = undefined;
     });
   }

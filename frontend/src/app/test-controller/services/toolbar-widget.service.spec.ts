@@ -5,7 +5,7 @@ import { ToolbarWidget, ToolbarWidgetService } from './toolbar-widget.service';
 import { TestControllerService } from './test-controller.service';
 import { BackendService } from './backend.service';
 import { WidgetDeliveryService } from './widget-delivery.service';
-import { WidgetRequest, WidgetRuntimeService } from './widget-runtime.service';
+import { WidgetCloseReason, WidgetRequest, WidgetRuntimeService } from './widget-runtime.service';
 import { StateReportEntry, TestControllerState } from '../interfaces/test-controller.interfaces';
 
 describe('ToolbarWidgetService', () => {
@@ -151,7 +151,7 @@ describe('ToolbarWidgetService', () => {
     it('logs opening and closing in the unit the widget was opened in', async () => {
       service.open((await getToolbarWidgets())[0]);
       goToUnit(2, [calculator]);
-      openedRequest().onClosed?.();
+      openedRequest().onClosed?.('testcenter');
 
       expect(getLoggedEntries()).toEqual([
         ['u1', 'WIDGET_OPENED', 'CALCULATOR'],
@@ -162,7 +162,7 @@ describe('ToolbarWidgetService', () => {
     it('logs each new calculation, not the state the calculator starts with', async () => {
       service.open((await getToolbarWidgets())[0]);
       openedRequest().onStateChanged?.(journal('1+1=2'));
-      openedRequest().onClosed?.();
+      openedRequest().onClosed?.('testTaker');
       service.open((await getToolbarWidgets())[0]);
       openedRequest().onStateChanged?.(journal('1+1=2'));
       openedRequest().onReturn?.(journal('1+1=2', '2\\cdot3=6'), true);
@@ -177,9 +177,95 @@ describe('ToolbarWidgetService', () => {
       tcs.testMode.saveResponses = false;
       service.open((await getToolbarWidgets())[0]);
       openedRequest().onStateChanged?.(journal('1+1=2'));
-      openedRequest().onClosed?.();
+      openedRequest().onClosed?.('testTaker');
 
       expect(addUnitLog).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('calculator peek', () => {
+    const image = 'data:image/png;base64,AAAA';
+
+    function journal(...calculations: { asLatex: string; asImage: string | null }[]): string {
+      return JSON.stringify(calculations);
+    }
+
+    async function calculateAndClose(reason: WidgetCloseReason): Promise<void> {
+      service.open((await getToolbarWidgets())[0]);
+      openedRequest().onStateChanged?.(journal({ asLatex: '1+1=2', asImage: image }));
+      openedRequest().onClosed?.(reason);
+    }
+
+    it('shows the newest calculation once the test taker closes the calculator', async () => {
+      service.open((await getToolbarWidgets())[0]);
+      openedRequest().onStateChanged?.(journal({ asLatex: '1+1=2', asImage: image }));
+      expect(service.calculatorPeek()).toBeUndefined();
+      openedRequest().onClosed?.('testTaker');
+
+      expect(service.calculatorPeek()).toEqual({ latex: '1+1=2', image });
+    });
+
+    it('shows the newest calculation once the calculator returns', async () => {
+      service.open((await getToolbarWidgets())[0]);
+      openedRequest().onReturn?.(journal({ asLatex: '1+1=2', asImage: image }), true);
+      openedRequest().onClosed?.('widget');
+
+      expect(service.calculatorPeek()).toEqual({ latex: '1+1=2', image });
+    });
+
+    it('shows nothing when the Testcenter closes the calculator', async () => {
+      await calculateAndClose('testcenter');
+
+      expect(service.calculatorPeek()).toBeUndefined();
+    });
+
+    it('shows nothing when the newest calculation has no image', async () => {
+      service.open((await getToolbarWidgets())[0]);
+      openedRequest().onStateChanged?.(journal(
+        { asLatex: '1+1=2', asImage: image },
+        { asLatex: '2\\cdot3=6', asImage: null }
+      ));
+      openedRequest().onClosed?.('testTaker');
+
+      expect(service.calculatorPeek()).toBeUndefined();
+    });
+
+    it('is gone when the calculator opens again', async () => {
+      await calculateAndClose('testTaker');
+      service.open((await getToolbarWidgets())[0]);
+
+      expect(service.calculatorPeek()).toBeUndefined();
+    });
+
+    it('stays when the calculator does not open', async () => {
+      await calculateAndClose('testTaker');
+      runtime.open.and.returnValue(false);
+      service.open((await getToolbarWidgets())[0]);
+
+      expect(service.calculatorPeek()).toEqual({ latex: '1+1=2', image });
+    });
+
+    it('is gone when the test taker closes it', async () => {
+      await calculateAndClose('testTaker');
+      service.closeCalculatorPeek();
+
+      expect(service.calculatorPeek()).toBeUndefined();
+    });
+
+    it('is gone when the unit changes and does not come back with the unit', async () => {
+      await calculateAndClose('testTaker');
+      goToUnit(2, [calculator]);
+      expect(service.calculatorPeek()).toBeUndefined();
+
+      goToUnit(1, [calculator]);
+      expect(service.calculatorPeek()).toBeUndefined();
+    });
+
+    it('is gone when the test stops running', async () => {
+      await calculateAndClose('testTaker');
+      tcs.state$.next('PAUSED');
+
+      expect(service.calculatorPeek()).toBeUndefined();
     });
   });
 });

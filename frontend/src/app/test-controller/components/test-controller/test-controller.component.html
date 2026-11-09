@@ -106,6 +106,9 @@
 
   <mat-sidenav-content>
     <router-outlet></router-outlet>
+    @if (toolbarWidgets.calculatorPeek(); as calculation) {
+      <tc-calculator-peek [calculation]="calculation" (closed)="toolbarWidgets.closeCalculatorPeek()"/>
+    }
     @if (isLoading) {
       <div class="loading-overlay">
         <tc-loading-progress [progress]="tcs.totalLoadingProgress" heading="Gleich geht's los!"></tc-loading-progress>
