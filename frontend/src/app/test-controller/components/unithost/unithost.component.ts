@@ -7,7 +7,9 @@ import { MatCardModule } from '@angular/material/card';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Params } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { distinctUntilChanged, map, withLatestFrom } from 'rxjs/operators';
+import {
+  distinctUntilChanged, filter, map, withLatestFrom
+} from 'rxjs/operators';
 import { CustomtextPipe, MainDataService } from '@shared/shared.module';
 import { AppError, AuthData, CodeInputType } from '@app/app.interfaces';
 import { ThemeService } from '@shared/services/theme.service';
@@ -28,6 +30,12 @@ import {
 import { PageService } from '../../services/page.service';
 import { VeronaAPIService } from '../../services/verona-api.service';
 import { MessageService } from '@app/shared/services/message.service';
+
+function isPlayerMessage(messageEvent: MessageEvent): boolean {
+  const data: unknown = messageEvent.data;
+  return data !== null && typeof data === 'object' && 'type' in data &&
+    typeof data.type === 'string' && data.type.startsWith('vop');
+}
 
 @Component({
   templateUrl: './unithost.component.html',
@@ -63,7 +71,9 @@ export class UnithostComponent implements OnInit, OnDestroy {
     this.iFrameItemplayer = null;
     setTimeout(() => {
       this.subscriptions.postMessage = this.mds.postMessage$
-        .subscribe(messageEvent => this.handleIncomingMessage(messageEvent));
+        // others post to this window too (e.g. widgets)
+        .pipe(filter(isPlayerMessage))
+        .subscribe(messageEvent => this.handlePlayerMessage(messageEvent));
       this.subscriptions.routing = merge(this.route.queryParamMap, this.route.params)
         .subscribe((params: Params) => (params.u ? this.open(Number(<Params>params.u)) : this.reload()));
       this.subscriptions.navigationDenial = this.tcs.navigationDenial$
@@ -86,7 +96,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
     Object.values(this.subscriptions).forEach(subscription => subscription.unsubscribe());
   }
 
-  private async handleIncomingMessage(messageEvent: MessageEvent): Promise<void> {
+  private async handlePlayerMessage(messageEvent: MessageEvent): Promise<void> {
     if (!this.tcs.currentUnit) {
       return;
     }

@@ -114,6 +114,16 @@ describe('UnithostComponent', () => {
     expect(component).toBeTruthy();
   });
 
+  it('ignores messages that are not from a player', () => {
+    const warn = spyOn(console, 'warn');
+    const log = spyOn(console, 'log');
+
+    receive(currentPlayer(), { type: 'vowStateChangedNotification', sessionId: '1' });
+
+    expect(warn).not.toHaveBeenCalled();
+    expect(log).not.toHaveBeenCalled();
+  });
+
   it('keeps talking to the current player after a message from the previous one', () => {
     const previousPlayer = currentPlayer();
     MockActivatedRoute.params.next({ u: 1 });
