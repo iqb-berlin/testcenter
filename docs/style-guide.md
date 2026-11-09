@@ -7,7 +7,7 @@ Formatting rules are integrated into tooling. It is expected that these have bee
 - Write the subject in the imperative mood ("Add", not "Added" or "Adds"), capitalized and without a trailing period. Keep it short — around 50 characters, and no more than 72 including the tag.
 - Separate subject and body with a blank line and wrap the body at 72 characters. Indent continuation lines of list items by two spaces.
 - Use the body to explain *why* the change was made and what it does, not how it works — the diff already shows that.
-- Reference issues as plain `#123`. Don't use GitHub's closing keywords (`Fixes`, `Closes`, `Resolves`), in commits or in pull request descriptions.
+- If a commit belongs to an issue, reference it in the body as plain `#123`. Don't use GitHub's closing keywords (`Fixes`, `Closes`, `Resolves`), in commits or in pull request descriptions.
 
 The reasoning behind these rules is spelled out at [cbea.ms/git-commit](https://cbea.ms/git-commit/).
 
