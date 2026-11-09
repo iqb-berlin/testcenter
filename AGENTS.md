@@ -1,5 +1,5 @@
 - When implementing features or bugfixes also add documentation about it in the file docs/CHANGELOG.md. user facing changes at the top.
-  - Leave a note under "Technisches" only if the change matters to people operating or extending a
+  - Leave a note under "Betrieb & Schnittstellen" only if the change matters to people operating or extending a
     deployment of this project from the outside - e.g. API changes, database/schema changes,
     deployment/config changes, new or changed environment variables, updated dependencies. Do not
     add a note there for internal implementation details - frontend implementation details

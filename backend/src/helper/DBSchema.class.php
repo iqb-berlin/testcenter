@@ -11,5 +11,5 @@ declare(strict_types=1);
  * InitDAO::installPatches().
  */
 class DBSchema {
-  const REQUIRED_VERSION = '18.3.0';
+  const REQUIRED_VERSION = '19.1.0';
 }
