@@ -92,7 +92,7 @@ describe('ToolbarWidgetService', () => {
       title: 'Taschenrechner',
       parameters: [{ key: 'JOURNAL_LINES', value: '2' }],
       state: undefined,
-      size: { width: '600px', height: '890px' },
+      size: { width: '400px', height: '600px' },
       losesWorkOnClose: false
     }));
   });

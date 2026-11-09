@@ -14,7 +14,7 @@ const widgetModels: Readonly<Record<string, WidgetModel>> = {
   CALCULATOR: {
     titleKey: 'booklet_widgetTitleCalculator',
     icon: 'calculate',
-    windowSize: { width: '600px', height: '890px' }
+    windowSize: { width: '400px', height: '600px' }
   },
   PERIODIC_TABLE: { titleKey: 'booklet_widgetTitlePeriodicTable' },
   MOLECULE_EDITOR: { titleKey: 'booklet_widgetTitleMoleculeEditor' }
