@@ -34,7 +34,7 @@ import { WidgetDeliveryService } from '../../services/widget-delivery.service';
 import { WidgetRuntimeService } from '../../services/widget-runtime.service';
 import { VopWidgetCall, VopWidgetReturn } from '../../interfaces/widget.interfaces';
 import { parseVopWidgetCall } from '../../util/widget-message.util';
-import { getWidgetTitle } from '../../util/widget-model.util';
+import { getWidgetTitle, getWidgetWindowSize } from '../../util/widget-model.util';
 
 function isPlayerMessage(messageEvent: MessageEvent): boolean {
   const data: unknown = messageEvent.data;
@@ -226,6 +226,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
       html: widget.html,
       parameters: call.parameters,
       state: call.state,
+      size: getWidgetWindowSize(call.widgetType),
       // the player waits for the result
       losesWorkOnClose: true,
       onReturn: (state, saveState) => {

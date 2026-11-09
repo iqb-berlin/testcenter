@@ -182,7 +182,7 @@ describe('UnithostComponent', () => {
       return widgetRuntime.open.calls.mostRecent().args[0] as WidgetRequest;
     }
 
-    it('opens the widget the player calls, titled for test takers', () => {
+    it('opens the widget the player calls, titled and sized for its model', () => {
       receive(currentPlayer(), call);
 
       expect(widgetDelivery.findWidget).toHaveBeenCalledOnceWith('PERIODIC_TABLE');
@@ -190,6 +190,7 @@ describe('UnithostComponent', () => {
         title: 'Periodensystem',
         parameters: [{ key: 'MAX_NUMBER_OF_SELECTIONS', value: '1' }],
         state: 'H',
+        size: { width: '1130px', height: '690px' },
         losesWorkOnClose: true
       }));
     });

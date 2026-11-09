@@ -16,7 +16,10 @@ const widgetModels: Readonly<Record<string, WidgetModel>> = {
     icon: 'calculate',
     windowSize: { width: '400px', height: '600px' }
   },
-  PERIODIC_TABLE: { titleKey: 'booklet_widgetTitlePeriodicTable' },
+  PERIODIC_TABLE: {
+    titleKey: 'booklet_widgetTitlePeriodicTable',
+    windowSize: { width: '1130px', height: '690px' }
+  },
   MOLECULE_EDITOR: { titleKey: 'booklet_widgetTitleMoleculeEditor' }
 };
 
