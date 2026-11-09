@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Testtakers xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:noNamespaceSchemaLocation="https://w3id.org/iqb/spec/testcenter-testtaker-xml/18.0">
+
+  <Metadata>
+    <Description>Logins für Cypress Test: Widget Calculator</Description>
+  </Metadata>
+
+  <Group id="wdgt" label="Widget">
+    <Login mode="run-hot-restart" name="Wdgt-1" pw="123">
+      <Booklet>Cy-Bklt_Wdgt_Calc-1</Booklet>
+    </Login>
+  </Group>
+</Testtakers>

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Booklet xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+               xsi:noNamespaceSchemaLocation="https://w3id.org/iqb/spec/testcenter-booklet-xml/18.1">
+	<Metadata>
+		<Id>Cy-Bklt_Wdgt_Calc-1</Id>
+		<Label>Widget-Calc-1</Label>
+		<Description>Check fallback to defaults</Description>
+	</Metadata>
+
+	<BookletConfig>
+	</BookletConfig>
+
+  <Widgets>
+    <Widget id="calc" model="CALCULATOR">
+      <Parameter key="JOURNAL_LINES">2</Parameter>
+    </Widget>
+    <Widget id="calcNoJournal" model="CALCULATOR">
+      <Parameter key="JOURNAL_LINES">0</Parameter>
+    </Widget>
+  </Widgets>
+
+  <Units widgets="">
+    <Unit id="CY-Unit.Sample-101" label="Aufgabe 1"/>
+    <!-- calcNoJournal auf Testlet-Ebene -->
+    <Testlet id="teil2" widgets="calcNoJournal">
+      <Unit id="CY-Unit.Sample-102" label="Aufgabe 2"/>
+      <Unit id="CY-Unit.Sample-103" label="Aufgabe 3" widgets="calc"/>
+    </Testlet>
+
+    <Testlet id="ohneHilfsmittel" widgets="">
+      <Unit id="CY-Unit.Sample-104" label="Aufgabe 4"/>
+    </Testlet>
+
+  </Units>
+
+</Booklet>
