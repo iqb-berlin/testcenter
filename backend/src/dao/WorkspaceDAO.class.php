@@ -179,12 +179,13 @@ class WorkspaceDAO extends DAO {
                     verona_module_type,
                     verona_version,
                     verona_module_id,
+                    verona_model,
                     is_valid,
                     validation_report,
                     size,
                     modification_ts,
                     context_data
-                ) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);",
+                ) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);",
         [
           $this->workspaceId,
           $file->getName(),
@@ -199,6 +200,7 @@ class WorkspaceDAO extends DAO {
           $file->getVeronaModuleType(),
           $file->getVeronaVersion(),
           $file->getVeronaModuleId(),
+          $file->getVeronaModel(),
           $file->isValid() ? 1 : 0,
           serialize($file->getValidationReport()),
           $file->getSize(),
@@ -235,6 +237,7 @@ class WorkspaceDAO extends DAO {
                     verona_module_id,
                     verona_module_type,
                     verona_version,
+                    verona_model,
                     context_data
                 from
                     files
@@ -297,6 +300,7 @@ class WorkspaceDAO extends DAO {
                 verona_module_id,
                 verona_module_type,
                 verona_version,
+                verona_model,
                 context_data
             from files
                 where workspace_id = ?";
@@ -324,6 +328,7 @@ class WorkspaceDAO extends DAO {
                 verona_module_id,
                 verona_module_type,
                 verona_version,
+                verona_model,
                 context_data
             from files
                 where workspace_id = ? and
@@ -358,6 +363,7 @@ class WorkspaceDAO extends DAO {
                 verona_module_id,
                 verona_module_type,
                 verona_version,
+                verona_model,
                 context_data
             from files
                 where workspace_id = ?";
@@ -453,6 +459,7 @@ class WorkspaceDAO extends DAO {
                     verona_module_id,
                     verona_module_type,
                     verona_version,
+                    verona_model,
                     context_data
                 from files
                 where
@@ -506,7 +513,8 @@ class WorkspaceDAO extends DAO {
         $row['version_minor'],
         $row['version_patch'],
         $row['version_label'],
-        $row['verona_version']
+        $row['verona_version'],
+        $row['verona_model']
       ),
       $row['type']
     );
@@ -635,6 +643,32 @@ class WorkspaceDAO extends DAO {
         );
     }
 
+  /**
+   * Picks the widget to deliver for each model: the highest valid version. The workspace holds only one widget per
+   * model, and its versions differ at least in major or minor, since those are part of a resource's id.
+   * @return array<string, array{path: string, label: string}> model => widget
+   */
+  public function getWidgets(): array {
+    /** @var list<array{verona_model: string, name: string, label: string}> $rows */
+    $rows = $this->_(
+      "select distinct on (verona_model) verona_model, name, label
+        from files
+        where workspace_id = :ws_id
+          and type = 'Resource'
+          and verona_module_type = 'widget'
+          and verona_model <> ''
+          and is_valid = true
+        order by verona_model, version_mayor desc, version_minor desc",
+      [':ws_id' => $this->workspaceId],
+      true
+    );
+    $widgets = [];
+    foreach ($rows as $row) {
+      $widgets[$row['verona_model']] = ['path' => "Resource/{$row['name']}", 'label' => $row['label']];
+    }
+    return $widgets;
+  }
+
   public function getWorkspaceHash(): string
   {
     return $this->_(
@@ -755,6 +789,7 @@ class WorkspaceDAO extends DAO {
       files.verona_module_id,
       files.verona_module_type,
       files.verona_version,
+      files.verona_model,
       files.context_data
     from file_relations
       left join files

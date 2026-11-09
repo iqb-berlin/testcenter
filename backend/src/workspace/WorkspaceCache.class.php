@@ -44,7 +44,36 @@ class WorkspaceCache {
       }
     }
 
+    if (!$onlyValidateThisType or $onlyValidateThisType === 'Resource') {
+      $this->rejectSecondWidgetsForAModel();
+    }
+
     $this->markUnusedItems();
+  }
+
+  // Temporary, see Workspace::getWidgets: widgets are found by model, so with two widgets for a model (each in any
+  // number of versions) the one delivered would be a guess. The check runs at upload and initialization only: after
+  // deleting one of two such widgets, the other stays invalid until it is uploaded again.
+  private function rejectSecondWidgetsForAModel(): void {
+    /** @var array<string, array<string, list<File>>> $widgetsByModel model => module id => files */
+    $widgetsByModel = [];
+    /** @var File $resource */
+    foreach ($this->cachedFiles['Resource'] ?? [] as $resource) {
+      // a widget that is invalid for another reason is never delivered, so it can't be confused with the others
+      if ($resource->getVeronaModuleType() !== 'widget' or !$resource->getVeronaModel() or !$resource->isValid()) {
+        continue;
+      }
+      $widgetsByModel[$resource->getVeronaModel()][$resource->getVeronaModuleId()][] = $resource;
+    }
+    foreach ($widgetsByModel as $model => $widgets) {
+      if (count($widgets) < 2) {
+        continue;
+      }
+      $moduleIds = implode('`, `', array_keys($widgets));
+      foreach (array_merge(...array_values($widgets)) as $widget) {
+        $widget->report('error', "Only one widget per model allowed: `$moduleIds` are all widgets for `$model`.");
+      }
+    }
   }
 
   public function getId(): int {

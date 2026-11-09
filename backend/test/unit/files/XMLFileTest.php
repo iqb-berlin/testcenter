@@ -137,7 +137,7 @@ class XMLFileTest extends TestCase {
     static::assertEquals(225, $xf->getSize());
     static::assertEquals('Booklet', $xf->getRootTagName());
     static::assertEquals('', $xf->getDescription());
-    static::assertEquals("Error [1871] in line 2: Element 'Invalid': This element is not expected. Expected is one of ( CustomTexts, BookletConfig, States, Units ).", $this->getErrorString($xf));
+    static::assertEquals("Error [1871] in line 2: Element 'Invalid': This element is not expected. Expected is one of ( CustomTexts, BookletConfig, States, Widgets, Units ).", $this->getErrorString($xf));
   }
 
   private function writeBookletWithSchema(string $schemaUrl): string {

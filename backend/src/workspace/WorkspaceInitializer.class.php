@@ -105,6 +105,7 @@ class WorkspaceInitializer {
       "sampledata/system-test/booklet-config/CY_Bklt_BkltConfig_54.xml" => "Booklet/CY_Bklt_BkltConfig_54.xml",
       "sampledata/system-test/booklet-config/CY_Bklt_BkltConfig_55.xml" => "Booklet/CY_Bklt_BkltConfig_55.xml",
       "sampledata/system-test/booklet-config/CY_Bklt_BkltConfig_56.xml" => "Booklet/CY_Bklt_BkltConfig_56.xml",
+      "sampledata/system-test/test-controller/widgets/CY_Bklt_Wdgt_Calc1.xml" => "Booklet/CY_Bklt_Wdgt_Calc1.xml",
       "sampledata/system-test/groupmon/CY_Bklt_GM-1.xml" => "Booklet/CY_Bklt_GM-1.xml",
       "sampledata/system-test/load-player/stars/CY_Bklt_Stars.xml" => "Booklet/CY_Bklt_Stars.xml",
       "sampledata/system-test/load-player/speed/CY_Bklt_Speed.xml" => "Booklet/CY_Bklt_Speed.xml",
@@ -116,6 +117,7 @@ class WorkspaceInitializer {
       "sampledata/system-test/load-player/stars/CY_Logins_Stars.xml" => "Testtakers/CY_Logins_Stars.xml",
       "sampledata/system-test/load-player/speed/CY_Logins_Speed.xml" => "Testtakers/CY_Logins_Speed.xml",
       "sampledata/system-test/adaptive/CY_Logins_Adap.xml" => "Testtakers/CY_Logins_Adap.xml",
+      "sampledata/system-test/test-controller/widgets/CY_Logins_Wdgt.xml" => "Testtakers/CY_Logins_Wdgt.xml",
       "sampledata/system-test/CY_SysCheck_2.xml" => "SysCheck/CY_SysCheck_2.xml",
       "sampledata/system-test/units/CY_Unit100.xml" => "Unit/CY_SAMPLE_UNIT100.XML",
       "sampledata/system-test/units/CY_Unit101.xml" => "Unit/CY_SAMPLE_UNIT101.XML",
@@ -131,6 +133,7 @@ class WorkspaceInitializer {
       "sampledata/system-test/load-player/speed/CY-SpeedUnit-002.voud" => "Resource/CY-SpeedUnit-002.voud",
       "sampledata/system-test/load-player/stars/iqb-player-stars-0.6.40.html" => "Resource/iqb-player-stars-0.6.40.html",
       "sampledata/system-test/load-player/speed/iqb-player-speedtest-9.9.99-cypress.html" => "Resource/iqb-player-speedtest-9.9.99-cypress.html",
+      "sampledata/system-test/test-controller/widgets/iqb-widget-calc-0.2.0.html" => "Resource/iqb-widget-calc-0.2.0.html",
     ]
   ];
 

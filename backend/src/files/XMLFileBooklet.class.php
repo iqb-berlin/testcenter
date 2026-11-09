@@ -27,6 +27,17 @@ class XMLFileBooklet extends XMLFile {
       'description' => 'units or alias in from-attribute must be defined',
       'xpath1' => '//States/State/Option/If//*//@from',
       'compare' => 'assertEveryReferredUnitMustBeDefined'
+    ],
+    [
+      'description' => 'All widgets offered must be defined',
+      'xpath1' => '//@widgets',
+      'xpath2' => '//Widgets/Widget/@id',
+      'compare' => 'assertAllWidgetsDefined'
+    ],
+    [
+      'description' => 'At most one widget per model',
+      'xpath1' => '//@widgets',
+      'compare' => 'assertOneWidgetPerModel'
     ]
   ];
 
@@ -158,5 +169,54 @@ class XMLFileBooklet extends XMLFile {
       return "No unit with id or alias `$unitId` defined or the id is not unique.";
     }
     return true;
+  }
+
+  /**
+   * @param string[] $definedIds
+   */
+  protected static function assertAllWidgetsDefined(
+    string|SimpleXMLElement|null $widgets,
+    string|SimpleXMLElement|null $dummy,
+    array $results1,
+    array $definedIds,
+    SimpleXMLElement $doc
+  ): true|string {
+    $undefinedIds = array_diff(self::getWidgetIds((string) $widgets), $definedIds);
+    return $undefinedIds ? 'Widget not defined: `' . implode('`, `', $undefinedIds) . '`' : true;
+  }
+
+  protected static function assertOneWidgetPerModel(
+    string|SimpleXMLElement|null $widgets,
+    string|SimpleXMLElement|null $dummy,
+    array $results1,
+    array $results2,
+    SimpleXMLElement $doc
+  ): true|string {
+    /** @var array<string, string> $modelsById */
+    $modelsById = [];
+    foreach ($doc->xpath('//Widgets/Widget') ?: [] as $widget) {
+      $modelsById[(string) $widget['id']] = (string) $widget['model'];
+    }
+    /** @var array<string, string[]> $idsByModel */
+    $idsByModel = [];
+    foreach (self::getWidgetIds((string) $widgets) as $id) {
+      // undefined ids are reported by assertAllWidgetsDefined
+      if (isset($modelsById[$id])) {
+        $idsByModel[$modelsById[$id]][] = $id;
+      }
+    }
+    foreach ($idsByModel as $model => $ids) {
+      if (count($ids) > 1) {
+        return 'Widgets `' . implode('`, `', $ids) . "` are offered together but share the model `$model`";
+      }
+    }
+    return true;
+  }
+
+  /**
+   * @return string[]
+   */
+  private static function getWidgetIds(string $widgets): array {
+    return preg_split('/\s+/', $widgets, -1, PREG_SPLIT_NO_EMPTY) ?: [];
   }
 }

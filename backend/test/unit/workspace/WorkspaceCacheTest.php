@@ -158,4 +158,68 @@ class WorkspaceCacheTest extends TestCase {
 
     // more scenarios are implicitly tested with test_getPlayerIfExists in XMLFilesUnitTest
   }
+
+  function test_validate_allowsOnlyOneWidgetPerModel() {
+    $periodic11 = $this->addWidget('periodic-1.1.html', 'periodic', '1.1.0', 'PERIODIC_TABLE');
+    $periodic12 = $this->addWidget('periodic-1.2.html', 'periodic', '1.2.0', 'PERIODIC_TABLE');
+    $molecules = $this->addWidget('molecules-1.0.html', 'molecules', '1.0.0', 'MOLECULE_EDITOR');
+    $otherPeriodic = $this->addWidget('other-periodic-2.0.html', 'other-periodic', '2.0.0', 'PERIODIC_TABLE');
+
+    $this->workspaceCache->validate('Resource');
+
+    $error = 'Only one widget per model allowed: `periodic`, `other-periodic` are all widgets for `PERIODIC_TABLE`.';
+    foreach ([$periodic11, $periodic12, $otherPeriodic] as $widget) {
+      static::assertEquals([$error], $widget->getValidationReport()['error'], $widget->getName());
+    }
+    static::assertTrue($molecules->isValid(), 'widgets for other models are fine');
+    static::assertTrue(
+      $this->workspaceCache->getResource('VERONA-PLAYER-SIMPLE-6.0')->isValid(),
+      'other resources are not affected'
+    );
+  }
+
+  function test_validate_allowsVersionsOfTheSameWidget() {
+    $periodic11 = $this->addWidget('periodic-1.1.html', 'periodic', '1.1.0', 'PERIODIC_TABLE');
+    $periodic12 = $this->addWidget('periodic-1.2.html', 'periodic', '1.2.0', 'PERIODIC_TABLE');
+
+    $this->workspaceCache->validate('Resource');
+
+    static::assertTrue($periodic11->isValid());
+    static::assertTrue($periodic12->isValid());
+  }
+
+  function test_validate_ignoresWidgetsInvalidForOtherReasons() {
+    $periodic = $this->addWidget('periodic-1.1.html', 'periodic', '1.1.0', 'PERIODIC_TABLE');
+    $this->addWidget('future-periodic-1.0.html', 'future-periodic', '1.0.0', 'PERIODIC_TABLE', '2.0');
+
+    $this->workspaceCache->validate('Resource');
+
+    static::assertTrue($periodic->isValid());
+  }
+
+  private function addWidget(
+    string $fileName,
+    string $id,
+    string $version,
+    string $model,
+    string $specVersion = '1.0'
+  ): ResourceFile {
+    $metadata = json_encode([
+      'type' => 'WIDGET',
+      'id' => $id,
+      'name' => [['lang' => 'de', 'value' => $id]],
+      'version' => $version,
+      'specVersion' => $specVersion,
+      'metadataVersion' => '3.1',
+      'model' => $model
+    ], JSON_THROW_ON_ERROR);
+    $path = DATA_DIR . "/ws_1/Resource/{$fileName}";
+    file_put_contents(
+      $path,
+      "<html lang='de'><head><script type='application/ld+json'>{$metadata}</script></head></html>"
+    );
+    $widget = new ResourceFile($path);
+    $this->workspaceCache->addFile('Resource', $widget);
+    return $widget;
+  }
 }

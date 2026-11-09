@@ -29,7 +29,8 @@ export const unitTestExampleBooklets: { [name: string]: Booklet } = {
           id: 'unit-1',
           alias: 'unit-1',
           label: '0-0-0',
-          labelShort: 'unit'
+          labelShort: 'unit',
+          widgets: []
         },
         {
           id: 'zara',
@@ -43,7 +44,8 @@ export const unitTestExampleBooklets: { [name: string]: Booklet } = {
           id: 'unit-2',
           alias: 'unit-2',
           label: '1-1-1',
-          labelShort: 'unit'
+          labelShort: 'unit',
+          widgets: []
         },
         {
           id: 'alf',
@@ -56,7 +58,8 @@ export const unitTestExampleBooklets: { [name: string]: Booklet } = {
               id: 'unit-3',
               alias: 'unit-3',
               label: '2-0-0',
-              labelShort: 'unit'
+              labelShort: 'unit',
+              widgets: []
             },
             {
               id: 'ben',
@@ -64,7 +67,7 @@ export const unitTestExampleBooklets: { [name: string]: Booklet } = {
               descendantCount: 3,
               restrictions: { },
               children: [
-                { id: 'unit-4', alias: 'unit-4', label: '3-1-0', labelShort: 'unit' },
+                { id: 'unit-4', alias: 'unit-4', label: '3-1-0', labelShort: 'unit', widgets: [] },
                 {
                   id: 'cara',
                   label: 'Testlet-3',
@@ -72,22 +75,22 @@ export const unitTestExampleBooklets: { [name: string]: Booklet } = {
                   restrictions: { },
                   children: []
                 },
-                { id: 'unit-5', alias: 'unit-5', label: '4-2-1', labelShort: 'unit' },
+                { id: 'unit-5', alias: 'unit-5', label: '4-2-1', labelShort: 'unit', widgets: [] },
                 {
                   id: 'dolf',
                   label: 'Testlet-4',
                   descendantCount: 1,
                   restrictions: { },
                   children: [
-                    { id: 'unit-6', alias: 'unit-6', label: '5-3-0', labelShort: 'unit' }
+                    { id: 'unit-6', alias: 'unit-6', label: '5-3-0', labelShort: 'unit', widgets: [] }
                   ]
                 }
               ]
             },
-            { id: 'unit-7', alias: 'unit-7', label: '6-4-1', labelShort: 'unit' }
+            { id: 'unit-7', alias: 'unit-7', label: '6-4-1', labelShort: 'unit', widgets: [] }
           ]
         },
-        { id: 'unit-8', alias: 'unit-8', label: '7-2-2', labelShort: 'unit' },
+        { id: 'unit-8', alias: 'unit-8', label: '7-2-2', labelShort: 'unit', widgets: [] },
         {
           id: 'ellie',
           label: 'Testlet-5',
@@ -95,14 +98,14 @@ export const unitTestExampleBooklets: { [name: string]: Booklet } = {
           restrictions: { },
           blockId: 'block-3',
           children: [
-            { id: 'unit-9', alias: 'unit-9', label: '8-0-0', labelShort: 'unit' },
+            { id: 'unit-9', alias: 'unit-9', label: '8-0-0', labelShort: 'unit', widgets: [] },
             {
               id: 'fred',
               label: 'Testlet-6',
               descendantCount: 1,
               restrictions: { },
               children: [
-                { id: 'unit-10', alias: 'unit-10', label: '9-1-0', labelShort: 'unit' }
+                { id: 'unit-10', alias: 'unit-10', label: '9-1-0', labelShort: 'unit', widgets: [] }
               ]
             }
           ]
@@ -145,14 +148,14 @@ export const unitTestExampleBooklets: { [name: string]: Booklet } = {
                   descendantCount: 1,
                   restrictions: { },
                   children: [
-                    { id: 'unit-1', alias: 'unit-1', label: '0-0-0', labelShort: 'unit' }
+                    { id: 'unit-1', alias: 'unit-1', label: '0-0-0', labelShort: 'unit', widgets: [] }
                   ]
                 }
               ]
             }
           ]
         },
-        { id: 'unit-2', alias: 'unit-2', label: '1-1-1', labelShort: 'unit' },
+        { id: 'unit-2', alias: 'unit-2', label: '1-1-1', labelShort: 'unit', widgets: [] },
         {
           id: 'dirk',
           label: 'Testlet-3',
@@ -195,7 +198,7 @@ export const unitTestExampleBooklets: { [name: string]: Booklet } = {
           blockId: 'block-2',
           restrictions: { },
           children: [
-            { id: 'unit-1', alias: 'unit-1', label: '0-0-0', labelShort: 'unit' }
+            { id: 'unit-1', alias: 'unit-1', label: '0-0-0', labelShort: 'unit', widgets: [] }
           ]
         }
       ]

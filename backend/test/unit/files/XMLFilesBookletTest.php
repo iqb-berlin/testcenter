@@ -209,6 +209,93 @@ EOT;
     static::assertFalse($xmlFile->isValid());
     static::assertCount(2, $xmlFile->getValidationReport()['error']);
   }
+
+  private function prepareBookletWithWidgets(string $units): XMLFileBooklet {
+    $xml = <<<EOT
+      <Booklet xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+               xsi:noNamespaceSchemaLocation="https://w3id.org/iqb/spec/testcenter-booklet-xml/18.1">
+        <Metadata>
+          <Id>i</Id>
+          <Label>l</Label>
+        </Metadata>
+        <Widgets>
+          <Widget id="calc" model="CALCULATOR">
+            <Parameter key="JOURNAL_LINES">2</Parameter>
+          </Widget>
+          <Widget id="calc-no-journal" model="CALCULATOR" />
+          <Widget id="periodic" model="PERIODIC_TABLE" />
+        </Widgets>
+        $units
+      </Booklet>
+      EOT;
+    return XMLFileBooklet::fromString($xml);
+  }
+
+  /**
+   * @return string[]
+   */
+  private function getErrors(XMLFileBooklet $booklet): array {
+    return $booklet->getValidationReport()['error'] ?? [];
+  }
+
+  function test_widgets_offeredAndInherited(): void {
+    $booklet = $this->prepareBookletWithWidgets('
+      <Units widgets="calc periodic">
+        <Unit id="u1" label="u1" />
+        <Unit id="u2" label="u2" widgets="calc-no-journal" />
+        <Testlet id="t1" widgets="">
+          <Unit id="u3" label="u3" />
+        </Testlet>
+      </Units>
+    ');
+    static::assertSame([], $this->getErrors($booklet));
+  }
+
+  function test_widgets_undefined(): void {
+    $booklet = $this->prepareBookletWithWidgets('
+      <Units>
+        <Unit id="u1" label="u1" widgets="calc formulas" />
+      </Units>
+    ');
+    static::assertSame(
+      [
+        'Advanced XML validation: Assertion `All widgets offered must be defined` failed: Widget not defined: `formulas`.'
+      ],
+      $this->getErrors($booklet)
+    );
+  }
+
+  function test_widgets_twoOfOneModel(): void {
+    $booklet = $this->prepareBookletWithWidgets('
+      <Units>
+        <Testlet id="t1" widgets="calc periodic calc-no-journal">
+          <Unit id="u1" label="u1" />
+        </Testlet>
+      </Units>
+    ');
+    static::assertSame(
+      [
+        'Advanced XML validation: Assertion `At most one widget per model` failed: Widgets `calc`, `calc-no-journal` are ' .
+          'offered together but share the model `CALCULATOR`.'
+      ],
+      $this->getErrors($booklet)
+    );
+  }
+
+  function test_widgets_duplicateIdRejectedBySchema(): void {
+    $booklet = XMLFileBooklet::fromString('
+      <Booklet xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+               xsi:noNamespaceSchemaLocation="https://w3id.org/iqb/spec/testcenter-booklet-xml/18.1">
+        <Metadata><Id>i</Id><Label>l</Label></Metadata>
+        <Widgets>
+          <Widget id="calc" model="CALCULATOR" />
+          <Widget id="calc" model="PERIODIC_TABLE" />
+        </Widgets>
+        <Units><Unit id="u1" label="u1" /></Units>
+      </Booklet>
+    ');
+    static::assertFalse($booklet->isValid());
+  }
 }
 
 

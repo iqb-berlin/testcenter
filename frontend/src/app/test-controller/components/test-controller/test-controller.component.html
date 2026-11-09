@@ -44,6 +44,13 @@
     }
 
     <div class="toolbar-right" data-cy="toolbar-right">
+      @for (toolbarWidget of toolbarWidgets.widgets | async; track toolbarWidget.widget.model) {
+        <button matButton data-cy="toolbar-widget" (click)="toolbarWidgets.open(toolbarWidget)">
+          <mat-icon [svgIcon]="toolbarWidget.icon"></mat-icon>
+          {{ toolbarWidget.title }}
+        </button>
+      }
+
       @if ((tcs.testMode.showTimeLeft || tcs.booklet?.config?.toolbar_show_time_left === 'TRUE') && timerValue) {
         <p data-cy="time-value">Verbleibende Zeit: {{timerValue.timeLeftString}}</p>
       }
@@ -99,6 +106,9 @@
 
   <mat-sidenav-content>
     <router-outlet></router-outlet>
+    @if (toolbarWidgets.calculatorPeek(); as calculation) {
+      <tc-calculator-peek [calculation]="calculation" (closed)="toolbarWidgets.closeCalculatorPeek()"/>
+    }
     @if (isLoading) {
       <div class="loading-overlay">
         <tc-loading-progress [progress]="tcs.totalLoadingProgress" heading="Gleich geht's los!"></tc-loading-progress>

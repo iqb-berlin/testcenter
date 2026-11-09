@@ -13,6 +13,8 @@ Es gibt zwei Log-Arten:
 
 Beide Log-Einträge bestehen aus einem `logKey` (Ereignis-Name), einem `timeStamp` (Unix-Zeitstempel in Millisekunden) und einem optionalen `logContent` (arbiträre Zusatzdaten, meist JSON-kodiert). In den meisten Fällen ist der logKey ausreichend als Information.
 
+Gespeichert und exportiert werden beide zusammen in einer Spalte `logentry`: bei UnitLogs als `logKey = logContent`, bei TestLogs als `logKey : logContent`.
+
 ## TestLog-Events
 
 | logKey | Wann wird geloggt | Bedeutung / Zweck | logContent |
@@ -42,6 +44,9 @@ Mögliche State-Keys (aus `TestState`, `frontend/.../test-controller.interfaces.
 | logKey | Wann wird geloggt | Bedeutung / Zweck | logContent |
 |---|---|---|---|
 | `Runtime Error: {code}` | Wenn ein Verona-Player einen Runtime-Fehler meldet (z. B. fehlende Session-ID, fehlende Unit-Definition, falsche Session-ID, nicht unterstützter Definitions- oder State-Typ, generischer Runtime-Fehler). Nur wenn `saveResponses` aktiv und die Unit ermittelbar ist. | Player-seitige Fehler festhalten, um Fehlbedienungen und Player-/Definitions-Inkompatibilitäten auszuwerten. | Fehler-Meldung (Text, ggf. leer) |
+| `WIDGET_OPENED` | Wenn die Testperson ein Widget über die Werkzeugleiste öffnet (z. B. den Taschenrechner). Nur wenn `saveResponses` aktiv ist. | Nutzung von Werkzeugen innerhalb der Unit. | Modell des Widgets, z. B. `"CALCULATOR"` |
+| `WIDGET_CLOSED` | Wenn ein über die Werkzeugleiste geöffnetes Widget geschlossen wird, egal ob durch die Testperson, das Widget oder das Testcenter (z. B. Unit-Wechsel, Pause). Wird der Unit zugeordnet, in der das Widget geöffnet wurde. Nur wenn `saveResponses` aktiv ist. | Ende der Nutzung. | Modell des Widgets, z. B. `"CALCULATOR"` |
+| `CALCULATOR_CALCULATION` | Wenn der Taschenrechner eine neue Rechnung in sein Journal aufnimmt. Der beim Öffnen wiederhergestellte Stand wird nicht erneut protokolliert. Nur wenn `saveResponses` aktiv ist und `JOURNAL_LINES` größer als 0 ist (sonst führt der Taschenrechner kein Journal). | Welche Rechnungen die Testperson ausgeführt hat. | Rechnung als LaTeX, z. B. `"2\\cdot3=6"` |
 | Player-Logs (`vopStateChangedNotification.log`) | Wenn ein Verona-Player über die `vopStateChangedNotification`-Message eigene Log-Einträge sendet. `logKey` und `content` werden vom Player bestimmt und vom Testcenter unverändert übernommen. | Player-spezifische Ereignisse (siehe Doku des jeweiligen Players — Aspect, Speedtest, StarS usw.). | Vom Player definiert |
 | State-Keys via `PATCH /test/{id}/unit/{unit}/state` | Bei jeder Änderung des Unit-States (z. B. Seitenwechsel, Fortschritts-Updates), die vom Frontend gemeldet wird. Jeder gepatchte Key erzeugt einen UnitLog-Eintrag mit demselben Key. | Historie der Unit-Bearbeitung (Seiten, Fortschritt, Player-Ladezustand). | Neuer Wert des jeweiligen State-Keys |
 
