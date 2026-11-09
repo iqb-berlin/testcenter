@@ -63,7 +63,6 @@ export type AppErrorType =
     | 'network'
     | 'script'
     | 'warning'
-    | 'fatal'
     | 'network_temporally'
     | 'xml'
     | 'verona_player_runtime_error';

@@ -38,10 +38,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.appErrorSubscription = this.mainDataService.appError$
-      .subscribe(err => {
-        if (err.type === 'fatal') {
-          this.mainDataService.quit();
-        }
+      .subscribe(() => {
         if (!this.disableGlobalErrorDisplay()) {
           this.messageService.showErrorDialog();
         }

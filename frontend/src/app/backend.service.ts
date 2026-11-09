@@ -1,8 +1,7 @@
 import { Injectable, Inject } from '@angular/core';
 import { HttpClient, HttpResponse } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { catchError } from 'rxjs/operators';
-import { SysCheckInfo, AuthData, AppError } from './app.interfaces';
+import { SysCheckInfo, AuthData } from './app.interfaces';
 import { SysConfig } from './shared/shared.module';
 
 export type ChallengeRequest =
@@ -60,15 +59,7 @@ export class BackendService {
 
   getSysConfig(): Observable<SysConfig> {
     return this.http
-      .get<SysConfig>(`${this.serverUrl}system/config`)
-      .pipe(
-        catchError((error: AppError) => {
-          if (error.code !== 503) {
-            error.type = 'fatal';
-          }
-          throw error;
-        })
-      );
+      .get<SysConfig>(`${this.serverUrl}system/config`);
   }
 
   checkIfSysCheckModeExists(): Observable<boolean> {
