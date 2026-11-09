@@ -48,11 +48,12 @@ const statusTexts: Record<Exclude<WidgetWindowStatus, 'running'>, { text: string
     <div #frameHost class="frame-host" [class.hidden]="status() !== 'running'"></div>
   `,
   styles: `
+    /* border and tinted title bar set the window off from white players */
     :host {
       display: flex; flex-direction: column; position: relative; height: 100%; overflow: hidden;
-      border-radius: inherit;
+      box-sizing: border-box; border: 1px solid var(--mat-sys-primary); border-radius: inherit;
     }
-    header { display: flex; align-items: center; flex-shrink: 0; }
+    header { display: flex; align-items: center; flex-shrink: 0; background-color: var(--mat-sys-secondary); }
     h2 {
       flex: 1; min-width: 0; margin: 0; padding: 8px 16px; cursor: move; touch-action: none; user-select: none;
       overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
