@@ -88,7 +88,7 @@ export const resetBackendTestData = () => {
   })
     .its('status')
     .should('eq', 200)
-    .then(() => cy.log('✅ Broadcasting-Service geflushed'));
+    .then(() => cy.log('✅ Broadcaster geflushed'));
 };
 
 export const disableSimplePlayersInternalDebounce = (): Chainable => modifyPlayer([{
@@ -100,7 +100,7 @@ export const modifyPlayer = (rules: { replace: string | RegExp, with: string }[]
   cy.intercept(
     {
       url: new RegExp(
-        `${Cypress.env('urls').fileService}/file/static:group:[^\\/]+/ws_1/Resource/verona-player-simple-6.0.html`
+        `${Cypress.env('urls').fileServer}/file/static:group:[^\\/]+/ws_1/Resource/verona-player-simple-6.0.html`
       )
     },
     req => {

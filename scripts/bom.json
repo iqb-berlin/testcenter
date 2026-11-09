@@ -34,7 +34,7 @@
       "command": "nginx -v"
     }
   },
-  "cache-service": {
+  "cache-server": {
     "redis": {
       "command": "redis-server -v"
     }

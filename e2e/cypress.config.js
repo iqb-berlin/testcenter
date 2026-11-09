@@ -5,9 +5,9 @@ const waitForServer = require('./src/plugins/wait-for-server');
 
 const urls = {
   backend: 'http://localhost/api',
-  fileService: 'http://localhost/fs',
+  fileServer: 'http://localhost/fs',
   frontend: 'http://localhost',
-  broadcastingService: 'http://localhost/bs'
+  broadcaster: 'http://localhost/bs'
 };
 
 const cypressJsonConfig = {
@@ -38,8 +38,8 @@ module.exports = defineConfig({
       on('before:run', async () => {
         await waitForServer(`${urls.backend}/system/config`);
         await waitForServer(urls.frontend);
-        await waitForServer(`${urls.fileService}/health`);
-        await waitForServer(`${urls.broadcastingService}/`);
+        await waitForServer(`${urls.fileServer}/health`);
+        await waitForServer(`${urls.broadcaster}/`);
       });
     },
     testIsolation: true

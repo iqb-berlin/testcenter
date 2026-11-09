@@ -8,7 +8,7 @@ TRIVY_VERSION := aquasec/trivy:latest
 
 # prevents collisions of make target names with possible file names
 .PHONY: scan-registry-login scan-registry-logout scan-app scan-traefik scan-broadcaster scan-frontend\
-	scan-file-server scan-backend scan-cache-service scan-db
+	scan-file-server scan-backend scan-cache-server scan-db
 
 # disables printing the recipe of a make target before executing it
 .SILENT: scan-registry-login scan-registry-logout
@@ -22,7 +22,7 @@ scan-registry-logout:
 	if test $(REGISTRY_PATH); then docker logout $(REGISTRY_PATH); fi
 
 # scans application images for security vulnerabilities
-scan-app: scan-traefik scan-broadcaster scan-frontend scan-file-server scan-backend scan-cache-service scan-db
+scan-app: scan-traefik scan-broadcaster scan-frontend scan-file-server scan-backend scan-cache-server scan-db
 
 # scans traefik image for security vulnerabilities
 scan-traefik: scan-registry-login
@@ -173,8 +173,8 @@ scan-backend: scan-registry-login
  						--severity CRITICAL\
 					$(REGISTRY_PATH)iqbberlin/testcenter-backend:scan
 
-# scans cache-service image for security vulnerabilities
-scan-cache-service: scan-registry-login
+# scans cache-server image for security vulnerabilities
+scan-cache-server: scan-registry-login
 		docker run\
 				--rm\
 				--volume /var/run/docker.sock:/var/run/docker.sock\

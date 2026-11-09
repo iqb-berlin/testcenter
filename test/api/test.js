@@ -196,9 +196,9 @@ const runDredd = serviceUrl => (async done => {
   });
 });
 
-const insertGroupTokenToCacheService = async () => {
+const insertGroupTokenToCacheServer = async () => {
   cliPrint.headline('Inject group-token into cache');
-  const client = redis.createClient({ url: testConfig.cache_service_url });
+  const client = redis.createClient({ url: testConfig.cache_server_url });
   await client.connect();
   await client.set('group-token:static:group:sample_group', 1, { EX: 60 });
   await client.quit();
@@ -222,15 +222,15 @@ exports.runDreddTest = gulp.series(
 
 exports.runDreddTestFs = gulp.series(
   confirmTestConfig(
-    testConfig.file_service_url,
+    testConfig.file_server_url,
     {
-      url: `${testConfig.file_service_url}/health`,
+      url: `${testConfig.file_server_url}/health`,
       timeout: 300000 // 5 minutes
     }
   ),
   clearTmpDir,
   mergeSpecFiles('api/file.spec.yml'),
   prepareSpecsForDredd,
-  insertGroupTokenToCacheService,
-  runDredd(testConfig.file_service_url)
+  insertGroupTokenToCacheServer,
+  runDredd(testConfig.file_server_url)
 );
