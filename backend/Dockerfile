@@ -143,6 +143,10 @@ RUN --mount=type=cache,sharing=locked,target=/var/cache/apt \
     apt-get update && apt-get install -y --no-install-recommends \
     jq
 
+# data dir of the e2e tests; docker-compose.dev.yml makes it a volume, so the file-server can serve it. A new volume
+# takes the owner of this directory - without it, the volume would belong to root and the backend couldn't write to it.
+RUN mkdir ../data-TEST && chown www-data:www-data ../data-TEST
+
 USER www-data
 
 
