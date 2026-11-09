@@ -11,7 +11,7 @@ enum FileType: string
   case RESOURCE = 'Resource';
 
   /**
-   * Returns the types of the input type and its dependencies in the correct order.
+   * Returns the given type followed by the type it directly depends on.
    * @return string[]
    */
   public static function getDependenciesOfType(self $dependantType): array {
