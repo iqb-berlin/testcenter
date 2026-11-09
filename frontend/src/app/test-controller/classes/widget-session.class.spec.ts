@@ -24,7 +24,6 @@ describe('WidgetSession', () => {
     onStateChanged = jasmine.createSpy('onStateChanged');
     onReturn = jasmine.createSpy('onReturn');
     onError = jasmine.createSpy('onError');
-    spyOn(console, 'warn');
   });
 
   afterEach(() => {
@@ -155,20 +154,44 @@ describe('WidgetSession', () => {
     expect(onStateChanged).not.toHaveBeenCalled();
   });
 
-  it('rejects invalid messages and messages for another session', () => {
+  [
+    { sessionId: 'another session' },
+    { sessionId: '' },
+    { timeStamp: 'yesterday' },
+    { timeStamp: undefined },
+    { state: 42 },
+    { sharedParameters: [{ key: 'SHARED' }] },
+    { sharedParameters: 'SHARED' }
+  ].forEach((invalid) => {
+    it(`fails on an invalid message: ${JSON.stringify(invalid)}`, () => {
+      createSession();
+      receiveReady();
+      receiveUpdate('vowStateChangedNotification', { state: 'H', ...invalid });
+      receiveUpdate('vowStateChangedNotification', { state: 'He' });
+
+      expect(onError).toHaveBeenCalledOnceWith(jasmine.any(Error));
+      expect(onStateChanged).not.toHaveBeenCalled();
+    });
+  });
+
+  it('fails on an invalid return message instead of returning', () => {
     createSession();
     receiveReady();
-    [
-      { sessionId: 'another session' },
-      { sessionId: '' },
-      { timeStamp: 'yesterday' },
-      { timeStamp: undefined },
-      { state: 42 },
-      { sharedParameters: [{ key: 'SHARED' }] },
-      { sharedParameters: 'SHARED' }
-    ].forEach(invalid => receiveUpdate('vowStateChangedNotification', { state: 'H', ...invalid }));
+    receiveUpdate('vowReturnRequested', { saveState: 'yes' });
 
-    expect(onStateChanged).not.toHaveBeenCalled();
+    expect(onError).toHaveBeenCalledOnceWith(jasmine.any(Error));
+    expect(onReturn).not.toHaveBeenCalled();
+  });
+
+  it('ignores messages of other types', () => {
+    createSession();
+    receiveReady();
+    receiveUpdate('vowSomethingNew', { state: 42 });
+    receive({ type: 'libraryMessage' });
+    receiveUpdate('vowStateChangedNotification', { state: 'H' });
+
+    expect(onError).not.toHaveBeenCalled();
+    expect(onStateChanged).toHaveBeenCalledOnceWith('H', undefined);
   });
 
   it('ignores a state that is older than the latest one', () => {

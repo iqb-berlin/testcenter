@@ -136,12 +136,33 @@ describe('WidgetRuntimeService', () => {
     expect(findWindows().length).toBe(0);
   }));
 
-  it('shows when the widget could not be loaded', fakeAsync(() => {
+  it('shows an error when the widget could not be loaded', fakeAsync(() => {
     spyOn(console, 'error');
     service.open(createRequest({ html: throwError(() => new Error('404')) }));
     settle();
 
-    expect(document.querySelector('.widget-window .status')?.textContent).toContain('nicht geladen');
+    expect(document.querySelector('.widget-window .status')?.textContent).toContain('Fehler');
+    expect(console.error).toHaveBeenCalled();
+  }));
+
+  it('shows an error instead of the widget when it sends an invalid message', fakeAsync(() => {
+    spyOn(console, 'error');
+    const onReturn = jasmine.createSpy('onReturn');
+    service.open(createRequest({ onReturn }));
+    settle();
+    const { sessionId } = startWidget();
+    receive({ type: 'vowReturnRequested', sessionId, timeStamp: 'now' });
+    settle();
+
+    expect(findWindows().length).toBe(1);
+    expect(document.querySelector('.widget-window iframe')).toBeNull();
+    expect(document.querySelector('.widget-window .status')?.textContent).toContain('Fehler');
+    expect(onReturn).not.toHaveBeenCalled();
+    // the failed widget no longer blocks other requests, although it would have lost work
+    expect(service.open(createRequest({ title: 'Molekül-Editor' }))).toBeTrue();
+    settle();
+    expect(findWindows().length).toBe(1);
+    service.close();
   }));
 
   it('shows that a widget is unavailable until the next request replaces it', fakeAsync(() => {

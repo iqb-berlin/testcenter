@@ -34,7 +34,7 @@ Widgets sind kleine Werkzeuge nach der Verona-Spezifikation, etwa ein Taschenrec
   - `booklet_widgetClose`: Beschriftung des Schließen-Knopfs für Screenreader („Widget schließen“)
   - `booklet_widgetLoading`, `booklet_widgetStarting`: Anzeige, während das Widget lädt bzw. startet
   - `booklet_widgetUnavailable`: Anzeige, wenn das angeforderte Widget im Arbeitsbereich fehlt („Das Widget ist nicht verfügbar.“)
-  - `booklet_widgetDownloadError`, `booklet_widgetStartupError`: Anzeige, wenn das Widget nicht geladen bzw. nicht gestartet werden konnte
+  - `booklet_widgetError`: Anzeige, wenn das Widget fehlschlägt („Im Widget ist ein Fehler aufgetreten.“)
 
 ## Neue Funktionen
 - Der Kurztitel einer Unit (Attribut `labelshort` im Booklet) lässt sich während des Tests anzeigen: im Kopfbereich über `header_content` = `UNIT_LABEL_SHORT`, auf der Navigationsleiste über `navbar_unit_label` = `LABEL_SHORT` und auf der Werkzeugleiste über den neuen Booklet-Parameter `toolbar_unit_label` = `LABEL_SHORT`. Fehlt der Kurztitel, wird der Titel der Unit angezeigt. `toolbar_unit_label` ersetzt `toolbar_show_unit_title`, das weiterhin ausgewertet wird, aber als veraltet gilt. Bisher wurde `labelshort` nur im Gruppen-Monitor angezeigt.

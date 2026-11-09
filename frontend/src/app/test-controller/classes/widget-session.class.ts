@@ -1,6 +1,6 @@
 import { Observable, Subscription, timer } from 'rxjs';
 import { SharedParameter } from '../interfaces/verona.interfaces';
-import { VowStartCommand, WidgetParameter } from '../interfaces/widget.interfaces';
+import { VowStartCommand, WidgetMessage, WidgetParameter } from '../interfaces/widget.interfaces';
 import { parseWidgetMessage } from '../util/widget-message.util';
 
 const READY_TIMEOUT_MS = 15000;
@@ -62,18 +62,21 @@ export class WidgetSession {
       if (this.session.status === 'waiting') this.start();
       return;
     }
+    // Other message types may come from a newer spec version or a library inside the widget.
+    if (data.type !== 'vowStateChangedNotification' && data.type !== 'vowReturnRequested') return;
     if (this.session.status !== 'running') return;
     const session = this.session;
 
-    let message;
+    let message: WidgetMessage;
     try {
       message = parseWidgetMessage(data);
     } catch (error) {
-      console.warn('Widget message rejected:', error, data);
+      const reason = error instanceof Error ? error.message : String(error);
+      this.fail(new Error(`Invalid widget message (${reason}): ${JSON.stringify(data)}`));
       return;
     }
     if (message.sessionId !== session.sessionId) {
-      console.warn('Widget message for another session rejected:', data);
+      this.fail(new Error(`Widget message for another session: ${message.sessionId}`));
       return;
     }
 

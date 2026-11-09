@@ -216,13 +216,9 @@
     "label": "Widget-Fenster: Anzeige, während das Widget startet",
     "defaultvalue": "Widget wird gestartet …"
   },
-  "booklet_widgetDownloadError" : {
-    "label": "Widget-Fenster: Fehlermeldung, wenn das Widget nicht geladen werden konnte",
-    "defaultvalue": "Das Widget konnte nicht geladen werden."
-  },
-  "booklet_widgetStartupError" : {
-    "label": "Widget-Fenster: Fehlermeldung, wenn das Widget nicht gestartet werden konnte",
-    "defaultvalue": "Das Widget konnte nicht gestartet werden."
+  "booklet_widgetError" : {
+    "label": "Widget-Fenster: Fehlermeldung, wenn das Widget nicht geladen oder gestartet werden konnte oder während der Nutzung fehlschlägt",
+    "defaultvalue": "Im Widget ist ein Fehler aufgetreten."
   },
   "booklet_widgetUnavailable" : {
     "label": "Widget-Fenster: Anzeige, wenn das von der Aufgabe angeforderte Widget im Arbeitsbereich fehlt",

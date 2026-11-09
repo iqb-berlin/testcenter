@@ -12,22 +12,14 @@ export interface WidgetWindowData {
   title: string;
 }
 
-export type WidgetWindowStatus = 'loading' | 'starting' | 'running' | 'unavailable' | 'download-error' |
-  'startup-error';
+export type WidgetWindowStatus = 'loading' | 'starting' | 'running' | 'unavailable' | 'error';
 
 // texts for the window while it doesn't show a running widget
 const statusTexts: Record<Exclude<WidgetWindowStatus, 'running'>, { text: string; key: string }> = {
   loading: { text: 'Widget wird geladen …', key: 'booklet_widgetLoading' },
   starting: { text: 'Widget wird gestartet …', key: 'booklet_widgetStarting' },
   unavailable: { text: 'Das Widget ist nicht verfügbar.', key: 'booklet_widgetUnavailable' },
-  'download-error': {
-    text: 'Das Widget konnte nicht geladen werden.',
-    key: 'booklet_widgetDownloadError'
-  },
-  'startup-error': {
-    text: 'Das Widget konnte nicht gestartet werden.',
-    key: 'booklet_widgetStartupError'
-  }
+  error: { text: 'Im Widget ist ein Fehler aufgetreten.', key: 'booklet_widgetError' }
 };
 
 // A movable window that shows one widget in an iframe. Its size is set by whoever opens it (the widgets fill the
@@ -113,13 +105,9 @@ export class WidgetWindowComponent implements OnDestroy {
     this.status.set('unavailable');
   }
 
-  showDownloadError(): void {
-    this.status.set('download-error');
-  }
-
-  showStartupError(): void {
+  showError(): void {
     this.removeIframe();
-    this.status.set('startup-error');
+    this.status.set('error');
   }
 
   ngOnDestroy(): void {

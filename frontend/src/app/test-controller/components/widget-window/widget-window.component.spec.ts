@@ -79,15 +79,12 @@ describe('WidgetWindowComponent', () => {
     expect((iframe?.height ?? 0) + (header?.height ?? 0)).toBeCloseTo(window?.height ?? 0, 0);
   });
 
-  it('shows errors and removes a widget that could not start', () => {
-    component.showDownloadError();
-    render();
-    expect(find('.status')?.textContent).toContain('Das Widget konnte nicht geladen werden.');
-
+  it('shows an error instead of the widget', () => {
     component.start('<html></html>', () => {});
-    component.showStartupError();
+    component.showRunning();
+    component.showError();
     render();
-    expect(find('.status')?.textContent).toContain('Das Widget konnte nicht gestartet werden.');
+    expect(find('.status')?.textContent).toContain('Im Widget ist ein Fehler aufgetreten.');
     expect(find('iframe')).toBeNull();
   });
 
@@ -96,8 +93,7 @@ describe('WidgetWindowComponent', () => {
       booklet_widgetLoading: 'Lädt',
       booklet_widgetStarting: 'Startet',
       booklet_widgetClose: 'Schließen',
-      booklet_widgetDownloadError: 'Nicht geladen',
-      booklet_widgetStartupError: 'Nicht gestartet'
+      booklet_widgetError: 'Fehler'
     });
     render();
     expect(find('.status')?.textContent).toContain('Lädt');
@@ -107,13 +103,9 @@ describe('WidgetWindowComponent', () => {
     render();
     expect(find('.status')?.textContent).toContain('Startet');
 
-    component.showDownloadError();
+    component.showError();
     render();
-    expect(find('.status')?.textContent).toContain('Nicht geladen');
-
-    component.showStartupError();
-    render();
-    expect(find('.status')?.textContent).toContain('Nicht gestartet');
+    expect(find('.status')?.textContent).toContain('Fehler');
   });
 
   it('closes with the close button', fakeAsync(() => {

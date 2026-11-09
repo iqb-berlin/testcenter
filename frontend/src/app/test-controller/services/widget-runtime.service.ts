@@ -95,8 +95,11 @@ export class WidgetRuntimeService implements OnDestroy {
       }
     };
     this.setCurrentWidget(widget);
-    // A widget that failed has no work to lose, and the next request for it starts it anew.
-    const markFailed = (): void => {
+    // A widget that failed has no work to lose, and the next request for it starts it anew. The test taker can't do
+    // anything about the cause, so the window only says that an error occurred; the console has the details.
+    const fail = (error: unknown): void => {
+      console.error('Widget failed:', request.title, error);
+      view.showError();
       widget.id = undefined;
       widget.losesWorkOnClose = false;
     };
@@ -119,18 +122,10 @@ export class WidgetRuntimeService implements OnDestroy {
             ref.close();
             request.onReturn?.(state, saveState);
           },
-          onError: (error: Error) => {
-            console.error('Widget could not be started:', request.title, error);
-            view.showStartupError();
-            markFailed();
-          }
+          onError: fail
         });
       }),
-      error: (error: unknown) => {
-        console.error('Widget could not be loaded:', request.title, error);
-        view.showDownloadError();
-        markFailed();
-      }
+      error: fail
     }));
     return true;
   }
