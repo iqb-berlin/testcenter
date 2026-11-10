@@ -1,5 +1,7 @@
 import { Inject, Injectable } from '@angular/core';
-import { HttpClient, HttpEvent, HttpEventType } from '@angular/common/http';
+import {
+  HttpClient, HttpContext, HttpEvent, HttpEventType
+} from '@angular/common/http';
 import { Observable, Subscription } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
 import {
@@ -7,6 +9,7 @@ import {
   KeyValuePairString, UnitStateUpdate, TestStateUpdate, Review, UnitReview, BookletReview
 } from '../interfaces/test-controller.interfaces';
 import { MainDataService } from '../../shared/services/maindata/maindata.service';
+import { SKIP_AUTH_TOKEN } from '../../auth.interceptor';
 
 @Injectable({
   providedIn: 'root'
@@ -129,6 +132,9 @@ export class BackendService {
       .get(
         `${resourceUri}file/${this.mds.getAuthData()?.groupToken}/ws_${workspaceId}/${path}`,
         {
+          // the group token in the URL authorizes the request; the header would follow a redirect to another
+          // origin and make the browser ask that origin for permission to send it (CORS preflight)
+          context: new HttpContext().set(SKIP_AUTH_TOKEN, true),
           responseType: 'text',
           reportProgress: true,
           observe: 'events'
