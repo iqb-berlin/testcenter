@@ -139,7 +139,7 @@ class ResourceFile extends File {
     } catch (Exception) {
       return false;
     }
-    if ($meta["@context"] !== "https://w3id.org/iqb/verona-modules") {
+    if (($meta["@context"] ?? null) !== "https://w3id.org/iqb/verona-modules") {
       return false;
     }
     $this->label = $this->getPreferredTranslationV35($meta['name']);
