@@ -7,6 +7,9 @@ use Psr\Http\Message\StreamInterface;
  * Where files live. Unlike on a disk, a directory exists exactly as long as there are files in it: there are no
  * empty directories, and deleting the last file removes its directory too. URL signing and locking are not storage
  * concerns.
+ *
+ * A name is either a file or a directory, never both: callers must not write `a/b` while `a/b/…` exists, or the
+ * other way round. What a driver does then is undefined.
  */
 interface StorageDriver {
   /** Stores a copy of the local file at $path, overwriting what is there. */
