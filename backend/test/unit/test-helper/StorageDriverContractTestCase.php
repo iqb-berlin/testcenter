@@ -46,6 +46,21 @@ abstract class StorageDriverContractTestCase extends TestCase {
     $this->assertSame(11, $this->driver->getFileInfo($path)->size);
   }
 
+  function test_put_failsOnMissingLocalFile(): void {
+    $this->expectException(Exception::class);
+
+    $this->driver->put(StoragePath::fromString('ws_1/Unit/unit.xml'), sys_get_temp_dir() . '/' . uniqid('missing-'));
+  }
+
+  function test_putContents_storesAnEmptyFile(): void {
+    $path = StoragePath::fromString('ws_1/Unit/empty.xml');
+
+    $this->driver->putContents($path, '');
+
+    $this->assertSame('', $this->driver->get($path));
+    $this->assertSame(['empty.xml'], array_keys($this->driver->listFiles(StorageDirectory::fromString('ws_1/Unit'))));
+  }
+
   function test_putContents_overwrites(): void {
     $path = StoragePath::fromString('ws_1/Unit/unit.xml');
     $this->driver->putContents($path, 'old');
@@ -108,6 +123,16 @@ abstract class StorageDriverContractTestCase extends TestCase {
     $this->assertSame(2, $files['b.html']->size);
   }
 
+  function test_listFiles_sortsByteWiseAndKeepsNamesDifferingInCase(): void {
+    $this->driver->putContents(StoragePath::fromString('ws_1/Unit/b.xml'), 'x');
+    $this->driver->putContents(StoragePath::fromString('ws_1/Unit/B.xml'), 'x');
+    $this->driver->putContents(StoragePath::fromString('ws_1/Unit/a.xml'), 'x');
+
+    $files = $this->driver->listFiles(StorageDirectory::fromString('ws_1/Unit'));
+
+    $this->assertSame(['B.xml', 'a.xml', 'b.xml'], array_keys($files));
+  }
+
   function test_listFiles_isEmptyForMissingDirectory(): void {
     $this->assertSame([], $this->driver->listFiles(StorageDirectory::fromString('ws_1/Resource')));
   }
@@ -137,6 +162,14 @@ abstract class StorageDriverContractTestCase extends TestCase {
     $this->driver->delete($path);
 
     $this->assertNull($this->driver->getFileInfo($path));
+  }
+
+  function test_delete_ofADirectoryKeepsItsFiles(): void {
+    $this->driver->putContents(StoragePath::fromString('ws_1/Resource/package/index.html'), 'x');
+
+    $this->driver->delete(StoragePath::fromString('ws_1/Resource/package'));
+
+    $this->assertSame('x', $this->driver->get(StoragePath::fromString('ws_1/Resource/package/index.html')));
   }
 
   function test_delete_ofTheLastFileRemovesItsDirectories(): void {
