@@ -4,6 +4,10 @@ declare(strict_types=1);
 use PHPUnit\Framework\TestCase;
 
 class XMLFileExposed extends XMLFile {
+  public function getXmlExposed(): SimpleXMLElement {
+    return $this->getXML();
+  }
+
   public function validateConstraint(string $desc, string $query1, string $query2, string $compare): bool {
     return parent::validateConstraint($desc, $query1, $query2, $compare);
   }
@@ -138,6 +142,21 @@ class XMLFileTest extends TestCase {
     static::assertEquals('Booklet', $xf->getRootTagName());
     static::assertEquals('', $xf->getDescription());
     static::assertEquals("Error [1871] in line 2: Element 'Invalid': This element is not expected. Expected is one of ( CustomTexts, BookletConfig, States, Widgets, Units ).", $this->getErrorString($xf));
+  }
+
+  function test_loadFromMetadataParsesWithoutValidating() {
+    file_put_contents(
+      DATA_DIR . "/ws_1/invalid.xml",
+      '<Booklet xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"'
+      . ' xsi:noNamespaceSchemaLocation="https://w3id.org/iqb/spec/testcenter-booklet-xml/18.0">'
+      . '<Metadata><Id>c</Id><Label>d</Label></Metadata>'
+      . '<Invalid></Invalid>'
+      . '</Booklet>'
+    );
+    $xf = new XMLFileExposed(new FileData(StoragePath::fromString('ws_1/invalid.xml'), 'Booklet', 'C'));
+
+    static::assertEquals('Booklet', $xf->getXmlExposed()->getName());
+    static::assertArrayNotHasKey('error', $xf->getValidationReport());
   }
 
   private function writeBookletWithSchema(string $schemaUrl): StoragePath {

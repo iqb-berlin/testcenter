@@ -15,17 +15,11 @@ class XMLFile extends File {
 
   private ?SimpleXMLElement $xml = null;
 
-  protected function validate(): void {
-    parent::validate();
-
-    if ($this->xml) {
-      return;
-    }
-
+  protected function parse(): bool {
     if (!$this->content) {
       $this->report('error', "Empty File");
       $this->xml = new SimpleXMLElement('<error />');
-      return;
+      return false;
     }
 
     libxml_use_internal_errors(true);
@@ -37,11 +31,24 @@ class XMLFile extends File {
       $this->importLibXmlErrors();
       libxml_use_internal_errors(false);
       $this->xml = new SimpleXMLElement('<error />');
-      return;
+      return false;
     }
 
     $this->xml = $xmlElem;
     $this->rootTagName = $this->xml->getName();
+    $this->importLibXmlErrors();
+    libxml_use_internal_errors(false);
+    return true;
+  }
+
+  protected function validate(): void {
+    parent::validate();
+
+    if (!$this->parse()) {
+      return;
+    }
+
+    libxml_use_internal_errors(true);
 
     if (!in_array($this->rootTagName, $this::knownRootTags)) {
       $this->report('error', "Invalid root-tag: `$this->rootTagName`");

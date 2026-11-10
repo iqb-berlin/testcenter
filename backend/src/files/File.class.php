@@ -85,7 +85,8 @@ class File extends FileData {
     $this->id = strtoupper($this->getName());
 
     if ($exists) {
-      $this->load();
+      $this->content = Storage::getDriver()->get($init);
+      $this->validate();
     }
   }
 
@@ -107,11 +108,20 @@ class File extends FileData {
     return true;
   }
 
+  /** Reads the content of a file created from its metadata. It was validated when it came into storage. */
   protected function load(): void {
     if (($this->content === null) and $this->path) {
       $this->content = Storage::getDriver()->get($this->path);
-      $this->validate();
+      $this->parse();
     }
+  }
+
+  /**
+   * Makes the content usable; validate() checks it.
+   * @return bool whether the content could be parsed
+   */
+  protected function parse(): bool {
+    return true;
   }
 
   protected function validate(): void {
