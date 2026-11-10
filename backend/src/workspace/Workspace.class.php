@@ -215,7 +215,7 @@ class Workspace {
 
   private function sortAndValidateToplevelFiles(array $relativeFilePaths): array {
     $filesAfterSorting = [];
-    $pathsPerType = array_fill_keys(Workspace::subFolders, []);
+    $pathsPerType = array_fill_keys([...Workspace::subFolders, 'xml'], []);
 
     foreach ($relativeFilePaths as $relativeFilePath) {
       $pathsPerType[File::determineType($this->workspacePath . '/' . $relativeFilePath)][] = $relativeFilePath;
@@ -644,7 +644,7 @@ class Workspace {
   private function loadFilesIntoCache(WorkspaceCache $workspaceCache, FileType $type): void {
     foreach (FileType::getDependenciesOfType($type) as $dependingType) {
       $files = $this->workspaceDAO->getAllFilesWhere(['type' => $dependingType]);
-      foreach ($files[$dependingType] as $file) {
+      foreach ($files[$dependingType] ?? [] as $file) {
         $workspaceCache->addFile($dependingType, $file);
       }
     }
