@@ -243,6 +243,6 @@ class ResourceFileTest extends TestCase {
 
   private function resourceFromString(string $fileName, string $content): ResourceFile {
     file_put_contents(DATA_DIR . '/ws_1/Resource/' . $fileName, $content);
-    return new ResourceFile(StoragePath::fromString("ws_1/Resource/$fileName"));
+    return VfsForTest::loadAndValidateFile("ws_1/Resource/$fileName", 'Resource');
   }
 }

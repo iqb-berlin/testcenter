@@ -115,7 +115,7 @@ class WorkspaceTest extends TestCase {
       ->expects('getFiles')
       ->andReturn([
         'Resource' => [
-          'verona-player-simple-6.0.html' => new ResourceFile(StoragePath::fromString('ws_1/Resource/verona-player-simple-6.0.html'))
+          'verona-player-simple-6.0.html' => VfsForTest::loadAndValidateFile('ws_1/Resource/verona-player-simple-6.0.html', 'Resource')
         ]
       ]);
     $this->workspaceDaoMock
@@ -175,7 +175,7 @@ class WorkspaceTest extends TestCase {
       ->expects('getFiles')
       ->andReturn([
         'Resource' => [
-          'verona-player-simple-6.0.html' => new ResourceFile(StoragePath::fromString('ws_1/Resource/verona-player-simple-6.0.html'))
+          'verona-player-simple-6.0.html' => VfsForTest::loadAndValidateFile('ws_1/Resource/verona-player-simple-6.0.html', 'Resource')
         ]
       ]);
     $this->workspaceDaoMock
@@ -203,15 +203,14 @@ class WorkspaceTest extends TestCase {
       ->expects('getFiles')
       ->andReturn([
         'Resource' => [
-          'verona-player-simple-6.0.html' => new ResourceFile(StoragePath::fromString('ws_1/Resource/verona-player-simple-6.0.html')
-          ),
-          'SAMPLE_UNITCONTENTS.HTM' => new ResourceFile(StoragePath::fromString('ws_1/Resource/SAMPLE_UNITCONTENTS.HTM'))
+          'verona-player-simple-6.0.html' => VfsForTest::loadAndValidateFile('ws_1/Resource/verona-player-simple-6.0.html', 'Resource'),
+          'SAMPLE_UNITCONTENTS.HTM' => VfsForTest::loadAndValidateFile('ws_1/Resource/SAMPLE_UNITCONTENTS.HTM', 'Resource')
         ],
         'SysCheck' => [
-          'SAMPLE_SYSCHECK.XML' => new XMLFileSysCheck(StoragePath::fromString('ws_1/SysCheck/SAMPLE_SYSCHECK.XML'))
+          'SAMPLE_SYSCHECK.XML' => VfsForTest::loadAndValidateFile('ws_1/SysCheck/SAMPLE_SYSCHECK.XML', 'SysCheck')
         ],
         'Testtakers' => [
-          'SAMPLE_TESTTAKERS.XML' => new XMLFileTesttakers(StoragePath::fromString('ws_1/Testtakers/SAMPLE_TESTTAKERS.XML'))
+          'SAMPLE_TESTTAKERS.XML' => VfsForTest::loadAndValidateFile('ws_1/Testtakers/SAMPLE_TESTTAKERS.XML', 'Testtakers')
         ]
       ]);
     $this->workspaceDaoMock
@@ -252,6 +251,17 @@ class WorkspaceTest extends TestCase {
     );
     static::assertEquals($expectation, $result, 'reject deleting, if file was used');
   }
+
+  function test_loadAndValidateFile_takesSizeAndTimeFromTheGivenInfo() {
+    $path = StoragePath::fromString('ws_1/Booklet/SAMPLE_BOOKLET.XML');
+
+    $file = Workspace::loadAndValidateFile($path, 'Booklet', new FileInfo(7, 42));
+
+    static::assertEquals(7, $file->getSize());
+    static::assertEquals(42, $file->getModificationTime());
+    static::assertTrue($file->isValid());
+  }
+
 
   function test_countFilesOfAllSubFolders() {
     $workspace = new Workspace(1);
@@ -328,12 +338,12 @@ class WorkspaceTest extends TestCase {
       ->andReturn(
         [
           'Unit' => [
-            'VALID-0.0.XML' => new XMLFileUnit(StoragePath::fromString('ws_1/Unit/valid.xml')),
+            'VALID-0.0.XML' => VfsForTest::loadAndValidateFile('ws_1/Unit/valid.xml', 'Unit'),
           ]
         ],
         [
           'Resource' => [
-            'P-0.0.HTML' => new ResourceFile(StoragePath::fromString('ws_1/Resource/P.HTML'))
+            'P-0.0.HTML' => VfsForTest::loadAndValidateFile('ws_1/Resource/P.HTML', 'Resource')
           ]
         ],
       )->twice();
@@ -376,12 +386,12 @@ class WorkspaceTest extends TestCase {
       ->andReturn(
         [
           'Unit' => [
-            'P-0.0.HTML' => new XMLFileUnit(StoragePath::fromString('ws_1/Unit/valid.xml'))
+            'P-0.0.HTML' => VfsForTest::loadAndValidateFile('ws_1/Unit/valid.xml', 'Unit')
           ]
         ],
         [
           'Resource' => [
-            'P-0.0.HTML' => new ResourceFile(StoragePath::fromString('ws_1/Resource/P.HTML'))
+            'P-0.0.HTML' => VfsForTest::loadAndValidateFile('ws_1/Resource/P.HTML', 'Resource')
           ]
         ],
       )->twice();
@@ -419,12 +429,12 @@ class WorkspaceTest extends TestCase {
       ->andReturn(
         [
           'Unit' => [
-            'VALID.XML' => new XMLFileUnit(StoragePath::fromString('ws_1/Unit/valid.xml'))
+            'VALID.XML' => VfsForTest::loadAndValidateFile('ws_1/Unit/valid.xml', 'Unit')
           ]
         ],
         [
           'Resource' => [
-            'P-0.0.HTML' => new ResourceFile(StoragePath::fromString('ws_1/Resource/P.HTML'))
+            'P-0.0.HTML' => VfsForTest::loadAndValidateFile('ws_1/Resource/P.HTML', 'Resource')
           ]
         ],
       )->twice();
@@ -483,13 +493,13 @@ class WorkspaceTest extends TestCase {
           2 => [], // Booklet
           3 => [ // Unit 2nd time
             'Unit' => [
-              'Unit.HTML' => new XMLFileUnit(StoragePath::fromString('ws_1/Unit/valid_unit.xml'))
+              'Unit.HTML' => VfsForTest::loadAndValidateFile('ws_1/Unit/valid_unit.xml', 'Unit')
             ]
           ],
           4 => [], // Testtakers
           5 => [ // Booklet 2nd time
             'Booklet' => [
-              'BOOKLET.HTML' => new XMLFileBooklet(StoragePath::fromString('ws_1/Booklet/valid_booklet.xml'))
+              'BOOKLET.HTML' => VfsForTest::loadAndValidateFile('ws_1/Booklet/valid_booklet.xml', 'Booklet')
             ]
           ]
         };
@@ -593,7 +603,7 @@ class WorkspaceTest extends TestCase {
         $getAllFilesWhereCalled++;
         return match ($getAllFilesWhereCalled) {
           0 => [], // Unit
-          1 => ['Resource' => ['DUP-PLAYER-1.0' => new ResourceFile(StoragePath::fromString('ws_1/Resource/dup-player-1.0.html'))]]
+          1 => ['Resource' => ['DUP-PLAYER-1.0' => VfsForTest::loadAndValidateFile('ws_1/Resource/dup-player-1.0.html', 'Resource')]]
         };
       });
     $this->workspaceDaoMock->allows('storeFile');
@@ -642,13 +652,13 @@ class WorkspaceTest extends TestCase {
           2 => [], // Booklet
           3 => [ // Unit 2nd time
             'Unit' => [
-              'Unit.HTML' => new XMLFileUnit(StoragePath::fromString('ws_1/Unit/valid_unit.xml'))
+              'Unit.HTML' => new FileData(StoragePath::fromString('ws_1/Unit/valid_unit.xml'), 'Unit', 'VALID_UNIT.XML', isValid: false)
             ]
           ],
           4 => [], // Testtakers
           5 => [ // Booklet 2nd time
             'Booklet' => [
-              'BOOKLET.HTML' => new XMLFileBooklet(StoragePath::fromString('ws_1/Booklet/valid_booklet.xml'))
+              'BOOKLET.HTML' => new FileData(StoragePath::fromString('ws_1/Booklet/valid_booklet.xml'), 'Booklet', 'VALID_BOOKLET.XML', isValid: false)
             ]
           ]
         };
@@ -709,13 +719,13 @@ class WorkspaceTest extends TestCase {
           2 => [], // Booklet
           3 => [ // Unit 2nd time
             'Unit' => [
-              'Unit.HTML' => new XMLFileUnit(StoragePath::fromString('ws_1/Unit/valid_unit.xml'))
+              'Unit.HTML' => VfsForTest::loadAndValidateFile('ws_1/Unit/valid_unit.xml', 'Unit')
             ]
           ],
           4 => [], // Testtakers
           5 => [ // Booklet 2nd time
             'Booklet' => [
-              'BOOKLET.HTML' => new XMLFileBooklet(StoragePath::fromString('ws_1/Booklet/valid_booklet.xml'))
+              'BOOKLET.HTML' => VfsForTest::loadAndValidateFile('ws_1/Booklet/valid_booklet.xml', 'Booklet')
             ]
           ]
         };
@@ -910,13 +920,13 @@ class WorkspaceTest extends TestCase {
           2 => [], // Booklet
           3 => [ // Unit 2nd time
             'Unit' => [
-              'Unit.HTML' => new XMLFileUnit(StoragePath::fromString('ws_1/Unit/valid_unit.xml'))
+              'Unit.HTML' => VfsForTest::loadAndValidateFile('ws_1/Unit/valid_unit.xml', 'Unit')
             ]
           ],
           4 => [], // Testtakers
           5 => [ // Booklet 2nd time
             'Booklet' => [
-              'BOOKLET.HTML' => new XMLFileBooklet(StoragePath::fromString('ws_1/Booklet/valid_booklet.xml'))
+              'BOOKLET.HTML' => VfsForTest::loadAndValidateFile('ws_1/Booklet/valid_booklet.xml', 'Booklet')
             ]
           ]
         };
@@ -990,7 +1000,7 @@ class WorkspaceTest extends TestCase {
       ->andReturn(
         [
           'Testtakers' => [
-            'TESTTAKERS.XML' => new XMLFileTesttakers(StoragePath::fromString('ws_1/Testtakers/testtakers.xml')),
+            'TESTTAKERS.XML' => VfsForTest::loadAndValidateFile('ws_1/Testtakers/testtakers.xml', 'Testtakers'),
           ]
         ], // Testtakers
         [] // Booklet,
@@ -1068,7 +1078,7 @@ class WorkspaceTest extends TestCase {
       ->expects('getFileById')
       ->once()
       ->withArgs(['SYSCHECK.SAMPLE', 'SysCheck'])
-      ->andReturn(new XMLFileSysCheck(StoragePath::fromString('ws_1/SysCheck/SAMPLE_SYSCHECK.XML')));
+      ->andReturn(VfsForTest::loadAndValidateFile('ws_1/SysCheck/SAMPLE_SYSCHECK.XML', 'SysCheck'));
     $workspace = new Workspace(1);
 
     $result = $workspace->getFileById('SysCheck', 'SYSCHECK.SAMPLE');
@@ -1105,7 +1115,7 @@ class WorkspaceTest extends TestCase {
       ->expects('getFileById')
       ->once()
       ->withArgs(['SYSCHECK.SAMPLE', 'SysCheck'])
-      ->andReturn(new XMLFileSysCheck(StoragePath::fromString('SYSCHECK.SAMPLE')));
+      ->andReturn(new FileData(StoragePath::fromString('ws_1/SysCheck/SAMPLE_SYSCHECK.XML'), 'SysCheck', 'SYSCHECK.SAMPLE', isValid: false));
     $workspace = new Workspace(1);
 
     $this->expectException("HttpError");

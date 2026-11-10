@@ -45,7 +45,7 @@ class XMLFileTest extends TestCase {
   }
 
   function test_loadFromFile() {
-    $xf = new XMLFile(StoragePath::fromString('ws_1/Booklet/SAMPLE_BOOKLET.XML'));
+    $xf = VfsForTest::loadAndValidateFile('ws_1/Booklet/SAMPLE_BOOKLET.XML', 'xml');
 
     static::assertEquals('SAMPLE_BOOKLET.XML', $xf->getName());
     static::assertEquals('BOOKLET.SAMPLE-1', $xf->getId());
@@ -57,23 +57,11 @@ class XMLFileTest extends TestCase {
     static::assertArrayNotHasKey('error', $xf->getValidationReport());
   }
 
-  function test_loadFromNotExisting() {
-    $xf = new XMLFile(StoragePath::fromString('ws_1/Booklet/not-existing.XML'));
-
-    static::assertEquals('not-existing.XML', $xf->getName());
-    static::assertEquals('NOT-EXISTING.XML', $xf->getId());
-    static::assertEquals('ws_1/Booklet/not-existing.XML', (string) $xf->getPath());
-    static::assertEquals('', $xf->getLabel());
-    static::assertEquals(0, $xf->getSize());
-    static::assertEquals('', $xf->getRootTagName());
-    static::assertEquals('', $xf->getDescription());
-    static::assertEquals('File does not exist: `ws_1/Booklet/not-existing.XML`', $this->getErrorString($xf));
-  }
 
   function test_loadFromArbitrary() {
     file_put_contents(DATA_DIR . "/ws_1/arbitrary.xml", '<a><Metadata><Id>ARBITRARY.XML</Id></Metadata><b>c</b>d</a>');
 
-    $xf = new XMLFile(StoragePath::fromString('ws_1/arbitrary.xml'));
+    $xf = VfsForTest::loadAndValidateFile('ws_1/arbitrary.xml', 'xml');
 
     static::assertEquals('arbitrary.xml', $xf->getName());
     static::assertEquals('ARBITRARY.XML', $xf->getId());
@@ -85,7 +73,7 @@ class XMLFileTest extends TestCase {
   }
 
   function test_loadFromBogus() {
-    $xf = new XMLFile(StoragePath::fromString('ws_1/Testtakers/testtakers-broken.xml'));
+    $xf = VfsForTest::loadAndValidateFile('ws_1/Testtakers/testtakers-broken.xml', 'xml');
 
     static::assertEquals('testtakers-broken.xml', $xf->getName());
     static::assertEquals('TESTTAKERS-BROKEN.XML', $xf->getId());
@@ -98,7 +86,7 @@ class XMLFileTest extends TestCase {
   }
 
   function test_loadFromValid() {
-    $xf = new XMLFile(StoragePath::fromString('ws_1/Booklet/SAMPLE_BOOKLET.XML'));
+    $xf = VfsForTest::loadAndValidateFile('ws_1/Booklet/SAMPLE_BOOKLET.XML', 'xml');
 
     static::assertEquals('SAMPLE_BOOKLET.XML', $xf->getName());
     static::assertEquals('BOOKLET.SAMPLE-1', $xf->getId());
@@ -111,7 +99,7 @@ class XMLFileTest extends TestCase {
   }
 
   function test_loadFromBogusAndValidate() {
-    $xf = new XMLFile(StoragePath::fromString('ws_1/Testtakers/testtakers-broken.xml'));
+    $xf = VfsForTest::loadAndValidateFile('ws_1/Testtakers/testtakers-broken.xml', 'xml');
 
     static::assertEquals('testtakers-broken.xml', $xf->getName());
     static::assertEquals('TESTTAKERS-BROKEN.XML', $xf->getId());
@@ -132,7 +120,7 @@ class XMLFileTest extends TestCase {
       . '<Invalid></Invalid>'
       . '</Booklet>'
     );
-    $xf = new XMLFile(StoragePath::fromString('ws_1/invalid.xml'));
+    $xf = VfsForTest::loadAndValidateFile('ws_1/invalid.xml', 'xml');
 
     static::assertEquals('invalid.xml', $xf->getName());
     static::assertEquals('C', $xf->getId());
@@ -168,7 +156,7 @@ class XMLFileTest extends TestCase {
     $file->getXmlExposed();
   }
 
-  private function writeBookletWithSchema(string $schemaUrl): StoragePath {
+  private function writeBookletWithSchema(string $schemaUrl): string {
     $path = DATA_DIR . "/ws_1/booklet-schema.xml";
     file_put_contents(
       $path,
@@ -177,11 +165,11 @@ class XMLFileTest extends TestCase {
       . '<Metadata><Id>c</Id><Label>d</Label></Metadata>'
       . '</Booklet>'
     );
-    return StoragePath::fromString('ws_1/booklet-schema.xml');
+    return 'ws_1/booklet-schema.xml';
   }
 
   function test_schemaVersionNewerThanSupported() {
-    $xf = new XMLFile($this->writeBookletWithSchema('https://w3id.org/iqb/spec/testcenter-booklet-xml/19.0'));
+    $xf = VfsForTest::loadAndValidateFile($this->writeBookletWithSchema('https://w3id.org/iqb/spec/testcenter-booklet-xml/19.0'), 'xml');
 
     static::assertEquals(
       'XSD schema version `19.0` of `testcenter-booklet-xml` is not supported. Supported major versions: 18 to 18.',
@@ -190,7 +178,7 @@ class XMLFileTest extends TestCase {
   }
 
   function test_schemaVersionOlderThanSupported() {
-    $xf = new XMLFile($this->writeBookletWithSchema('https://w3id.org/iqb/spec/testcenter-booklet-xml/17.4'));
+    $xf = VfsForTest::loadAndValidateFile($this->writeBookletWithSchema('https://w3id.org/iqb/spec/testcenter-booklet-xml/17.4'), 'xml');
 
     static::assertEquals(
       'XSD schema version `17.4` of `testcenter-booklet-xml` is not supported. Supported major versions: 18 to 18.',
@@ -200,7 +188,7 @@ class XMLFileTest extends TestCase {
 
   function test_schemaVersionUnsupportedWithoutValidation() {
     SystemConfig::$xmlSchema_validation = false;
-    $xf = new XMLFile($this->writeBookletWithSchema('https://w3id.org/iqb/spec/testcenter-booklet-xml/19.0'));
+    $xf = VfsForTest::loadAndValidateFile($this->writeBookletWithSchema('https://w3id.org/iqb/spec/testcenter-booklet-xml/19.0'), 'xml');
 
     static::assertEquals(
       'XSD schema version `19.0` of `testcenter-booklet-xml` is not supported. Supported major versions: 18 to 18.',
@@ -211,7 +199,7 @@ class XMLFileTest extends TestCase {
   function test_schemaMissingWithoutValidation() {
     SystemConfig::$xmlSchema_validation = false;
     file_put_contents(DATA_DIR . "/ws_1/no-schema.xml", '<Booklet><Metadata><Id>c</Id><Label>d</Label></Metadata></Booklet>');
-    $xf = new XMLFile(StoragePath::fromString('ws_1/no-schema.xml'));
+    $xf = VfsForTest::loadAndValidateFile('ws_1/no-schema.xml', 'xml');
 
     static::assertEquals(
       'File has no link to XSD-schema. Expected a schema URL like '
@@ -221,9 +209,9 @@ class XMLFileTest extends TestCase {
   }
 
   function test_schemaLegacyUrl() {
-    $xf = new XMLFile($this->writeBookletWithSchema(
+    $xf = VfsForTest::loadAndValidateFile($this->writeBookletWithSchema(
       'https://raw.githubusercontent.com/iqb-berlin/testcenter/17.4.1/definitions/vo_Booklet.xsd'
-    ));
+    ), 'xml');
 
     static::assertEquals(
       'XSD schema URL could not be resolved. Expected a schema URL like '
@@ -242,7 +230,7 @@ class XMLFileTest extends TestCase {
       . '<Invalid></Invalid>'
       . '</Booklet>'
     );
-    $xf = new XMLFile(StoragePath::fromString('ws_1/invalid.xml'));
+    $xf = VfsForTest::loadAndValidateFile('ws_1/invalid.xml', 'xml');
 
     static::assertArrayNotHasKey('error', $xf->getValidationReport());
   }

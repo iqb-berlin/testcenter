@@ -270,8 +270,8 @@ class Workspace {
       ->createSubdirectory($file->getType())
       ->createFilePath($file->getName());
 
-    if (Storage::getDriver()->getFileInfo($targetStoragePath)) {
-      $oldFile = File::get($targetStoragePath, $file->getType());
+    if ($oldFileInfo = Storage::getDriver()->getFileInfo($targetStoragePath)) {
+      $oldFile = self::loadAndValidateFile($targetStoragePath, $file->getType(), $oldFileInfo);
 
       if ($oldFile->getId() !== $file->getId()) {
         $file->report(
@@ -306,7 +306,11 @@ class Workspace {
     }
 
     Storage::getDriver()->put($targetStoragePath, $stagedFilePath);
-    $file->readFileMeta($targetStoragePath);
+    $file->setStorageInfo(
+      $targetStoragePath,
+      Storage::getDriver()->getFileInfo($targetStoragePath)
+        ?? throw new Exception("File not found in storage right after storing it: `$targetStoragePath`")
+    );
 
     return true;
   }
@@ -344,10 +348,17 @@ class Workspace {
     return File::fromData($file, Storage::getDriver()->get($file->getPath()));
   }
 
-  public function getFileByName(string $type, string $fileName): File {
-    $file = File::get($this->storageDirectory->createSubdirectory($type)->createFilePath($fileName), $type);
+  /** @param FileInfo $info the file's size and modification time, e.g. from a listing of its directory */
+  public static function loadAndValidateFile(StoragePath $path, string $type, FileInfo $info): File {
+    return File::fromStorage($path, $info, Storage::getDriver()->get($path), $type);
+  }
 
-    if ($file->isValid()) {
+  public function getFileByName(string $type, string $fileName): File {
+    $path = $this->storageDirectory->createSubdirectory($type)->createFilePath($fileName);
+    $info = Storage::getDriver()->getFileInfo($path);
+    $file = $info ? self::loadAndValidateFile($path, $type, $info) : null;
+
+    if ($file?->isValid()) {
       return $file;
     }
 

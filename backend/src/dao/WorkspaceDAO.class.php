@@ -781,9 +781,13 @@ class WorkspaceDAO extends DAO {
     
     foreach ($testtakersFiles as $fileInfo) {
       try {
-        $testtakersFile = new XMLFileTesttakers(
-          $this->workspaceDirectory->createSubdirectory('Testtakers')->createFilePath($fileInfo['name'])
-        );
+        $path = $this->workspaceDirectory->createSubdirectory('Testtakers')->createFilePath($fileInfo['name']);
+        $storageInfo = Storage::getDriver()->getFileInfo($path);
+        if (!$storageInfo) {
+          continue;
+        }
+        /** @var XMLFileTesttakers $testtakersFile */
+        $testtakersFile = Workspace::loadAndValidateFile($path, 'Testtakers', $storageInfo);
         if ($testtakersFile->isValid()) {
           $fileLogins = $testtakersFile->getAllLogins();
           foreach ($fileLogins as $login) {

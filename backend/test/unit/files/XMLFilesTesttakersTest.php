@@ -80,7 +80,7 @@ END;
   // crossValidate is implicitly tested by WorkspaceValidatorTest -> validate
 
   function test_getPersonsInSameGroup() {
-    $xmlFile = new XMLFileTesttakers(StoragePath::fromString('ws_1/Testtakers/SAMPLE_TESTTAKERS.XML'));
+    $xmlFile = VfsForTest::loadAndValidateFile('ws_1/Testtakers/SAMPLE_TESTTAKERS.XML', 'Testtakers');
     $expected = new LoginArray(
       new Login(
         'test',
@@ -233,7 +233,7 @@ END;
   }
 
   function test_getGroups() {
-    $xmlFile = new XMLFileTesttakers(StoragePath::fromString('ws_1/Testtakers/SAMPLE_TESTTAKERS.XML'));
+    $xmlFile = VfsForTest::loadAndValidateFile('ws_1/Testtakers/SAMPLE_TESTTAKERS.XML', 'Testtakers');
 
     $expected = [
       'sample_group' => new Group(
@@ -311,7 +311,7 @@ END;
 
   function test_getAllLogins() {
     TestEnvironment::makeRandomStatic();
-    $xmlFile = new XMLFileTesttakers(StoragePath::fromString('ws_1/Testtakers/SAMPLE_TESTTAKERS.XML'));
+    $xmlFile = VfsForTest::loadAndValidateFile('ws_1/Testtakers/SAMPLE_TESTTAKERS.XML', 'Testtakers');
 
     $expected = new LoginArray(
       new Login(

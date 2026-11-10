@@ -78,6 +78,13 @@ class VfsForTest {
     }
   }
 
+  /** Reads and validates a file of the test data directory, as the startup scan does. */
+  static function loadAndValidateFile(string $path, string $type): File {
+    $storagePath = StoragePath::fromString($path);
+    $info = Storage::getDriver()->getFileInfo($storagePath) ?? throw new Exception("No test file `$path`");
+    return Workspace::loadAndValidateFile($storagePath, $type, $info);
+  }
+
   static function setUp(bool $includeBogusMaterial = false): vfsStreamDirectory {
     $vfs = vfsStream::setup('root', 0o777);
 

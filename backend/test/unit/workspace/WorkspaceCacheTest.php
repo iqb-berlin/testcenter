@@ -216,7 +216,7 @@ class WorkspaceCacheTest extends TestCase {
       DATA_DIR . "/ws_1/Resource/{$fileName}",
       "<html lang='de'><head><script type='application/ld+json'>{$metadata}</script></head></html>"
     );
-    $widget = new ResourceFile(StoragePath::fromString("ws_1/Resource/{$fileName}"));
+    $widget = VfsForTest::loadAndValidateFile("ws_1/Resource/{$fileName}", 'Resource');
     $this->workspaceCache->addFile('Resource', $widget);
     return $widget;
   }

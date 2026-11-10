@@ -7,11 +7,11 @@ class SysChecksFolder extends Workspace {
     $sysChecks = [];
 
     $directory = $this->storageDirectory->createSubdirectory('SysCheck');
-    foreach (array_keys(Storage::getDriver()->listFiles($directory)) as $fileName) {
+    foreach (Storage::getDriver()->listFiles($directory) as $fileName => $fileInfo) {
       if (!fnmatch("*.[xX][mM][lL]", $fileName)) {
         continue;
       }
-      $xFile = new XMLFileSysCheck($directory->createFilePath($fileName));
+      $xFile = self::loadAndValidateFile($directory->createFilePath($fileName), 'SysCheck', $fileInfo);
 
       if ($xFile->isValid()) {
         $sysChecks[] = $xFile;

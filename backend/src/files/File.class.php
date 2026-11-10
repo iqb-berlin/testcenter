@@ -7,7 +7,7 @@ class File extends FileData {
   public const canBeRelationObject = false;
   protected ?string $content = null;
 
-  static function get(StoragePath|FileData $init, string $type): File {
+  static function get(FileData $init, string $type): File {
     return match ($type) {
       'Testtakers' => new XMLFileTesttakers($init),
       'SysCheck' => new XMLFileSysCheck($init),
@@ -24,6 +24,16 @@ class File extends FileData {
     $file = File::get($data, $data->getType());
     $file->content = $content;
     $file->parse();
+    return $file;
+  }
+
+  /** A file in storage that is read to be validated, e.g. when the workspace is read at startup. */
+  static function fromStorage(StoragePath $path, FileInfo $info, string $content, string $type): File {
+    $file = File::get(new FileData($path), $type);
+    $file->id = strtoupper($file->name);
+    $file->setStorageInfo($path, $info);
+    $file->content = $content;
+    $file->validate();
     return $file;
   }
 
@@ -62,57 +72,34 @@ class File extends FileData {
     }
   }
 
-  public function __construct(StoragePath|FileData $init) {
-    if (is_a($init, FileData::class)) {
-      $this->path = $init->path;
-      $this->type = $init->type;
-      $this->id = $init->id;
-      $this->label = $init->label;
-      $this->description = $init->description;
-      $this->validationReport = $init->validationReport;
-      $this->relations = $init->relations;
-      $this->modificationTime = $init->modificationTime;
-      $this->size = $init->size;
-      $this->name = $init->name;
-      $this->contextData = $init->contextData;
-      $this->veronaModuleType = $init->veronaModuleType;
-      $this->veronaModuleId = $init->veronaModuleId;
-      $this->versionMayor = $init->versionMayor;
-      $this->versionMinor = $init->versionMinor;
-      $this->versionPatch = $init->versionPatch;
-      $this->versionLabel = $init->versionLabel;
-      $this->veronaVersion = $init->veronaVersion;
-      $this->veronaModel = $init->veronaModel;
-      return;
-    }
-
-    parent::__construct();
-
-    $exists = $this->readFileMeta($init);
-    $this->id = strtoupper($this->getName());
-
-    if ($exists) {
-      $this->content = Storage::getDriver()->get($init);
-      $this->validate();
-    }
+  public function __construct(FileData $init) {
+    $this->path = $init->path;
+    $this->type = $init->type;
+    $this->id = $init->id;
+    $this->label = $init->label;
+    $this->description = $init->description;
+    $this->validationReport = $init->validationReport;
+    $this->relations = $init->relations;
+    $this->modificationTime = $init->modificationTime;
+    $this->size = $init->size;
+    $this->name = $init->name;
+    $this->contextData = $init->contextData;
+    $this->veronaModuleType = $init->veronaModuleType;
+    $this->veronaModuleId = $init->veronaModuleId;
+    $this->versionMayor = $init->versionMayor;
+    $this->versionMinor = $init->versionMinor;
+    $this->versionPatch = $init->versionPatch;
+    $this->versionLabel = $init->versionLabel;
+    $this->veronaVersion = $init->veronaVersion;
+    $this->veronaModel = $init->veronaModel;
   }
 
-  /** @return bool whether the file exists */
-  public function readFileMeta(StoragePath $path): bool { // TODO can this be private / merged with load?
+  /** Where the file is stored, with its size and modification time there. */
+  public function setStorageInfo(StoragePath $path, FileInfo $info): void {
     $this->path = $path;
     $this->name = $path->name;
-    $fileInfo = Storage::getDriver()->getFileInfo($path);
-
-    if (!$fileInfo) {
-      $this->size = 0;
-      $this->modificationTime = 1;
-      $this->report('error', "File does not exist: `$path`");
-      return false;
-    }
-
-    $this->size = $fileInfo->size;
-    $this->modificationTime = $fileInfo->modificationTime;
-    return true;
+    $this->size = $info->size;
+    $this->modificationTime = $info->modificationTime;
   }
 
   /**

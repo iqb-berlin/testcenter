@@ -20,10 +20,10 @@ class WorkspaceCache {
   public function loadFiles(): void {
     foreach (Workspace::subFolders as $type) {
       $directory = $this->workspace->getStorageDirectory()->createSubdirectory($type);
-      $fileNames = array_keys($this->workspace->listFilesOfType($type));
+      $files = array_reverse($this->workspace->listFilesOfType($type), true);
 
-      foreach (array_reverse($fileNames) as $fileName) {
-        $this->addFile($type, File::get($directory->createFilePath($fileName), $type));
+      foreach ($files as $fileName => $fileInfo) {
+        $this->addFile($type, Workspace::loadAndValidateFile($directory->createFilePath($fileName), $type, $fileInfo));
       }
     }
   }

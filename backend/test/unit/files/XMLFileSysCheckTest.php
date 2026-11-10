@@ -21,21 +21,21 @@ class XMLFileSysCheckTest extends TestCase {
   // crossValidate is implicitly tested by WorkspaceValidatorTest -> validate
 
   function test_getUnitId() {
-    $xmlFile = new XMLFileSysCheck(StoragePath::fromString('ws_1/SysCheck/SAMPLE_SYSCHECK.XML'));
+    $xmlFile = VfsForTest::loadAndValidateFile('ws_1/SysCheck/SAMPLE_SYSCHECK.XML', 'SysCheck');
     $expected = 'UNIT.SAMPLE';
     $result = $xmlFile->getUnitId();
     static::assertEquals($expected, $result);
   }
 
   function test_getSaveKey() {
-    $xmlFile = new XMLFileSysCheck(StoragePath::fromString('ws_1/SysCheck/SAMPLE_SYSCHECK.XML'));
+    $xmlFile = VfsForTest::loadAndValidateFile('ws_1/SysCheck/SAMPLE_SYSCHECK.XML', 'SysCheck');
     $expected = 'SAVEME';
     $result = $xmlFile->getSaveKey();
     static::assertEquals($expected, $result);
   }
 
   function test_hasSaveKey() {
-    $xmlFile = new XMLFileSysCheck(StoragePath::fromString('ws_1/SysCheck/SAMPLE_SYSCHECK.XML'));
+    $xmlFile = VfsForTest::loadAndValidateFile('ws_1/SysCheck/SAMPLE_SYSCHECK.XML', 'SysCheck');
     $result = $xmlFile->hasSaveKey();
     static::assertTrue($result);
 
@@ -45,7 +45,7 @@ class XMLFileSysCheckTest extends TestCase {
   }
 
   function test_hasUnit() {
-    $xmlFile = new XMLFileSysCheck(StoragePath::fromString('ws_1/SysCheck/SAMPLE_SYSCHECK.XML'));
+    $xmlFile = VfsForTest::loadAndValidateFile('ws_1/SysCheck/SAMPLE_SYSCHECK.XML', 'SysCheck');
     $result = $xmlFile->hasUnit();
     static::assertTrue($result);
 
@@ -68,7 +68,7 @@ class XMLFileSysCheckTest extends TestCase {
   }
 
   function test_getSkipNetwork() {
-    $xmlFile = new XMLFileSysCheck(StoragePath::fromString('ws_1/SysCheck/SAMPLE_SYSCHECK.XML'));
+    $xmlFile = VfsForTest::loadAndValidateFile('ws_1/SysCheck/SAMPLE_SYSCHECK.XML', 'SysCheck');
     $result = $xmlFile->getSkipNetwork();
     static::assertFalse($result);
 
@@ -121,7 +121,7 @@ class XMLFileSysCheckTest extends TestCase {
   }
 
   function test_getSpeedtestUploadParams() {
-    $xmlFile = new XMLFileSysCheck(StoragePath::fromString('ws_1/SysCheck/SAMPLE_SYSCHECK.XML'));
+    $xmlFile = VfsForTest::loadAndValidateFile('ws_1/SysCheck/SAMPLE_SYSCHECK.XML', 'SysCheck');
     $result = $xmlFile->getSpeedtestUploadParams();
     $expectation = [
       "min" => 1024,
