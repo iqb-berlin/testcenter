@@ -18,4 +18,4 @@ cp -R "$DATABASE_SOURCE_DIR/." "$DATABASE_WORK_DIR/"
 # Replace this setup process with the requested test so Docker Compose observes
 # the test's real exit code for --exit-code-from.
 cd /var/www/testcenter
-exec bash "backend/test/initialization/tests/${TEST_NAME:-fallback}.sh"
+exec bash "backend/test/initialization/tests/${TEST_NAME}.sh"

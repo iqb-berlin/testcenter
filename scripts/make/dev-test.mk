@@ -65,11 +65,18 @@ test-backend-api:
 # Performs a tests suite from the initialization tests.
 # Param test - (All files in backend/test/initialization/tests for are available tests.)
 # Example: `make test-backend-initialization test=general/vanilla-installation`
+# Runs as its own compose project, so it does not touch a running dev stack.
 test-backend-initialization:
+	@if [ -z "$(test)" ]; then\
+		echo "Usage: make test-backend-initialization test=<test>, available tests:";\
+		cd $(TC_BASE_DIR)/backend/test/initialization/tests && find . -name '*.sh' | sed 's|^\./||; s|\.sh$$||' | sort;\
+		exit 1;\
+	fi
 	cd $(TC_BASE_DIR) &&\
 	TEST_NAME=$(test) \
 	docker compose\
 			--env-file .env.dev\
+			--project-name testcenter-initialization-test\
 			--file backend/test/initialization/docker-compose.initialization-test.yml\
 		up\
 			--force-recreate\
@@ -79,7 +86,6 @@ test-backend-initialization:
 
 # Performs the general tests around fresh installation, PostgreSQL patches and re-initialization.
 test-backend-initialization-general:
-	cd $(TC_BASE_DIR) && make stop # TODO this should be able to run while the testcenter runs ins dev-mode
 	cd $(TC_BASE_DIR) && make test-backend-initialization test=general/vanilla-installation
 	cd $(TC_BASE_DIR) && make test-backend-initialization test=general/no-sample-data
 	cd $(TC_BASE_DIR) && make test-backend-initialization test=general/no-db-but-files

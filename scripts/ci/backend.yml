@@ -163,43 +163,10 @@ test-backend-initialization:
 #    BACKEND_IMAGE_NAME: "${GITLAB_REGISTRY_IMAGE_BASE}/${BACKEND_IMAGE_NAME}"
   before_script:
     - !reference [ .gitlab_login, before_script ]
+    - apk add --no-cache make
   script:
-    - TEST_NAME=general/vanilla-installation
-      docker compose
-      --env-file .env.dev-template
-      --file backend/test/initialization/docker-compose.initialization-test.yml
-      up
-      --force-recreate
-      --renew-anon-volumes
-      --abort-on-container-exit
-      --exit-code-from=initialization-test-backend
-    - TEST_NAME=general/no-db-but-files
-      docker compose
-      --env-file .env.dev-template
-      --file backend/test/initialization/docker-compose.initialization-test.yml
-      up
-      --force-recreate
-      --renew-anon-volumes
-      --abort-on-container-exit
-      --exit-code-from=initialization-test-backend
-    - TEST_NAME=general/install-db-patches
-      docker compose
-      --env-file .env.dev-template
-      --file backend/test/initialization/docker-compose.initialization-test.yml
-      up
-      --force-recreate
-      --renew-anon-volumes
-      --abort-on-container-exit
-      --exit-code-from=initialization-test-backend
-    - TEST_NAME=general/re-initialize
-      docker compose
-      --env-file .env.dev-template
-      --file backend/test/initialization/docker-compose.initialization-test.yml
-      up
-      --force-recreate
-      --renew-anon-volumes
-      --abort-on-container-exit
-      --exit-code-from=initialization-test-backend
+    - make init
+    - make test-backend-initialization-general
   after_script:
     - !reference [ .gitlab_login, after_script ]
 
