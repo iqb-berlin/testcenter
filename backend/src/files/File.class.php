@@ -5,7 +5,6 @@ class File extends FileData {
   private const type = 'file';
   public const canBeRelationSubject = false;
   public const canBeRelationObject = false;
-  protected string $name = '';
   protected ?string $content = null;
 
   static function get(StoragePath|FileData $init, string $type): File {
@@ -18,6 +17,14 @@ class File extends FileData {
       'xml' => new XMLFile($init),
       default => new File($init),
     };
+  }
+
+  /** A stored file, created from its metadata and content. It was validated when it came into storage. */
+  static function fromData(FileData $data, string $content): File {
+    $file = File::get($data, $data->getType());
+    $file->content = $content;
+    $file->parse();
+    return $file;
   }
 
   /** A file that is not in storage, created from its content. */
@@ -66,7 +73,7 @@ class File extends FileData {
       $this->relations = $init->relations;
       $this->modificationTime = $init->modificationTime;
       $this->size = $init->size;
-      $this->name = $init->path?->name ?? '';
+      $this->name = $init->name;
       $this->contextData = $init->contextData;
       $this->veronaModuleType = $init->veronaModuleType;
       $this->veronaModuleId = $init->veronaModuleId;
@@ -108,14 +115,6 @@ class File extends FileData {
     return true;
   }
 
-  /** Reads the content of a file created from its metadata. It was validated when it came into storage. */
-  protected function load(): void {
-    if (($this->content === null) and $this->path) {
-      $this->content = Storage::getDriver()->get($this->path);
-      $this->parse();
-    }
-  }
-
   /**
    * Makes the content usable; validate() checks it.
    * @return bool whether the content could be parsed
@@ -132,14 +131,6 @@ class File extends FileData {
 
   public function getType(): string {
     return $this->type ?? $this::type;
-  }
-
-  public function getName(): string {
-    return $this->name;
-  }
-
-  public function getVersion(): string {
-    return Version::asString($this->versionMayor, $this->versionMinor, $this->versionPatch, $this->versionLabel) ?? '';
   }
 
   public function getVersionMayorMinor(): string {
@@ -173,36 +164,8 @@ class File extends FileData {
     $this->relations[] = $relation;
   }
 
-  public function jsonSerialize(): mixed {
-    $info = [
-      'label' => $this->getLabel(),
-      'description' => $this->getDescription(),
-    ];
-    if ($this->veronaModuleType) {
-      $info['veronaModuleType'] = $this->veronaModuleType;
-      $info['veronaVersion'] = $this->veronaVersion;
-      $info['version'] = $this->getVersion();
-    }
-    if ($this->veronaModel) {
-      $info['veronaModel'] = $this->veronaModel;
-    }
-
-    return [
-      'name' => $this->name,
-      'size' => $this->size,
-      'modificationTime' => $this->modificationTime,
-      'type' => $this->type,
-      'id' => $this->id,
-      'report' => $this->validationReport,
-      'dependencies' => $this->relations,
-      'info' => array_merge($info, $this->getContextData()
-      ),
-    ];
-  }
-
   public function getContent(): string {
-    $this->load();
-    return $this->content;
+    return $this->content ?? throw new LogicException("File `$this->name` has no content.");
   }
 }
 

@@ -214,11 +214,11 @@ class WorkspaceDAO extends DAO {
   /**
    * @codeCoverageIgnore
    */
-  public function deleteFile(File $file): void {
+  public function deleteFile(FileData $file): void {
     $this->_("delete from files where workspace_id = ? and name = ? and type = ?", [$this->workspaceId, $file->getName(), $file->getType()]);
   }
 
-  public function getFileById(string $fileId, string $type): ?File {
+  public function getFileById(string $fileId, string $type): ?FileData {
     $fileData = $this->_(
       "select
                     name,
@@ -250,7 +250,7 @@ class WorkspaceDAO extends DAO {
       ]
     );
 
-    return $fileData ? $this->resultRow2File($fileData, []) : null;
+    return $fileData ? $this->createFileData($fileData, []) : null;
   }
 
   public function updateUnitDefsAttachments(string $bookletName, array $attachments): void {
@@ -343,7 +343,7 @@ class WorkspaceDAO extends DAO {
   }
 
   /** @param array $conditions list('column' => value)
-   * @return array ['filetype' => File[]]*/
+   * @return array type => name => FileData */
   public function getAllFilesWhere(array $conditions): array {
     $sql = "
             select
@@ -509,7 +509,7 @@ class WorkspaceDAO extends DAO {
       if ($getDependencies) {
         $dependencies = $this->fetchDependenciesForFile($row['name']);
       }
-      $files[$row['type']][$row['name']] = $this->resultRow2File($row, $dependencies ?? []);
+      $files[$row['type']][$row['name']] = $this->createFileData($row, $dependencies ?? []);
     }
 
     // The queries have no `order by`, so the row order is up to the database. The inner arrays are
@@ -524,30 +524,27 @@ class WorkspaceDAO extends DAO {
     );
   }
 
-  private function resultRow2File(array $row, array $relations): ?File {
-    return File::get(
-      new FileData(
-        $this->workspaceDirectory->createSubdirectory($row['type'])->createFilePath($row['name']),
-        $row['type'],
-        $row['id'],
-        $row['label'],
-        $row['description'],
-        !!$row['is_valid'],
-        unserialize($row['validation_report']),
-        $relations,
-        TimeStamp::fromSQLFormat($row['modification_ts']),
-        $row['size'],
-        unserialize($row['context_data']),
-        $row['verona_module_type'],
-        $row['verona_module_id'],
-        $row['version_mayor'],
-        $row['version_minor'],
-        $row['version_patch'],
-        $row['version_label'],
-        $row['verona_version'],
-        $row['verona_model']
-      ),
-      $row['type']
+  private function createFileData(array $row, array $relations): FileData {
+    return new FileData(
+      $this->workspaceDirectory->createSubdirectory($row['type'])->createFilePath($row['name']),
+      $row['type'],
+      $row['id'],
+      $row['label'],
+      $row['description'],
+      !!$row['is_valid'],
+      unserialize($row['validation_report']),
+      $relations,
+      TimeStamp::fromSQLFormat($row['modification_ts']),
+      $row['size'],
+      unserialize($row['context_data']),
+      $row['verona_module_type'],
+      $row['verona_module_id'],
+      $row['version_mayor'],
+      $row['version_minor'],
+      $row['version_patch'],
+      $row['version_label'],
+      $row['verona_version'],
+      $row['verona_model']
     );
   }
 
@@ -828,7 +825,7 @@ class WorkspaceDAO extends DAO {
     );
   }
 
-  public function getDependentFilesByTypes(File $file, array $types = []): array {
+  public function getDependentFilesByTypes(FileData $file, array $types = []): array {
     $sql = "select
       files.name,
       files.type,

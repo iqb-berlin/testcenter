@@ -28,16 +28,19 @@ class WorkspaceCache {
     }
   }
 
+  /** Validates all cached files; they have to come with their content. */
   public function validate(): void {
+    $files = [];
     foreach ($this->cachedFiles as $fileSet) {
       /** @var File $file */
       foreach ($fileSet as $file) {
         $file->crossValidate($this);
+        $files[] = $file;
       }
     }
 
-    $this->rejectSecondWidgetsForAModel();
-    $this->markUnusedItems();
+    $this->rejectSecondWidgetsForAModel($files);
+    $this->markUnusedItems($files);
   }
 
   /**
@@ -51,17 +54,20 @@ class WorkspaceCache {
       $file->crossValidate($this);
     }
 
-    $this->rejectSecondWidgetsForAModel();
-    $this->markUnusedItems($usedByStoredFiles);
+    $this->rejectSecondWidgetsForAModel($files);
+    $this->markUnusedItems($files, $usedByStoredFiles);
   }
 
-  // Temporary, see Workspace::getWidgets: widgets are found by model, so with two widgets for a model (each in any
-  // number of versions) the one delivered would be a guess. The check runs at upload and initialization only: after
-  // deleting one of two such widgets, the other stays invalid until it is uploaded again.
-  private function rejectSecondWidgetsForAModel(): void {
-    /** @var array<string, array<string, list<File>>> $widgetsByModel model => module id => files */
+  /**
+   * Temporary, see Workspace::getWidgets: widgets are found by model, so with two widgets for a model (each in any
+   * number of versions) the one delivered would be a guess. The check runs at upload and initialization only: after
+   * deleting one of two such widgets, the other stays invalid until it is uploaded again.
+   * @param list<File> $filesToReport the widgets among them get the error; all cached widgets count
+   */
+  private function rejectSecondWidgetsForAModel(array $filesToReport): void {
+    /** @var array<string, array<string, list<FileData>>> $widgetsByModel model => module id => files */
     $widgetsByModel = [];
-    /** @var File $resource */
+    /** @var FileData $resource */
     foreach ($this->cachedFiles['Resource'] ?? [] as $resource) {
       // a widget that is invalid for another reason is never delivered, so it can't be confused with the others
       if ($resource->getVeronaModuleType() !== 'widget' or !$resource->getVeronaModel() or !$resource->isValid()) {
@@ -75,7 +81,9 @@ class WorkspaceCache {
       }
       $moduleIds = implode('`, `', array_keys($widgets));
       foreach (array_merge(...array_values($widgets)) as $widget) {
-        $widget->report('error', "Only one widget per model allowed: `$moduleIds` are all widgets for `$model`.");
+        if (in_array($widget, $filesToReport, true)) {
+          $widget->report('error', "Only one widget per model allowed: `$moduleIds` are all widgets for `$model`.");
+        }
       }
     }
   }
@@ -100,31 +108,32 @@ class WorkspaceCache {
     return $files;
   }
 
-  public function getDuplicateId(File $file): ?string {
+  public function getDuplicateId(FileData $file): ?string {
     return $this->duplicates["{$file->getType()}/{$file->getName()}"] ?? null;
   }
 
-  public function getFile(string $type, string $fileId): ?File {
+  public function getFile(string $type, string $fileId): ?FileData {
     return $this->cachedFiles[$type][$fileId] ?? null;
   }
 
-  public function getResource(string $resourceId): ?ResourceFile {
+  public function getResource(string $resourceId): ?FileData {
     return $this->cachedFiles['Resource'][$resourceId] ?? null;
   }
 
-  public function getUnit(string $unitId): ?XMLFileUnit {
+  public function getUnit(string $unitId): ?FileData {
     return $this->cachedFiles['Unit'][$unitId] ?? null;
   }
 
-  public function getBooklet(string $bookletId): ?XMLFileBooklet {
+  public function getBooklet(string $bookletId): ?FileData {
     return $this->cachedFiles['Booklet'][$bookletId] ?? null;
   }
 
-  public function getSysCheck(string $sysCheckId): ?XMLFileSysCheck {
+  public function getSysCheck(string $sysCheckId): ?FileData {
     return $this->cachedFiles['SysCheck'][$sysCheckId] ?? null;
   }
 
-  public function addFile(string $type, File $file, $overwriteAllowed = false): string {
+  /** Stored files only need their metadata; files that are validated come with their content. */
+  public function addFile(string $type, FileData $file, $overwriteAllowed = false): string {
     $index = $file->getId();
 
     if (isset($this->cachedFiles[$type][$index])) {
@@ -141,29 +150,25 @@ class WorkspaceCache {
     return "$type/{$file->getId()}";
   }
 
-  /** @param array<string, array<string, true>> $usedByStoredFiles type => upper-case id => true */
-  public function markUnusedItems(array $usedByStoredFiles = []): void {
+  /**
+   * @param list<File> $files
+   * @param array<string, array<string, true>> $usedByStoredFiles type => upper-case id => true
+   */
+  private function markUnusedItems(array $files, array $usedByStoredFiles = []): void {
     $used = $usedByStoredFiles;
 
-    foreach (Workspace::subFolders as $type) {
-      /** @var File $file */
-      foreach ($this->cachedFiles[$type] as $file) {
-        if ($file::canBeRelationSubject) {
-          $relations = $file->getRelations();
-          /** @var FileRelation $relation */
-          foreach ($relations as $relation) {
-            $used[$relation->getTargetType()][strtoupper($relation->getTargetName())] = true;
-          }
+    foreach ($files as $file) {
+      if ($file::canBeRelationSubject) {
+        /** @var FileRelation $relation */
+        foreach ($file->getRelations() as $relation) {
+          $used[$relation->getTargetType()][strtoupper($relation->getTargetName())] = true;
         }
       }
     }
 
-    foreach (Workspace::subFolders as $type) {
-      /** @var File $file */
-      foreach ($this->cachedFiles[$type] as $file) {
-        if ($file::canBeRelationObject and !isset($used[$file->getType()][strtoupper($file->getId())])) {
-          $file->report('warning', "{$file->getType()} is never used");
-        }
+    foreach ($files as $file) {
+      if ($file::canBeRelationObject and !isset($used[$file->getType()][strtoupper($file->getId())])) {
+        $file->report('warning', "{$file->getType()} is never used");
       }
     }
   }

@@ -25,13 +25,13 @@ class ResourceFile extends File {
       $this->id = strtoupper($this->getVeronaModuleId() . '-' . $this->versionMayor . '.' . $this->versionMinor);
     }
 
-    if ($this->isPackage()) {
+    if (self::isPackage($this->getName())) {
       $this->validatePackage();
     }
   }
 
-  public function isPackage(): bool {
-    return FileExt::has($this->getName(), 'ITCR.ZIP');
+  public static function isPackage(string $fileName): bool {
+    return FileExt::has($fileName, 'ITCR.ZIP');
   }
 
   // player is not it's own class, because player and other resources are stored in the same dir
@@ -290,13 +290,13 @@ class ResourceFile extends File {
     }
   }
 
-  private function getPackageDirectory(): StorageDirectory {
-    return $this->getPath()->directory->createSubdirectory(basename($this->getName(), '.itcr.zip'));
+  private static function getPackageDirectory(StoragePath $packagePath): StorageDirectory {
+    return $packagePath->directory->createSubdirectory(basename($packagePath->name, '.itcr.zip'));
   }
 
   public function installPackage(): void {
     try {
-      $this->uninstallPackage();
+      self::uninstallPackage($this->getPath());
 
     } catch (Exception $e) {
       $this->report('error', "Could not delete package files: {$e->getMessage()}");
@@ -307,7 +307,7 @@ class ResourceFile extends File {
       Folder::useTempDirectory('package-', function(string $extractionPath): void {
         ZIP::extract($this->getContent(), $extractionPath);
 
-        $packageDirectory = $this->getPackageDirectory();
+        $packageDirectory = self::getPackageDirectory($this->getPath());
         foreach (Folder::getContentsFlat($extractionPath) as $relativePath) {
           Storage::getDriver()->put(
             StoragePath::fromString($packageDirectory . $relativePath),
@@ -321,7 +321,7 @@ class ResourceFile extends File {
     }
   }
 
-  public function uninstallPackage(): void {
-    Storage::getDriver()->deleteDirectory($this->getPackageDirectory());
+  public static function uninstallPackage(StoragePath $packagePath): void {
+    Storage::getDriver()->deleteDirectory(self::getPackageDirectory($packagePath));
   }
 }

@@ -39,7 +39,7 @@ class BookletController extends Controller {
 
     $Workspace = new Workspace($authToken->getWorkspaceId());
     /** @var XMLFileBooklet $booklet */
-    $booklet = $Workspace->getFileById('Booklet', $bookletName);
+    $booklet = $Workspace->loadFileById('Booklet', $bookletName);
     $xml = $booklet->getContent();
 
     return $response->withHeader('Content-Type', 'application/xml')->write($xml);

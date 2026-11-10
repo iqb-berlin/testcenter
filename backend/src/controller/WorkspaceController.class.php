@@ -271,7 +271,7 @@ class WorkspaceController extends Controller {
 
     $workspaceController = new Workspace($workspaceId);
     /** @var XMLFileSysCheck $xmlFile */
-    $xmlFile = $workspaceController->getFileById('SysCheck', $sysCheckName);
+    $xmlFile = $workspaceController->loadFileById('SysCheck', $sysCheckName);
 
     return $response->withJson([
       'name' => $xmlFile->getId(),
@@ -294,7 +294,7 @@ class WorkspaceController extends Controller {
     $workspace = new Workspace($workspaceId);
 
     /** @var XMLFileSysCheck $sysCheck */
-    $sysCheck = $workspace->getFileById('SysCheck', $sysCheckName);
+    $sysCheck = $workspace->loadFileById('SysCheck', $sysCheckName);
 
     $res = [
       'player_id' => '',
@@ -307,7 +307,7 @@ class WorkspaceController extends Controller {
     }
 
     /** @var XMLFileUnit $unit */
-    $unit = $workspace->getFileById('Unit', $sysCheck->getUnitId());
+    $unit = $workspace->loadFileById('Unit', $sysCheck->getUnitId());
     $unitRelations = $workspace->getFileRelations($unit);
 
     /** @var FileRelation $unitRelation */
@@ -348,7 +348,7 @@ class WorkspaceController extends Controller {
 
     $sysChecksFolder = new SysChecksFolder($workspaceId);
     /** @var XMLFileSysCheck $sysCheck */
-    $sysCheck = $sysChecksFolder->getFileById('SysCheck', $sysCheckName);
+    $sysCheck = $sysChecksFolder->loadFileById('SysCheck', $sysCheckName);
 
     if ($authToken) {
       $session = self::sessionDAO()->getPersonSessionByToken($authToken->getToken());

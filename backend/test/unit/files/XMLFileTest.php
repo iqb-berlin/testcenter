@@ -144,19 +144,28 @@ class XMLFileTest extends TestCase {
     static::assertEquals("Error [1871] in line 2: Element 'Invalid': This element is not expected. Expected is one of ( CustomTexts, BookletConfig, States, Widgets, Units ).", $this->getErrorString($xf));
   }
 
-  function test_loadFromMetadataParsesWithoutValidating() {
-    file_put_contents(
-      DATA_DIR . "/ws_1/invalid.xml",
-      '<Booklet xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"'
+  function test_fromDataParsesWithoutValidating() {
+    $content = '<Booklet xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"'
       . ' xsi:noNamespaceSchemaLocation="https://w3id.org/iqb/spec/testcenter-booklet-xml/18.0">'
       . '<Metadata><Id>c</Id><Label>d</Label></Metadata>'
       . '<Invalid></Invalid>'
-      . '</Booklet>'
-    );
-    $xf = new XMLFileExposed(new FileData(StoragePath::fromString('ws_1/invalid.xml'), 'Booklet', 'C'));
+      . '<Units><Unit id="u1" /></Units>'
+      . '</Booklet>';
 
-    static::assertEquals('Booklet', $xf->getXmlExposed()->getName());
-    static::assertArrayNotHasKey('error', $xf->getValidationReport());
+    $file = File::fromData(new FileData(StoragePath::fromString('ws_1/invalid.xml'), 'Booklet', 'C'), $content);
+
+    static::assertInstanceOf(XMLFileBooklet::class, $file);
+    static::assertEquals(['U1'], $file->getUnitIds());
+    static::assertEquals($content, $file->getContent());
+    static::assertArrayNotHasKey('error', $file->getValidationReport());
+  }
+
+  function test_withoutContent() {
+    $file = new XMLFileExposed(new FileData(StoragePath::fromString('ws_1/a.xml'), 'Booklet', 'A'));
+
+    static::assertEquals('a.xml', $file->getName());
+    $this->expectExceptionObject(new LogicException('File `a.xml` has no content.'));
+    $file->getXmlExposed();
   }
 
   private function writeBookletWithSchema(string $schemaUrl): StoragePath {

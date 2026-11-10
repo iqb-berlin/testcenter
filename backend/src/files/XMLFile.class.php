@@ -71,8 +71,7 @@ class XMLFile extends File {
   }
 
   protected function getXML(): SimpleXMLElement {
-    parent::load();
-    return $this->xml;
+    return $this->xml ?? throw new LogicException("File `$this->name` has no content.");
   }
 
   private function readMetadata(): void {

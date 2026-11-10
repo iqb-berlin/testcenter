@@ -32,7 +32,7 @@ class ReviewCSVFormatter
       if (!isset($labelCache[$bookletFileId])) {
         try {
           /** @var XMLFileBooklet $bookletFile */
-          $bookletFile = $workspace->getFileById('Booklet', $bookletFileId);
+          $bookletFile = $workspace->loadFileById('Booklet', $bookletFileId);
           $labelCache[$bookletFileId] = [
             'bookletLabel' => $bookletFile->getLabel(),
             'unitLabels' => $bookletFile->getUnitLabelsMap()

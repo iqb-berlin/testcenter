@@ -7,14 +7,14 @@ class FileRelation extends DataCollectionTypeSafe {
   protected string $targetType = '';
   protected string $targetName = '';
   protected FileRelationshipType $relationshipType = FileRelationshipType::unknown;
-  protected ?File $target;
+  protected ?FileData $target;
   protected ?string $targetId;
 
   public function __construct(
     string $targetType,
     string $targetName,
     FileRelationshipType $relationshipType = FileRelationshipType::unknown,
-    File $target = null,
+    ?FileData $target = null,
     string $targetId = null,
   ) {
     $this->targetType = $targetType;
@@ -36,7 +36,7 @@ class FileRelation extends DataCollectionTypeSafe {
     return $this->relationshipType;
   }
 
-  public function getTarget(): ?File {
+  public function getTarget(): ?FileData {
     return $this->target;
   }
 

@@ -54,7 +54,7 @@ class TestController extends Controller {
     }
 
     $workspace = new Workspace($authToken->getWorkspaceId());
-    $bookletFile = $workspace->getFileById('Booklet', $test->bookletFileId);
+    $bookletFile = $workspace->loadFileById('Booklet', $test->bookletFileId);
     $testName = TestName::fromString($test->name);
 
     // TODO check for Mode::hasCapability(ModeCapability::MONITORABLE)
@@ -99,7 +99,7 @@ class TestController extends Controller {
 
     $workspace = new Workspace($authToken->getWorkspaceId());
     /** @var XMLFileUnit $unitFile */
-    $unitFile = $workspace->getFileById('Unit', $unitName);
+    $unitFile = $workspace->loadFileById('Unit', $unitName);
 
     if (!$unitAlias) {
       $unitAlias = $unitName;

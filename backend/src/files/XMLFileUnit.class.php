@@ -21,7 +21,7 @@ class XMLFileUnit extends XMLFile {
     $this->getPlayerIfExists($workspaceCache);
   }
 
-  public function getPlayerIfExists(WorkspaceCache $workspaceCache): ?ResourceFile {
+  public function getPlayerIfExists(WorkspaceCache $workspaceCache): ?FileData {
     if (!$this->isValid()) {
       return null;
     }

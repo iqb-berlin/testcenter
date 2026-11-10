@@ -4,6 +4,7 @@ declare(strict_types=1);
 class FileData extends DataCollectionTypeSafe {
   protected string|null $type = null;
   protected ?StoragePath $path = null;
+  protected string $name = '';
   protected string $id = '';
   protected string $label = '';
   protected string $description = '';
@@ -44,6 +45,7 @@ class FileData extends DataCollectionTypeSafe {
     string $veronaModel = ""
   ) {
     $this->path = $path;
+    $this->name = $path?->name ?? '';
     $this->type = $type;
     $this->id = $id;
     $this->label = $label;
@@ -70,6 +72,10 @@ class FileData extends DataCollectionTypeSafe {
 
   public function getPath(): ?StoragePath {
     return $this->path;
+  }
+
+  public function getName(): string {
+    return $this->name;
   }
 
   public function getSize(): int {
@@ -144,12 +150,43 @@ class FileData extends DataCollectionTypeSafe {
     return $this->versionLabel;
   }
 
+  public function getVersion(): string {
+    return Version::asString($this->versionMayor, $this->versionMinor, $this->versionPatch, $this->versionLabel) ?? '';
+  }
+
   public function getVeronaVersion(): string {
     return $this->veronaVersion;
   }
 
   public function getVeronaModel(): string {
     return $this->veronaModel;
+  }
+
+  public function jsonSerialize(): mixed {
+    $info = [
+      'label' => $this->getLabel(),
+      'description' => $this->getDescription(),
+    ];
+    if ($this->veronaModuleType) {
+      $info['veronaModuleType'] = $this->veronaModuleType;
+      $info['veronaVersion'] = $this->veronaVersion;
+      $info['version'] = $this->getVersion();
+    }
+    if ($this->veronaModel) {
+      $info['veronaModel'] = $this->veronaModel;
+    }
+
+    return [
+      'name' => $this->name,
+      'size' => $this->size,
+      'modificationTime' => $this->modificationTime,
+      'type' => $this->type,
+      'id' => $this->id,
+      'report' => $this->validationReport,
+      'dependencies' => $this->relations,
+      'info' => array_merge($info, $this->getContextData()
+      ),
+    ];
   }
 
   /**

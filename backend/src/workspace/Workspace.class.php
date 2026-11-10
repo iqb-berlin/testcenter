@@ -133,15 +133,15 @@ class Workspace {
     }
   }
 
-  private function deleteFileFromDb(?File $file): bool {
+  private function deleteFileFromDb(FileData $file): bool {
     try {
-      if (is_a($file, XMLFileTesttakers::class)) {
+      if ($file->getType() === 'Testtakers') {
         $this->workspaceDAO->deleteLoginSource($file->getName());
         $this->workspaceDAO->deleteAssetAssignmentSource($file->getName());
       }
 
-      if (is_a($file, ResourceFile::class) and $file->isPackage()) {
-        $file->uninstallPackage();
+      if ($file->getType() === 'Resource' and ResourceFile::isPackage($file->getName())) {
+        ResourceFile::uninstallPackage($file->getPath());
       }
 
       $this->workspaceDAO->deleteFile($file);
@@ -325,7 +325,7 @@ class Workspace {
     return Folder::getContentsFlat($extractionPath, $extractionFolder);
   }
 
-  public function getFileById(string $type, string $fileId): File {
+  public function getFileById(string $type, string $fileId): FileData {
     if ($file = $this->workspaceDAO->getFileById($fileId, $type)) {
       if ($file->isValid()) {
         return $file;
@@ -333,6 +333,15 @@ class Workspace {
     }
 
     throw new HttpError("No $type with id `$fileId` found on workspace `$this->workspaceId`!", 404);
+  }
+
+  /** Like getFileById(), but with the file's content. */
+  public function loadFileById(string $type, string $fileId): File {
+    return $this->loadFile($this->getFileById($type, $fileId));
+  }
+
+  public function loadFile(FileData $file): File {
+    return File::fromData($file, Storage::getDriver()->get($file->getPath()));
   }
 
   public function getFileByName(string $type, string $fileName): File {
@@ -476,12 +485,11 @@ class Workspace {
     $deletedLogins = 0;
 
     foreach ($filesInDb as $fileSet) {
-      /** @var File $file */
       foreach ($fileSet as $file) {
 
         if (!isset($filesInFolder[(string) $file->getPath()])) {
           $this->workspaceDAO->deleteFile($file);
-          if (is_a($file, XMLFileTesttakers::class)) {
+          if ($file->getType() === 'Testtakers') {
             $deletedLogins += $this->workspaceDAO->deleteLoginSource($file->getName());
             $this->workspaceDAO->deleteAssetAssignmentSource($file->getName());
           }
@@ -515,7 +523,7 @@ class Workspace {
       $this->workspaceDAO->updateAssetAssignmentSource($file->getName(), $file->getAssetAssignments());
     }
 
-    if (is_a($file, ResourceFile::class) and $file->isPackage()) {
+    if (is_a($file, ResourceFile::class) and ResourceFile::isPackage($file->getName())) {
       $file->installPackage();
     }
 
@@ -529,22 +537,26 @@ class Workspace {
     return $stats;
   }
 
-  /** A cache holding the booklet's units answers from memory; without one every unit is read from the database. */
+  /**
+   * Units the cache holds with their content are taken from there; all others are found in the database and loaded
+   * from storage.
+   */
   public function getRequestedAttachments(XMLFileBooklet $booklet, ?WorkspaceCache $workspaceCache = null): array {
     if (!$booklet->isValid()) {
       return [];
     }
 
     $requestedAttachments = [];
-    foreach ($booklet->getUnitIds() as $uniId) {
+    foreach ($booklet->getUnitIds() as $unitId) {
+      $unit = $workspaceCache?->getUnit($unitId) ?? $this->getFileById('Unit', $unitId);
       /** @var XMLFileUnit $unit */
-      $unit = $workspaceCache?->getUnit($uniId) ?? $this->getFileById('Unit', $uniId);
+      $unit = $unit instanceof File ? $unit : $this->loadFile($unit);
       $requestedAttachments = array_merge($requestedAttachments, $unit->getRequestedAttachments());
     }
     return $requestedAttachments;
   }
 
-  public function getFileRelations(File $file): array {
+  public function getFileRelations(FileData $file): array {
     return $this->workspaceDAO->getFileRelations($file->getName(), $file->getType());
   }
 
@@ -553,9 +565,10 @@ class Workspace {
     $relatingFiles = $this->workspaceDAO->getDependentFilesByTypes($file, ['Booklet']);
 
     foreach ($relatingFiles as $fileset) {
-      foreach ($fileset as $file) {
-        $requestedAttachments = $this->getRequestedAttachments($file);
-        $this->workspaceDAO->updateUnitDefsAttachments($file->getId(), $requestedAttachments);
+      foreach ($fileset as $bookletData) {
+        /** @var XMLFileBooklet $booklet */
+        $booklet = $this->loadFile($bookletData);
+        $this->workspaceDAO->updateUnitDefsAttachments($booklet->getId(), $this->getRequestedAttachments($booklet));
       }
     }
 
