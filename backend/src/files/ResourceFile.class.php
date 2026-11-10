@@ -6,6 +6,7 @@ class ResourceFile extends File {
   const string type = 'Resource';
   const bool canBeRelationSubject = false;
   const bool canBeRelationObject = true;
+  private const string packageExtension = 'ITCR.ZIP';
 
   // Metadata 2.x names exactly this schema. Its repository has since been renamed, so the URL no longer resolves,
   // but it still identifies the format.
@@ -30,8 +31,23 @@ class ResourceFile extends File {
     }
   }
 
+  /** A package needs a name before its extension, as that name is the directory it is unpacked into. */
   public static function isPackage(string $fileName): bool {
-    return FileExt::has($fileName, 'ITCR.ZIP');
+    return FileExt::has($fileName, self::packageExtension) and self::getPackageDirectoryName($fileName) !== '';
+  }
+
+  /**
+   * The names a resource takes in its directory: its file name, and for a package also the name of the directory it
+   * is unpacked into. Two resources must not take the same name, or their files would overwrite each other.
+   * @return list<string>
+   */
+  public static function getTakenNames(string $fileName): array {
+    return self::isPackage($fileName) ? [$fileName, self::getPackageDirectoryName($fileName)] : [$fileName];
+  }
+
+  /** The package's name without its extension, which may be in any case */
+  private static function getPackageDirectoryName(string $packageName): string {
+    return substr($packageName, 0, -strlen('.' . self::packageExtension));
   }
 
   // player is not it's own class, because player and other resources are stored in the same dir
@@ -291,7 +307,7 @@ class ResourceFile extends File {
   }
 
   private static function getPackageDirectory(StoragePath $packagePath): StorageDirectory {
-    return $packagePath->directory->createSubdirectory(basename($packagePath->name, '.itcr.zip'));
+    return $packagePath->directory->createSubdirectory(self::getPackageDirectoryName($packagePath->name));
   }
 
   public function installPackage(): void {

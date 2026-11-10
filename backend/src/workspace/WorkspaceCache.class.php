@@ -40,6 +40,7 @@ class WorkspaceCache {
     }
 
     $this->rejectSecondWidgetsForAModel($files);
+    $this->rejectResourcesTakingTheSameName($files);
     $this->markUnusedItems($files);
   }
 
@@ -55,7 +56,48 @@ class WorkspaceCache {
     }
 
     $this->rejectSecondWidgetsForAModel($files);
+    $this->rejectResourcesTakingTheSameName($files);
     $this->markUnusedItems($files, $usedByStoredFiles);
+  }
+
+  /**
+   * See ResourceFile::getTakenNames: e.g. the package `foo.itcr.zip` and a resource `foo` can't be stored together,
+   * nor can `foo.itcr.zip` and `foo.ITCR.ZIP`.
+   * @param list<File> $filesToReport the resources among them get the error; all cached resources count
+   */
+  private function rejectResourcesTakingTheSameName(array $filesToReport): void {
+    $resourcesToReport = array_filter($filesToReport, static fn(File $file): bool => $file->getType() === 'Resource');
+
+    /** @var array<string, true> $resourceNames */
+    $resourceNames = [];
+    /** @var FileData $resource */
+    foreach ($this->cachedFiles['Resource'] ?? [] as $resource) {
+      $resourceNames[$resource->getName()] = true;
+    }
+
+    /** @var array<string, list<string>> $takenBy taken name => names of the resources taking it */
+    $takenBy = [];
+    foreach (array_keys($resourceNames) as $resourceName) {
+      foreach (ResourceFile::getTakenNames((string) $resourceName) as $takenName) {
+        $takenBy[$takenName][] = (string) $resourceName;
+      }
+    }
+
+    foreach ($resourcesToReport as $resource) {
+      $others = [];
+      foreach (ResourceFile::getTakenNames($resource->getName()) as $takenName) {
+        array_push($others, ...array_diff($takenBy[$takenName], [$resource->getName()]));
+      }
+      if ($others) {
+        $others = array_unique($others);
+        sort($others, SORT_STRING);
+        $others = implode('`, `', $others);
+        $resource->report(
+          'error',
+          "Can not be stored together with `$others`: a package also takes its file name without the extension."
+        );
+      }
+    }
   }
 
   /**

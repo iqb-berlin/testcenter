@@ -196,6 +196,57 @@ class WorkspaceCacheTest extends TestCase {
     static::assertTrue($periodic->isValid());
   }
 
+  function test_validate_rejectsResourcesTakingTheSameName() {
+    $resource = $this->addResource('sample_resource_package', 'x');
+    $upperCasePackage = $this->addResource('sample_resource_package.ITCR.ZIP', ZipForTest::createContent(['a.txt' => 'x']));
+    $package = $this->workspaceCache->getResource('SAMPLE_RESOURCE_PACKAGE.ITCR.ZIP');
+
+    $this->workspaceCache->validate();
+
+    static::assertEquals(
+      ['Can not be stored together with `sample_resource_package.ITCR.ZIP`, `sample_resource_package.itcr.zip`: a package also takes its file name without the extension.'],
+      $resource->getValidationReport()['error']
+    );
+    // its id `SAMPLE_RESOURCE_PACKAGE.ITCR.ZIP` is taken as well, which is reported separately
+    static::assertContains(
+      'Can not be stored together with `sample_resource_package`, `sample_resource_package.itcr.zip`: a package also takes its file name without the extension.',
+      $upperCasePackage->getValidationReport()['error']
+    );
+    static::assertFalse($package->isValid());
+    static::assertTrue(
+      $this->workspaceCache->getResource('VERONA-PLAYER-SIMPLE-6.0')->isValid(),
+      'other resources are not affected'
+    );
+  }
+
+  function test_validateNewFiles_rejectsOnlyTheNewResourceTakingAStoredName() {
+    $package = $this->workspaceCache->getResource('SAMPLE_RESOURCE_PACKAGE.ITCR.ZIP');
+    $resource = $this->addResource('sample_resource_package', 'x');
+
+    $this->workspaceCache->validateNewFiles([$resource], []);
+
+    static::assertEquals(
+      ['Can not be stored together with `sample_resource_package.itcr.zip`: a package also takes its file name without the extension.'],
+      $resource->getValidationReport()['error']
+    );
+    static::assertTrue($package->isValid());
+  }
+
+  function test_validateNewFiles_acceptsAResourceReplacingOneOfItsName() {
+    $package = $this->addResource('sample_resource_package.itcr.zip', ZipForTest::createContent(['a.txt' => 'x']), true);
+
+    $this->workspaceCache->validateNewFiles([$package], []);
+
+    static::assertTrue($package->isValid());
+  }
+
+  private function addResource(string $fileName, string $content, bool $overwriteAllowed = false): ResourceFile {
+    file_put_contents(DATA_DIR . "/ws_1/Resource/{$fileName}", $content);
+    $resource = VfsForTest::loadAndValidateFile("ws_1/Resource/{$fileName}", 'Resource');
+    $this->workspaceCache->addFile('Resource', $resource, $overwriteAllowed);
+    return $resource;
+  }
+
   private function addWidget(
     string $fileName,
     string $id,

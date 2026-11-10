@@ -1,5 +1,9 @@
 # storage-driver (nach dem nächsten Release)
 
+## Fehlerbehebungen
+- Ressourcen-Pakete mit groß geschriebener Endung (z. B. `geogebra.ITCR.ZIP`) können von Units genutzt werden. Bisher scheiterte das Hochladen mit „Could not extract package“.
+- Ein Ressourcen-Paket und eine Ressource mit dem Namen des Pakets ohne Endung (`geogebra.itcr.zip` und `geogebra`) werden beim Hochladen abgelehnt, wenn das jeweils andere schon vorhanden ist. Bisher brach das Hochladen der Ressource mit einem Serverfehler ab, und ein so hochgeladenes Paket wurde gespeichert, ließ sich aber nicht nutzen.
+
 ## Betrieb & Schnittstellen
 - Datenbank: Neue Spalte `workspaces.locked_at`. Während eines Uploads oder Löschvorgangs sperrt sie den Arbeitsbereich für weitere solche Aktionen. Bisher übernahm das eine Datei `.lock` im Workspace-Ordner, die mehrere Backend-Container ohne gemeinsames Laufwerk nicht teilen können.
 

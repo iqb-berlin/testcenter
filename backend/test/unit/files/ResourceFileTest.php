@@ -205,6 +205,23 @@ class ResourceFileTest extends TestCase {
     }
   }
 
+  function test_installPackage_unpacksIntoTheNameWithoutTheExtensionInAnyCase(): void {
+    foreach (['lower.itcr.zip' => 'lower', 'upper.ITCR.ZIP' => 'upper', 'a.b.Itcr.Zip' => 'a.b'] as $packageName => $directory) {
+      $package = $this->resourceFromString($packageName, ZipForTest::createContent(['index.html' => 'x']));
+
+      $package->installPackage();
+
+      static::assertArrayNotHasKey('error', $package->getValidationReport(), $packageName);
+      static::assertFileExists(DATA_DIR . "/ws_1/Resource/$directory/index.html", $packageName);
+    }
+  }
+
+  function test_isPackage_needsANameBeforeTheExtension(): void {
+    static::assertTrue(ResourceFile::isPackage('a.itcr.zip'));
+    static::assertFalse(ResourceFile::isPackage('.itcr.zip'));
+    static::assertFalse(ResourceFile::isPackage('itcr.zip'));
+  }
+
   /** @param array<string, mixed> $override */
   private function createMetadataV3(array $override = []): string {
     $metadata = array_merge(
