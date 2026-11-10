@@ -164,7 +164,7 @@ class WorkspaceCacheTest extends TestCase {
     $molecules = $this->addWidget('molecules-1.0.html', 'molecules', '1.0.0', 'MOLECULE_EDITOR');
     $otherPeriodic = $this->addWidget('other-periodic-2.0.html', 'other-periodic', '2.0.0', 'PERIODIC_TABLE');
 
-    $this->workspaceCache->validate('Resource');
+    $this->workspaceCache->validate();
 
     $error = 'Only one widget per model allowed: `periodic`, `other-periodic` are all widgets for `PERIODIC_TABLE`.';
     foreach ([$periodic11, $periodic12, $otherPeriodic] as $widget) {
@@ -181,7 +181,7 @@ class WorkspaceCacheTest extends TestCase {
     $periodic11 = $this->addWidget('periodic-1.1.html', 'periodic', '1.1.0', 'PERIODIC_TABLE');
     $periodic12 = $this->addWidget('periodic-1.2.html', 'periodic', '1.2.0', 'PERIODIC_TABLE');
 
-    $this->workspaceCache->validate('Resource');
+    $this->workspaceCache->validate();
 
     static::assertTrue($periodic11->isValid());
     static::assertTrue($periodic12->isValid());
@@ -191,7 +191,7 @@ class WorkspaceCacheTest extends TestCase {
     $periodic = $this->addWidget('periodic-1.1.html', 'periodic', '1.1.0', 'PERIODIC_TABLE');
     $this->addWidget('future-periodic-1.0.html', 'future-periodic', '1.0.0', 'PERIODIC_TABLE', '2.0');
 
-    $this->workspaceCache->validate('Resource');
+    $this->workspaceCache->validate();
 
     static::assertTrue($periodic->isValid());
   }

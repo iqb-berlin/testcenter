@@ -28,26 +28,31 @@ class WorkspaceCache {
     }
   }
 
-  public function validate(?string $onlyValidateThisType = null): void {
-    if ($onlyValidateThisType) {
+  public function validate(): void {
+    foreach ($this->cachedFiles as $fileSet) {
       /** @var File $file */
-      foreach ($this->cachedFiles[$onlyValidateThisType] as $file) {
+      foreach ($fileSet as $file) {
         $file->crossValidate($this);
       }
-    } else {
-      foreach ($this->cachedFiles as $fileSet) {
-        /** @var File $file */
-        foreach ($fileSet as $file) {
-          $file->crossValidate($this);
-        }
-      }
     }
 
-    if (!$onlyValidateThisType or $onlyValidateThisType === 'Resource') {
-      $this->rejectSecondWidgetsForAModel();
-    }
-
+    $this->rejectSecondWidgetsForAModel();
     $this->markUnusedItems();
+  }
+
+  /**
+   * Cross-validates files that are about to be stored against the cached files, and checks whether they are used.
+   * What stored files refer to is passed in, as it comes from the database.
+   * @param list<File> $files the files that are depended on come first
+   * @param array<string, array<string, true>> $usedByStoredFiles type => upper-case id => true
+   */
+  public function validateNewFiles(array $files, array $usedByStoredFiles): void {
+    foreach ($files as $file) {
+      $file->crossValidate($this);
+    }
+
+    $this->rejectSecondWidgetsForAModel();
+    $this->markUnusedItems($usedByStoredFiles);
   }
 
   // Temporary, see Workspace::getWidgets: widgets are found by model, so with two widgets for a model (each in any
@@ -136,8 +141,9 @@ class WorkspaceCache {
     return "$type/{$file->getId()}";
   }
 
-  public function markUnusedItems(): void {
-    $relationsMap = [];
+  /** @param array<string, array<string, true>> $usedByStoredFiles type => upper-case id => true */
+  public function markUnusedItems(array $usedByStoredFiles = []): void {
+    $used = $usedByStoredFiles;
 
     foreach (Workspace::subFolders as $type) {
       /** @var File $file */
@@ -146,7 +152,7 @@ class WorkspaceCache {
           $relations = $file->getRelations();
           /** @var FileRelation $relation */
           foreach ($relations as $relation) {
-            $relationsMap[$relation->getTargetType()][strtoupper($relation->getTargetName())] = $file->getName();
+            $used[$relation->getTargetType()][strtoupper($relation->getTargetName())] = true;
           }
         }
       }
@@ -155,7 +161,7 @@ class WorkspaceCache {
     foreach (Workspace::subFolders as $type) {
       /** @var File $file */
       foreach ($this->cachedFiles[$type] as $file) {
-        if ($file::canBeRelationObject and !isset($relationsMap[$file->getType()][strtoupper($file->getId())])) {
+        if ($file::canBeRelationObject and !isset($used[$file->getType()][strtoupper($file->getId())])) {
           $file->report('warning', "{$file->getType()} is never used");
         }
       }

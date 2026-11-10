@@ -15,6 +15,8 @@ class WorkspaceTest extends TestCase {
   private vfsStreamDirectory $vfs;
   private WorkspaceDAO|MockInterface $workspaceDaoMock;
   private string $stagingPath;
+  /** @var list<array{subject_type: string, subject_name: string, object_type: string, object_id: string}> */
+  private array $storedRelations;
 
   const validFile = '<Unit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"'
     . ' xsi:noNamespaceSchemaLocation="https://w3id.org/iqb/spec/unit-xml/17.4">'
@@ -83,6 +85,10 @@ class WorkspaceTest extends TestCase {
     $this->workspaceDaoMock
       ->allows('updateAssetAssignmentSource')
       ->andReturn(['deleted' => 0, 'added' => 0]);
+    $this->storedRelations = [];
+    $this->workspaceDaoMock
+      ->allows('getRelations')
+      ->andReturnUsing(fn(): array => $this->storedRelations);
   }
 
   function tearDown(): void {
@@ -507,6 +513,68 @@ class WorkspaceTest extends TestCase {
     static::assertTrue(file_exists(DATA_DIR . '/ws_1/Booklet/valid_booklet.xml'), 'import valid booklet');
     static::assertTrue(file_exists(DATA_DIR . '/ws_1/Resource/P.html'), 'import resource');
     static::assertTrue(file_exists(DATA_DIR . '/ws_1/Testtakers/valid_testtakers.xml'), 'import testtakers');
+  }
+
+  function test_importUncategorizedFiles_doesNotValidateStoredFilesAgain() {
+    file_put_contents(DATA_DIR . '/ws_1/Unit/stored.xml', self::validUnit);
+    $storedUnit = new XMLFileUnit(new FileData(StoragePath::fromString('ws_1/Unit/stored.xml'), 'Unit', 'X_UNIT'));
+    file_put_contents($this->stagingPath . '/valid.xml', self::validFile);
+    file_put_contents($this->stagingPath . '/P.HTML', 'this would be a player');
+
+    $this->workspaceDaoMock
+      ->expects('getAllFilesWhere')
+      ->andReturn(['Unit' => ['X_UNIT' => $storedUnit]], [])
+      ->twice();
+    $this->workspaceDaoMock->allows('storeFile');
+    $this->workspaceDaoMock->allows('storeRelations');
+    $this->workspaceDaoMock->allows('getDependentFilesByTypes')->andReturn([]);
+    $this->workspaceDaoMock->expects('updateContentTypeBasedOnRemainingTesttakers');
+
+    $workspace = new Workspace(1);
+    $result = $workspace->importUncategorizedFiles($this->stagingPath, ['valid.xml', 'P.HTML']);
+
+    static::assertArrayNotHasKey('error', $result['valid.xml']);
+    static::assertEquals([], $storedUnit->getRelations(), 'the stored unit is not cross-validated');
+  }
+
+  function test_importUncategorizedFiles_resourceUsedByStoredFileIsNotUnused() {
+    file_put_contents($this->stagingPath . '/valid.xml', self::validFile);
+    file_put_contents($this->stagingPath . '/P.HTML', 'this would be a player');
+    file_put_contents($this->stagingPath . '/R.VOUD', 'a definition only a stored unit uses');
+    $this->storedRelations = [
+      ['subject_type' => 'Unit', 'subject_name' => 'stored.xml', 'object_type' => 'Resource', 'object_id' => 'R.VOUD']
+    ];
+
+    $this->workspaceDaoMock->expects('getAllFilesWhere')->andReturn([], [])->twice();
+    $this->workspaceDaoMock->allows('storeFile');
+    $this->workspaceDaoMock->allows('storeRelations');
+    $this->workspaceDaoMock->allows('getDependentFilesByTypes')->andReturn([]);
+    $this->workspaceDaoMock->expects('updateContentTypeBasedOnRemainingTesttakers');
+
+    $workspace = new Workspace(1);
+    $result = $workspace->importUncategorizedFiles($this->stagingPath, ['valid.xml', 'P.HTML', 'R.VOUD']);
+
+    static::assertNotContains('Resource is never used', $result['R.VOUD']['warning'] ?? []);
+  }
+
+  function test_importUncategorizedFiles_relationsOfReplacedFilesDoNotCount() {
+    file_put_contents($this->stagingPath . '/valid.xml', self::validFile);
+    file_put_contents($this->stagingPath . '/P.HTML', 'this would be a player');
+    file_put_contents($this->stagingPath . '/R.VOUD', 'a definition the replaced unit used');
+    $this->storedRelations = [
+      ['subject_type' => 'Unit', 'subject_name' => 'valid.xml', 'object_type' => 'Resource', 'object_id' => 'R.VOUD']
+    ];
+
+    $this->workspaceDaoMock->expects('getAllFilesWhere')->andReturn([], [])->twice();
+    $this->workspaceDaoMock->allows('storeFile');
+    $this->workspaceDaoMock->allows('storeRelations');
+    $this->workspaceDaoMock->allows('getDependentFilesByTypes')->andReturn([]);
+    $this->workspaceDaoMock->expects('updateContentTypeBasedOnRemainingTesttakers');
+
+    $workspace = new Workspace(1);
+    $result = $workspace->importUncategorizedFiles($this->stagingPath, ['valid.xml', 'P.HTML', 'R.VOUD']);
+
+    static::assertContains('Resource is never used', $result['R.VOUD']['warning'] ?? []);
   }
 
   function test_importUncategorizedFiles_rejectDuplicateResourceIdUploadedWithUnit() {

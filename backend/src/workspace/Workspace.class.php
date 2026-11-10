@@ -234,11 +234,35 @@ class Workspace {
 
     // Resources uploaded together with units come in as one category (see sortAndValidateToplevelFiles), but each
     // type needs its own cross-validation, e.g. against duplicate ids. Dependencies first.
-    $uploadedTypes = array_map(static fn(File $file): string => $file->getType(), $files);
-    $typesToValidate = array_reverse(FileType::getDependenciesOfType($highestTypeAmongFiles));
-    foreach (array_intersect($typesToValidate, $uploadedTypes) as $type) {
-      $workspaceCache->validate($type);
+    $typeOrder = array_reverse(FileType::getDependenciesOfType($highestTypeAmongFiles));
+    $filesInOrder = array_values($files);
+    usort(
+      $filesInOrder,
+      static fn(File $a, File $b): int => array_search($a->getType(), $typeOrder) <=> array_search($b->getType(), $typeOrder)
+    );
+
+    $workspaceCache->validateNewFiles($filesInOrder, $this->getUsedByStoredFiles($files));
+  }
+
+  /**
+   * What stored files of the uploaded types relate to - except those the upload replaces.
+   * @param array<string, File> $uploadedFiles
+   * @return array<string, array<string, true>> type => upper-case id => true
+   */
+  private function getUsedByStoredFiles(array $uploadedFiles): array {
+    $replaced = [];
+    foreach ($uploadedFiles as $file) {
+      $replaced["{$file->getType()}/{$file->getName()}"] = true;
     }
+    $uploadedTypes = array_values(array_unique(array_map(static fn(File $file): string => $file->getType(), $uploadedFiles)));
+
+    $used = [];
+    foreach ($this->workspaceDAO->getRelations($uploadedTypes) as $relation) {
+      if (!isset($replaced["{$relation['subject_type']}/{$relation['subject_name']}"])) {
+        $used[$relation['object_type']][strtoupper($relation['object_id'])] = true;
+      }
+    }
+    return $used;
   }
 
   protected function categorizeFile(string $stagedFilePath, File $file): bool {

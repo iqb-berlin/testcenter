@@ -150,6 +150,32 @@ class WorkspaceDAOTest extends TestCase {
     );
   }
 
+  public function test_getRelations(): void {
+    $this->dbc->_(
+      "insert into files(workspace_id, name, id, type, modification_ts, is_valid, size)
+        values (1, 'unit.xml', 'UNIT', 'Unit', '2023-01-16 09:00:00+01:00', true, 1)"
+    );
+    $this->dbc->_(
+      "insert into file_relations(workspace_id, subject_name, subject_type, relationship_type, object_type, object_name)
+        values
+          (1, 'unit.xml', 'Unit', 'usesPlayer', 'Resource', 'verona-player-simple-6.0.html'),
+          (1, 'Booklet.xml', 'Booklet', 'containsUnit', 'Unit', 'unit.xml')"
+    );
+
+    static::assertEquals(
+      [
+        [
+          'subject_type' => 'Unit',
+          'subject_name' => 'unit.xml',
+          'object_type' => 'Resource',
+          'object_id' => 'verona-player-simple-4.0.html'
+        ]
+      ],
+      $this->dbc->getRelations(['Unit'])
+    );
+    static::assertEquals([], $this->dbc->getRelations([]));
+  }
+
   public function test_addLoginSource(): void {
     $logins = new LoginArray(
       new Login('first', 'some', 'run-hot-return', 'grp', 'Grp', [], 1, 1000000, 200000, 0, (object) ['some' => 'thing']),

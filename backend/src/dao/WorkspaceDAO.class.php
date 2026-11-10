@@ -412,6 +412,37 @@ class WorkspaceDAO extends DAO {
     );
   }
 
+  /**
+   * Lists what the stored files of the given types refer to, e.g. which resources the units use: for each reference
+   * the referring file's type and name, and the referred-to file's type and id.
+   * @param list<string> $subjectTypes
+   * @return list<array{subject_type: string, subject_name: string, object_type: string, object_id: string}>
+   */
+  public function getRelations(array $subjectTypes): array {
+    if (!count($subjectTypes)) {
+      return [];
+    }
+
+    return $this->_(
+      "select
+          file_relations.subject_type,
+          file_relations.subject_name,
+          file_relations.object_type,
+          files.id as object_id
+        from
+          file_relations
+          join files
+            on file_relations.workspace_id = files.workspace_id
+              and file_relations.object_name = files.name
+              and file_relations.object_type = files.type
+        where
+          file_relations.workspace_id = ?
+          and file_relations.subject_type in (" . implode(',', array_fill(0, count($subjectTypes), '?')) . ')',
+      [$this->workspaceId, ...$subjectTypes],
+      true
+    );
+  }
+
   public function getFiles(array $localPaths, bool $includeInvalid = false): array {
     $replacements = [$this->workspaceId];
     $validFilePaths = 0;
