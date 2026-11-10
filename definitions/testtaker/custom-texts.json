@@ -350,7 +350,7 @@
   },
   "gm_control_unlock" : {
     "label" : "Control: Entsperren",
-    "defaultvalue" : "Test Entsperren"
+    "defaultvalue" : "Test entsperren"
   },
   "gm_control_goto_unlock_blocks_confirm_text" : {
     "label" : "Control: Springe zu Block - soll Zeit wiederhergestellt werden?",
@@ -382,7 +382,7 @@
   },
   "gm_control_unlock_tooltip" : {
     "label" : "Tooltip: Freigeben",
-    "defaultvalue" : "Test Freigeben"
+    "defaultvalue" : "Test freigeben"
   },
   "gm_filter_locked" : {
     "label" : "Filter: gesperrte ausblenden",
