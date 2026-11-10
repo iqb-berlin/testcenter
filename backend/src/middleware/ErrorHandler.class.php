@@ -25,10 +25,9 @@ class ErrorHandler {
 
     if (is_a($throwable, "Slim\Exception\HttpException")) {
       $request = $throwable->getRequest();
-      $serverParams = $request->getServerParams();
-      $logHeadline[] = "on `[{$serverParams['REQUEST_METHOD']}] {$serverParams['REQUEST_URI']}`";
+      $logHeadline[] = "on `[{$request->getMethod()}] {$request->getRequestTarget()}`";
     } else if(isset($_SERVER['REQUEST_METHOD'])) {
-      $logHeadline[] = "on `[{$_SERVER['REQUEST_METHOD']}]` {$_SERVER['REQUEST_URI']}`";
+      $logHeadline[] = "on `[{$_SERVER['REQUEST_METHOD']}] {$_SERVER['REQUEST_URI']}`";
     }
 
     if ($testMode = TestEnvironment::$testMode) {
