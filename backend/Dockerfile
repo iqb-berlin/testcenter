@@ -129,6 +129,14 @@ COPY --from=dev-extension /usr/local/etc/php/conf.d/ /usr/local/etc/php/conf.d/
 # Copy dev dependencies
 COPY --chown=www-data:www-data --from=dev-composer /usr/src/testcenter/backend/vendor/ vendor/
 
+# entrypoint-dev.sh regenerates the class map at every start, so it matches the mounted sources; composer lies within
+# open_basedir of local.php.ini
+COPY --from=dev-composer /usr/bin/composer ../tools/composer
+COPY --chown=www-data:www-data backend/composer.json .
+COPY backend/entrypoint-dev.sh /entrypoint-dev.sh
+ENTRYPOINT ["/entrypoint-dev.sh"]
+CMD ["/entrypoint.sh"]
+
 # static analysis; the digest pins the exact binary, not only the version
 COPY --from=ghcr.io/carthage-software/mago:1.44.0@sha256:0b922aacc5303ffa2bc2601ec5bb594064b730b31f125ff2473409dd555b5fcf \
     /usr/local/bin/mago /usr/local/bin/mago

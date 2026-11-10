@@ -56,7 +56,7 @@ services:
       context: ../../..
       dockerfile: backend/Dockerfile
       target: dev
-    entrypoint: [ "bash", "/var/www/testcenter/backend/test/initialization/entrypoint.sh" ]
+    command: [ "bash", "/var/www/testcenter/backend/test/initialization/entrypoint.sh" ]
     environment:
       # Pass the selection into the container explicitly. The previous inline
       # entrypoint happened to expand TEST_NAME while Compose parsed this file.
@@ -77,6 +77,7 @@ services:
       - ../../../backend/index.php:/var/www/testcenter/backend/index.php
       - ../../../backend/initialize.php:/var/www/testcenter/backend/initialize.php
       - ../../../backend/routes.php:/var/www/testcenter/backend/routes.php
+      - ../../../backend/composer.json:/var/www/testcenter/backend/composer.json
       - ../../../backend/src:/var/www/testcenter/backend/src
       - ../../../backend/test:/var/www/testcenter/backend/test
       - ../../../definitions:/var/www/testcenter/definitions

@@ -43,7 +43,7 @@ build-e2e:
       --file docker-compose.yml
       --file docker-compose.dev.yml
       --file e2e/docker-compose.system-test-headless.yml
-      run --rm --entrypoint /initialize_only.sh backend
+      run --rm backend /initialize_only.sh
     - docker compose
       --env-file .env.dev-template
       --file docker-compose.yml

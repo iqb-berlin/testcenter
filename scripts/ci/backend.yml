@@ -225,7 +225,7 @@ test-backend-api:
       --file docker-compose.yml
       --file docker-compose.dev.yml
       --file test/docker-compose.api-test.yml
-      run --rm --entrypoint /initialize_only.sh backend
+      run --rm backend /initialize_only.sh
     - docker compose
       --env-file .env.dev-template
       --file docker-compose.yml
@@ -262,7 +262,7 @@ test-file-server-api:
       --file docker-compose.yml
       --file docker-compose.dev.yml
       --file test/docker-compose.api-test.yml
-      run --rm --entrypoint /initialize_only.sh backend
+      run --rm backend /initialize_only.sh
     - docker compose
       --env-file .env.dev-template
       --file docker-compose.yml

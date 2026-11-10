@@ -183,7 +183,7 @@ init-backend:
 			--env-file .env.dev\
 			--file docker-compose.yml\
 			--file docker-compose.dev.yml\
-		run --rm --no-TTY --entrypoint /initialize_only.sh backend
+		run --rm --no-TTY backend /initialize_only.sh
 
 # Creates some interfaces for booklets and test-modes out of the definitions.
 create-interfaces:

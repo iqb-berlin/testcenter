@@ -27,7 +27,7 @@ test-backend-unit:
 			--env-file .env.dev\
 			--file docker-compose.yml\
 			--file docker-compose.dev.yml\
-		run --rm --entrypoint "" $(UNIT_TEST_PHP_INI) backend\
+		run --rm $(UNIT_TEST_PHP_INI) backend\
 			php -dxdebug.mode='debug' /var/www/testcenter/backend/vendor/phpunit/phpunit/phpunit\
 						--bootstrap /var/www/testcenter/backend/test/unit/bootstrap.php\
 						--configuration /var/www/testcenter/backend/phpunit.xml\
@@ -39,7 +39,7 @@ test-backend-unit-coverage:
 			--env-file .env.dev\
 			--file docker-compose.yml\
 			--file docker-compose.dev.yml\
-		run --rm --entrypoint "" $(UNIT_TEST_PHP_INI) backend\
+		run --rm $(UNIT_TEST_PHP_INI) backend\
 			php -dxdebug.mode='coverage' /var/www/testcenter/backend/vendor/phpunit/phpunit/phpunit\
 					--bootstrap /var/www/testcenter/backend/test/unit/bootstrap.php\
 					--configuration /var/www/testcenter/backend/phpunit.xml\
@@ -53,7 +53,7 @@ test-backend-api:
 			--file docker-compose.yml\
 			--file docker-compose.dev.yml\
 			--file test/docker-compose.api-test.yml\
-		run --rm --entrypoint /initialize_only.sh backend &&\
+		run --rm backend /initialize_only.sh &&\
 	docker compose\
 			--env-file .env.dev\
 			--file docker-compose.yml\
@@ -133,7 +133,7 @@ test-system-headless:
 			--file docker-compose.yml\
 			--file docker-compose.dev.yml\
 			--file e2e/docker-compose.system-test-headless.yml\
-		run --rm --entrypoint /initialize_only.sh backend &&\
+		run --rm backend /initialize_only.sh &&\
 	SPEC='$(spec)' \
 	docker compose\
 			--env-file .env.dev\
@@ -158,7 +158,7 @@ test-system:
 			--env-file .env.dev\
 			--file docker-compose.yml\
 			--file docker-compose.dev.yml\
-		run --rm --entrypoint /initialize_only.sh backend &&\
+		run --rm backend /initialize_only.sh &&\
 	docker compose\
 			--env-file .env.dev\
 			--file docker-compose.yml\
