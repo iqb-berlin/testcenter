@@ -21,7 +21,6 @@ class WorkspaceCacheTest extends TestCase {
   function setUp(): void {
     require_once "test/unit/mock-classes/ExternalFileMock.php";
     require_once "test/unit/mock-classes/PasswordMock.php";
-    require_once "test/unit/mock-classes/ZIPMock.php";
 
     $workspaceDaoMock = Mockery::mock('overload:' . WorkspaceDAO::class);
     $workspaceDaoMock->allows([
@@ -117,7 +116,7 @@ class WorkspaceCacheTest extends TestCase {
         'warning' => ['Resource is never used']
       ],
       'Resource/sample_resource_package.itcr.zip' => [
-        'info' => ['Contains 0 files.']
+        'info' => ['Contains 1 files.']
       ],
       'Resource/SAMPLE_UNITCONTENTS.HTM' => [],
       "Resource/coding-scheme.vocs.json" => [],
@@ -213,12 +212,11 @@ class WorkspaceCacheTest extends TestCase {
       'metadataVersion' => '3.1',
       'model' => $model
     ], JSON_THROW_ON_ERROR);
-    $path = DATA_DIR . "/ws_1/Resource/{$fileName}";
     file_put_contents(
-      $path,
+      DATA_DIR . "/ws_1/Resource/{$fileName}",
       "<html lang='de'><head><script type='application/ld+json'>{$metadata}</script></head></html>"
     );
-    $widget = new ResourceFile($path);
+    $widget = new ResourceFile(StoragePath::fromString("ws_1/Resource/{$fileName}"));
     $this->workspaceCache->addFile('Resource', $widget);
     return $widget;
   }

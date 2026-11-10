@@ -144,13 +144,7 @@ class WorkspaceInitializer {
       throw new Exception("File not found: `$importFileName`");
     }
 
-    $dir = pathinfo($target, PATHINFO_DIRNAME);
-    $fileName = basename($target);
-    $fileName = Folder::createPath(DATA_DIR . "/ws_$workspaceId/$dir") . $fileName;
-
-    if (!@copy($importFileName, $fileName)) {
-      throw new Exception("Could not write file: $fileName");
-    }
+    Storage::getDriver()->put(StoragePath::fromString(Workspace::getStorageDirectoryOf($workspaceId) . $target), $importFileName);
   }
 
   public function importSampleFiles(int $workspaceId, string $sampleFileSet = 'default'): void {
@@ -159,16 +153,8 @@ class WorkspaceInitializer {
     }
   }
 
-  public function cleanWorkspace(int $workspaceId): void {
-    Folder::deleteContentsRecursive(DATA_DIR . "/ws_$workspaceId/");
-    rmdir(DATA_DIR . "/ws_$workspaceId/");
-  }
-
-  public function createSampleScanImage(string $fileName, int $workspaceId): void {
-    $png = '89504e470d0a1a0a0000000d49484452000000010000000108060000001f15c4890000000d4944415478da636460f85f0f0002870180eb47ba920000000049454e44ae426082';
-    file_put_contents(
-      Folder::createPath(DATA_DIR . "/ws_$workspaceId") . $fileName,
-      hex2bin($png)
-    );
+  /** a 1x1 PNG */
+  public function getSampleScanImage(): string {
+    return hex2bin('89504e470d0a1a0a0000000d49484452000000010000000108060000001f15c4890000000d4944415478da636460f85f0f0002870180eb47ba920000000049454e44ae426082');
   }
 }

@@ -33,7 +33,6 @@ class TestEnvironment {
         CacheService::flush();
         self::defineTestDataDir(self::integrationTestDataDir, true);
         self::createTestFiles(true);
-        self::overwriteModificationDatesTestDataDir();
         self::buildTestDB();
         self::createTestData();
       }
@@ -42,7 +41,6 @@ class TestEnvironment {
         // this is called once before the api tests (dredd)
         self::defineTestDataDir(self::apiTestDataDir, true);
         self::createTestFiles(false);
-        self::overwriteModificationDatesTestDataDir();
         self::buildTestDB();
         self::createTestData();
       }
@@ -56,7 +54,6 @@ class TestEnvironment {
         // resolution like realpath behaves as in production
         self::defineTestDataDir(self::apiTestDataDir, true);
         self::createTestFiles(false);
-        self::overwriteModificationDatesTestDataDir();
         // in api-tests every call is atomic and the test db gets restored afterwards
         // the test db must be set up before with $testMode == 'prepare'
         $initDAO = new InitDAO();
@@ -75,8 +72,10 @@ class TestEnvironment {
   private static function createTestFiles(bool $includeSystemTestFiles): void {
     $initializer = new WorkspaceInitializer();
     $initializer->importSampleFiles(1, 'default');
-    Folder::createPath(DATA_DIR . "/ws_1/UnitAttachments");
-    $initializer->createSampleScanImage("UnitAttachments/h5ki-bd-va4dg-jc2to2mp_6tga4teiw.png", 1);
+    Storage::getDriver()->putContents(
+      StoragePath::fromString('ws_1/UnitAttachments/h5ki-bd-va4dg-jc2to2mp_6tga4teiw.png'),
+      $initializer->getSampleScanImage()
+    );
     if ($includeSystemTestFiles) {
       $initializer->importSampleFiles(1, 'system-test');
       $initializer->importSampleFiles(2, 'default');
@@ -105,8 +104,14 @@ class TestEnvironment {
     $initDAO->createSampleCommands($groupMonitor->getPerson()->getId());
 
     $initializer = new WorkspaceInitializer();
-    $initializer->createSampleScanImage('sample_scanned_image.png', 1);
-    $initDAO->importScanImage(1, 'sample_scanned_image.png');
+    Folder::useTempDirectory(
+      'upload-',
+      static function(string $stagingPath) use ($initializer, $initDAO): void {
+        $imagePath = "$stagingPath/sample_scanned_image.png";
+        file_put_contents($imagePath, $initializer->getSampleScanImage());
+        $initDAO->importScanImage(1, $imagePath);
+      }
+    );
   }
 
   // full.sql is the complete, hand-maintained schema, so the test DB is just a plain re-run of it.
@@ -135,19 +140,12 @@ class TestEnvironment {
     if (!$shouldReset) {
       return;
     }
-    Folder::createPath(DATA_DIR);
-    Folder::deleteContentsRecursive(DATA_DIR);
-  }
-
-  private static function overwriteModificationDatesTestDataDir(?string $dir = DATA_DIR): void {
-    foreach (new DirectoryIterator($dir) as $child) {
-      if ($child->isDot() or $child->isLink()) {
-        continue;
-      }
-      touch($child->getPathname(), TestEnvironment::staticDate);
-      if ($child->isDir()) {
-        self::overwriteModificationDatesTestDataDir($child->getPathname());
-      }
+    $storage = Storage::getDriver();
+    foreach ($storage->listSubdirectories(StorageDirectory::root()) as $directory) {
+      $storage->deleteDirectory(StorageDirectory::root()->createSubdirectory($directory));
+    }
+    foreach (array_keys($storage->listFiles(StorageDirectory::root())) as $fileName) {
+      $storage->delete(StorageDirectory::root()->createFilePath($fileName));
     }
   }
 }

@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 class FileData extends DataCollectionTypeSafe {
   protected string|null $type = null;
-  protected string $path = '';
+  protected ?StoragePath $path = null;
   protected string $id = '';
   protected string $label = '';
   protected string $description = '';
@@ -23,7 +23,7 @@ class FileData extends DataCollectionTypeSafe {
   protected string $veronaModel;
 
   public function __construct(
-    string $path = '',
+    ?StoragePath $path = null,
     string $type = null,
     string $id = '',
     string $label = '',
@@ -68,7 +68,7 @@ class FileData extends DataCollectionTypeSafe {
     return $this->type;
   }
 
-  public function getPath(): string {
+  public function getPath(): ?StoragePath {
     return $this->path;
   }
 

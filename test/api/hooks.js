@@ -305,7 +305,6 @@ dreddHooks.beforeValidation('specs > /workspace/{ws_id}/report/log > get report 
 dreddHooks.beforeValidation('specs > /workspace/{ws_id}/report/response > get report of item responses > 200 > text/csv;charset=utf-8', attachBOM);
 dreddHooks.beforeValidation('specs > /workspace/{ws_id}/report/review > get report of item reviews > 200 > text/csv;charset=utf-8', attachBOM);
 dreddHooks.beforeValidation('specs > /reviews/export > get all reviews of a person > 200 > text/csv;charset=utf-8', attachBOM);
-dreddHooks.beforeValidation('specs > /workspace/{ws_id}/report/sys-check > get report of system checks > 200 > text/csv;charset=utf-8', attachBOM);
 dreddHooks.beforeValidation('specs > /booklet/{booklet_name} > get a booklet > 200 > application/xml', addBookletToExpectation);
 dreddHooks.before('specs > /attachment/{attachment_id}/file > upload a new attachment-file > 201', attachUploadImage);
 dreddHooks.before('specs > /attachment/{attachment_id}/file > upload a new attachment-file > 401', attachUploadImage);
@@ -331,4 +330,7 @@ dreddHooks.before('specs > /test/{test_id}/unit/{unit_name}/review > add review 
 dreddHooks.before('specs > /test/{test_id}/review > add review to booklet > 201', skipTransaction);
 dreddHooks.before('specs > /test/{test_id}/unit/{unit_name}/review/{review_id} > update a unit review > 200', skipTransaction);
 dreddHooks.before('specs > /test/{test_id}/review/{review_id} > update a booklet review > 200', skipTransaction);
+// The CSV contains the report file's modification date, which is the time the test files were copied. The sys-check
+// feature is going to be removed, so the CSV variant is not worth a workaround.
+dreddHooks.before('specs > /workspace/{ws_id}/report/sys-check > get report of system checks > 200 > text/csv;charset=utf-8', skipTransaction);
 dreddHooks.afterEach(finishAfterError);

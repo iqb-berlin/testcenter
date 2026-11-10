@@ -32,17 +32,23 @@ class AssetController extends Controller {
     }
 
     $file = $uploadedFiles['file'];
-    $validationResult = self::validateUpload($file);
-
-    $originalName = $validationResult['originalName'];
-    $extension = $validationResult['extension'];
-    $storedName = 'asset_' . Random::generateRandomId() . '.' . $extension;
-
-    $uploadDir = AssetStorage::getDir();
-    if (!is_dir($uploadDir)) {
-      mkdir($uploadDir, 0o755, true);
+    if ($file->getError() !== UPLOAD_ERR_OK) {
+      throw new HttpError('Upload failed', 400);
     }
-    $file->moveTo($uploadDir . DIRECTORY_SEPARATOR . $storedName);
+
+    $localPath = tempnam(sys_get_temp_dir(), 'asset-upload-');
+    try {
+      $file->moveTo($localPath);
+      $validationResult = self::validateUpload($file, $localPath);
+
+      $originalName = $validationResult['originalName'];
+      $extension = $validationResult['extension'];
+      $storedName = 'asset_' . Random::generateRandomId() . '.' . $extension;
+
+      Storage::getDriver()->put(AssetStorage::getPath($storedName), $localPath);
+    } finally {
+      unlink($localPath);
+    }
 
     try {
       $replacement = self::assetDAO()->replaceAssetByOriginalName($originalName, $storedName);
@@ -80,22 +86,17 @@ class AssetController extends Controller {
   /**
    * @return array{originalName: string, extension: string, mimeType: string}
    */
-  private static function validateUpload(UploadedFileInterface $file): array {
-    if ($file->getError() !== UPLOAD_ERR_OK) {
-      throw new HttpError('Upload failed', 400);
-    }
-
+  private static function validateUpload(UploadedFileInterface $file, string $localPath): array {
     if ($file->getSize() > self::MAX_UPLOAD_SIZE) {
       throw new HttpError('File too large (max 2MB)', 400);
     }
 
-    $tmpFilePath = $file->getStream()->getMetadata('uri');
-    $mimeType = mime_content_type($tmpFilePath);
+    $mimeType = mime_content_type($localPath);
     if (!in_array($mimeType, self::ALLOWED_MIME_TYPES, true)) {
       throw new HttpError("Invalid file type: `$mimeType`", 400);
     }
 
-    if (getimagesize($tmpFilePath) === false) {
+    if (getimagesize($localPath) === false) {
       throw new HttpError('File is not a valid image', 400);
     }
 
@@ -113,9 +114,6 @@ class AssetController extends Controller {
   }
 
   private static function deleteStoredFile(string $storedName): void {
-    $filePath = AssetStorage::getDir() . DIRECTORY_SEPARATOR . $storedName;
-    if (file_exists($filePath)) {
-      unlink($filePath);
-    }
+    Storage::getDriver()->delete(AssetStorage::getPath($storedName));
   }
 }

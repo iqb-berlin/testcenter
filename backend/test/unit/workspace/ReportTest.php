@@ -22,12 +22,12 @@ final class ReportTest extends TestCase {
    *    VfsForTest would instantiate the real Workspace class before our mocks are registered,
    *    causing conflicts.
    *
-   * 3. ReviewCSVFormatter::enrichWithLabels() instantiates Workspace directly (line 18),
-   *    which calls getOrCreateWorkspacePath() needing DATA_DIR. Our Workspace mock intercepts
-   *    getFileById() to return empty results, avoiding actual file parsing.
+   * 3. ReviewCSVFormatter::enrichWithLabels() instantiates Workspace directly (line 18).
+   *    Our Workspace mock intercepts getFileById() to return empty results, avoiding actual
+   *    file parsing.
    *
-   * Minimal setup: define DATA_DIR pointing to vfsStream so Workspace constructor doesn't
-   * fail, then mock away the actual file operations.
+   * Minimal setup: define DATA_DIR pointing to vfsStream so the storage driver lands there,
+   * then mock away the actual file operations.
    *
    * Future refactor opportunity: inject Workspace dependency into ReviewCSVFormatter
    * instead of instantiating internally, enabling cleaner test isolation.
@@ -715,9 +715,17 @@ final class ReportTest extends TestCase {
     $this->testGenerateReviewsReportWithFailure(ReportFormat::CSV);
   }
 
+  private static function createSampleSysCheckReport(): SysCheckReportFile {
+    return new SysCheckReportFile(
+      basename(self::SYS_CHECK_SAMPLE_DATA_FILE),
+      file_get_contents(self::SYS_CHECK_SAMPLE_DATA_FILE),
+      filemtime(self::SYS_CHECK_SAMPLE_DATA_FILE)
+    );
+  }
+
   function testSysCheckDigestUsesCorrectedEnvironmentLabels(): void {
     // Exercise the shared sample report so label changes cannot silently empty admin summaries.
-    $report = new SysCheckReportFile(self::SYS_CHECK_SAMPLE_DATA_FILE);
+    $report = self::createSampleSysCheckReport();
     static::assertSame(['os' => 'Linux x86_64', 'browser' => 'Chrome 79'], $report->getDigest());
   }
 
@@ -727,7 +735,7 @@ final class ReportTest extends TestCase {
     $this->reportFormat = ReportFormat::CSV;
     $this->sysChecksFolderMock
       ->allows('collectSysCheckReports')
-      ->andReturn([new SysCheckReportFile(self::SYS_CHECK_SAMPLE_DATA_FILE)]);
+      ->andReturn([self::createSampleSysCheckReport()]);
 
     $expectedSysChecksCSVReportData = self::BOM .
       "\"Titel\";\"SysCheck-Id\";\"SysCheck\";\"Responses\";\"DatumTS\";\"Datum\";\"FileName\";\"Betriebssystem\";\"Betriebssystemversion\";\"Bildschirmauflösung\";\"Browser\";\"Browser-Cookies aktiviert\";\"Browser-Plugins\";\"Browsersprache\";\"Browserversion\";\"CPU-Architektur\";\"CPU-Kerne\";\"Fenstergröße\";\"Downloadgeschwindigkeit\";\"Downloadgeschwindigkeit benötigt\";\"Downloadbewertung\";\"Uploadgeschwindigkeit\";\"Uploadgeschwindigkeit benötigt\";\"Uploadbewertung\";\"Gesamtbewertung\";\"RoundTrip in ms\";\"Netzwerktyp nach Leistung\";\"Downlink MB/s\";\"Name\";\"Who am I?\";\"Why so serious?\";\"Check this out\";\"All we here is\";\"loading time\"\n" .
@@ -749,7 +757,7 @@ final class ReportTest extends TestCase {
     $this->reportFormat = ReportFormat::CSV;
     $this->sysChecksFolderMock
       ->allows('collectSysCheckReports')
-      ->andReturn([new SysCheckReportFile(self::SYS_CHECK_SAMPLE_DATA_FILE)]);
+      ->andReturn([self::createSampleSysCheckReport()]);
 
     $expectedSysChecksJsonReportData = self::SYS_CHECKS;
     $expectedSysChecksJsonReportData[0]["fileData"] = [

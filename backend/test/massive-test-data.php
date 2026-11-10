@@ -191,7 +191,7 @@ try {
       $ttFile .= "\n</Testtakers>";
       echo $ttFile;
 
-      file_put_contents($ws->getWorkspacePath() . "/Testtakers/$ttFileName.xml", $ttFile);
+      Storage::getDriver()->putContents($ws->getFilePath('Testtakers', "$ttFileName.xml"), $ttFile);
     }
 
     $stats = $ws->storeAllFiles();

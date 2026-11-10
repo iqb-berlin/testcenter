@@ -466,11 +466,6 @@ final class WorkspaceControllerTest extends TestCase {
       ->expects('setWorkspaceHash')
       ->once();
 
-    $this->workspaceMock
-      ->expects('getWorkspacePath')
-      ->once()
-      ->andReturn('..whataver');
-
     $this->uploadedFilesHandler
       ->expects('handleUploadedFiles')
       ->once()

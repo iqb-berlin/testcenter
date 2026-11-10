@@ -5,7 +5,7 @@ declare(strict_types=1);
 
 class Workspace {
   protected int $workspaceId = 0;
-  protected string $workspacePath = '';
+  protected StorageDirectory $storageDirectory;
   public WorkspaceDAO $workspaceDAO;
 
   // dont' change order, it's the order of possible dependencies
@@ -15,7 +15,10 @@ class Workspace {
     $workspaces = [];
     $class = get_called_class();
 
-    foreach (Folder::glob(DATA_DIR, 'ws_*') as $workspaceDir) {
+    foreach (Storage::getDriver()->listSubdirectories(StorageDirectory::root()) as $workspaceDir) {
+      if (!fnmatch('ws_*', $workspaceDir)) {
+        continue;
+      }
       $workspaceFolderNameParts = explode('_', $workspaceDir);
       $workspaceId = (int) array_pop($workspaceFolderNameParts);
       if (!$workspaceId) {
@@ -32,84 +35,39 @@ class Workspace {
     return $currentHash !== $originalHash;
   }
 
-  private static function getHashOfAllFiles(string $dir): array {
-    $result = [];
-
-    $files = scandir($dir);
-
-    foreach ($files as $file) {
-      if ($file != '.' && $file != '..') {
-        $path = $dir . '/' . $file;
-        if (is_dir($path)) {
-          $result = array_merge($result, self::getHashOfAllFiles($path));
-        } else {
-          $result[] = [
-            'filename' => $file,
-            'filemtime' => filemtime($path),
-            'filesize' => filesize($path)
-          ];
-        }
-      }
-    }
-
-    return $result;
+  static function getStorageDirectoryOf(int $workspaceId): StorageDirectory {
+    return StorageDirectory::root()->createSubdirectory("ws_$workspaceId");
   }
 
   function __construct(int $workspaceId) {
     $this->workspaceId = $workspaceId;
-    $this->workspacePath = $this->getOrCreateWorkspacePath();
-    $this->workspaceDAO = new WorkspaceDAO($this->workspaceId, $this->workspacePath);
-  }
-
-  protected function getOrCreateWorkspacePath(): string {
-    $workspacePath = DATA_DIR . '/ws_' . $this->workspaceId;
-    if (file_exists($workspacePath) and !is_dir($workspacePath)) {
-      throw new Exception("Workspace dir $this->workspaceId seems not to be a proper directory!");
-    }
-    if (!file_exists($workspacePath)) {
-      if (!mkdir($workspacePath)) {
-        throw new Exception("Could not create workspace dir $this->workspaceId");
-      }
-    }
-    return $workspacePath;
-  }
-
-  public function getOrCreateSubFolderPath(string $type): string {
-    $subFolderPath = $this->workspacePath . '/' . $type;
-    if (!in_array($type, $this::subFolders)) {
-      throw new Exception("Invalid type `$type`!");
-    }
-    if (file_exists($subFolderPath) and !is_dir($subFolderPath)) {
-      throw new Exception("Workspace dir `$subFolderPath` seems not to be a proper directory!");
-    }
-    if (!file_exists($subFolderPath)) {
-      if (!mkdir($subFolderPath)) {
-        throw new Exception("Could not create workspace dir `$subFolderPath`");
-      }
-    }
-    return $subFolderPath;
+    $this->storageDirectory = self::getStorageDirectoryOf($workspaceId);
+    $this->workspaceDAO = new WorkspaceDAO($this->workspaceId);
   }
 
   public function getId(): int {
     return $this->workspaceId;
   }
 
-  public function getWorkspacePath(): string {
-    return $this->workspacePath;
+  public function getStorageDirectory(): StorageDirectory {
+    return $this->storageDirectory;
   }
 
   /**
    * The only sanctioned way to turn request input (type, file name) into a workspace
-   * file path. Returns null if the type is unknown or the path escapes its sub-folder.
+   * file path. Returns null if the type is unknown or the name is no valid path inside
+   * the type's directory. Whether the file exists is not checked.
    */
-  public function getFilePath(string $type, string $fileName): ?string {
+  public function getFilePath(string $type, string $fileName): ?StoragePath {
     if (!in_array($type, self::subFolders)) {
       return null;
     }
 
-    $path = Folder::getContainedRealPath($this->workspacePath . '/' . $type, $fileName);
-
-    return ($path !== null and is_file($path)) ? $path : null;
+    try {
+      return StoragePath::fromString($this->storageDirectory->createSubdirectory($type) . $fileName);
+    } catch (InvalidArgumentException) {
+      return null;
+    }
   }
 
   public function deleteFiles(array $filesToDelete): FileDeletionReport {
@@ -128,6 +86,13 @@ class Workspace {
 
       list($type, $name) = $pathParts;
 
+      try {
+        $path = StoragePath::fromString($this->storageDirectory . $localFilePath);
+      } catch (InvalidArgumentException) {
+        $deletionReport->incorrect_path[] = $localFilePath;
+        continue;
+      }
+
       $cachedFile = $cachedFilesToDelete[$type][$name] ?? null;
 
       // file does not exist in db means, it must be something not validatable like sysCheck-Reports
@@ -142,8 +107,7 @@ class Workspace {
           continue;
         }
       }
-      $fieldName = $this->deleteFileFromFs($this->workspacePath . '/' . $localFilePath);
-      $deletionReport->$fieldName[] = $localFilePath;
+      self::deleteFromStorage($path, $deletionReport, $localFilePath);
     }
 
     $this->workspaceDAO->updateContentTypeBasedOnRemainingTesttakers();
@@ -151,16 +115,22 @@ class Workspace {
     return $deletionReport;
   }
 
-  protected function deleteFileFromFs(string $fullPath): string {
-    if (!file_exists($fullPath)) {
-      return 'did_not_exist';
+  /** Deletes the file at $path and records the outcome under $entry in $deletionReport. */
+  protected static function deleteFromStorage(
+    StoragePath $path,
+    FileDeletionReport $deletionReport,
+    string $entry
+  ): void {
+    try {
+      if (Storage::getDriver()->delete($path)) {
+        $deletionReport->deleted[] = $entry;
+      } else {
+        $deletionReport->did_not_exist[] = $entry;
+      }
+    } catch (Exception $e) {
+      error_log($e->getMessage());
+      $deletionReport->not_allowed[] = $entry;
     }
-
-    if ($this->isPathLegal($fullPath) and unlink($fullPath)) {
-      return 'deleted';
-    }
-
-    return 'not_allowed';
   }
 
   private function deleteFileFromDb(?File $file): bool {
@@ -183,10 +153,6 @@ class Workspace {
     return true;
   }
 
-  protected function isPathLegal(string $path): bool {
-    return substr_count($path, '..') == 0;
-  }
-
   /** takes files from the workspace-dir toplevel and puts it to the correct subdir if valid
    * @return array{
    *   type: string,
@@ -194,60 +160,54 @@ class Workspace {
    *   error: array,
    *   info: array}
    */
-  public function importUncategorizedFiles(array $fileNames): array {
-    $toDeleteFilePaths = [];
+  public function importUncategorizedFiles(string $stagingPath, array $fileNames): array {
     $toSortInFilePaths = [];
     foreach ($fileNames as $fileName) {
       if (FileExt::has($fileName, 'ZIP') and !FileExt::has($fileName, 'ITCR.ZIP')) {
-        array_push($toSortInFilePaths, ...$this->unpackRootlevelZipArchive($fileName));
-        array_push($toDeleteFilePaths, $fileName, $this->getExtractionDirName($fileName));
+        array_push($toSortInFilePaths, ...$this->unpackRootlevelZipArchive($stagingPath, $fileName));
       } else {
         $toSortInFilePaths[] = $fileName;
-        $toDeleteFilePaths[] = $fileName;
       }
     }
 
-    $importedFiles = $this->sortAndValidateToplevelFiles($toSortInFilePaths);
-    $this->deleteRootlevelFiles($toDeleteFilePaths);
-
-    return $importedFiles;
+    return $this->sortAndValidateToplevelFiles($stagingPath, $toSortInFilePaths);
   }
 
-  private function sortAndValidateToplevelFiles(array $relativeFilePaths): array {
+  private function sortAndValidateToplevelFiles(string $stagingPath, array $relativeFilePaths): array {
     $filesAfterSorting = [];
-    $pathsPerType = array_fill_keys([...Workspace::subFolders, 'xml'], []);
+    $filesPerType = array_fill_keys([...Workspace::subFolders, 'xml'], []);
 
     foreach ($relativeFilePaths as $relativeFilePath) {
-      $pathsPerType[File::determineType($this->workspacePath . '/' . $relativeFilePath)][] = $relativeFilePath;
+      $file = File::fromStringOfAnyType(file_get_contents("$stagingPath/$relativeFilePath"), $relativeFilePath);
+      $filesPerType[$file->getType()][$relativeFilePath] = $file;
     }
 
-    $pathsPerType = [
+    $filesPerType = [
       // Resource and Unit are merged in order to save one call to getFilesWhere(['type' => 'Resource']), as this is the
       // most expensive call in the following loop (Unit depends on Resource anyway)
-      !empty($pathsPerType['Unit']) ? 'Unit' : 'Resource' => array_merge(
-        $pathsPerType['Resource'],
-        $pathsPerType['Unit']
+      !empty($filesPerType['Unit']) ? 'Unit' : 'Resource' => array_merge(
+        $filesPerType['Resource'],
+        $filesPerType['Unit']
       ),
-      'Booklet' => $pathsPerType['Booklet'],
-      'Testtakers' => $pathsPerType['Testtakers'],
-      'SysCheck' => $pathsPerType['SysCheck'],
-      'xml' => $pathsPerType['xml']
+      'Booklet' => $filesPerType['Booklet'],
+      'Testtakers' => $filesPerType['Testtakers'],
+      'SysCheck' => $filesPerType['SysCheck'],
+      'xml' => $filesPerType['xml']
     ];
 
-    foreach ($pathsPerType as $type => $filePaths) {
-      if (!empty($filePaths)) {
+    foreach ($filesPerType as $type => $files) {
+      if (!empty($files)) {
         // these files are all not valid from the start
         if ($type === 'xml') {
-          foreach ($filePaths as $path) {
-            $file = File::get($this->workspacePath . '/' . $path);
-            $filesAfterSorting[$path] = ['type' => $file->getType(), ...$file->getValidationReport()];
+          foreach ($files as $filePath => $file) {
+            $filesAfterSorting[$filePath] = ['type' => $file->getType(), ...$file->getValidationReport()];
           }
           continue;
         }
 
-        $files = $this->validateFilesForCategory($filePaths, FileType::tryFrom($type));
+        $this->validateFilesForCategory($files, FileType::tryFrom($type));
         foreach ($files as $filePath => $file) {
-          if ($file->isValid() and $this->categorizeFile($filePath, $file)) {
+          if ($file->isValid() and $this->categorizeFile("$stagingPath/$filePath", $file)) {
             $this->workspaceDAO->storeFile($file);
             $this->storeFileMeta($file);
             $this->updateDependentFiles($file);
@@ -263,42 +223,31 @@ class Workspace {
     return $filesAfterSorting;
   }
 
-  protected function validateFilesForCategory(array $localFilePaths, FileType $highestTypeAmongFiles): array {
-    $filesPerType = [];
+  /** @param array<string, File> $files */
+  protected function validateFilesForCategory(array $files, FileType $highestTypeAmongFiles): void {
     $workspaceCache = new WorkspaceCache($this);
     $this->loadFilesIntoCache($workspaceCache, $highestTypeAmongFiles);
 
-    foreach ($localFilePaths as $localFilePath) {
-      $file = File::get($this->workspacePath . '/' . $localFilePath);
+    foreach ($files as $file) {
       $workspaceCache->addFile($file->getType(), $file, true);
-      $filesPerType[$localFilePath] = $file;
     }
 
     // Resources uploaded together with units come in as one category (see sortAndValidateToplevelFiles), but each
     // type needs its own cross-validation, e.g. against duplicate ids. Dependencies first.
-    $uploadedTypes = array_map(static fn(File $file): string => $file->getType(), $filesPerType);
+    $uploadedTypes = array_map(static fn(File $file): string => $file->getType(), $files);
     $typesToValidate = array_reverse(FileType::getDependenciesOfType($highestTypeAmongFiles));
     foreach (array_intersect($typesToValidate, $uploadedTypes) as $type) {
       $workspaceCache->validate($type);
     }
-
-    return $filesPerType;
   }
 
-  protected function categorizeFile(string $localFilePath, File $file): bool {
-    $targetFolder = $this->workspacePath . '/' . $file->getType();
+  protected function categorizeFile(string $stagedFilePath, File $file): bool {
+    $targetStoragePath = $this->storageDirectory
+      ->createSubdirectory($file->getType())
+      ->createFilePath($file->getName());
 
-    if (!file_exists($targetFolder)) {
-      if (!mkdir($targetFolder)) {
-        $file->report('error', "Could not create folder: `$targetFolder`.");
-        return false;
-      }
-    }
-
-    $targetFilePath = $targetFolder . '/' . basename($localFilePath);
-
-    if (file_exists($targetFilePath)) {
-      $oldFile = File::get($targetFilePath, $file->getType());
+    if (Storage::getDriver()->getFileInfo($targetStoragePath)) {
+      $oldFile = File::get($targetStoragePath, $file->getType());
 
       if ($oldFile->getId() !== $file->getId()) {
         $file->report(
@@ -329,59 +278,27 @@ class Workspace {
         return false;
       }
 
-      if (!unlink($targetFilePath)) {
-        $file->report('error', "Could not delete file: `$targetFolder/$localFilePath`");
-        return false;
-      }
-
       $file->report('warning', "File of name `{$oldFile->getName()}` did already exist and was overwritten.");
     }
 
-    if (!rename($this->workspacePath . '/' . $localFilePath, $targetFilePath)) {
-      $file->report('error', "Could not move file to `$targetFolder/$localFilePath`");
-      return false;
-    }
-
-    $file->readFileMeta($targetFilePath);
+    Storage::getDriver()->put($targetStoragePath, $stagedFilePath);
+    $file->readFileMeta($targetStoragePath);
 
     return true;
   }
 
-  protected function unpackRootlevelZipArchive(string $fileName): array {
-    $filePath = "$this->workspacePath/$fileName";
-    $extractionFolder = $this->getExtractionDirName($fileName);
-    $extractionPath = "$this->workspacePath/$extractionFolder";
-
-    // sometimes in error cases there are remains from previous attempts
-    if (file_exists($extractionPath) and is_dir($extractionPath)) {
-      Folder::deleteContentsRecursive($extractionPath);
-      rmdir($extractionPath);
-    }
+  /** @return string[] the paths of the extracted files, relative to $stagingPath */
+  protected function unpackRootlevelZipArchive(string $stagingPath, string $fileName): array {
+    $extractionFolder = "{$fileName}_Extract";
+    $extractionPath = "$stagingPath/$extractionFolder";
 
     if (!mkdir($extractionPath)) {
       throw new Exception("Could not create directory for extracted files: `$extractionPath`");
     }
 
-    ZIP::extract($filePath, $extractionPath);
+    ZIP::extract(file_get_contents("$stagingPath/$fileName"), $extractionPath);
 
     return Folder::getContentsFlat($extractionPath, $extractionFolder);
-  }
-
-  protected function getExtractionDirName(string $fileName): string {
-    return "{$fileName}_Extract";
-  }
-
-  protected function deleteRootlevelFiles(array $relativePaths): void {
-    foreach ($relativePaths as $relativePath) {
-      $filePath = "$this->workspacePath/$relativePath";
-      if (is_dir($filePath)) {
-        Folder::deleteContentsRecursive($filePath);
-        rmdir($filePath);
-      }
-      if (is_file($filePath)) {
-        unlink($filePath);
-      }
-    }
   }
 
   public function getFileById(string $type, string $fileId): File {
@@ -395,7 +312,7 @@ class Workspace {
   }
 
   public function getFileByName(string $type, string $fileName): File {
-    $file = File::get("$this->workspacePath/$type/$fileName", $type);
+    $file = File::get($this->storageDirectory->createSubdirectory($type)->createFilePath($fileName), $type);
 
     if ($file->isValid()) {
       return $file;
@@ -415,13 +332,25 @@ class Workspace {
   }
 
   public function countFiles(string $type): int {
+    return count($this->listFilesOfType($type));
+  }
+
+  /**
+   * The files a rescan reads: those directly in the type's directory whose names fit the type.
+   *
+   * @return array<string, FileInfo>
+   */
+  public function listFilesOfType(string $type): array {
     $pattern = ($type == 'Resource') ? "*.*" : "*.[xX][mM][lL]";
-    return count(Folder::glob($this->getOrCreateSubFolderPath($type), $pattern));
+    return array_filter(
+      Storage::getDriver()->listFiles($this->storageDirectory->createSubdirectory($type)),
+      fn(string $fileName): bool => fnmatch($pattern, $fileName),
+      ARRAY_FILTER_USE_KEY
+    );
   }
 
   public function delete(): void {
-    Folder::deleteContentsRecursive($this->workspacePath);
-    rmdir($this->workspacePath);
+    Storage::getDriver()->deleteDirectory($this->storageDirectory);
   }
 
   /**
@@ -526,7 +455,7 @@ class Workspace {
       /** @var File $file */
       foreach ($fileSet as $file) {
 
-        if (!isset($filesInFolder[$file->getPath()])) {
+        if (!isset($filesInFolder[(string) $file->getPath()])) {
           $this->workspaceDAO->deleteFile($file);
           if (is_a($file, XMLFileTesttakers::class)) {
             $deletedLogins += $this->workspaceDAO->deleteLoginSource($file->getName());
@@ -617,7 +546,7 @@ class Workspace {
   public function getWidgets(): array {
     $widgets = $this->workspaceDAO->getWidgets();
     foreach ($widgets as $widget) {
-      CacheService::storeFile("/ws_{$this->workspaceId}/{$widget['path']}");
+      CacheService::storeFile(StoragePath::fromString($this->storageDirectory . $widget['path']));
     }
     return $widgets;
   }
@@ -627,14 +556,20 @@ class Workspace {
     $resourceListStructured = [];
     foreach ($resourceList as $item) {
       $resourceListStructured[$item['id']][$item['relationship_type']][] = "{$item['type']}/{$item['name']}";
-      $path = "/ws_$this->workspaceId/{$item['type']}/{$item['name']}";
-      CacheService::storeFile($path);
+      CacheService::storeFile($this->storageDirectory->createSubdirectory($item['type'])->createFilePath($item['name']));
     }
     return $resourceListStructured;
   }
 
+  /** Changes whenever a file the rescan reads is added, removed or modified – and only then. */
   public function getWorkspaceHash(): string {
-    return hash('XXH3', serialize(self::getHashOfAllFiles($this->getWorkspacePath())));
+    $files = [];
+    foreach (self::subFolders as $type) {
+      foreach ($this->listFilesOfType($type) as $fileName => $fileInfo) {
+        $files[] = ["$type/$fileName", $fileInfo->size, $fileInfo->modificationTime];
+      }
+    }
+    return hash('XXH3', serialize($files));
   }
 
   public function setWorkspaceHash(): void {
