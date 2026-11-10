@@ -12,7 +12,7 @@
   displayDetailsOnTestsThatTriggerWarnings="true"
   displayDetailsOnTestsThatTriggerErrors="true"
   displayDetailsOnTestsThatTriggerDeprecations="true"
-  stopOnDefect="true"
+  failOnWarning="true"
 >
   <coverage/>
   <source>
