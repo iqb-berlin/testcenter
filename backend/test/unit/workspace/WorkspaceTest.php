@@ -266,7 +266,8 @@ class WorkspaceTest extends TestCase {
       ->expects('storeRelations');
     $this->workspaceDaoMock
       ->expects('getDependentFilesByTypes')
-      ->twice();
+      ->twice()
+      ->andReturn([]);
     $this->workspaceDaoMock
       ->expects('getAllFilesWhere')
       ->andReturn([], [])
@@ -358,7 +359,8 @@ class WorkspaceTest extends TestCase {
     $this->workspaceDaoMock
       ->expects('storeRelations');
     $this->workspaceDaoMock
-      ->expects('getDependentFilesByTypes');
+      ->expects('getDependentFilesByTypes')
+      ->andReturn([]);
     $this->workspaceDaoMock
       ->expects('getAllFilesWhere')
       ->andReturn(
@@ -459,7 +461,8 @@ class WorkspaceTest extends TestCase {
       ->once();
     $this->workspaceDaoMock
       ->expects('getDependentFilesByTypes')
-      ->times(4);
+      ->times(4)
+      ->andReturn([]);
     $getAllFilesWhereCalled = -1;
     $this->workspaceDaoMock
       ->shouldReceive('getAllFilesWhere')
@@ -628,7 +631,8 @@ class WorkspaceTest extends TestCase {
       ->once();
     $this->workspaceDaoMock
       ->expects('getDependentFilesByTypes')
-      ->times(4);
+      ->times(4)
+      ->andReturn([]);
     $getAllFilesWhereCalled = -1;
     $this->workspaceDaoMock
       ->shouldReceive('getAllFilesWhere')
@@ -686,7 +690,8 @@ class WorkspaceTest extends TestCase {
       ->never();
     $this->workspaceDaoMock
       ->expects('getDependentFilesByTypes')
-      ->once();
+      ->once()
+      ->andReturn([]);
     $getAllFilesWhereCalled = -1;
     $this->workspaceDaoMock
       ->shouldReceive('getAllFilesWhere')
@@ -739,10 +744,11 @@ class WorkspaceTest extends TestCase {
       ->once();
     $this->workspaceDaoMock
       ->expects('getDependentFilesByTypes')
-      ->twice();
+      ->twice()
+      ->andReturn([]);
     $this->workspaceDaoMock
       ->expects('getAllFilesWhere')
-      ->andReturn(null, null, null, null)
+      ->andReturn([], [], [], [])
       ->times(4);
     $this->workspaceDaoMock
       ->expects('updateContentTypeBasedOnRemainingTesttakers');
@@ -789,7 +795,7 @@ class WorkspaceTest extends TestCase {
       ->never();
     $this->workspaceDaoMock
       ->expects('getAllFilesWhere')
-      ->andReturn(null, null, null, null)
+      ->andReturn([], [])
       ->twice();
     $this->workspaceDaoMock
       ->expects('updateContentTypeBasedOnRemainingTesttakers');
@@ -832,7 +838,8 @@ class WorkspaceTest extends TestCase {
       ->once();
     $this->workspaceDaoMock
       ->expects('getDependentFilesByTypes')
-      ->times(4);
+      ->times(4)
+      ->andReturn([]);
     $getAllFilesWhereCalled = -1;
     $this->workspaceDaoMock
       ->shouldReceive('getAllFilesWhere')
@@ -912,7 +919,8 @@ class WorkspaceTest extends TestCase {
       ->once();
     $this->workspaceDaoMock
       ->expects('getDependentFilesByTypes')
-      ->once();
+      ->once()
+      ->andReturn([]);
     $this->workspaceDaoMock
       ->expects('updateLoginSource')
       ->andReturn([2, 2])
