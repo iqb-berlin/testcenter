@@ -1,6 +1,7 @@
 TC_BASE_DIR := $(shell git rev-parse --show-toplevel)
 
 -include $(TC_BASE_DIR)/.env.dev
+include $(TC_BASE_DIR)/scripts/make/compose.mk
 
 ## prevents collisions of make target names with possible file names
 .PHONY: init dev-registry-login dev-registry-logout build up down start stop logs composer-install composer-update\
@@ -25,11 +26,7 @@ dev-registry-logout:
 # Param: (optional) service - Only build a specified service, e.g. `service=backend`
 build:	dev-registry-login
 	cd $(TC_BASE_DIR) &&\
-	docker compose\
-			--progress plain\
-			--env-file .env.dev\
-			--file docker-compose.yml\
-			--file docker-compose.dev.yml\
+	$(COMPOSE_DEV) --progress plain\
 		build $(service)
 
 # Ramp the application up (i.e. creates and starts all application containers).
@@ -37,58 +34,40 @@ build:	dev-registry-login
 # Param: (optional) service - Only ramp up a specified service, e.g. `service=backend`
 up:
 	cd $(TC_BASE_DIR) &&\
-	docker compose\
-			--env-file .env.dev\
-			--file docker-compose.yml\
-			--file docker-compose.dev.yml\
+	$(COMPOSE_DEV)\
 		up $(service)
 
 # Stop and remove all application containers.
 down:
 	cd $(TC_BASE_DIR) &&\
-	docker compose\
-			--env-file .env.dev\
-			--file docker-compose.yml\
-			--file docker-compose.dev.yml\
+	$(COMPOSE_DEV)\
 		down --remove-orphans $(service)
 
 # Start the application with already existing containers.
 # Param: (optional) service - Only start a specified service, e.g. `service=backend`
 start:
 	cd $(TC_BASE_DIR) &&\
-	docker compose\
-			--env-file .env.dev\
-			--file docker-compose.yml\
-			--file docker-compose.dev.yml\
+	$(COMPOSE_DEV)\
 		start $(service)
 
 # Stop the application but don't remove the service containers.
 # Param: (optional) service - Only stop a specified service, e.g. `service=backend`
 stop:
 	cd $(TC_BASE_DIR) &&\
-	docker compose\
-			--env-file .env.dev\
-			--file docker-compose.yml\
-			--file docker-compose.dev.yml\
+	$(COMPOSE_DEV)\
 		stop $(service)
 
 # Log the application.
 # Param: (optional) service - Only log a specified service, e.g. `service=backend`
 logs:
 	cd $(TC_BASE_DIR) &&\
-	docker compose\
-			--env-file .env.dev\
-			--file docker-compose.yml\
-			--file docker-compose.dev.yml\
+	$(COMPOSE_DEV)\
 		logs --follow $(service)
 
 ## Open DB console
 connect-db:
 	cd $(TC_BASE_DIR) &&\
-	docker compose\
-			--env-file .env.dev\
-			--file docker-compose.yml\
-			--file docker-compose.dev.yml\
+	$(COMPOSE_DEV)\
 		exec db psql --username=$(DB_USER) --dbname=$(DB_DATABASE)
 
 # Applies the unreleased schema patch `scripts/database/next.sql` to the dev database. The patch run
@@ -97,10 +76,7 @@ connect-db:
 # database instead of upgrading it.
 apply-next-db-patch:
 	cd $(TC_BASE_DIR) &&\
-	docker compose\
-			--env-file .env.dev\
-			--file docker-compose.yml\
-			--file docker-compose.dev.yml\
+	$(COMPOSE_DEV)\
 		exec --no-TTY db psql --username=$(DB_USER) --dbname=$(DB_DATABASE)\
 				--set ON_ERROR_STOP=1 --single-transaction\
 			< scripts/database/next.sql
@@ -152,26 +128,17 @@ composer-refresh-autoload:
 data-pull:
 	cd $(TC_BASE_DIR) &&\
 	rm -rf data &&\
-	docker compose\
-			--env-file .env.dev\
-			--file docker-compose.yml\
-			--file docker-compose.dev.yml\
+	$(COMPOSE_DEV)\
 		cp backend:/var/www/testcenter/data .
 
 # Copies the local data folder into the Backend Container, while keeping the same user-, group- and file permissions
 # from https://blog.nashcom.de/nashcomblog.nsf/dx/docker-cp-with-permissions-and-owner-change.htm
 data-push:
 	cd $(TC_BASE_DIR) &&\
-		docker compose\
-				--env-file .env.dev\
-				--file docker-compose.yml\
-				--file docker-compose.dev.yml\
+		$(COMPOSE_DEV)\
 			exec backend sh -c 'rm -rf ../data/* ../data/.schemas/*' &&\
 		tar -cf - data --owner www-data --group www-data |\
-			docker compose\
-					--env-file .env.dev\
-					--file docker-compose.yml\
-					--file docker-compose.dev.yml\
+			$(COMPOSE_DEV)\
 				cp - backend:/var/www/testcenter &&\
 	$(MAKE) -f $(firstword $(MAKEFILE_LIST)) init-backend
 
@@ -179,10 +146,7 @@ data-push:
 # counterpart of `testcenter-init`.
 init-backend:
 	cd $(TC_BASE_DIR) &&\
-	docker compose\
-			--env-file .env.dev\
-			--file docker-compose.yml\
-			--file docker-compose.dev.yml\
+	$(COMPOSE_DEV)\
 		run --rm --no-TTY backend /initialize_only.sh
 
 # Creates some interfaces for booklets and test-modes out of the definitions.

@@ -1,4 +1,5 @@
 TC_BASE_DIR := $(shell git rev-parse --show-toplevel)
+include $(TC_BASE_DIR)/scripts/make/compose.mk
 target ?= .
 args ?= --help
 # the leading ':' keeps PHP's default conf.d; the unit-test ini is loaded after it, and the
@@ -7,10 +8,7 @@ UNIT_TEST_PHP_INI := --env PHP_INI_SCAN_DIR=:/var/www/testcenter/backend/test/un
 
 # mago runs in the dev backend container, where vendor/ is complete - it needs it to know the dependencies' types;
 # it runs as the host user, so that fixes and formatting can write the bind-mounted sources
-MAGO_RUN := docker compose\
-		--env-file .env.dev\
-		--file docker-compose.yml\
-		--file docker-compose.dev.yml\
+MAGO_RUN := $(COMPOSE_DEV)\
 	run --rm --no-deps --entrypoint "" --user $(shell id -u):$(shell id -g) backend
 
 test-backend-static-analysis:
@@ -23,10 +21,7 @@ test-backend-lint:
 
 test-backend-unit:
 	cd $(TC_BASE_DIR) &&\
-	docker compose\
-			--env-file .env.dev\
-			--file docker-compose.yml\
-			--file docker-compose.dev.yml\
+	$(COMPOSE_DEV)\
 		run --rm $(UNIT_TEST_PHP_INI) backend\
 			php -dxdebug.mode='debug' /var/www/testcenter/backend/vendor/phpunit/phpunit/phpunit\
 						--bootstrap /var/www/testcenter/backend/test/unit/bootstrap.php\
@@ -35,10 +30,7 @@ test-backend-unit:
 
 test-backend-unit-coverage:
 	cd $(TC_BASE_DIR) &&\
-	docker compose\
-			--env-file .env.dev\
-			--file docker-compose.yml\
-			--file docker-compose.dev.yml\
+	$(COMPOSE_DEV)\
 		run --rm $(UNIT_TEST_PHP_INI) backend\
 			php -dxdebug.mode='coverage' /var/www/testcenter/backend/vendor/phpunit/phpunit/phpunit\
 					--bootstrap /var/www/testcenter/backend/test/unit/bootstrap.php\
@@ -48,16 +40,10 @@ test-backend-unit-coverage:
 
 test-backend-api:
 	cd $(TC_BASE_DIR) &&\
-	docker compose\
-			--env-file .env.dev\
-			--file docker-compose.yml\
-			--file docker-compose.dev.yml\
+	$(COMPOSE_DEV)\
 			--file test/docker-compose.api-test.yml\
 		run --rm backend /initialize_only.sh &&\
-	docker compose\
-			--env-file .env.dev\
-			--file docker-compose.yml\
-			--file docker-compose.dev.yml\
+	$(COMPOSE_DEV)\
 			--file test/docker-compose.api-test.yml\
 		run --rm task-runner-backend\
 			node_modules/.bin/gulp --gulpfile=./test/api/test.js runDreddTest
@@ -95,36 +81,24 @@ test-backend-initialization-general:
 
 test-broadcaster-unit:
 	cd $(TC_BASE_DIR) &&\
-	docker compose\
-			--env-file .env.dev\
-			--file docker-compose.yml\
-			--file docker-compose.dev.yml run\
+	$(COMPOSE_DEV) run\
 		broadcaster\
 			npx jest
 
 test-frontend-unit:
 	cd $(TC_BASE_DIR) &&\
-	docker compose\
-			--env-file .env.dev\
-			--file docker-compose.yml\
-			--file docker-compose.dev.yml run\
+	$(COMPOSE_DEV) run\
 		frontend test --watch=false
 
 # Performs some API tests with Dredd on the file-server
 # ! Attention: The testcenter must not run when starting this # TODO change this
 # TODO this creates a file in /sampledata. Change this.
 test-file-server-api:
-	docker compose\
-			--env-file $(TC_BASE_DIR)/.env.dev\
-			--file $(TC_BASE_DIR)/docker-compose.yml\
-			--file $(TC_BASE_DIR)/docker-compose.dev.yml\
+	$(COMPOSE_DEV)\
 			--file $(TC_BASE_DIR)/test/docker-compose.api-test.yml\
 		run --rm task-runner-file-server\
 			npm run file-server:api-test
-	@docker compose\
-			--env-file $(TC_BASE_DIR)/.env.dev\
-			--file $(TC_BASE_DIR)/docker-compose.yml\
-			--file $(TC_BASE_DIR)/docker-compose.dev.yml\
+	@$(COMPOSE_DEV)\
 		down
 	@docker image rm testcenter-task-runner-file-server
 
@@ -134,47 +108,29 @@ test-file-server-api:
 test-system-headless:
 	-cd $(TC_BASE_DIR) &&\
 	make down &&\
-	docker compose\
-			--env-file .env.dev\
-			--file docker-compose.yml\
-			--file docker-compose.dev.yml\
+	$(COMPOSE_DEV)\
 			--file e2e/docker-compose.system-test-headless.yml\
 		run --rm backend /initialize_only.sh &&\
 	SPEC='$(spec)' \
-	docker compose\
-			--env-file .env.dev\
-			--file docker-compose.yml\
-			--file docker-compose.dev.yml\
+	$(COMPOSE_DEV)\
 			--file e2e/docker-compose.system-test-headless.yml\
 		up\
 			--abort-on-container-exit\
 			--exit-code-from=e2e
 	@cd $(TC_BASE_DIR) &&\
-	docker compose --progress quiet\
-			--env-file .env.dev\
-			--file docker-compose.yml\
-			--file docker-compose.dev.yml\
+	$(COMPOSE_DEV) --progress quiet\
 			--file e2e/docker-compose.system-test-headless.yml\
 		down &&\
 	docker image rm testcenter-e2e
 
 test-system:
 	cd $(TC_BASE_DIR) &&\
-	docker compose\
-			--env-file .env.dev\
-			--file docker-compose.yml\
-			--file docker-compose.dev.yml\
+	$(COMPOSE_DEV)\
 		run --rm backend /initialize_only.sh &&\
-	docker compose\
-			--env-file .env.dev\
-			--file docker-compose.yml\
-			--file docker-compose.dev.yml\
+	$(COMPOSE_DEV)\
 		up --detach --wait &&\
 	cd e2e &&\
 	npm run test-system-ui
 	@cd $(TC_BASE_DIR) &&\
-	docker compose --progress quiet\
-			--env-file .env.dev\
-			--file docker-compose.yml\
-			--file docker-compose.dev.yml\
+	$(COMPOSE_DEV) --progress quiet\
 		down
