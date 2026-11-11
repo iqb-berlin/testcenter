@@ -5,6 +5,7 @@
 - Ein Ressourcen-Paket und eine Ressource mit dem Namen des Pakets ohne Endung (`geogebra.itcr.zip` und `geogebra`) werden beim Hochladen abgelehnt, wenn das jeweils andere schon vorhanden ist. Bisher brach das Hochladen der Ressource mit einem Serverfehler ab, und ein so hochgeladenes Paket wurde gespeichert, ließ sich aber nicht nutzen.
 
 ## Betrieb & Schnittstellen
+- Die undokumentierte Umgebungsvariable `OVERRIDE_CONFIG` wird nicht mehr ausgewertet; das Backend wird nur noch über die einzeln benannten Umgebungsvariablen konfiguriert. Bisher konnte sie als INI-Text beliebige Einstellungen des Backends überschreiben, wurde vom Testcenter selbst seit 19.0.0 nicht mehr verwendet.
 - Datenbank: Neue Spalte `workspaces.locked_at`. Während eines Uploads oder Löschvorgangs sperrt sie den Arbeitsbereich für weitere solche Aktionen. Bisher übernahm das eine Datei `.lock` im Workspace-Ordner, die mehrere Backend-Container ohne gemeinsames Laufwerk nicht teilen können.
 
 # 19.1.0

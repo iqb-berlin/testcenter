@@ -124,12 +124,6 @@ class SystemConfig {
 
     $config['debug']['allowTestMode'] = self::boolEnv('ALLOW_TEST_MODE');
 
-    $overrideConfig = getenv('OVERRIDE_CONFIG');
-    if ($overrideConfig) {
-      $overrideConfig = parse_ini_string($overrideConfig, true, INI_SCANNER_TYPED);
-      $config = array_replace_recursive($config, $overrideConfig);
-    }
-
     self::apply($config);
   }
 
