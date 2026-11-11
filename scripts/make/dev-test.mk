@@ -1,4 +1,6 @@
 TC_BASE_DIR := $(shell git rev-parse --show-toplevel)
+
+-include $(TC_BASE_DIR)/.env.dev
 include $(TC_BASE_DIR)/scripts/make/compose.mk
 target ?= .
 args ?= --help

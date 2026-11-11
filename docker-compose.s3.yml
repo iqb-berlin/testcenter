@@ -1,0 +1,40 @@
+# Local S3 for development (SeaweedFS). The make targets add this file when LOCAL_S3 is true (see
+# scripts/make/compose.mk); without it the dev stack knows nothing about S3.
+services:
+  backend:
+    depends_on:
+      s3:
+        condition: service_healthy
+
+  s3:
+    image: ${DOCKERHUB_PROXY}chrislusf/seaweedfs:4.51
+    # single-process mode with master, volume, filer and S3 API; no usage statistics sent to the SeaweedFS project;
+    # without a password the Admin UI would only listen inside the container
+    command: [ "mini", "-dir=/data", "-master.telemetry=false", "-admin.password=testcenter" ]
+    environment:
+      # the only S3 user, with full access
+      AWS_ACCESS_KEY_ID: testcenter
+      AWS_SECRET_ACCESS_KEY: testcenter-secret
+      # created on startup if missing
+      S3_BUCKET: testcenter
+    ports:
+      # Admin UI to browse the bucket (user admin, password testcenter), only reachable from this machine
+      - "127.0.0.1:23646:23646"
+    volumes:
+      - s3_vol:/data
+    # the S3 API answers shortly before the bucket exists; the filer lists the bucket only once it is created
+    healthcheck:
+      test: [
+        "CMD-SHELL",
+        "curl -fsS -o /dev/null http://localhost:8333/healthz && curl -fsS -o /dev/null http://localhost:8888/buckets/testcenter/"
+      ]
+      start_period: 60s
+      start_interval: 1s
+      interval: 90s
+      timeout: 10s
+      retries: 3
+    networks:
+      - testcenter
+
+volumes:
+  s3_vol:
