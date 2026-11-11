@@ -45,9 +45,6 @@ final class WorkspaceControllerTest extends TestCase {
   private string $dataIds = 'id1,id2';
 
   function setUp(): void {
-    if (!defined('DATA_DIR')) {
-      define('DATA_DIR', ROOT_DIR . '/data');
-    }
     require_once "test/unit/mock-classes/ExternalFileMock.php";
     require_once "test/unit/test-helper/RequestCreator.class.php";
     require_once "test/unit/test-helper/ResponseCreator.class.php";
@@ -427,35 +424,16 @@ final class WorkspaceControllerTest extends TestCase {
   }
 
   function test_postFile() {
-    $booklet = XMLFileBooklet::fromString(file_get_contents(ROOT_DIR . '/sampledata/Booklet.xml'), 'Booklet.xml');
-    $unit = XMLFileUnit::fromString(file_get_contents(ROOT_DIR . '/sampledata/Unit2.xml') . 'is_bogus', 'Unit2.xml');
-    $testtakers = XMLFileTesttakers::fromString(
-      file_get_contents(ROOT_DIR . '/sampledata/Testtakers.xml'),
-      'Testtakers.xml'
-    );
-    $files = [
-      'Booklet.xml' => $booklet,
-      'Unit2.xml' => $unit,
-      'Testtakers.xml' => $testtakers
+    $fileReports = [
+      'Booklet.xml' => ['type' => 'Booklet'],
+      'Unit2.xml' => ['type' => 'Unit', 'error' => ['Error [5] in line 70: Extra content at the end of the document']],
+      'Testtakers.xml' => ['type' => 'Testtakers']
     ];
-
-    $fileReports = array_reduce(
-      array_keys($files),
-      static function ($agg, $fileName) use ($files) {
-        $agg[$fileName] = ['type' => $files[$fileName]->getType(), ...$files[$fileName]->getValidationReport()];
-        return $agg;
-      },
-      []
-    );
-
-    $filesContents = array_reduce(
-      array_keys($files),
-      static function ($agg, $fileName) use ($files) {
-        $agg[$fileName] = $files[$fileName]->getContent();
-        return $agg;
-      },
-      []
-    );
+    $filesContents = [
+      'Booklet.xml' => '<Booklet/>',
+      'Unit2.xml' => '<Unit/>is_bogus',
+      'Testtakers.xml' => '<Testtakers/>'
+    ];
 
     $this->workspaceMock
       ->expects('importUncategorizedFiles')
@@ -469,7 +447,7 @@ final class WorkspaceControllerTest extends TestCase {
     $this->uploadedFilesHandler
       ->expects('handleUploadedFiles')
       ->once()
-      ->andReturn(array_keys($files));
+      ->andReturn(array_keys($filesContents));
 
     $this->broadcastingServiceMock
       ->expects('send')

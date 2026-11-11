@@ -16,9 +16,6 @@ final class AssetControllerTest extends TestCase {
   private AssetDAO|MockInterface $assetDaoMock;
 
   function setUp(): void {
-    if (!defined('DATA_DIR')) {
-      define('DATA_DIR', ROOT_DIR . '/data');
-    }
     require_once "test/unit/test-helper/RequestCreator.class.php";
     require_once "test/unit/test-helper/ResponseCreator.class.php";
 
