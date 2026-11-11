@@ -51,7 +51,6 @@ try {
     error_log("{$_SERVER['HTTP_TESTMODE']}: [{$_SERVER['REQUEST_METHOD']}] {$_SERVER['REQUEST_URI']}");
     TestEnvironment::setup($_SERVER['HTTP_TESTMODE'], $_SERVER['HTTP_TESTCLOCK'] ?? null);
   } else { // productive
-    define('DATA_DIR', ROOT_DIR . '/data');
     date_default_timezone_set(SystemConfig::$system_timezone); // just to be safe. TimeStamp-class should be used everywhere anyway
     DB::connect();
   }

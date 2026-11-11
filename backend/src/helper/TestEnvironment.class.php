@@ -5,9 +5,9 @@ declare(strict_types=1);
 class TestEnvironment {
   const int staticDate = 1627545600;
   const array testModes = ['prepare', 'api', 'integration', 'prepare-integration'];
-  // separate directories, so resetting one suite's files never touches the other's
-  const string integrationTestDataDir = 'data-TEST';
-  const string apiTestDataDir = 'data-TEST-api';
+  // separate storage roots, so resetting one suite's files never touches the other's
+  const string integrationTestStorageRoot = 'data-TEST';
+  const string apiTestStorageRoot = 'data-TEST-api';
   static string | null $testMode = null;
 
 
@@ -24,14 +24,14 @@ class TestEnvironment {
 
       if (self::$testMode == 'integration') {
         // this is called every single call from integration tests
-        self::defineTestDataDir(self::integrationTestDataDir, false);
+        self::useStorageRoot(self::integrationTestStorageRoot, false);
       }
 
       if (self::$testMode == 'prepare-integration') {
         // this is called one time before each integration test (cypress)
         // login lockouts, tokens and cached files of the previous spec must not leak into the next one
         CacheService::flush();
-        self::defineTestDataDir(self::integrationTestDataDir, true);
+        self::useStorageRoot(self::integrationTestStorageRoot, true);
         self::createTestFiles(true);
         self::buildTestDB();
         self::createTestData();
@@ -39,7 +39,7 @@ class TestEnvironment {
 
       if (self::$testMode == 'prepare') {
         // this is called once before the api tests (dredd)
-        self::defineTestDataDir(self::apiTestDataDir, true);
+        self::useStorageRoot(self::apiTestStorageRoot, true);
         self::createTestFiles(false);
         self::buildTestDB();
         self::createTestData();
@@ -52,7 +52,7 @@ class TestEnvironment {
 
         // every api call starts from the same files; a real directory (not vfs), so path
         // resolution like realpath behaves as in production
-        self::defineTestDataDir(self::apiTestDataDir, true);
+        self::useStorageRoot(self::apiTestStorageRoot, true);
         self::createTestFiles(false);
         // in api-tests every call is atomic and the test db gets restored afterwards
         // the test db must be set up before with $testMode == 'prepare'
@@ -135,8 +135,8 @@ class TestEnvironment {
     throw new RuntimeException("Could not create environment: " . $exception->getMessage());
   }
 
-  private static function defineTestDataDir(string $dirName, bool $shouldReset): void {
-    define('DATA_DIR', ROOT_DIR . '/' . $dirName);
+  private static function useStorageRoot(string $root, bool $shouldReset): void {
+    SystemConfig::$storage_root = $root;
     if (!$shouldReset) {
       return;
     }

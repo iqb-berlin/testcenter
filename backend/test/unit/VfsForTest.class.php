@@ -15,6 +15,9 @@ use org\bovigo\vfs\vfsStreamDirectory;
 use org\bovigo\vfs\vfsStreamWrapper;
 
 class VfsForTest {
+  /** the storage root of the unit tests, as the bootstrap configures it */
+  const string dataDir = 'vfs://root/data';
+
   const globalIds = [
     '1' => [
       '/name/' => 'sample_workspace',
@@ -72,10 +75,6 @@ class VfsForTest {
 
   static function setUpBeforeClass(): void {
     ini_set('max_execution_time', 30);
-
-    if (!defined('DATA_DIR')) {
-      define('DATA_DIR', vfsStream::url('root/data'));
-    }
   }
 
   /** Reads and validates a file of the test data directory, as the startup scan does. */
@@ -95,7 +94,7 @@ class VfsForTest {
 
     self::insertTrashFiles();
     if ($includeBogusMaterial) {
-      Folder::createPath(DATA_DIR . '/ws_2/Testtakers');
+      Folder::createPath(self::dataDir . '/ws_2/Testtakers');
       self::insertBogusFiles();
     }
 
@@ -117,13 +116,13 @@ class VfsForTest {
 
   private static function insertTrashFiles() {
     $trashXml = "<Trash><data value='some'>content</data></Trash>";
-    file_put_contents(DATA_DIR . '/ws_1/Testtakers/trash.xml', $trashXml);
-    file_put_contents(DATA_DIR . '/ws_1/Booklet/trash.xml', $trashXml);
+    file_put_contents(self::dataDir . '/ws_1/Testtakers/trash.xml', $trashXml);
+    file_put_contents(self::dataDir . '/ws_1/Booklet/trash.xml', $trashXml);
   }
 
   private static function insertBogusFiles(): void {
-    $bookletFileContents = file_get_contents(DATA_DIR . '/ws_1/Booklet/SAMPLE_BOOKLET.XML');
-    $testtakersFileContents = file_get_contents(DATA_DIR . '/ws_1/Testtakers/SAMPLE_TESTTAKERS.XML');
+    $bookletFileContents = file_get_contents(self::dataDir . '/ws_1/Booklet/SAMPLE_BOOKLET.XML');
+    $testtakersFileContents = file_get_contents(self::dataDir . '/ws_1/Testtakers/SAMPLE_TESTTAKERS.XML');
 
     $brokenTestFiles = [
       1 => [
@@ -202,7 +201,7 @@ class VfsForTest {
       foreach ($brokenTestFilesWS as $fileName => $fileContents) {
         $type = ucfirst(explode('-', $fileName)[0]);
         //echo "\n-----[$type: $fileName]-----\n$fileContents\n------------\n";
-        file_put_contents(DATA_DIR . "/ws_$wsId/$type/$fileName", $fileContents);
+        file_put_contents(self::dataDir . "/ws_$wsId/$type/$fileName", $fileContents);
       }
     }
   }

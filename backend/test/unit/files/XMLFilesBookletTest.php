@@ -34,7 +34,7 @@ class XMLFilesBookletTest extends TestCase {
   }
 
   function test_getAllUnitIds() {
-    $xmlFile = XMLFileBookletExposed::fromString(file_get_contents(DATA_DIR . '/ws_1/Booklet/SAMPLE_BOOKLET.XML'));
+    $xmlFile = XMLFileBookletExposed::fromString(file_get_contents(VfsForTest::dataDir . '/ws_1/Booklet/SAMPLE_BOOKLET.XML'));
 
     $expected = ['UNIT.SAMPLE', 'UNIT.SAMPLE-2', 'UNIT.SAMPLE'];
 

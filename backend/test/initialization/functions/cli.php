@@ -10,7 +10,6 @@ function runCli(callable $callback): void {
   error_reporting(E_ALL);
 
   define('ROOT_DIR', realpath(dirname(__FILE__) . '/../../../..'));
-  define('DATA_DIR', ROOT_DIR . '/data');
 
   require_once ROOT_DIR . "/backend/vendor/autoload.php";
   SystemConfig::readEnvironment();

@@ -10,9 +10,11 @@ use Slim\Psr7\Stream;
  * removed as soon as they are empty, so they exist exactly as long as storage directories do.
  */
 class FilesystemDriver implements StorageDriver {
-  function __construct(
-    private readonly string $root
-  ) {
+  private readonly string $rootDirectory;
+
+  /** @param string $root the outermost segment of every stored file's location, a directory below `$directory` */
+  function __construct(string $directory, string $root) {
+    $this->rootDirectory = "$directory/$root";
   }
 
   public function put(StoragePath $path, string $localPath): void {
@@ -147,10 +149,10 @@ class FilesystemDriver implements StorageDriver {
   }
 
   private function getDiskPath(StoragePath $path): string {
-    return "$this->root/$path";
+    return "$this->rootDirectory/$path";
   }
 
   private function getDiskDirectory(StorageDirectory $directory): string {
-    return rtrim("$this->root/$directory", '/');
+    return rtrim("$this->rootDirectory/$directory", '/');
   }
 }

@@ -16,7 +16,6 @@ if (php_sapi_name() !== 'cli') {
 }
 
 define('ROOT_DIR', realpath(__DIR__ . '/..'));
-const DATA_DIR = ROOT_DIR . '/data';
 
 require_once __DIR__ . '/vendor/autoload.php';
 

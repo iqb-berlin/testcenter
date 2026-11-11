@@ -1,6 +1,6 @@
 services:
   backend:
-    # the api tests reset their data directory (TestEnvironment::apiTestDataDir) on every request;
+    # the api tests reset their data directory (TestEnvironment::apiTestStorageRoot) on every request;
     # keep it in memory so that does not depend on the disk speed of the machine. Owned by www-data (33), as Docker
     # mounts it as root with mode 755 when a stopped container starts again.
     tmpfs:

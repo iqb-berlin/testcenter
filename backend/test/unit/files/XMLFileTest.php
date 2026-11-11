@@ -51,7 +51,7 @@ class XMLFileTest extends TestCase {
     static::assertEquals('BOOKLET.SAMPLE-1', $xf->getId());
     static::assertEquals('ws_1/Booklet/SAMPLE_BOOKLET.XML', (string) $xf->getPath());
     static::assertEquals('Sample booklet', $xf->getLabel());
-    static::assertEquals(filesize(DATA_DIR . '/ws_1/Booklet/SAMPLE_BOOKLET.XML'), $xf->getSize());
+    static::assertEquals(filesize(VfsForTest::dataDir . '/ws_1/Booklet/SAMPLE_BOOKLET.XML'), $xf->getSize());
     static::assertEquals('Booklet', $xf->getRootTagName());
     static::assertEquals('This a sample booklet for testing/development/showcase purposes.', $xf->getDescription());
     static::assertArrayNotHasKey('error', $xf->getValidationReport());
@@ -59,7 +59,7 @@ class XMLFileTest extends TestCase {
 
 
   function test_loadFromArbitrary() {
-    file_put_contents(DATA_DIR . "/ws_1/arbitrary.xml", '<a><Metadata><Id>ARBITRARY.XML</Id></Metadata><b>c</b>d</a>');
+    file_put_contents(VfsForTest::dataDir . "/ws_1/arbitrary.xml", '<a><Metadata><Id>ARBITRARY.XML</Id></Metadata><b>c</b>d</a>');
 
     $xf = VfsForTest::loadAndValidateFile('ws_1/arbitrary.xml', 'xml');
 
@@ -79,7 +79,7 @@ class XMLFileTest extends TestCase {
     static::assertEquals('TESTTAKERS-BROKEN.XML', $xf->getId());
     static::assertEquals('ws_1/Testtakers/testtakers-broken.xml', (string) $xf->getPath());
     static::assertEquals('', $xf->getLabel());
-    static::assertEquals(filesize(DATA_DIR . '/ws_1/Testtakers/testtakers-broken.xml'), $xf->getSize());
+    static::assertEquals(filesize(VfsForTest::dataDir . '/ws_1/Testtakers/testtakers-broken.xml'), $xf->getSize());
     static::assertEquals('', $xf->getRootTagName());
     static::assertEquals('', $xf->getDescription());
     static::assertEquals('Error [76] in line 7: Opening and ending tag mismatch: Testtakers line 2 and Metadata, Error [5] in line 9: Extra content at the end of the document', $this->getErrorString($xf));
@@ -92,7 +92,7 @@ class XMLFileTest extends TestCase {
     static::assertEquals('BOOKLET.SAMPLE-1', $xf->getId());
     static::assertEquals('ws_1/Booklet/SAMPLE_BOOKLET.XML', (string) $xf->getPath());
     static::assertEquals('Sample booklet', $xf->getLabel());
-    static::assertEquals(filesize(DATA_DIR . '/ws_1/Booklet/SAMPLE_BOOKLET.XML'), $xf->getSize());
+    static::assertEquals(filesize(VfsForTest::dataDir . '/ws_1/Booklet/SAMPLE_BOOKLET.XML'), $xf->getSize());
     static::assertEquals('Booklet', $xf->getRootTagName());
     static::assertEquals('This a sample booklet for testing/development/showcase purposes.', $xf->getDescription());
     static::assertArrayNotHasKey('error', $xf->getValidationReport());
@@ -105,7 +105,7 @@ class XMLFileTest extends TestCase {
     static::assertEquals('TESTTAKERS-BROKEN.XML', $xf->getId());
     static::assertEquals('ws_1/Testtakers/testtakers-broken.xml', (string) $xf->getPath());
     static::assertEquals('', $xf->getLabel());
-    static::assertEquals(filesize(DATA_DIR . '/ws_1/Testtakers/testtakers-broken.xml'), $xf->getSize());
+    static::assertEquals(filesize(VfsForTest::dataDir . '/ws_1/Testtakers/testtakers-broken.xml'), $xf->getSize());
     static::assertEquals('', $xf->getRootTagName());
     static::assertEquals('', $xf->getDescription());
     static::assertEquals('Error [76] in line 7: Opening and ending tag mismatch: Testtakers line 2 and Metadata, Error [5] in line 9: Extra content at the end of the document', $this->getErrorString($xf));
@@ -113,7 +113,7 @@ class XMLFileTest extends TestCase {
 
   function test_loadFromInvalid() {
     file_put_contents(
-      DATA_DIR . "/ws_1/invalid.xml",
+      VfsForTest::dataDir . "/ws_1/invalid.xml",
       '<Booklet xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"'
       . ' xsi:noNamespaceSchemaLocation="https://w3id.org/iqb/spec/testcenter-booklet-xml/18.0">'
       . '<Metadata><Id>c</Id><Label>d</Label></Metadata>'
@@ -157,7 +157,7 @@ class XMLFileTest extends TestCase {
   }
 
   private function writeBookletWithSchema(string $schemaUrl): string {
-    $path = DATA_DIR . "/ws_1/booklet-schema.xml";
+    $path = VfsForTest::dataDir . "/ws_1/booklet-schema.xml";
     file_put_contents(
       $path,
       '<Booklet xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"'
@@ -198,7 +198,7 @@ class XMLFileTest extends TestCase {
 
   function test_schemaMissingWithoutValidation() {
     SystemConfig::$xmlSchema_validation = false;
-    file_put_contents(DATA_DIR . "/ws_1/no-schema.xml", '<Booklet><Metadata><Id>c</Id><Label>d</Label></Metadata></Booklet>');
+    file_put_contents(VfsForTest::dataDir . "/ws_1/no-schema.xml", '<Booklet><Metadata><Id>c</Id><Label>d</Label></Metadata></Booklet>');
     $xf = VfsForTest::loadAndValidateFile('ws_1/no-schema.xml', 'xml');
 
     static::assertEquals(
@@ -223,7 +223,7 @@ class XMLFileTest extends TestCase {
   function test_schemaInvalidContentIgnoredWithoutValidation() {
     SystemConfig::$xmlSchema_validation = false;
     file_put_contents(
-      DATA_DIR . "/ws_1/invalid.xml",
+      VfsForTest::dataDir . "/ws_1/invalid.xml",
       '<Booklet xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"'
       . ' xsi:noNamespaceSchemaLocation="https://w3id.org/iqb/spec/testcenter-booklet-xml/18.0">'
       . '<Metadata><Id>c</Id><Label>d</Label></Metadata>'

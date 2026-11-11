@@ -20,7 +20,7 @@ class SysCheckReportFileTest extends TestCase {
   function test_construct(): void {
     $sysCheckReportFile = new SysCheckReportFile(
       'SAMPLE_SYSCHECK-REPORT.JSON',
-      file_get_contents(DATA_DIR . '/ws_1/SysCheck/reports/SAMPLE_SYSCHECK-REPORT.JSON'),
+      file_get_contents(VfsForTest::dataDir . '/ws_1/SysCheck/reports/SAMPLE_SYSCHECK-REPORT.JSON'),
       TestEnvironment::staticDate
     );
     $report = $sysCheckReportFile->getReport();

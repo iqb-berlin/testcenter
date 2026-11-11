@@ -106,7 +106,7 @@ class WorkspaceTest extends TestCase {
     /** @var $voDataDir \org\bovigo\vfs\vfsStreamContent */
     $voDataDir = $this->vfs->getChild('data')->getChild('ws_1')->getChild('SysCheck');
     $voDataDir->chmod(0o444);
-    file_put_contents(DATA_DIR . '/ws_1/Resource/somePlayer.HTML', 'player content');
+    file_put_contents(VfsForTest::dataDir . '/ws_1/Resource/somePlayer.HTML', 'player content');
     // in a separate process PHPUnit treats anything on stderr as an error
     $errorLog = tempnam(sys_get_temp_dir(), 'error-log');
     ini_set('error_log', $errorLog);
@@ -157,13 +157,13 @@ class WorkspaceTest extends TestCase {
       'verona-player-simple-6.0.html'
     ];
     static::assertEquals($resourcesLeftExpected, $resourcesLeft);
-    static::assertFileExists(DATA_DIR . '/ws_1/Unit/SAMPLE_UNIT.XML');
+    static::assertFileExists(VfsForTest::dataDir . '/ws_1/Unit/SAMPLE_UNIT.XML');
     static::assertStringContainsString('Could not delete `ws_1/SysCheck/SAMPLE_SYSCHECK.XML`', file_get_contents($errorLog));
     unlink($errorLog);
   }
 
   function test_delete(): void {
-    file_put_contents(DATA_DIR . '/ws_1.txt', 'shares the prefix, but is not part of ws_1');
+    file_put_contents(VfsForTest::dataDir . '/ws_1.txt', 'shares the prefix, but is not part of ws_1');
 
     (new Workspace(1))->delete();
 
@@ -302,7 +302,7 @@ class WorkspaceTest extends TestCase {
     $result = $workspace->importUncategorizedFiles($this->stagingPath, ['valid.xml', 'P.HTML']);
 
     static::assertArrayNotHasKey('error', $result["valid.xml"], 'valid file has no errors');
-    static::assertTrue(file_exists(DATA_DIR . '/ws_1/Unit/valid.xml'), 'valid file is imported');
+    static::assertTrue(file_exists(VfsForTest::dataDir . '/ws_1/Unit/valid.xml'), 'valid file is imported');
   }
 
   function test_importUncategorizedFiles_singleFile_second_fail_invalidfile() {
@@ -325,12 +325,12 @@ class WorkspaceTest extends TestCase {
       count($result["invalid.xml"]['error']),
       'invalid file has error report'
     );
-    static::assertFalse(file_exists(DATA_DIR . '/ws_1/Unit/invalid.xml'), 'invalid file is rejected');
+    static::assertFalse(file_exists(VfsForTest::dataDir . '/ws_1/Unit/invalid.xml'), 'invalid file is rejected');
   }
 
   function test_importUncategorizedFiles_singleFile_third_fail_duplicate() {
-    file_put_contents(DATA_DIR . '/ws_1/Unit/valid.xml', self::validFile);
-    file_put_contents(DATA_DIR . '/ws_1/Resource/P.HTML', "this would be a player");
+    file_put_contents(VfsForTest::dataDir . '/ws_1/Unit/valid.xml', self::validFile);
+    file_put_contents(VfsForTest::dataDir . '/ws_1/Resource/P.HTML', "this would be a player");
     file_put_contents($this->stagingPath . '/valid3.xml', self::validFile2);
 
     $this->workspaceDaoMock
@@ -354,12 +354,12 @@ class WorkspaceTest extends TestCase {
     $result = $workspace->importUncategorizedFiles($this->stagingPath, ['valid3.xml']);
 
     static::assertFalse(
-      file_exists(DATA_DIR . '/ws_1/Unit/valid3.xml'),
+      file_exists(VfsForTest::dataDir . '/ws_1/Unit/valid3.xml'),
       'reject on duplicate id if file names are not the same'
     );
     static::assertStringContainsString(
       '1st valid file',
-      file_get_contents(DATA_DIR . '/ws_1/Unit/valid.xml'),
+      file_get_contents(VfsForTest::dataDir . '/ws_1/Unit/valid.xml'),
       "don't overwrite on duplicate id if file names are not the same"
     );
     static::assertGreaterThan(
@@ -370,8 +370,8 @@ class WorkspaceTest extends TestCase {
   }
 
   function test_importUncategorizedFiles_singleFile_second_success() {
-    file_put_contents(DATA_DIR . '/ws_1/Unit/valid.xml', self::validFile);
-    file_put_contents(DATA_DIR . '/ws_1/Resource/P.HTML', "this would be a player");
+    file_put_contents(VfsForTest::dataDir . '/ws_1/Unit/valid.xml', self::validFile);
+    file_put_contents(VfsForTest::dataDir . '/ws_1/Resource/P.HTML', "this would be a player");
     file_put_contents($this->stagingPath . '/valid.xml', self::validFile2);
 
     $this->workspaceDaoMock
@@ -403,7 +403,7 @@ class WorkspaceTest extends TestCase {
 
     static::assertStringContainsString(
       '2nd valid file',
-      file_get_contents(DATA_DIR . '/ws_1/Unit/valid.xml'),
+      file_get_contents(VfsForTest::dataDir . '/ws_1/Unit/valid.xml'),
       'allow overwriting if filename and id is the same'
     );
     static::assertGreaterThan(
@@ -414,8 +414,8 @@ class WorkspaceTest extends TestCase {
   }
 
   function test_importUncategorizedFiles_singleFile_fail_sameNameDifferentId() {
-    file_put_contents(DATA_DIR . '/ws_1/Unit/valid.xml', self::validFile);
-    file_put_contents(DATA_DIR . '/ws_1/Resource/P.HTML', "this would be a player");
+    file_put_contents(VfsForTest::dataDir . '/ws_1/Unit/valid.xml', self::validFile);
+    file_put_contents(VfsForTest::dataDir . '/ws_1/Resource/P.HTML', "this would be a player");
     file_put_contents($this->stagingPath . '/valid.xml', self::validUnit);
 
     $this->workspaceDaoMock
@@ -446,7 +446,7 @@ class WorkspaceTest extends TestCase {
 
     static::assertStringContainsString(
       '1st valid file',
-      file_get_contents(DATA_DIR . '/ws_1/Unit/valid.xml'),
+      file_get_contents(VfsForTest::dataDir . '/ws_1/Unit/valid.xml'),
       "don't overwrite if filename is the same but id differs"
     );
     static::assertGreaterThan(
@@ -519,14 +519,14 @@ class WorkspaceTest extends TestCase {
     static::assertCount(0, $errors); // todo wie ruft man mock archive dateien auf, um Files daraus zu bauen
 
 
-    static::assertTrue(file_exists(DATA_DIR . '/ws_1/Unit/valid_unit.xml'), 'import valid unit');
-    static::assertTrue(file_exists(DATA_DIR . '/ws_1/Booklet/valid_booklet.xml'), 'import valid booklet');
-    static::assertTrue(file_exists(DATA_DIR . '/ws_1/Resource/P.html'), 'import resource');
-    static::assertTrue(file_exists(DATA_DIR . '/ws_1/Testtakers/valid_testtakers.xml'), 'import testtakers');
+    static::assertTrue(file_exists(VfsForTest::dataDir . '/ws_1/Unit/valid_unit.xml'), 'import valid unit');
+    static::assertTrue(file_exists(VfsForTest::dataDir . '/ws_1/Booklet/valid_booklet.xml'), 'import valid booklet');
+    static::assertTrue(file_exists(VfsForTest::dataDir . '/ws_1/Resource/P.html'), 'import resource');
+    static::assertTrue(file_exists(VfsForTest::dataDir . '/ws_1/Testtakers/valid_testtakers.xml'), 'import testtakers');
   }
 
   function test_importUncategorizedFiles_doesNotValidateStoredFilesAgain() {
-    file_put_contents(DATA_DIR . '/ws_1/Unit/stored.xml', self::validUnit);
+    file_put_contents(VfsForTest::dataDir . '/ws_1/Unit/stored.xml', self::validUnit);
     $storedUnit = new XMLFileUnit(new FileData(StoragePath::fromString('ws_1/Unit/stored.xml'), 'Unit', 'X_UNIT'));
     file_put_contents($this->stagingPath . '/valid.xml', self::validFile);
     file_put_contents($this->stagingPath . '/P.HTML', 'this would be a player');
@@ -592,7 +592,7 @@ class WorkspaceTest extends TestCase {
       . '{"type": "PLAYER", "id": "dup-player", "name": [{"lang": "de", "value": "Player"}], "version": "1.0.0", '
       . '"specVersion": "6.0", "metadataVersion": "3.1"}'
       . '</script></head><body>!</body></html>';
-    file_put_contents(DATA_DIR . '/ws_1/Resource/dup-player-1.0.html', $player);
+    file_put_contents(VfsForTest::dataDir . '/ws_1/Resource/dup-player-1.0.html', $player);
     file_put_contents($this->stagingPath . '/dup-player-copy.html', $player);
     file_put_contents($this->stagingPath . '/valid_unit.xml', self::validUnit);
 
@@ -618,7 +618,7 @@ class WorkspaceTest extends TestCase {
       'Duplicate Resource-Id: `DUP-PLAYER-1.0` (dup-player-1.0.html)',
       $result['dup-player-copy.html']['error'] ?? []
     );
-    static::assertFalse(file_exists(DATA_DIR . '/ws_1/Resource/dup-player-copy.html'));
+    static::assertFalse(file_exists(VfsForTest::dataDir . '/ws_1/Resource/dup-player-copy.html'));
   }
 
   function test_importUncategorizedFiles_multipleFilesWithMissingDependencies() {
@@ -675,9 +675,9 @@ class WorkspaceTest extends TestCase {
     static::assertCount(3, $errors);
 
 
-    static::assertFalse(file_exists(DATA_DIR . '/ws_1/Unit/valid_unit.xml'), 'import valid unit');
-    static::assertFalse(file_exists(DATA_DIR . '/ws_1/Booklet/valid_booklet.xml'), 'import valid booklet');
-    static::assertFalse(file_exists(DATA_DIR . '/ws_1/Testtakers/valid_testtakers.xml'), 'import testtakers');
+    static::assertFalse(file_exists(VfsForTest::dataDir . '/ws_1/Unit/valid_unit.xml'), 'import valid unit');
+    static::assertFalse(file_exists(VfsForTest::dataDir . '/ws_1/Booklet/valid_booklet.xml'), 'import valid booklet');
+    static::assertFalse(file_exists(VfsForTest::dataDir . '/ws_1/Testtakers/valid_testtakers.xml'), 'import testtakers');
   }
 
   function test_importUncategorizedFiles_zipWithValidFilesWithDependencies() {
@@ -741,10 +741,10 @@ class WorkspaceTest extends TestCase {
     static::assertCount(0, $errors);
 
 
-    static::assertTrue(file_exists(DATA_DIR . '/ws_1/Unit/valid_unit.xml'), 'import valid unit from ZIP');
-    static::assertTrue(file_exists(DATA_DIR . '/ws_1/Booklet/valid_booklet.xml'), 'import valid booklet from ZIP');
-    static::assertTrue(file_exists(DATA_DIR . '/ws_1/Resource/P.html'), 'import resource from ZIP');
-    static::assertTrue(file_exists(DATA_DIR . '/ws_1/Testtakers/valid_testtakers.xml'), 'import testtakers from ZIP');
+    static::assertTrue(file_exists(VfsForTest::dataDir . '/ws_1/Unit/valid_unit.xml'), 'import valid unit from ZIP');
+    static::assertTrue(file_exists(VfsForTest::dataDir . '/ws_1/Booklet/valid_booklet.xml'), 'import valid booklet from ZIP');
+    static::assertTrue(file_exists(VfsForTest::dataDir . '/ws_1/Resource/P.html'), 'import resource from ZIP');
+    static::assertTrue(file_exists(VfsForTest::dataDir . '/ws_1/Testtakers/valid_testtakers.xml'), 'import testtakers from ZIP');
   }
 
   function test_importUncategorizedFiles_zip_rejectInvalidUnitAndDependantFiles() {
@@ -789,19 +789,19 @@ class WorkspaceTest extends TestCase {
     static::assertCount(3, $errors);
 
     static::assertFalse(
-      file_exists(DATA_DIR . '/ws_1/Unit/valid_unit.xml'),
+      file_exists(VfsForTest::dataDir . '/ws_1/Unit/valid_unit.xml'),
       'don\'t import invalid Unit from ZIP'
     );
     static::assertFalse(
-      file_exists(DATA_DIR . '/ws_1/Booklet/valid_booklet.xml'),
+      file_exists(VfsForTest::dataDir . '/ws_1/Booklet/valid_booklet.xml'),
       'don\'t import Booklet dependant of invalid unit from ZIP'
     );
     static::assertTrue(
-      file_exists(DATA_DIR . '/ws_1/Resource/P.html'),
+      file_exists(VfsForTest::dataDir . '/ws_1/Resource/P.html'),
       'import resource from ZIP'
     );
     static::assertFalse(
-      file_exists(DATA_DIR . '/ws_1/Testtakers/valid_testtakers.xml'),
+      file_exists(VfsForTest::dataDir . '/ws_1/Testtakers/valid_testtakers.xml'),
       'don\'t import Testtakers dependant of invalid unit from ZIP'
     );
   }
@@ -839,19 +839,19 @@ class WorkspaceTest extends TestCase {
     static::assertCount(2, $errors);
 
     static::assertTrue(
-      file_exists(DATA_DIR . '/ws_1/Unit/valid_unit.xml'),
+      file_exists(VfsForTest::dataDir . '/ws_1/Unit/valid_unit.xml'),
       'import valid Unit from ZIP'
     );
     static::assertFalse(
-      file_exists(DATA_DIR . '/ws_1/Booklet/valid_booklet.xml'),
+      file_exists(VfsForTest::dataDir . '/ws_1/Booklet/valid_booklet.xml'),
       'don\'t import Booklet dependant of invalid unit from ZIP'
     );
     static::assertTrue(
-      file_exists(DATA_DIR . '/ws_1/Resource/P.html'),
+      file_exists(VfsForTest::dataDir . '/ws_1/Resource/P.html'),
       'import resource from ZIP'
     );
     static::assertFalse(
-      file_exists(DATA_DIR . '/ws_1/Testtakers/valid_testtakers.xml'),
+      file_exists(VfsForTest::dataDir . '/ws_1/Testtakers/valid_testtakers.xml'),
       'don\'t import Testtakers dependant of invalid unit from ZIP'
     );
   }
@@ -881,7 +881,7 @@ class WorkspaceTest extends TestCase {
     static::assertCount(1, $errors);
 
     static::assertFalse(
-      file_exists(DATA_DIR . '/ws_1/Unit/valid_unit.xml'),
+      file_exists(VfsForTest::dataDir . '/ws_1/Unit/valid_unit.xml'),
       'reject file from ZIP on duplicate ID'
     );
   }
@@ -956,30 +956,30 @@ class WorkspaceTest extends TestCase {
     static::assertCount(1, $errors);
 
     static::assertFalse(
-      file_exists(DATA_DIR . '/ws_1/Unit/invalid_unit.xml'),
+      file_exists(VfsForTest::dataDir . '/ws_1/Unit/invalid_unit.xml'),
       'don\'t import invalid Unit from ZIP'
     );
     static::assertTrue(
-      file_exists(DATA_DIR . '/ws_1/Unit/valid_unit.xml'),
+      file_exists(VfsForTest::dataDir . '/ws_1/Unit/valid_unit.xml'),
       'import valid Unit from ZIP'
     );
     static::assertTrue(
-      file_exists(DATA_DIR . '/ws_1/Booklet/valid_booklet.xml'),
+      file_exists(VfsForTest::dataDir . '/ws_1/Booklet/valid_booklet.xml'),
       'import Booklet dependant of invalid unit from ZIP'
     );
     static::assertTrue(
-      file_exists(DATA_DIR . '/ws_1/Resource/P.html'),
+      file_exists(VfsForTest::dataDir . '/ws_1/Resource/P.html'),
       'import resource from ZIP'
     );
     static::assertTrue(
-      file_exists(DATA_DIR . '/ws_1/Testtakers/valid_testtakers.xml'),
+      file_exists(VfsForTest::dataDir . '/ws_1/Testtakers/valid_testtakers.xml'),
       'import Testtakers dependant of invalid unit from ZIP'
     );
   }
 
   // regression test for #235
   function test_importUncategorizedFiles_multiMonitor() {
-    file_put_contents(DATA_DIR . '/ws_1/Testtakers/testtakers.xml', self::dangerousTesttakers);
+    file_put_contents(VfsForTest::dataDir . '/ws_1/Testtakers/testtakers.xml', self::dangerousTesttakers);
 
     $this->workspaceDaoMock
       ->expects('storeFile')
@@ -1030,12 +1030,12 @@ class WorkspaceTest extends TestCase {
     $workspace = new Workspace(1);
     $hash = $workspace->getWorkspaceHash();
 
-    file_put_contents(DATA_DIR . '/ws_1/.lock', '.');
-    file_put_contents(DATA_DIR . '/ws_1/SysCheck/reports/report_new.json', '{}');
-    Folder::createPath(DATA_DIR . '/ws_1/Resource/package');
-    file_put_contents(DATA_DIR . '/ws_1/Resource/package/index.html', 'x');
-    Folder::createPath(DATA_DIR . '/ws_1/UnitAttachments');
-    file_put_contents(DATA_DIR . '/ws_1/UnitAttachments/scan.png', 'x');
+    file_put_contents(VfsForTest::dataDir . '/ws_1/.lock', '.');
+    file_put_contents(VfsForTest::dataDir . '/ws_1/SysCheck/reports/report_new.json', '{}');
+    Folder::createPath(VfsForTest::dataDir . '/ws_1/Resource/package');
+    file_put_contents(VfsForTest::dataDir . '/ws_1/Resource/package/index.html', 'x');
+    Folder::createPath(VfsForTest::dataDir . '/ws_1/UnitAttachments');
+    file_put_contents(VfsForTest::dataDir . '/ws_1/UnitAttachments/scan.png', 'x');
 
     static::assertSame($hash, $workspace->getWorkspaceHash());
   }
@@ -1044,14 +1044,14 @@ class WorkspaceTest extends TestCase {
     $workspace = new Workspace(1);
     $hash = $workspace->getWorkspaceHash();
 
-    file_put_contents(DATA_DIR . '/ws_1/Unit/NEW_UNIT.XML', '<Unit/>');
+    file_put_contents(VfsForTest::dataDir . '/ws_1/Unit/NEW_UNIT.XML', '<Unit/>');
     $hashWithNewFile = $workspace->getWorkspaceHash();
     static::assertNotSame($hash, $hashWithNewFile);
 
-    file_put_contents(DATA_DIR . '/ws_1/Unit/NEW_UNIT.XML', '<Unit></Unit>');
+    file_put_contents(VfsForTest::dataDir . '/ws_1/Unit/NEW_UNIT.XML', '<Unit></Unit>');
     static::assertNotSame($hashWithNewFile, $workspace->getWorkspaceHash());
 
-    rename(DATA_DIR . '/ws_1/Unit/NEW_UNIT.XML', DATA_DIR . '/ws_1/Booklet/NEW_UNIT.XML');
+    rename(VfsForTest::dataDir . '/ws_1/Unit/NEW_UNIT.XML', VfsForTest::dataDir . '/ws_1/Booklet/NEW_UNIT.XML');
     static::assertNotSame($hashWithNewFile, $workspace->getWorkspaceHash());
   }
 

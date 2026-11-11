@@ -34,6 +34,13 @@ class SystemConfig {
   public static bool $xmlSchema_validation = true;
   /** local directory of downloaded XSD files, outside the storage; the image ships the known ones there */
   public static string $xmlSchema_cacheDir;
+  /**
+   * outermost segment of every stored file's location, here the directory below `$storage_filesystemDir`;
+   * test mode switches it, so its files stay apart from the real ones
+   */
+  public static string $storage_root;
+  /** directory the filesystem driver keeps the storage root in */
+  public static string $storage_filesystemDir;
   public static string $server_key = 'Secret';
   // TODO server URL
   public static int $password_min_length;
@@ -124,6 +131,9 @@ class SystemConfig {
 
     $config['xmlSchema']['validation'] = self::boolEnv('XML_SCHEMA_VALIDATION', true);
     $config['xmlSchema']['cacheDir'] = ROOT_DIR . '/data/.schemas';
+
+    $config['storage']['root'] = 'data';
+    $config['storage']['filesystemDir'] = ROOT_DIR;
 
     $config['debug']['allowTestMode'] = self::boolEnv('ALLOW_TEST_MODE');
 

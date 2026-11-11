@@ -241,7 +241,7 @@ class WorkspaceCacheTest extends TestCase {
   }
 
   private function addResource(string $fileName, string $content, bool $overwriteAllowed = false): ResourceFile {
-    file_put_contents(DATA_DIR . "/ws_1/Resource/{$fileName}", $content);
+    file_put_contents(VfsForTest::dataDir . "/ws_1/Resource/{$fileName}", $content);
     $resource = VfsForTest::loadAndValidateFile("ws_1/Resource/{$fileName}", 'Resource');
     $this->workspaceCache->addFile('Resource', $resource, $overwriteAllowed);
     return $resource;
@@ -264,7 +264,7 @@ class WorkspaceCacheTest extends TestCase {
       'model' => $model
     ], JSON_THROW_ON_ERROR);
     file_put_contents(
-      DATA_DIR . "/ws_1/Resource/{$fileName}",
+      VfsForTest::dataDir . "/ws_1/Resource/{$fileName}",
       "<html lang='de'><head><script type='application/ld+json'>{$metadata}</script></head></html>"
     );
     $widget = VfsForTest::loadAndValidateFile("ws_1/Resource/{$fileName}", 'Resource');

@@ -69,7 +69,6 @@ declare(strict_types=1);
  * See `backend/test/massive-test-data.md` for the standalone documentation.
  */
 define('ROOT_DIR', realpath(__DIR__ . '/../..'));
-const DATA_DIR = ROOT_DIR . '/data';
 require_once(ROOT_DIR . '/backend/vendor/autoload.php');
 SystemConfig::readEnvironment();
 DB::connect();

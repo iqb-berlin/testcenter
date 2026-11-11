@@ -26,17 +26,14 @@ final class ReportTest extends TestCase {
    *    Our Workspace mock intercepts getFileById() to return empty results, avoiding actual
    *    file parsing.
    *
-   * Minimal setup: define DATA_DIR pointing to vfsStream so the storage driver lands there,
-   * then mock away the actual file operations.
+   * Minimal setup: an empty vfsStream for the storage driver, then mock away the actual file
+   * operations.
    *
    * Future refactor opportunity: inject Workspace dependency into ReviewCSVFormatter
    * instead of instantiating internally, enabling cleaner test isolation.
    */
   public static function setUpBeforeClass(): void {
-    if (!defined('DATA_DIR')) {
-      vfsStream::setup('root', 0o777);
-      define('DATA_DIR', vfsStream::url('root/data'));
-    }
+    vfsStream::setup('root', 0o777);
   }
 
   private const BOM = "\xEF\xBB\xBF";

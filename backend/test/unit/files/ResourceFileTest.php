@@ -212,7 +212,7 @@ class ResourceFileTest extends TestCase {
       $package->installPackage();
 
       static::assertArrayNotHasKey('error', $package->getValidationReport(), $packageName);
-      static::assertFileExists(DATA_DIR . "/ws_1/Resource/$directory/index.html", $packageName);
+      static::assertFileExists(VfsForTest::dataDir . "/ws_1/Resource/$directory/index.html", $packageName);
     }
   }
 
@@ -259,7 +259,7 @@ class ResourceFileTest extends TestCase {
   }
 
   private function resourceFromString(string $fileName, string $content): ResourceFile {
-    file_put_contents(DATA_DIR . '/ws_1/Resource/' . $fileName, $content);
+    file_put_contents(VfsForTest::dataDir . '/ws_1/Resource/' . $fileName, $content);
     return VfsForTest::loadAndValidateFile("ws_1/Resource/$fileName", 'Resource');
   }
 }

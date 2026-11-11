@@ -22,7 +22,6 @@ if (php_sapi_name() !== 'cli') {
 ini_set('memory_limit', '1G');
 
 define('ROOT_DIR', realpath(__DIR__ . '/..'));
-const DATA_DIR = ROOT_DIR . '/data';
 
 require_once "vendor/autoload.php";
 
