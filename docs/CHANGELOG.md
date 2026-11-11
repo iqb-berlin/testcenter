@@ -7,6 +7,7 @@
 ## Betrieb & Schnittstellen
 - Die undokumentierte Umgebungsvariable `OVERRIDE_CONFIG` wird nicht mehr ausgewertet; das Backend wird nur noch über die einzeln benannten Umgebungsvariablen konfiguriert. Bisher konnte sie als INI-Text beliebige Einstellungen des Backends überschreiben, wurde vom Testcenter selbst seit 19.0.0 nicht mehr verwendet.
 - Datenbank: Neue Spalte `workspaces.locked_at`. Während eines Uploads oder Löschvorgangs sperrt sie den Arbeitsbereich für weitere solche Aktionen. Bisher übernahm das eine Datei `.lock` im Workspace-Ordner, die mehrere Backend-Container ohne gemeinsames Laufwerk nicht teilen können.
+- API: `DELETE /workspace/{ws_id}/files` löscht nur Dateien aus der Dateiliste des Arbeitsbereichs; andere Pfade erscheinen in der Antwort unter `did_not_exist`. Bisher löschte der Aufruf jede Datei im Speicher des Arbeitsbereichs, auch einzelne Dateien entpackter Ressourcen-Pakete und Anhänge, ohne zu prüfen, ob sie verwendet werden.
 
 # 19.1.0
 

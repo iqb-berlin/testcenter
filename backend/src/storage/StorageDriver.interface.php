@@ -27,8 +27,8 @@ interface StorageDriver {
   /** @return string[] the names of the subdirectories directly in $directory, sorted */
   public function listSubdirectories(StorageDirectory $directory): array;
 
-  /** @return bool false if there was no file at $path */
-  public function delete(StoragePath $path): bool;
+  /** Afterwards there is no file at $path, whether there was one before or not. */
+  public function delete(StoragePath $path): void;
 
   /** Deletes $directory with everything in it. Refuses the root directory. */
   public function deleteDirectory(StorageDirectory $directory): void;

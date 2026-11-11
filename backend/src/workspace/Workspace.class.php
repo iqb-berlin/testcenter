@@ -95,17 +95,21 @@ class Workspace {
 
       $cachedFile = $cachedFilesToDelete[$type][$name] ?? null;
 
-      // file does not exist in db means, it must be something not validatable like sysCheck-Reports
-      if ($cachedFile) {
-        if (isset($blockedFiles[$localFilePath])) {
-          $deletionReport->was_used[] = $localFilePath;
-          continue;
-        }
+      // only files of the file list; other files in the workspace's storage, such as unpacked packages or
+      // attachments, are managed by what they belong to
+      if (!$cachedFile) {
+        $deletionReport->did_not_exist[] = $localFilePath;
+        continue;
+      }
 
-        if (!$this->deleteFileFromDb($cachedFile)) {
-          $deletionReport->error[] = $localFilePath;
-          continue;
-        }
+      if (isset($blockedFiles[$localFilePath])) {
+        $deletionReport->was_used[] = $localFilePath;
+        continue;
+      }
+
+      if (!$this->deleteFileFromDb($cachedFile)) {
+        $deletionReport->error[] = $localFilePath;
+        continue;
       }
       self::deleteFromStorage($path, $deletionReport, $localFilePath);
     }
@@ -122,11 +126,8 @@ class Workspace {
     string $entry
   ): void {
     try {
-      if (Storage::getDriver()->delete($path)) {
-        $deletionReport->deleted[] = $entry;
-      } else {
-        $deletionReport->did_not_exist[] = $entry;
-      }
+      Storage::getDriver()->delete($path);
+      $deletionReport->deleted[] = $entry;
     } catch (Exception $e) {
       error_log($e->getMessage());
       $deletionReport->not_allowed[] = $entry;

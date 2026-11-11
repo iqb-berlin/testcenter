@@ -107,6 +107,7 @@ class WorkspaceTest extends TestCase {
     $voDataDir = $this->vfs->getChild('data')->getChild('ws_1')->getChild('SysCheck');
     $voDataDir->chmod(0o444);
     file_put_contents(VfsForTest::dataDir . '/ws_1/Resource/somePlayer.HTML', 'player content');
+    Storage::getDriver()->putContents(StoragePath::fromString('ws_1/Resource/package/index.html'), 'package content');
     // in a separate process PHPUnit treats anything on stderr as an error
     $errorLog = tempnam(sys_get_temp_dir(), 'error-log');
     ini_set('error_log', $errorLog);
@@ -115,12 +116,19 @@ class WorkspaceTest extends TestCase {
       ->expects('getFiles')
       ->andReturn([
         'Resource' => [
-          'verona-player-simple-6.0.html' => VfsForTest::loadAndValidateFile('ws_1/Resource/verona-player-simple-6.0.html', 'Resource')
+          'verona-player-simple-6.0.html' => VfsForTest::loadAndValidateFile('ws_1/Resource/verona-player-simple-6.0.html', 'Resource'),
+          'somePlayer.HTML' => VfsForTest::loadAndValidateFile('ws_1/Resource/somePlayer.HTML', 'Resource')
+        ],
+        'SysCheck' => [
+          'SAMPLE_SYSCHECK.XML' => VfsForTest::loadAndValidateFile('ws_1/SysCheck/SAMPLE_SYSCHECK.XML', 'SysCheck')
         ]
       ]);
     $this->workspaceDaoMock
       ->expects('getBlockedFiles')
       ->andReturn(['Resource/verona-player-simple-6.0.html' => 'Unit/SAMPLE_UNIT2.XML']);
+    $this->workspaceDaoMock
+      ->expects('deleteFile')
+      ->twice();
     $this->workspaceDaoMock
       ->expects('updateContentTypeBasedOnRemainingTesttakers');
 
@@ -131,16 +139,13 @@ class WorkspaceTest extends TestCase {
       'Resource/somePlayer.HTML',
       'SysCheck/SAMPLE_SYSCHECK.XML',
       'i_dont/even.exist',
-      "SysCheck/reports/SAMPLE_SYSCHECK-REPORT.JSON",
+      'Resource/package/index.html',
       'Resource/../Unit/SAMPLE_UNIT.XML',
       'no-type'
     ]);
     $expectation = new FileDeletionReport(
-      deleted: [
-        'Resource/somePlayer.HTML',
-        "SysCheck/reports/SAMPLE_SYSCHECK-REPORT.JSON"
-      ],
-      did_not_exist: ['i_dont/even.exist'],
+      deleted: ['Resource/somePlayer.HTML'],
+      did_not_exist: ['i_dont/even.exist', 'Resource/package/index.html'],
       not_allowed: ['SysCheck/SAMPLE_SYSCHECK.XML'],
       was_used: ['Resource/verona-player-simple-6.0.html'],
       incorrect_path: ['Resource/../Unit/SAMPLE_UNIT.XML', 'no-type']
@@ -153,10 +158,12 @@ class WorkspaceTest extends TestCase {
       '..',
       'SAMPLE_UNITCONTENTS.HTM',
       'coding-scheme.vocs.json',
+      'package',
       'sample_resource_package.itcr.zip',
       'verona-player-simple-6.0.html'
     ];
     static::assertEquals($resourcesLeftExpected, $resourcesLeft);
+    static::assertFileExists(VfsForTest::dataDir . '/ws_1/Resource/package/index.html');
     static::assertFileExists(VfsForTest::dataDir . '/ws_1/Unit/SAMPLE_UNIT.XML');
     static::assertStringContainsString('Could not delete `ws_1/SysCheck/SAMPLE_SYSCHECK.XML`', file_get_contents($errorLog));
     unlink($errorLog);

@@ -72,16 +72,15 @@ class FilesystemDriver implements StorageDriver {
     ));
   }
 
-  public function delete(StoragePath $path): bool {
+  public function delete(StoragePath $path): void {
     $diskPath = $this->getDiskPath($path);
     if (!is_file($diskPath)) {
-      return false;
+      return;
     }
     if (!unlink($diskPath)) {
       throw new Exception("Could not delete `$path`.");
     }
     $this->removeEmptyDirectories($path->directory);
-    return true;
   }
 
   public function deleteDirectory(StorageDirectory $directory): void {

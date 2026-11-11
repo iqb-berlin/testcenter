@@ -126,9 +126,17 @@ abstract class StorageDriverContractTestCase extends TestCase {
     $path = StoragePath::fromString('ws_1/Unit/unit.xml');
     $this->driver->putContents($path, 'x');
 
-    $this->assertTrue($this->driver->delete($path));
+    $this->driver->delete($path);
+
     $this->assertNull($this->driver->getFileInfo($path));
-    $this->assertFalse($this->driver->delete($path));
+  }
+
+  function test_delete_ignoresMissingFile(): void {
+    $path = StoragePath::fromString('ws_1/Unit/missing.xml');
+
+    $this->driver->delete($path);
+
+    $this->assertNull($this->driver->getFileInfo($path));
   }
 
   function test_delete_ofTheLastFileRemovesItsDirectories(): void {

@@ -801,7 +801,9 @@ paths:
                 $ref: './components.spec.yml#/components/schemas/error'
     delete:
       summary: delete files
-      description: deletes files from a workspace
+      description: >
+        deletes files of the workspace's file list; other paths, e.g. files inside unpacked resource packages,
+        are reported as not existing
       tags:
         - admin workspace
       parameters:
@@ -843,12 +845,12 @@ paths:
                 deleted:
                   - "SysCheck/SAMPLE_SYSCHECK.XML"
                 did_not_exist:
-                  - "some rubbish"
                   - "a/b"
-                not_allowed:
-                  - "../../README.md"
                 was_used:
                   - "Unit/SAMPLE_UNIT.XML"
+                incorrect_path:
+                  - "some rubbish"
+                  - "../../README.md"
         "401":
           description: Not authenticated
           content:
