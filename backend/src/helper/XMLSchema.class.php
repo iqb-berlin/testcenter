@@ -50,7 +50,7 @@ class XMLSchema {
   }
 
   private static function accessSchemaCache(array $schemaData): ?string {
-    $folder = DATA_DIR . "/.schemas/{$schemaData['repo']}/{$schemaData['version']}/";
+    $folder = SystemConfig::$xmlSchema_cacheDir . "/{$schemaData['repo']}/{$schemaData['version']}/";
     $fileName = "{$schemaData['repo']}.xsd";
 
     if (file_exists("$folder$fileName")) {

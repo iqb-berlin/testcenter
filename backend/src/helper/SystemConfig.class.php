@@ -32,6 +32,8 @@ class SystemConfig {
   public static bool $debug_allowTestMode = false;
   public static string $language_dateFormat = 'd/m/Y H:i';
   public static bool $xmlSchema_validation = true;
+  /** local directory of downloaded XSD files, outside the storage; the image ships the known ones there */
+  public static string $xmlSchema_cacheDir;
   public static string $server_key = 'Secret';
   // TODO server URL
   public static int $password_min_length;
@@ -121,6 +123,7 @@ class SystemConfig {
     $config['server']['key'] = $serverKey;
 
     $config['xmlSchema']['validation'] = self::boolEnv('XML_SCHEMA_VALIDATION', true);
+    $config['xmlSchema']['cacheDir'] = ROOT_DIR . '/data/.schemas';
 
     $config['debug']['allowTestMode'] = self::boolEnv('ALLOW_TEST_MODE');
 

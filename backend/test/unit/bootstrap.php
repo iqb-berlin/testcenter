@@ -15,6 +15,6 @@ SystemConfig::apply([
   'cacheServer' => ['host' => '', 'port' => 6379, 'password' => ''],
   'bruteForceProtection' => ['sessions' => []],
   'server' => ['key' => 'Secret'],
-  'xmlSchema' => ['validation' => true],
+  'xmlSchema' => ['validation' => true, 'cacheDir' => 'vfs://root/data/.schemas'],
   'debug' => ['allowTestMode' => false]
 ]);
