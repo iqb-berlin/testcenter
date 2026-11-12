@@ -30,6 +30,17 @@ test-backend-unit:
 						--configuration /var/www/testcenter/backend/phpunit.xml\
 					/var/www/testcenter/backend/test/unit/$(target)
 
+# the S3 driver against the local S3; adds the overlay itself, so it runs whatever LOCAL_S3 says (twice is harmless)
+test-backend-s3:
+	cd $(TC_BASE_DIR) &&\
+	$(COMPOSE_DEV)\
+			--file $(TC_BASE_DIR)/docker-compose.s3.yml\
+		run --rm $(UNIT_TEST_PHP_INI) backend\
+			php -dxdebug.mode=off /var/www/testcenter/backend/vendor/phpunit/phpunit/phpunit\
+					--bootstrap /var/www/testcenter/backend/test/s3/bootstrap.php\
+					--configuration /var/www/testcenter/backend/phpunit.xml\
+				/var/www/testcenter/backend/test/s3
+
 test-backend-unit-coverage:
 	cd $(TC_BASE_DIR) &&\
 	$(COMPOSE_DEV)\
