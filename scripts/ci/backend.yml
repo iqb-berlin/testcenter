@@ -11,10 +11,13 @@ build-backend:
   before_script:
     - !reference [ .gitlab_login, before_script ]
   script:
+    # the XSD schemas are downloaded on every build: the cache can't tell when a schema version is
+    # added upstream or its tag is moved, and would keep the schemas of an earlier build
     - docker build --progress plain --pull
       --build-arg REGISTRY_PATH=${DEP_PROXY_PREFIX}/
       --build-arg BUILDKIT_INLINE_CACHE=1
-      --cache-from ${IMAGE_NAME}:dev      
+      --cache-from ${IMAGE_NAME}:dev
+      --no-cache-filter schema-downloader
       --target dev --file backend/Dockerfile
       --tag ${IMAGE_NAME}:${CI_COMMIT_SHA}_dev
       --tag ${IMAGE_NAME}:dev
