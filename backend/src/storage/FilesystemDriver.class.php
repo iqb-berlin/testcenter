@@ -7,7 +7,7 @@ use Slim\Psr7\Stream;
 
 /**
  * Keeps each file at its storage path below a root directory on disk. Directories on disk are created on write and
- * removed as soon as they are empty, so they exist exactly as long as storage directories do.
+ * removed as soon as they are empty.
  */
 class FilesystemDriver implements StorageDriver {
   private readonly string $rootDirectory;

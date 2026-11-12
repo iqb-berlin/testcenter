@@ -102,6 +102,12 @@ class WorkspaceTest extends TestCase {
     static::assertEquals(['.', '..', 'ws_1'], scandir(vfsStream::url('root/data')));
   }
 
+  function test_getAll_skipsDirectoriesWithoutFiles() {
+    mkdir(VfsForTest::dataDir . '/ws_2/Unit', recursive: true);
+
+    static::assertSame([1], array_keys(Workspace::getAll()));
+  }
+
   function test_deleteFiles() {
     /** @var $voDataDir \org\bovigo\vfs\vfsStreamContent */
     $voDataDir = $this->vfs->getChild('data')->getChild('ws_1')->getChild('SysCheck');

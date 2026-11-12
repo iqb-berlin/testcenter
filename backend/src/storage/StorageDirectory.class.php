@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 /**
- * A directory in storage, e.g. `ws_1/Resource/`. It exists exactly as long as there are files in it.
+ * A directory in storage, e.g. `ws_1/Resource/`. Writing a file into it makes it exist.
  * Together with StoragePath the only place where storage paths are built and validated.
  */
 readonly class StorageDirectory {
