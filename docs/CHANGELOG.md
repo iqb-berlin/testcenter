@@ -1,5 +1,12 @@
 # storage-driver (nach dem nächsten Release)
 
+## S3
+
+Das Backend kann die Dateien der Arbeitsbereiche in einem S3-kompatiblen Bucket ablegen statt im Dateisystem, etwa bei AWS, STACKIT oder einem eigenen SeaweedFS. TODO (S3-Plan 1.3–1.6): Auslieferung über S3, Compose, Helm und Dokumentation ergänzen.
+
+- Konfiguration: `STORAGE_DRIVER=s3` wählt den Bucket, eingestellt über `S3_ENDPOINT` (leer für AWS), `S3_REGION`, `S3_BUCKET`, `S3_ACCESS_KEY`, `S3_SECRET_KEY` und `S3_USE_PATH_STYLE`. Ohne `STORAGE_DRIVER` bleibt es beim Dateisystem; ein unbekannter Wert oder leere S3-Einstellungen verhindern den Start.
+- Neue Abhängigkeit des Backends: `async-aws/s3`.
+
 ## Fehlerbehebungen
 - Ressourcen-Pakete mit groß geschriebener Endung (z. B. `geogebra.ITCR.ZIP`) können von Units genutzt werden. Bisher scheiterte das Hochladen mit „Could not extract package“.
 - Ein Ressourcen-Paket und eine Ressource mit dem Namen des Pakets ohne Endung (`geogebra.itcr.zip` und `geogebra`) werden beim Hochladen abgelehnt, wenn das jeweils andere schon vorhanden ist. Bisher brach das Hochladen der Ressource mit einem Serverfehler ab, und ein so hochgeladenes Paket wurde gespeichert, ließ sich aber nicht nutzen.
