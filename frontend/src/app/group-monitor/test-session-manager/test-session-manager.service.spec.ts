@@ -297,6 +297,25 @@ describe('TestSessionManager', () => {
   });
 
   describe('groupForGoto', () => {
+    it('should include the destination block in the command response', () => {
+      const selection: Selected = {
+        element: <Testlet>unitTestExampleBooklets.example_booklet_1.units.children[3],
+        inversion: false,
+        originSession: unitTestExampleSessions[0],
+        nthClick: 'first'
+      };
+      service.checkSessionsBySelection(selection);
+      const responses: CommandResponse[] = [];
+      const subscription = service.commandResponses$.subscribe(response => responses.push(response));
+
+      service.testCommandGoto(selection, 1).subscribe();
+
+      expect(responses.length).toBe(1);
+      expect(responses[0].commandType).toBe('goto');
+      expect(responses[0].blockId).toBe('block-2');
+      subscription.unsubscribe();
+    });
+
     it('return a group for each booklet in set and the first unit in the selected block', () => {
       const selection: Selected = {
         element: <Testlet>unitTestExampleBooklets.example_booklet_1.units.children[3], // alf = block-2

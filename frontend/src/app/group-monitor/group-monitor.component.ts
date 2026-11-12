@@ -131,7 +131,10 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
   }
 
   private commandResponseToMessage(commandResponse: CommandResponse): UIMessage {
-    const command = this.cts.getCustomText(`gm_control_${commandResponse.commandType}`) || commandResponse.commandType;
+    let command = this.cts.getCustomText(`gm_control_${commandResponse.commandType}`) || commandResponse.commandType;
+    if (commandResponse.commandType === 'goto' && commandResponse.blockId) {
+      command += ` ${this.cts.getCustomText('gm_col_blockLabel') || 'Block'} ${commandResponse.blockId}`;
+    }
     const successWarning = this.cts.getCustomText(`gm_control_${commandResponse.commandType}_success_warning`) || '';
     if (!commandResponse.testIds.length) {
       return {
@@ -309,7 +312,10 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
   }
 
   private selectNextBlock(): void {
-    if (!this.displayOptions.autoselectNextBlock) return;
+    if (!this.displayOptions.autoselectNextBlock) {
+      this.currentlySelected = null;
+      return;
+    }
     if (!this.currentlySelected) return;
     if (!isBooklet(this.currentlySelected.originSession.booklet)) return;
     this.currentlySelected = {
