@@ -1,6 +1,8 @@
 # storage-driver (nach dem nächsten Release)
 
 ## Fehlerbehebungen
+- In der Testtakers-XML definierte Aktivitätsfilter mit `type="equal"` lassen sich im Gruppen-Monitor bearbeiten. Bisher brach der Dialog bei einem einzelnen Zustandswert mit „Value must be an array in multiple-selection mode“ ab. (#1107)
+- Beim Abbrechen der Filterbearbeitung im Gruppen-Monitor bleibt der ursprüngliche Filter unverändert. Bisher wurden Änderungen bereits vor dem Speichern auf den aktiven Filter übertragen.
 - Ressourcen-Pakete mit groß geschriebener Endung (z. B. `geogebra.ITCR.ZIP`) können von Units genutzt werden. Bisher scheiterte das Hochladen mit „Could not extract package“.
 - Ein Ressourcen-Paket und eine Ressource mit dem Namen des Pakets ohne Endung (`geogebra.itcr.zip` und `geogebra`) werden beim Hochladen abgelehnt, wenn das jeweils andere schon vorhanden ist. Bisher brach das Hochladen der Ressource mit einem Serverfehler ab, und ein so hochgeladenes Paket wurde gespeichert, ließ sich aber nicht nutzen.
 
