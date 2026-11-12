@@ -4,9 +4,10 @@ declare(strict_types=1);
 use Psr\Http\Message\StreamInterface;
 
 /**
- * Where files live. Unlike on a disk, a directory exists exactly as long as there are files in it: there are no
- * empty directories, and deleting the last file removes its directory too. URL signing and locking are not storage
- * concerns.
+ * Where files live. Unlike on a disk, directories are not created or removed: writing a file makes its directory
+ * exist. A directory without files may still be listed for a while, as some S3 implementations clean up empty
+ * directories only later and other tools may leave empty folder markers in a bucket. URL signing and locking are not
+ * storage concerns.
  *
  * A name is either a file or a directory, never both: callers must not write `a/b` while `a/b/…` exists, or the
  * other way round. What a driver does then is undefined.
