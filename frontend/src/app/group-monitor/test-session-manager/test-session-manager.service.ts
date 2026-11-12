@@ -300,6 +300,7 @@ export class TestSessionManager {
   }
 
   testCommandGoto(selection: Selected, newTimeLeft: number): Observable<true> {
+    const blockId = selection.element?.blockId;
     const gfg = TestSessionManager.groupForGoto(this.checked, selection);
     const allTestIds = this.checked.map(s => s.data.testId);
     return zip(
@@ -313,7 +314,8 @@ export class TestSessionManager {
       tap(() => {
         this._commandResponses$.next({
           commandType: 'goto',
-          testIds: allTestIds
+          testIds: allTestIds,
+          blockId
         });
       }),
       map(() => true)

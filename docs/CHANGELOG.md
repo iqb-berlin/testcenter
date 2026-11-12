@@ -4,6 +4,10 @@
 - Ressourcen-Pakete mit groß geschriebener Endung (z. B. `geogebra.ITCR.ZIP`) können von Units genutzt werden. Bisher scheiterte das Hochladen mit „Could not extract package“.
 - Ein Ressourcen-Paket und eine Ressource mit dem Namen des Pakets ohne Endung (`geogebra.itcr.zip` und `geogebra`) werden beim Hochladen abgelehnt, wenn das jeweils andere schon vorhanden ist. Bisher brach das Hochladen der Ressource mit einem Serverfehler ab, und ein so hochgeladenes Paket wurde gespeichert, ließ sich aber nicht nutzen.
 
+## Fehlerbehebungen
+- Die Bestätigung nach „Springe zu“ im Gruppen-Monitor nennt den angesprungenen Block auch dann, wenn die Blockauswahl anschließend geleert oder der nächste Block ausgewählt wird.
+- Im Gruppen-Monitor wird die Blockauswahl nach erfolgreichem Starten eines Abschnitts geleert, wenn das Monitor-Profil die automatische Auswahl des nächsten Blocks deaktiviert (`autoselectNextBlock="no"`). So bleibt der gerade gestartete Abschnitt nicht versehentlich für einen erneuten Start ausgewählt. Bei aktivierter automatischer Auswahl wird weiterhin der nächste Block ausgewählt. (#1100)
+
 ## Betrieb & Schnittstellen
 - Die undokumentierte Umgebungsvariable `OVERRIDE_CONFIG` wird nicht mehr ausgewertet; das Backend wird nur noch über die einzeln benannten Umgebungsvariablen konfiguriert. Bisher konnte sie als INI-Text beliebige Einstellungen des Backends überschreiben, wurde vom Testcenter selbst seit 19.0.0 nicht mehr verwendet.
 - Datenbank: Neue Spalte `workspaces.locked_at`. Während eines Uploads oder Löschvorgangs sperrt sie den Arbeitsbereich für weitere solche Aktionen. Bisher übernahm das eine Datei `.lock` im Workspace-Ordner, die mehrere Backend-Container ohne gemeinsames Laufwerk nicht teilen können.

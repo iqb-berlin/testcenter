@@ -177,6 +177,7 @@ export interface UIMessage {
 export interface CommandResponse {
   commandType: string;
   testIds: number[];
+  blockId?: string;
 }
 
 export interface GotoCommandData {
