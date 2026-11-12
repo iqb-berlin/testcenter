@@ -34,7 +34,13 @@ export class AddFilterDialogComponent implements OnInit {
   ) {
     if (data && isTestSessionFilter(data)) {
       this.originalId = data.id;
-      this.filter = data;
+      this.filter = {
+        ...data,
+        value: Array.isArray(data.value) ? [...data.value] : data.value // destructure the array, to create a new one in its place
+      };
+      if (this.filter.target === 'state' && this.filter.type === 'equal' && typeof this.filter.value === 'string') {
+        this.filter.value = [this.filter.value];
+      }
     }
   }
 
