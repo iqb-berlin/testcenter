@@ -35,12 +35,11 @@ class SystemConfig {
   /** local directory of downloaded XSD files, outside the storage; the image ships the known ones there */
   public static string $xmlSchema_cacheDir;
   /**
-   * outermost segment of every stored file's location, here the directory below `$storage_filesystemDir`;
-   * test mode switches it, so its files stay apart from the real ones
+   * outermost segment of every stored file's location: for the filesystem driver a directory, for S3 the first
+   * segment of every key; test mode switches it, so its files stay apart from the real ones
    */
   public static string $storage_root;
-  /** directory the filesystem driver keeps the storage root in */
-  public static string $storage_filesystemDir;
+  public static StorageDriverConfig $storage_driver;
   public static string $server_key = 'Secret';
   // TODO server URL
   public static int $password_min_length;
@@ -133,11 +132,27 @@ class SystemConfig {
     $config['xmlSchema']['cacheDir'] = ROOT_DIR . '/data/.schemas';
 
     $config['storage']['root'] = 'data';
-    $config['storage']['filesystemDir'] = ROOT_DIR;
+    $config['storage']['driver'] = self::readStorageDriverEnvironment();
 
     $config['debug']['allowTestMode'] = self::boolEnv('ALLOW_TEST_MODE');
 
     self::apply($config);
+  }
+
+  private static function readStorageDriverEnvironment(): StorageDriverConfig {
+    $driver = getEnv('STORAGE_DRIVER') ?: 'filesystem';
+    return match ($driver) {
+      'filesystem' => new FilesystemDriverConfig(ROOT_DIR),
+      's3' => new S3DriverConfig(
+        self::stringEnv('S3_ENDPOINT') ?: null,
+        self::stringEnv('S3_REGION'),
+        self::stringEnv('S3_BUCKET'),
+        self::stringEnv('S3_ACCESS_KEY'),
+        self::stringEnv('S3_SECRET_KEY'),
+        self::boolEnv('S3_USE_PATH_STYLE')
+      ),
+      default => throw new Exception("Unknown storage driver `$driver` in `STORAGE_DRIVER`: filesystem or s3.")
+    };
   }
 
   public static function applyVersionFromPackageJson(): void {

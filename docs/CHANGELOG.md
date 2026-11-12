@@ -3,6 +3,13 @@
 ## Änderungen
 - Im Gruppen-Monitor ersetzen „Login“, „Code“ und „Suffix“ die Spalte „Teilnehmer“. Die Spalte „Suffix“ zeigt die zufällig erzeugte Kennung. Fehlt der Code, bleibt die Zelle leer. Die Tabelle sortiert standardmäßig aufsteigend nach Login. Ein Klick auf „Login“ kehrt die Reihenfolge der Login-Gruppen um. Innerhalb jeder Gruppe bleiben Codes und bei gleichem Code die Suffixe in aufsteigender Textreihenfolge, etwa `A10` vor `A2`. (#1101)
 
+## S3
+
+Das Backend kann die Dateien der Arbeitsbereiche in einem S3-kompatiblen Bucket ablegen statt im Dateisystem, etwa bei AWS, STACKIT oder einem eigenen SeaweedFS. TODO (S3-Plan 1.3–1.6): Auslieferung über S3, Compose, Helm und Dokumentation ergänzen.
+
+- Konfiguration: `STORAGE_DRIVER=s3` wählt den Bucket, eingestellt über `S3_ENDPOINT` (leer für AWS), `S3_REGION`, `S3_BUCKET`, `S3_ACCESS_KEY`, `S3_SECRET_KEY` und `S3_USE_PATH_STYLE`. Ohne `STORAGE_DRIVER` bleibt es beim Dateisystem; ein unbekannter Wert oder leere S3-Einstellungen verhindern den Start.
+- Neue Abhängigkeit des Backends: `async-aws/s3`.
+
 ## Fehlerbehebungen
 - In der Testtakers-XML definierte Aktivitätsfilter mit `type="equal"` lassen sich im Gruppen-Monitor bearbeiten. Bisher brach der Dialog bei einem einzelnen Zustandswert mit „Value must be an array in multiple-selection mode“ ab. (#1107)
 - Beim Abbrechen der Filterbearbeitung im Gruppen-Monitor bleibt der ursprüngliche Filter unverändert. Bisher wurden Änderungen bereits vor dem Speichern auf den aktiven Filter übertragen.

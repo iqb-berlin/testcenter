@@ -7,7 +7,7 @@ class Storage {
 
   static function getDriver(): StorageDriver {
     if (!self::$driver) {
-      self::$driver = new FilesystemDriver(SystemConfig::$storage_filesystemDir, SystemConfig::$storage_root);
+      self::$driver = SystemConfig::$storage_driver->createDriver(SystemConfig::$storage_root);
     }
     return self::$driver;
   }
