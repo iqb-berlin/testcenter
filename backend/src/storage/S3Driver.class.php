@@ -34,14 +34,14 @@ class S3Driver implements StorageDriver {
       throw new Exception("Could not open `$localPath`.");
     }
     try {
-      $this->client->putObject(['Bucket' => $this->bucket, 'Key' => $this->getKey($path), 'Body' => $handle])->resolve();
+      $this->putObject($path, $handle);
     } finally {
       fclose($handle);
     }
   }
 
   public function putContents(StoragePath $path, string $contents): void {
-    $this->client->putObject(['Bucket' => $this->bucket, 'Key' => $this->getKey($path), 'Body' => $contents])->resolve();
+    $this->putObject($path, $contents);
   }
 
   public function get(StoragePath $path): string {
@@ -113,6 +113,21 @@ class S3Driver implements StorageDriver {
     foreach (array_chunk($keys, self::DELETE_BATCH_SIZE) as $batch) {
       $this->deleteObjects($batch);
     }
+  }
+
+  /**
+   * S3 sends the stored `Content-Type` with every download of the object, so it is set here from the file name, as a
+   * web server would when delivering from disk.
+   *
+   * @param string|resource $body
+   */
+  private function putObject(StoragePath $path, mixed $body): void {
+    $this->client->putObject([
+      'Bucket' => $this->bucket,
+      'Key' => $this->getKey($path),
+      'Body' => $body,
+      'ContentType' => FileExt::getMimeType($path->name)
+    ])->resolve();
   }
 
   /** @param string[] $keys */
