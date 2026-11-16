@@ -35,4 +35,9 @@ readonly class S3DriverConfig implements StorageDriverConfig {
     }
     return new S3Driver(new S3Client($clientConfig), $this->bucket, $root);
   }
+
+  public function describeLocation(): string {
+    $location = $this->endpoint !== null ? "at `$this->endpoint`" : "in AWS region `$this->region`";
+    return "S3 bucket `$this->bucket` $location";
+  }
 }

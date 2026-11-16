@@ -5,4 +5,7 @@ declare(strict_types=1);
 interface StorageDriverConfig {
   /** @param string $root the outermost segment of every stored file's location */
   public function createDriver(string $root): StorageDriver;
+
+  /** Names where the files are kept, for operators reading the startup log. Contains no secrets. */
+  public function describeLocation(): string;
 }

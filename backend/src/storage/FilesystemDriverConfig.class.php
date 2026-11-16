@@ -11,4 +11,8 @@ readonly class FilesystemDriverConfig implements StorageDriverConfig {
   public function createDriver(string $root): StorageDriver {
     return new FilesystemDriver($this->directory, $root);
   }
+
+  public function describeLocation(): string {
+    return "filesystem below `$this->directory`";
+  }
 }

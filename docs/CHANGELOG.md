@@ -8,6 +8,7 @@
 Das Backend kann die Dateien der Arbeitsbereiche in einem S3-kompatiblen Bucket ablegen statt im Dateisystem, etwa bei AWS, STACKIT oder einem eigenen SeaweedFS. TODO (S3-Plan 1.3–1.6): Auslieferung über S3, Compose, Helm und Dokumentation ergänzen.
 
 - Konfiguration: `STORAGE_DRIVER=s3` wählt den Bucket, eingestellt über `S3_ENDPOINT` (leer für AWS), `S3_REGION`, `S3_BUCKET`, `S3_ACCESS_KEY`, `S3_SECRET_KEY` und `S3_USE_PATH_STYLE`. Ohne `STORAGE_DRIVER` bleibt es beim Dateisystem; ein unbekannter Wert oder leere S3-Einstellungen verhindern den Start.
+- Das Backend startet nur, wenn es in den Speicher schreiben kann: Beim Start legt es eine Prüfdatei an und löscht sie wieder, ein Fehler nennt Bucket und Endpunkt bzw. das Verzeichnis. Das gilt auch für das Dateisystem. Bisher fielen falsche Schlüssel oder fehlende Schreibrechte erst beim ersten Hochladen auf.
 - Neue Abhängigkeit des Backends: `async-aws/s3`.
 
 ## Fehlerbehebungen

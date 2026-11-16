@@ -59,6 +59,10 @@ try {
   CLI::success("Environment variables successfully read.");
   DB::connectWithRetries();
 
+  CLI::h2("Storage");
+  Storage::checkWriteAccess();
+  CLI::success("Storage (" . SystemConfig::$storage_driver->describeLocation() . ") is writable.");
+
   CLI::h2("Check Database Settings");
   $initDAO = new InitDAO();
 
