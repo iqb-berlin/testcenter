@@ -9,6 +9,7 @@ import {
   KeyValuePairString, UnitStateUpdate, TestStateUpdate, Review, UnitReview, BookletReview
 } from '../interfaces/test-controller.interfaces';
 import { MainDataService } from '../../shared/services/maindata/maindata.service';
+import { FileServerService } from '../../shared/services/file-server.service';
 import { SKIP_AUTH_TOKEN } from '../../auth.interceptor';
 
 @Injectable({
@@ -16,10 +17,10 @@ import { SKIP_AUTH_TOKEN } from '../../auth.interceptor';
 })
 export class BackendService {
   constructor(
-    @Inject('FILE_SERVER_URL') private readonly fileServerUrl: string,
     @Inject('BACKEND_URL') public backendUrl: string,
     private http: HttpClient,
-    private mds: MainDataService
+    private mds: MainDataService,
+    private fileServerService: FileServerService
   ) { }
 
   getReviews(testId: string, unitAlias: string | null): Observable<BookletReview[] | UnitReview[]> {
@@ -127,10 +128,9 @@ export class BackendService {
   }
 
   getResource(workspaceId: number, path: string): Observable<LoadingFile> {
-    const resourceUri = this.mds.appConfig?.fileServiceUri ? this.fileServerUrl : this.backendUrl; // @TODO: extract to 'file-server.service' class
     return this.http
       .get(
-        `${resourceUri}file/${this.mds.getAuthData()?.groupToken}/ws_${workspaceId}/${path}`,
+        `${this.fileServerService.getBaseUrl()}file/${this.mds.getAuthData()?.groupToken}/ws_${workspaceId}/${path}`,
         {
           // the group token in the URL authorizes the request; the header would follow a redirect to another
           // origin and make the browser ask that origin for permission to send it (CORS preflight)

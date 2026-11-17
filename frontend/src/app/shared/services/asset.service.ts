@@ -1,10 +1,11 @@
-import { Inject, Injectable } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { Observable, ReplaySubject } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { BackendService } from '@app/superadmin/backend.service';
 import { MessageService } from '@shared/services/message.service';
 import { MainDataService } from '@shared/services/maindata/maindata.service';
 import { ThemeService } from './theme.service';
+import { FileServerService } from './file-server.service';
 
 const DEFAULT_ASSETS: Record<AssetSlotName, string> = {
   logo: 'assets/images/IQB-Logo-2025.png',
@@ -42,7 +43,7 @@ export class AssetService {
   constructor(private backendService: BackendService, private messageService: MessageService,
               private mainDataService: MainDataService,
               private themeService: ThemeService,
-              @Inject('FILE_SERVER_URL') private readonly fileServerUrl: string) { }
+              private fileServerService: FileServerService) { }
 
   private loadAssets(): void {
     this.backendService.getAllAssets().subscribe(assets => {
@@ -138,7 +139,7 @@ export class AssetService {
   }
 
   toAbsolute(url: string): string {
-    return `${this.fileServerUrl}${url}`;
+    return `${this.fileServerService.getBaseUrl()}${url}`;
   }
 
   refreshAssetSlots(): void {
