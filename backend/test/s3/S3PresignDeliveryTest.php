@@ -34,7 +34,7 @@ class S3PresignDeliveryTest extends TestCase {
     return $storage;
   }
 
-  function test_theRedirectDeliversTheFileWithItsContentType(): void {
+  function test_theRedirectDeliversTheFileWithItsHeaders(): void {
     $delivery = (new S3PresignDeliveryConfig(self::getStorageConfig(), null, self::INTERVAL))->createMethod(self::$root);
 
     $response = $delivery->deliver(ResponseCreator::createEmpty(), $this->path);
@@ -42,6 +42,7 @@ class S3PresignDeliveryTest extends TestCase {
 
     $this->assertSame('export const x = 1;', $contents);
     $this->assertContains('Content-Type: text/javascript', $http_response_header);
+    $this->assertContains('Cache-Control: private, max-age=3600', $http_response_header);
   }
 
   function test_theUrlStaysValidForAMarginAfterItsInterval(): void {

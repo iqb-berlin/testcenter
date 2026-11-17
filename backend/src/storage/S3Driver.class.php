@@ -16,6 +16,12 @@ use Slim\Psr7\Stream;
 class S3Driver implements StorageDriver {
   /** S3 deletes at most this many objects per request */
   private const int DELETE_BATCH_SIZE = 1000;
+  /**
+   * Stored with every object and sent by S3 with every download. `private`: the files are confidential, so caches
+   * shared between users (e.g. proxies in school networks) must not keep them. `max-age`: the browser uses its copy
+   * without asking again for that long; within the default URL renewal interval of an hour, files get the same URL.
+   */
+  private const string CACHE_CONTROL = 'private, max-age=3600';
 
   private readonly string $rootPrefix;
 
@@ -126,7 +132,8 @@ class S3Driver implements StorageDriver {
       'Bucket' => $this->bucket,
       'Key' => $this->getKey($path),
       'Body' => $body,
-      'ContentType' => FileExt::getMimeType($path->name)
+      'ContentType' => FileExt::getMimeType($path->name),
+      'CacheControl' => self::CACHE_CONTROL
     ])->resolve();
   }
 

@@ -1,6 +1,7 @@
 <?php
 declare(strict_types=1);
 
+use AsyncAws\S3\Result\HeadObjectOutput;
 use AsyncAws\S3\S3Client;
 
 // Runs against the local S3 of the dev stack (`make test-backend-s3`), with the storage the environment configures for
@@ -56,10 +57,19 @@ class S3DriverTest extends StorageDriverContractTestCase {
     $this->assertSame('application/octet-stream', $this->getStoredContentType('ws_1/Resource/package/data.unknown'));
   }
 
+  function test_storesTheCacheControl(): void {
+    $this->driver->putContents(StoragePath::fromString('ws_1/Resource/package/main.js'), 'x');
+
+    $this->assertSame('private, max-age=3600', $this->getStoredObject('ws_1/Resource/package/main.js')->getCacheControl());
+  }
+
   private function getStoredContentType(string $path): ?string {
+    return $this->getStoredObject($path)->getContentType();
+  }
+
+  private function getStoredObject(string $path): HeadObjectOutput {
     $config = self::getConfig();
     return (new S3Client($config->createClientConfiguration($config->endpoint)))
-      ->headObject(['Bucket' => $config->bucket, 'Key' => "$this->root/$path"])
-      ->getContentType();
+      ->headObject(['Bucket' => $config->bucket, 'Key' => "$this->root/$path"]);
   }
 }
