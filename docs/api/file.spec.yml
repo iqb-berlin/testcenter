@@ -45,7 +45,7 @@ paths:
           description: |
             With S3 storage: redirect to a presigned URL of the file in the bucket. URLs are renewed in fixed
             intervals (`S3_URL_RENEWAL_INTERVAL`); within one, every request for the file gets the same URL.
-            `Cache-Control` says how long the redirect may be reused.
+            The redirect may be reused until `Expires`, the end of the interval.
           headers:
             location:
               schema:
@@ -54,7 +54,11 @@ paths:
             cache-control:
               schema:
                 type: string
-              example: "private, max-age=1234"
+              example: "private"
+            expires:
+              schema:
+                type: string
+              example: "Tue, 17 Nov 2026 13:00:00 GMT"
         "404":
           description: The file was not found
           content:

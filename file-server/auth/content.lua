@@ -1,3 +1,9 @@
+-- S3 storage: the files are in the bucket, not on disk; the backend redirects there (see location
+-- @s3_redirect). First, so that none of the headers below end up next to the backend's.
+if os.getenv("STORAGE_DRIVER") == 's3' then
+  return ngx.exec('@s3_redirect')
+end
+
 -- authenticated resources: keep shared/edge caches (e.g. a CDN) from storing them and
 -- serving them on without re-checking the token; set for every path this handler serves
 ngx.header["Cache-Control"] = "private"

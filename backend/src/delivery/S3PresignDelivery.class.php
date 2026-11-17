@@ -6,10 +6,12 @@ use Slim\Http\Response;
 
 /**
  * Redirects the browser to a presigned URL of the file in the bucket. URLs are renewed in fixed intervals: within one,
- * every request for a file gets the same URL, so the browser can cache the file. A URL stays valid until the end of the
- * following interval, so whoever caches the redirect can still hand it out a while after its interval has ended.
+ * every request for a file gets the same URL, so the browser can cache the file.
  */
 class S3PresignDelivery implements DeliveryMethod {
+  /** how long a URL stays valid after its interval, for a browser that got it just before the interval ended */
+  public const int VALIDITY_MARGIN_SECONDS = 300;
+
   private readonly string $rootPrefix;
   private readonly Closure $getCurrentTime;
 
@@ -30,20 +32,21 @@ class S3PresignDelivery implements DeliveryMethod {
     }
     $now = ($this->getCurrentTime)();
     $intervalStart = $now - $now % $this->urlRenewalInterval;
+    $intervalEnd = $intervalStart + $this->urlRenewalInterval;
+    // signing again before the interval ends gives the same URL, so the browser and the file-server's cache may reuse
+    // the redirect until then; an absolute time, unlike `max-age`, stays right when a cache hands the redirect out later
     return $response
       ->withStatus(302)
-      ->withHeader('Location', $this->createPresignedUrl($path, $intervalStart))
-      // signing again before the interval ends gives the same URL, so the redirect may be reused until then
-      ->withHeader('Cache-Control', 'private, max-age=' . ($intervalStart + $this->urlRenewalInterval - $now));
+      ->withHeader('Location', $this->createPresignedUrl($path, $intervalStart, $intervalEnd))
+      ->withHeader('Cache-Control', 'private')
+      ->withHeader('Expires', gmdate('D, d M Y H:i:s', $intervalEnd) . ' GMT');
   }
 
-  /** The URL of the file for the interval starting at `$intervalStart`, valid until the end of the following one. */
-  private function createPresignedUrl(StoragePath $path, int $intervalStart): string {
-    $signingDate = new DateTimeImmutable("@$intervalStart");
+  private function createPresignedUrl(StoragePath $path, int $intervalStart, int $intervalEnd): string {
     return $this->client->presignGetObject(
       new GetObjectRequest(['Bucket' => $this->bucket, 'Key' => $this->rootPrefix . $path]),
-      $signingDate,
-      $signingDate->modify('+' . (2 * $this->urlRenewalInterval) . ' seconds')
+      new DateTimeImmutable("@$intervalStart"),
+      new DateTimeImmutable('@' . ($intervalEnd + self::VALIDITY_MARGIN_SECONDS))
     );
   }
 }

@@ -44,11 +44,13 @@ class S3PresignDeliveryTest extends TestCase {
     $this->assertContains('Content-Type: text/javascript', $http_response_header);
   }
 
-  function test_theUrlOfThePreviousIntervalIsStillValid(): void {
+  function test_theUrlStaysValidForAMarginAfterItsInterval(): void {
+    // with one-minute intervals, the URL of the previous minute has ended its interval, but not its margin
+    $interval = 60;
     $storage = self::getStorageConfig();
     $client = new FixedDatePresignS3Client($storage->createClientConfiguration($storage->endpoint));
-    $delivery = new S3PresignDelivery($client, $storage->bucket, self::$root, self::INTERVAL,
-                                      fn(): int => time() - self::INTERVAL);
+    $delivery = new S3PresignDelivery($client, $storage->bucket, self::$root, $interval,
+                                      fn(): int => time() - $interval);
 
     $response = $delivery->deliver(ResponseCreator::createEmpty(), $this->path);
 

@@ -40,7 +40,7 @@ class S3PresignDeliveryTest extends TestCase {
     return $query;
   }
 
-  function test_deliver_redirectsToAUrlSignedForTheIntervalStartAndValidForTwoIntervals(): void {
+  function test_deliver_redirectsToAUrlSignedForTheIntervalStartAndValidForItPlusAMargin(): void {
     $response = $this->deliverAt(self::INTERVAL_START + 100);
 
     $this->assertSame(302, $response->getStatusCode());
@@ -48,13 +48,17 @@ class S3PresignDeliveryTest extends TestCase {
     $this->assertStringStartsWith('https://s3.example.org/testcenter/data/ws_1/Resource/main.js?', $url);
     $query = self::getQuery($url);
     $this->assertSame('20260101T000000Z', $query['X-Amz-Date']);
-    $this->assertSame((string) (2 * self::INTERVAL), $query['X-Amz-Expires']);
+    $this->assertSame(
+      (string) (self::INTERVAL + S3PresignDelivery::VALIDITY_MARGIN_SECONDS),
+      $query['X-Amz-Expires']
+    );
   }
 
   function test_deliver_allowsReusingTheRedirectUntilTheIntervalEnds(): void {
     $response = $this->deliverAt(self::INTERVAL_START + 100);
 
-    $this->assertSame('private, max-age=' . (self::INTERVAL - 100), $response->getHeaderLine('Cache-Control'));
+    $this->assertSame('private', $response->getHeaderLine('Cache-Control'));
+    $this->assertSame('Thu, 01 Jan 2026 01:00:00 GMT', $response->getHeaderLine('Expires'));
   }
 
   function test_deliver_givesTheSameUrlWithinAnIntervalAndAnotherInTheNext(): void {

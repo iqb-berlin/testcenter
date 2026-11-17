@@ -16,6 +16,10 @@ services:
       s3:
         condition: service_healthy
 
+  file-server:
+    environment:
+      STORAGE_DRIVER: s3
+
   s3:
     image: ${DOCKERHUB_PROXY}chrislusf/seaweedfs:4.51
     # single-process mode with master, volume, filer and S3 API; no usage statistics sent to the SeaweedFS project;
