@@ -40,6 +40,7 @@ class SystemConfig {
    */
   public static string $storage_root;
   public static StorageDriverConfig $storage_driver;
+  public static DeliveryMethodConfig $delivery_method;
   public static string $server_key = 'Secret';
   // TODO server URL
   public static int $password_min_length;
@@ -133,6 +134,7 @@ class SystemConfig {
 
     $config['storage']['root'] = 'data';
     $config['storage']['driver'] = self::readStorageDriverEnvironment();
+    $config['delivery']['method'] = self::readDeliveryMethodEnvironment($config['storage']['driver']);
 
     $config['debug']['allowTestMode'] = self::boolEnv('ALLOW_TEST_MODE');
 
@@ -153,6 +155,22 @@ class SystemConfig {
       ),
       default => throw new Exception("Unknown storage driver `$driver` in `STORAGE_DRIVER`: filesystem or s3.")
     };
+  }
+
+  /**
+   * Chosen by the storage driver: files in S3 are delivered by presigned URLs, files on disk locally. A setting of its
+   * own comes once a storage can be delivered in more than one way (e.g. through a CDN).
+   */
+  private static function readDeliveryMethodEnvironment(StorageDriverConfig $storageDriver): DeliveryMethodConfig {
+    if (!$storageDriver instanceof S3DriverConfig) {
+      return new LocalDeliveryConfig();
+    }
+    $interval = getEnv('S3_URL_RENEWAL_INTERVAL');
+    $urlRenewalInterval = ($interval === false or $interval === '') ? 3600 : filter_var($interval, FILTER_VALIDATE_INT);
+    if ($urlRenewalInterval === false) {
+      throw new Exception("`S3_URL_RENEWAL_INTERVAL` is not a number of seconds: `$interval`.");
+    }
+    return new S3PresignDeliveryConfig($storageDriver, getEnv('S3_PUBLIC_ENDPOINT') ?: null, $urlRenewalInterval);
   }
 
   public static function applyVersionFromPackageJson(): void {

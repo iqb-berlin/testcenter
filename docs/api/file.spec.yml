@@ -41,6 +41,20 @@ paths:
                 1) `disk`: When the File-Server is used.
                 2) `cache`: When the File-Server is used, configured to cache files and served this one form cache.
                 3) `backend`: When the Backend served this file.
+        "302":
+          description: |
+            With S3 storage: redirect to a presigned URL of the file in the bucket. URLs are renewed in fixed
+            intervals (`S3_URL_RENEWAL_INTERVAL`); within one, every request for the file gets the same URL.
+            `Cache-Control` says how long the redirect may be reused.
+          headers:
+            location:
+              schema:
+                type: string
+              description: the presigned URL
+            cache-control:
+              schema:
+                type: string
+              example: "private, max-age=1234"
         "404":
           description: The file was not found
           content:

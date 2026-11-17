@@ -24,16 +24,24 @@ readonly class S3DriverConfig implements StorageDriverConfig {
   }
 
   public function createDriver(string $root): StorageDriver {
+    return new S3Driver(new S3Client($this->createClientConfiguration($this->endpoint)), $this->bucket, $root);
+  }
+
+  /**
+   * @param ?string $endpoint the endpoint the client talks to, which for signed URLs can differ from the backend's
+   * @return array<string, string> configuration of an async-aws client
+   */
+  public function createClientConfiguration(?string $endpoint): array {
     $clientConfig = [
       'region' => $this->region,
       'accessKeyId' => $this->accessKey,
       'accessKeySecret' => $this->secretKey,
       'pathStyleEndpoint' => $this->pathStyle ? 'true' : 'false'
     ];
-    if ($this->endpoint !== null) {
-      $clientConfig['endpoint'] = $this->endpoint;
+    if ($endpoint !== null) {
+      $clientConfig['endpoint'] = $endpoint;
     }
-    return new S3Driver(new S3Client($clientConfig), $this->bucket, $root);
+    return $clientConfig;
   }
 
   public function describeLocation(): string {

@@ -9,6 +9,7 @@ Das Backend kann die Dateien der Arbeitsbereiche in einem S3-kompatiblen Bucket 
 
 - Konfiguration: `STORAGE_DRIVER=s3` wählt den Bucket, eingestellt über `S3_ENDPOINT` (leer für AWS), `S3_REGION`, `S3_BUCKET`, `S3_ACCESS_KEY`, `S3_SECRET_KEY` und `S3_USE_PATH_STYLE`. Ohne `STORAGE_DRIVER` bleibt es beim Dateisystem; ein unbekannter Wert oder leere S3-Einstellungen verhindern den Start.
 - Das Backend startet nur, wenn es in den Speicher schreiben kann: Beim Start legt es eine Prüfdatei an und löscht sie wieder, ein Fehler nennt Bucket und Endpunkt bzw. das Verzeichnis. Das gilt auch für das Dateisystem. Bisher fielen falsche Schlüssel oder fehlende Schreibrechte erst beim ersten Hochladen auf.
+- Mit S3 leitet die Backend-Route `/file/{group_token}/…` auf eine vorsignierte URL der Datei im Bucket um (`302`). Die URLs werden in festen Abständen erneuert; dazwischen bekommt jede Anfrage dieselbe URL, so dass Browser die Dateien zwischenspeichern. Eine URL bleibt doppelt so lange gültig (beim Standardwert zwei Stunden), damit zwischengespeicherte Weiterleitungen nach dem Erneuern nicht sofort ungültig werden. `S3_URL_RENEWAL_INTERVAL` stellt den Abstand in Sekunden ein (Standard 3600, höchstens 302400). `S3_PUBLIC_ENDPOINT` ist die Adresse, unter der Browser den Bucket erreichen, wenn sie von `S3_ENDPOINT` abweicht.
 - Neue Abhängigkeit des Backends: `async-aws/s3`.
 
 ## Fehlerbehebungen

@@ -17,5 +17,6 @@ SystemConfig::apply([
   'server' => ['key' => 'Secret'],
   'xmlSchema' => ['validation' => true, 'cacheDir' => 'vfs://root/data/.schemas'],
   'storage' => ['root' => 'data', 'driver' => new FilesystemDriverConfig('vfs://root')],
+  'delivery' => ['method' => new LocalDeliveryConfig()],
   'debug' => ['allowTestMode' => false]
 ]);

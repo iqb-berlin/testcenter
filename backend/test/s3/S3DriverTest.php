@@ -58,16 +58,7 @@ class S3DriverTest extends StorageDriverContractTestCase {
 
   private function getStoredContentType(string $path): ?string {
     $config = self::getConfig();
-    $clientConfig = [
-      'region' => $config->region,
-      'accessKeyId' => $config->accessKey,
-      'accessKeySecret' => $config->secretKey,
-      'pathStyleEndpoint' => $config->pathStyle ? 'true' : 'false'
-    ];
-    if ($config->endpoint !== null) {
-      $clientConfig['endpoint'] = $config->endpoint;
-    }
-    return (new S3Client($clientConfig))
+    return (new S3Client($config->createClientConfiguration($config->endpoint)))
       ->headObject(['Bucket' => $config->bucket, 'Key' => "$this->root/$path"])
       ->getContentType();
   }
