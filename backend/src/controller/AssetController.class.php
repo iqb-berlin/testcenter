@@ -24,6 +24,20 @@ class AssetController extends Controller {
     return $response->withJson($assets);
   }
 
+  /**
+   * Public: the assets are shown before login. Their names are random and never reused, so the content behind a URL
+   * never changes and every cache may keep it.
+   */
+  public static function getFile(Request $request, Response $response, array $args): Response {
+    try {
+      $path = AssetStorage::getPath($args['name']);
+    } catch (InvalidArgumentException) {
+      throw new HttpError("Asset `{$args['name']}` not found", 404);
+    }
+
+    return FileResponse::stream($response, $path, cacheControl: 'public, max-age=31536000, immutable');
+  }
+
   public static function upload(Request $request, Response $response): Response {
     $uploadedFiles = $request->getUploadedFiles();
 
