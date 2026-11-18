@@ -1,5 +1,5 @@
 # Local S3 for development (SeaweedFS). The make targets add this file when LOCAL_S3 is true (see
-# scripts/make/compose.mk); without it the dev stack knows nothing about S3.
+# scripts/make/compose.mk); without it the dev stack has no S3 of its own.
 services:
   backend:
     environment:

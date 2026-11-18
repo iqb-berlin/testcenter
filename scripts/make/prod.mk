@@ -327,7 +327,10 @@ testcenter-backup:
 		echo "created=$$(date -u '+%Y-%m-%dT%H:%M:%SZ')";\
 		sha256sum $(DB_DATABASE).sql backend_vol.tar.gz;\
 	} >manifest;\
-	echo "Backup set '$${backup}' complete."
+	echo "Backup set '$${backup}' complete.";\
+	test "$(STORAGE_DRIVER)" != "s3" ||\
+		echo "WARNING: this backup set does NOT contain the files of the workspaces. They are in the S3 bucket \
+'$(S3_BUCKET)'; back it up with the provider's tools, e.g. versioning."
 
 ## Restore a complete backup set, e.g. `make testcenter-restore BACKUP=backup/2026-09-08T10-42-00Z`.
 ## Restores both halves with the application down, so it never starts on halves that do not match.
@@ -376,7 +379,10 @@ testcenter-restore:
 	$(MAKE) --no-print-directory -f $(THIS_MAKEFILE) testcenter-import-backend-vol BACKUP="$(BACKUP)" FORCE=yes;\
 	echo "- data files restored";\
 	$(MAKE) --no-print-directory -f $(THIS_MAKEFILE) testcenter-down;\
-	echo "Restore complete. Start the application with 'make testcenter-up'."
+	echo "Restore complete. Start the application with 'make testcenter-up'.";\
+	test "$(STORAGE_DRIVER)" != "s3" ||\
+		echo "WARNING: the files of the workspaces were NOT restored. They are in the S3 bucket '$(S3_BUCKET)', \
+which must match the restored database; restore it to the time of the set with the provider's tools."
 
 ## Start the database alone and wait until it accepts connections
 testcenter-start-db:
