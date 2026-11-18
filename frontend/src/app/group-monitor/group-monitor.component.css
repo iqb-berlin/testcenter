@@ -265,8 +265,10 @@
   margin-bottom: 1em
 }
 
-.toolbar .control ~ .control {
-  margin-left: 15px;
+.session-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
 }
 
 .min-height-section {
