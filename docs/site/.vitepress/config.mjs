@@ -24,7 +24,8 @@ export default defineConfig({
         text: 'Administration',
         items: [
           { text: 'Installation and Update', link: '/pages/installation-prod' },
-          { text: 'Configuration', link: '/pages/config-prod' }
+          { text: 'Configuration', link: '/pages/config-prod' },
+          { text: 'S3 Storage', link: '/pages/storage-s3' }
         ]
       },
       {
