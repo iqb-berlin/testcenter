@@ -405,6 +405,8 @@ final class AdminDAOTest extends TestCase {
         'groupName' => 'sample_group',
         'groupLabel' => 'Sample Group',
         'personLabel' => 'sample_user/xxx',
+        'loginName' => 'sample_user',
+        'code' => 'xxx',
         'mode' => 'run-hot-return',
         'testState' => [
           'CURRENT_UNIT_ID' => 'UNIT_1',
@@ -423,6 +425,8 @@ final class AdminDAOTest extends TestCase {
         'groupName' => 'sample_group',
         'groupLabel' => 'Sample Group',
         'personLabel' => 'sample_user/xxx',
+        'loginName' => 'sample_user',
+        'code' => 'xxx',
         'mode' => 'run-hot-return',
         'testState' => [
           'status' => 'running',
