@@ -363,6 +363,18 @@ export class TestSessionManager {
     return sessions
       .sort((session1, session2) => {
         const sortDirectionFactor = (sort.direction === 'asc' ? 1 : -1);
+        if (sort.active === 'personLabel') {
+          const a = session1.data;
+          const b = session2.data;
+          const loginA = a.loginName ?? a.personLabel ?? '';
+          const loginB = b.loginName ?? b.personLabel ?? '';
+          if (loginA !== loginB) {
+            const loginOrder = loginA.localeCompare(loginB) || (loginA < loginB ? -1 : 1);
+            return loginOrder * sortDirectionFactor;
+          }
+          return (a.code ?? '').localeCompare(b.code ?? '') ||
+            (a.nameSuffix ?? '').localeCompare(b.nameSuffix ?? '');
+        }
         if (sort.active === 'timestamp') {
           return (session1.data.timestamp - session2.data.timestamp) * sortDirectionFactor;
         }

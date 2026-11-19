@@ -1,5 +1,8 @@
 # storage-driver (nach dem nächsten Release)
 
+## Änderungen
+- Im Gruppen-Monitor ersetzen „Login“, „Code“ und „Suffix“ die Spalte „Teilnehmer“. Die Spalte „Suffix“ zeigt die zufällig erzeugte Kennung. Fehlt der Code, bleibt die Zelle leer. Die Tabelle sortiert standardmäßig aufsteigend nach Login. Ein Klick auf „Login“ kehrt die Reihenfolge der Login-Gruppen um. Innerhalb jeder Gruppe bleiben Codes und bei gleichem Code die Suffixe in aufsteigender Textreihenfolge, etwa `A10` vor `A2`. (#1101)
+
 ## Fehlerbehebungen
 - In der Testtakers-XML definierte Aktivitätsfilter mit `type="equal"` lassen sich im Gruppen-Monitor bearbeiten. Bisher brach der Dialog bei einem einzelnen Zustandswert mit „Value must be an array in multiple-selection mode“ ab. (#1107)
 - Beim Abbrechen der Filterbearbeitung im Gruppen-Monitor bleibt der ursprüngliche Filter unverändert. Bisher wurden Änderungen bereits vor dem Speichern auf den aktiven Filter übertragen.
@@ -11,6 +14,7 @@
 - Im Gruppen-Monitor wird die Blockauswahl nach erfolgreichem Starten eines Abschnitts geleert, wenn das Monitor-Profil die automatische Auswahl des nächsten Blocks deaktiviert (`autoselectNextBlock="no"`). So bleibt der gerade gestartete Abschnitt nicht versehentlich für einen erneuten Start ausgewählt. Bei aktivierter automatischer Auswahl wird weiterhin der nächste Block ausgewählt. (#1100)
 
 ## Betrieb & Schnittstellen
+- `GET /monitor/test-sessions` und `GET /monitor/group/{group_name}/test-sessions` liefern zusätzlich `loginName`, `code` und `nameSuffix`. `nameSuffix` enthält die zufällig erzeugte Kennung. Fehlt der Code oder die Kennung, fehlt auch das jeweilige Feld im response. Sitzungsdaten im WebSocket-Kanal `test-sessions` enthalten dieselben Felder. (#1101)
 - Die undokumentierte Umgebungsvariable `OVERRIDE_CONFIG` wird nicht mehr ausgewertet; das Backend wird nur noch über die einzeln benannten Umgebungsvariablen konfiguriert. Bisher konnte sie als INI-Text beliebige Einstellungen des Backends überschreiben, wurde vom Testcenter selbst seit 19.0.0 nicht mehr verwendet.
 - Datenbank: Neue Spalte `workspaces.locked_at`. Während eines Uploads oder Löschvorgangs sperrt sie den Arbeitsbereich für weitere solche Aktionen. Bisher übernahm das eine Datei `.lock` im Workspace-Ordner, die mehrere Backend-Container ohne gemeinsames Laufwerk nicht teilen können.
 - API: `DELETE /workspace/{ws_id}/files` löscht nur Dateien aus der Dateiliste des Arbeitsbereichs; andere Pfade erscheinen in der Antwort unter `did_not_exist`. Bisher löschte der Aufruf jede Datei im Speicher des Arbeitsbereichs, auch einzelne Dateien entpackter Ressourcen-Pakete und Anhänge, ohne zu prüfen, ob sie verwendet werden.

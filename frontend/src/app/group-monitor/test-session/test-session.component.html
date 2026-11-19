@@ -22,8 +22,16 @@
 
 <td class="user" (contextmenu)="deselectForce($event)">
   <div class="vertical-align-middle">
-    <h1>{{testSession.data.personLabel}}</h1>
+    <h1>{{testSession.data.loginName}}</h1>
   </div>
+</td>
+
+<td (contextmenu)="deselectForce($event)">
+  <div class="vertical-align-middle">{{testSession.data.code}}</div>
+</td>
+
+<td (contextmenu)="deselectForce($event)">
+  <div class="vertical-align-middle">{{testSession.data.nameSuffix}}</div>
 </td>
 
 <td

@@ -2,6 +2,9 @@ export interface TestSessionChange {
   personId: number;
   groupName: string;
   personLabel: string;
+  loginName?: string;
+  code?: string;
+  nameSuffix?: string;
   mode?: string;
   groupLabel?: string;
   testId: number;
