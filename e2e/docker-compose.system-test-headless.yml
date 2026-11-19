@@ -8,8 +8,13 @@ services:
     image: testcenter-e2e
     build:
       dockerfile: e2e/Dockerfile
+    # the browser runs in the Docker network and reaches the services by their names (see cypress.config.js)
     environment:
-      - CYPRESS_baseUrl=http://frontend:8080
+      E2E_FRONTEND_URL: http://frontend:8080
+      E2E_BACKEND_URL: http://backend:8080
+      E2E_FILE_SERVER_URL: http://file-server:8080
+      E2E_BROADCASTER_URL: http://broadcaster:3000
+      E2E_OUTPUT_FOLDER: cypress-headless
     command: [
       "npx", "cypress", "run",
       "--browser", "chrome",
@@ -18,7 +23,7 @@ services:
     volumes:
       - ./e2e/cypress-headless:/usr/src/testcenter/e2e/cypress-headless
       - ./e2e/src:/usr/src/testcenter/e2e/src
-      - ./e2e/cypress.headless.config.js:/usr/src/testcenter/e2e/cypress.config.js
+      - ./e2e/cypress.config.js:/usr/src/testcenter/e2e/cypress.config.js
       - ./e2e/tsconfig.json:/usr/src/testcenter/e2e/tsconfig.json
       - ./sampledata:/usr/src/testcenter/sampledata
     networks:
