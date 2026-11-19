@@ -1,4 +1,4 @@
-# storage-driver (nach dem nächsten Release)
+# next
 
 ## Änderungen
 - Im Gruppen-Monitor ersetzen „Login“, „Code“ und „Suffix“ die Spalte „Teilnehmer“. Die Spalte „Suffix“ zeigt die zufällig erzeugte Kennung. Fehlt der Code, bleibt die Zelle leer. Die Tabelle sortiert standardmäßig aufsteigend nach Login. Ein Klick auf „Login“ kehrt die Reihenfolge der Login-Gruppen um. Innerhalb jeder Gruppe bleiben Codes und bei gleichem Code die Suffixe in aufsteigender Textreihenfolge, etwa `A10` vor `A2`. (#1101)
@@ -8,8 +8,6 @@
 - Beim Abbrechen der Filterbearbeitung im Gruppen-Monitor bleibt der ursprüngliche Filter unverändert. Bisher wurden Änderungen bereits vor dem Speichern auf den aktiven Filter übertragen.
 - Ressourcen-Pakete mit groß geschriebener Endung (z. B. `geogebra.ITCR.ZIP`) können von Units genutzt werden. Bisher scheiterte das Hochladen mit „Could not extract package“.
 - Ein Ressourcen-Paket und eine Ressource mit dem Namen des Pakets ohne Endung (`geogebra.itcr.zip` und `geogebra`) werden beim Hochladen abgelehnt, wenn das jeweils andere schon vorhanden ist. Bisher brach das Hochladen der Ressource mit einem Serverfehler ab, und ein so hochgeladenes Paket wurde gespeichert, ließ sich aber nicht nutzen.
-
-## Fehlerbehebungen
 - Die Bestätigung nach „Springe zu“ im Gruppen-Monitor nennt den angesprungenen Block auch dann, wenn die Blockauswahl anschließend geleert oder der nächste Block ausgewählt wird.
 - Im Gruppen-Monitor wird die Blockauswahl nach erfolgreichem Starten eines Abschnitts geleert, wenn das Monitor-Profil die automatische Auswahl des nächsten Blocks deaktiviert (`autoselectNextBlock="no"`). So bleibt der gerade gestartete Abschnitt nicht versehentlich für einen erneuten Start ausgewählt. Bei aktivierter automatischer Auswahl wird weiterhin der nächste Block ausgewählt. (#1100)
 
