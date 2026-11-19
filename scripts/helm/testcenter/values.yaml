@@ -149,6 +149,36 @@ config:
     redisMemoryMax: 1gb
 
 # =============================================================================
+# OBJECT STORAGE (S3-compatible, e.g. AWS, STACKIT or SeaweedFS)
+# =============================================================================
+# When enabled, the backend keeps the files of the workspaces in a bucket instead of the backend data PVC, which is
+# then not created. The file-server redirects browsers to the files in the bucket. Choose it when installing: files
+# already stored stay where they are, and the Testcenter does not find them after a switch.
+# Backups of the database do not contain the files; back up the bucket with the provider's tools, e.g. versioning.
+objectStore:
+  # -- Store the files of the workspaces in S3
+  enabled: false
+  # -- Address of the S3 API as the backend reaches it, without the bucket. Empty for AWS.
+  endpoint: ""
+  # -- Address of the S3 API as browsers reach it, if it differs from `endpoint`
+  # Test-takers' browsers load the files of the tests from there.
+  publicEndpoint: ""
+  # -- Origin browsers load the files from, allowed in the Content Security Policy of the frontend
+  # Only needed if it differs from `publicEndpoint` (or `endpoint`): with `pathStyle: false` it is
+  # https://<bucket>.<endpoint host>, at AWS https://<bucket>.s3.<region>.amazonaws.com.
+  publicOrigin: ""
+  region: ""
+  bucket: ""
+  # -- true: the bucket is part of the path (https://<endpoint>/<bucket>/...), false: a subdomain
+  # (https://<bucket>.<endpoint>/...)
+  pathStyle: false
+  # -- Browsers get links to the files that stay the same for this many seconds, so they can cache the files
+  # At most 604500.
+  urlRenewalInterval: 3600
+  # -- Name of an existing Secret with the keys S3_ACCESS_KEY and S3_SECRET_KEY
+  existingSecret: ""
+
+# =============================================================================
 # SECRETS AND CREDENTIALS
 # =============================================================================
 # SECURITY WARNING: This section contains sensitive information!
@@ -672,6 +702,7 @@ persistence:
 
   # -- Storage class name for backend application data PVC
   # The backend stores uploaded test files, configurations, and temporary data.
+  # Not created with objectStore.enabled: the files are in the bucket then.
   # For production: Use fast SSD storage class (e.g., "fast-ssd", "gp3")
   backendPvcStorageClassName: standard
   # -- Access mode for backend PVC

@@ -84,16 +84,23 @@ spec:
                 configMapKeyRef:
                   name: {{ .Release.Name }}-file-server-config
                   key: REDIS_CACHE_FILES
+            # with s3 the file-server asks the backend for redirects to the bucket instead of reading the data volume
+            - name: STORAGE_DRIVER
+              value: {{ if .Values.objectStore.enabled }}s3{{ else }}filesystem{{ end }}
           volumeMounts:
+            {{- if not .Values.objectStore.enabled }}
             - name: backend-volume
               mountPath: /var/www/testcenter/data
+            {{- end }}
             - name: nginx-config-volume
               mountPath: /etc/nginx/nginx.conf
               subPath: nginx.conf-in-volume
       volumes:
+        {{- if not .Values.objectStore.enabled }}
         - name: backend-volume
           persistentVolumeClaim:
             claimName: {{ .Release.Name }}-backend-pvc
+        {{- end }}
         - name: nginx-config-volume
           configMap:
             name: file-server-nginx-config
