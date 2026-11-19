@@ -99,6 +99,29 @@ describe('TestSessionManager', () => {
       expect(sorted.map(s => s.data.personLabel)).toEqual(['Person 2', 'Person 1', 'Person 1']);
     });
 
+    it('should reverse only login groups and keep codes and suffixes ascending', () => {
+      const participants = [
+        { loginName: 'class-b', code: 'A10' },
+        { loginName: 'class-a', code: 'A2', nameSuffix: 'r2' },
+        { loginName: 'class-a', code: 'A10' },
+        { loginName: 'class-a', code: 'A2', nameSuffix: 'r10' },
+        { loginName: 'class-b', code: 'A2' },
+        { loginName: 'class-a' }
+      ];
+      const sessions = participants.map(participant => ({
+        ...unitTestExampleSessions[0],
+        data: { ...unitTestExampleSessions[0].data, ...participant }
+      }));
+      const sessionLabels = (direction: 'asc' | 'desc') =>
+        service.sortSessions({ active: 'personLabel', direction }, [...sessions])
+          .map(({ data }) => `${data.loginName}/${data.code ?? ''}/${data.nameSuffix ?? ''}`);
+      const classA = ['class-a//', 'class-a/A10/', 'class-a/A2/r10', 'class-a/A2/r2'];
+      const classB = ['class-b/A10/', 'class-b/A2/'];
+
+      expect(sessionLabels('asc')).toEqual([...classA, ...classB]);
+      expect(sessionLabels('desc')).toEqual([...classB, ...classA]);
+    });
+
     it('should sort by timestamp', () => {
       const sorted = service.sortSessions({ active: 'timestamp', direction: 'asc' }, [...unitTestExampleSessions]);
       expect(sorted.map(s => s.data.timestamp)).toEqual([10000000, 10000300, 10000500]);

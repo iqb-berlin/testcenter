@@ -9,6 +9,9 @@ class SessionChangeMessage implements JsonSerializable {
   protected ?string $groupName;
   protected ?string $groupLabel = "";
   protected ?string $personLabel = "";
+  protected string $loginName = "";
+  protected string $nameSuffix = "";
+  protected string $code = "";
   protected ?string $mode = "";
   protected ?array $testState = [];
   protected ?string $bookletName = "";
@@ -48,9 +51,20 @@ class SessionChangeMessage implements JsonSerializable {
 
   public function setSession(PersonSession $session): void {
     $login = $session->getLoginSession()->getLogin();
-    $suffix = $session->getPerson()->getNameSuffix();
+    $person = $session->getPerson();
+    $loginName = $login->getName();
+    $code = $person->getCode();
+    $storedSuffix = $person->getNameSuffix();
+    $codePrefix = $code . '/';
 
-    $this->personLabel = $login->getName() . ($suffix ? '/' . $suffix : '');
+    $this->loginName = $loginName;
+    $this->code = $code;
+    $this->personLabel = $loginName . ($storedSuffix ? '/' . $storedSuffix : '');
+    $this->nameSuffix = match (true) {
+      $storedSuffix === $code => '',
+      $code !== '' && str_starts_with($storedSuffix, $codePrefix) => substr($storedSuffix, strlen($codePrefix)),
+      default => $storedSuffix,
+    };
 
     $this->mode = $login->getMode();
     $this->groupName = $login->getGroupName();

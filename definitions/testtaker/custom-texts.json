@@ -289,8 +289,8 @@
     "defaultvalue" : "Zustände"
   },
   "gm_col_personLabel" : {
-    "label" : "Spalte: Teilnehmer",
-    "defaultvalue" : "Teilnehmer"
+    "label" : "Spalte: Login",
+    "defaultvalue" : "Login"
   },
   "gm_col_state" : {
     "label" : "Spalte: Aktivität",
