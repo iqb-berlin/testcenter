@@ -133,7 +133,7 @@
 
         <button mat-raised-button class="control" data-cy="GM_pause_button" [disabled]="!checkedSessionCount" (click)="tsm.testCommandPause()">
           <mat-icon svgIcon="pause"></mat-icon>
-          caeicaeicaeicaerintcasrentisrcntaesirntcasernitcsarnetisrcntaeisrnctaesir
+          {{'pause' | customtext:'gm_control_pause' | async}}
         </button>
       </div>
 
