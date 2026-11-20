@@ -52,6 +52,9 @@ RUN chown -R nginx:root /usr/share/nginx/html
 USER nginx
 COPY --chown=nginx:root --from=base /usr/src/testcenter/frontend/dist/browser /usr/share/nginx/html
 COPY --chown=nginx:root frontend/nginx.conf /etc/nginx/templates/default.conf.template
+# The image fills in only variables that are set; one left unset would stay in the config as an nginx variable that
+# does not exist, and nginx would not start.
+ENV S3_PUBLIC_ORIGIN=""
 
 EXPOSE 8080
 

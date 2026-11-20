@@ -24,7 +24,12 @@ class Workspace {
       if (!$workspaceId) {
         continue;
       }
-      $workspaces[$workspaceId] = new $class($workspaceId);
+      $workspace = new $class($workspaceId);
+      // storage may still list the directory of a workspace whose files are all deleted
+      if (!array_sum($workspace->countFilesOfAllSubFolders())) {
+        continue;
+      }
+      $workspaces[$workspaceId] = $workspace;
     }
 
     return $workspaces;

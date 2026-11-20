@@ -35,12 +35,12 @@ class SystemConfig {
   /** local directory of downloaded XSD files, outside the storage; the image ships the known ones there */
   public static string $xmlSchema_cacheDir;
   /**
-   * outermost segment of every stored file's location, here the directory below `$storage_filesystemDir`;
-   * test mode switches it, so its files stay apart from the real ones
+   * outermost segment of every stored file's location: for the filesystem driver a directory, for S3 the first
+   * segment of every key; test mode switches it, so its files stay apart from the real ones
    */
   public static string $storage_root;
-  /** directory the filesystem driver keeps the storage root in */
-  public static string $storage_filesystemDir;
+  public static StorageDriverConfig $storage_driver;
+  public static DeliveryMethodConfig $delivery_method;
   public static string $server_key = 'Secret';
   // TODO server URL
   public static int $password_min_length;
@@ -133,11 +133,44 @@ class SystemConfig {
     $config['xmlSchema']['cacheDir'] = ROOT_DIR . '/data/.schemas';
 
     $config['storage']['root'] = 'data';
-    $config['storage']['filesystemDir'] = ROOT_DIR;
+    $config['storage']['driver'] = self::readStorageDriverEnvironment();
+    $config['delivery']['method'] = self::readDeliveryMethodEnvironment($config['storage']['driver']);
 
     $config['debug']['allowTestMode'] = self::boolEnv('ALLOW_TEST_MODE');
 
     self::apply($config);
+  }
+
+  private static function readStorageDriverEnvironment(): StorageDriverConfig {
+    $driver = getEnv('STORAGE_DRIVER') ?: 'filesystem';
+    return match ($driver) {
+      'filesystem' => new FilesystemDriverConfig(ROOT_DIR),
+      's3' => new S3DriverConfig(
+        self::stringEnv('S3_ENDPOINT') ?: null,
+        self::stringEnv('S3_REGION'),
+        self::stringEnv('S3_BUCKET'),
+        self::stringEnv('S3_ACCESS_KEY'),
+        self::stringEnv('S3_SECRET_KEY'),
+        self::boolEnv('S3_USE_PATH_STYLE')
+      ),
+      default => throw new Exception("Unknown storage driver `$driver` in `STORAGE_DRIVER`: filesystem or s3.")
+    };
+  }
+
+  /**
+   * Chosen by the storage driver: files in S3 are delivered by presigned URLs, files on disk locally. A setting of its
+   * own comes once a storage can be delivered in more than one way (e.g. through a CDN).
+   */
+  private static function readDeliveryMethodEnvironment(StorageDriverConfig $storageDriver): DeliveryMethodConfig {
+    if (!$storageDriver instanceof S3DriverConfig) {
+      return new LocalDeliveryConfig();
+    }
+    $interval = getEnv('S3_URL_RENEWAL_INTERVAL');
+    $urlRenewalInterval = ($interval === false or $interval === '') ? 3600 : filter_var($interval, FILTER_VALIDATE_INT);
+    if ($urlRenewalInterval === false) {
+      throw new Exception("`S3_URL_RENEWAL_INTERVAL` is not a number of seconds: `$interval`.");
+    }
+    return new S3PresignDeliveryConfig($storageDriver, getEnv('S3_PUBLIC_ENDPOINT') ?: null, $urlRenewalInterval);
   }
 
   public static function applyVersionFromPackageJson(): void {

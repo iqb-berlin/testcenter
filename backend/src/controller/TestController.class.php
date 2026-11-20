@@ -142,7 +142,7 @@ class TestController extends Controller {
       throw new HttpNotFoundException($request, "File not found: `$path`");
     }
 
-    return FileResponse::stream($response, $filePath)
+    return Delivery::getMethod()->deliver($response, $filePath)
       ->withHeader('X-Source', 'backend');
   }
 

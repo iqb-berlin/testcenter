@@ -14,6 +14,7 @@ data:
     env REDIS_PORT;
     env REDIS_PASSWORD;
     env REDIS_CACHE_FILES;
+    env STORAGE_DRIVER;
 
     worker_processes auto; # The special value auto allows binding worker processes automatically to available CPUs
     worker_cpu_affinity auto; # The optional mask parameter can be used to limit the CPUs available for automatic binding
@@ -101,6 +102,12 @@ data:
         default fs-$request_id;
       }
 
+      # S3 storage: the backend's redirects to files in the bucket (see location @s3_redirect). An entry is a
+      # few hundred bytes; 10m of keys holds about 80,000 files.
+      proxy_cache_path /tmp/file-server-cache keys_zone=s3_redirects:10m max_size=100m use_temp_path=off;
+      # The superadmin's uploaded images (see location /public/uploaded_assets/), at most 2 MB each.
+      proxy_cache_path /tmp/file-server-cache-assets keys_zone=uploaded_assets:1m max_size=100m inactive=7d use_temp_path=off;
+
       server {
         server_tokens off; # removes the nginx version at least (removing the server-header at all is very difficult)
         listen 8080;
@@ -116,6 +123,35 @@ data:
           set $file_path '';
           access_by_lua_file auth/auth.lua;
           content_by_lua_file auth/content.lua;
+        }
+
+        # S3 storage (content.lua jumps here after auth.lua checked the group token): the backend answers
+        # with a redirect to the file in the bucket, which stays the same until its `Expires`. Kept for
+        # that long under the file path without the token, so all groups share it; one request per file
+        # asks the backend at a time. 403/404 carry no `Expires` and pass through uncached.
+        location @s3_redirect {
+          proxy_pass http://backend:8080;
+          proxy_redirect off;
+          proxy_cache s3_redirects;
+          # the backend redirects to the test storage when the testmode header asks for it
+          proxy_cache_key $http_testmode$file_path;
+          # the backend's `Cache-Control: private` is meant for shared caches between here and the
+          # browser; it is still passed on
+          proxy_ignore_headers Cache-Control;
+          proxy_cache_lock on;
+          add_header X-Cache-Status $upstream_cache_status always;
+        }
+
+        # The superadmin's uploaded images, public. The backend reads them from the storage, whichever driver
+        # it uses, and allows every cache to keep them for good; kept here as long as they are asked for.
+        # The path is AssetStorage::URL_PREFIX.
+        location /public/uploaded_assets/ {
+          proxy_pass http://backend:8080;
+          proxy_cache uploaded_assets;
+          # the backend reads from the test storage when the testmode header asks for it
+          proxy_cache_key $http_testmode$uri;
+          proxy_cache_lock on;
+          add_header X-Cache-Status $upstream_cache_status always;
         }
 
         location /health {

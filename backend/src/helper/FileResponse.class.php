@@ -9,15 +9,16 @@ class FileResponse {
    * must ensure the path is legitimate (e.g. via Workspace::getFilePath).
    * Passing $downloadName adds a Content-Disposition attachment header.
    *
-   * Cache-Control: private keeps shared/edge caches (e.g. a CDN) from storing these
+   * The default Cache-Control: private keeps shared/edge caches (e.g. a CDN) from storing
    * authenticated responses and serving them without re-checking authorization; the
-   * browser may still cache them per user.
+   * browser may still cache them per user. Public files pass their own.
    */
   public static function stream(
     Response $response,
     StoragePath $path,
     ?string  $downloadName = null,
-    ?string  $contentType = null
+    ?string  $contentType = null,
+    string   $cacheControl = 'private'
   ): Response {
     $fileInfo = Storage::getDriver()->getFileInfo($path);
     if (!$fileInfo) {
@@ -27,7 +28,7 @@ class FileResponse {
     $response = $response
       ->withHeader('Content-Type', $contentType ?? FileExt::getMimeType($path->name))
       ->withHeader('Content-Length', (string) $fileInfo->size)
-      ->withHeader('Cache-Control', 'private')
+      ->withHeader('Cache-Control', $cacheControl)
       ->withBody(Storage::getDriver()->getStream($path));
 
     if ($downloadName !== null) {
