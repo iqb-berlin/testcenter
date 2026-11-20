@@ -1,6 +1,7 @@
 # 19.2.0
 
 ## Änderungen
+- Für `monitor-group`-Logins wird jetzt der „Bearbeitungsstand“-Button angezeigt, mit dem man zu jeder Aufgabe navigieren kann. Es ist der gleiche Button wie im Review-Modus. (#1257)
 - Im Gruppen-Monitor ersetzen „Login“, „Code“ und „Suffix“ die Spalte „Teilnehmer“. Die Spalte „Suffix“ zeigt die zufällig erzeugte Kennung. Fehlt der Code, bleibt die Zelle leer. Die Tabelle sortiert standardmäßig aufsteigend nach Login. Ein Klick auf „Login“ kehrt die Reihenfolge der Login-Gruppen um. Innerhalb jeder Gruppe bleiben Codes und bei gleichem Code die Suffixe in aufsteigender Textreihenfolge, etwa `A10` vor `A2`. (#1101)
 
 ## Fehlerbehebungen
