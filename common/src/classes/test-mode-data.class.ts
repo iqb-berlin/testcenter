@@ -37,7 +37,7 @@ export class TestModeData {
       forceNaviRestrictions: false,
       showCode: true,
       showTimeLeft: false,
-      showUnitMenu: false,
+      showUnitMenu: true,
       receiveRemoteCommands: false,
       canChangeStateOptions: true,
       lockAfterFailedLogins: true
