@@ -276,9 +276,10 @@ class Workspace {
       ->createSubdirectory($file->getType())
       ->createFilePath($file->getName());
 
-    if ($oldFileInfo = Storage::getDriver()->getFileInfo($targetStoragePath)) {
-      $oldFile = self::loadAndValidateFile($targetStoragePath, $file->getType(), $oldFileInfo);
+    $oldFile = $this->workspaceDAO->getAllFilesWhere(['type' => $file->getType(), 'name' => $file->getName()])
+      [$file->getType()][$file->getName()] ?? null;
 
+    if ($oldFile) {
       if ($oldFile->getId() !== $file->getId()) {
         $file->report(
           'error',

@@ -76,6 +76,18 @@ class WorkspaceTest extends TestCase {
     mkdir($this->stagingPath);
 
     $this->workspaceDaoMock = Mockery::mock('overload:' . WorkspaceDAO::class);
+    // the lookup of the file an upload replaces, answered from the stored test files; declared first, so it takes
+    // these calls before the tests' own expectations for the lookups by type
+    $this->workspaceDaoMock
+      ->allows('getAllFilesWhere')
+      ->with(Mockery::on(static fn(array $conditions): bool => isset($conditions['name'])))
+      ->andReturnUsing(static function(array $conditions): array {
+        $path = "ws_1/{$conditions['type']}/{$conditions['name']}";
+        if (!file_exists(VfsForTest::dataDir . "/$path")) {
+          return [];
+        }
+        return [$conditions['type'] => [$conditions['name'] => VfsForTest::loadAndValidateFile($path, $conditions['type'])]];
+      });
     $this->workspaceDaoMock
       ->allows('getGlobalIds')
       ->andReturn(VfsForTest::globalIds);
