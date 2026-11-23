@@ -5,9 +5,6 @@ declare(strict_types=1);
 
 
 class AdminDAO extends DAO {
-  /**
-   * @codeCoverageIgnore
-   */
   public function refreshAdminToken(string $token): void {
     $this->_(
       'update admin_sessions

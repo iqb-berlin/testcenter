@@ -75,9 +75,6 @@ class DAO {
     return is_bool($result) ? null : $result;
   }
 
-  /**
-   * @codeCoverageIgnore
-   */
   public function runFile(string $path): void {
     if (!file_exists($path)) {
       throw new HttpError("File does not exist: `$path`");

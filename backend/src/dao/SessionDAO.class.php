@@ -74,9 +74,6 @@ class SessionDAO extends DAO {
     );
   }
 
-  /**
-   * @codeCoverageIgnore
-   */
   public function getOrCreateLoginSession(string $name, string $password): LoginSession | FailedLogin {
     $login = $this->getLogin($name, $password);
 

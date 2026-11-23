@@ -37,6 +37,10 @@ literal-named-argument = { enabled = false }
 halstead = { effort-threshold = 7000 }
 sensitive-parameter = { enabled = false }
 readable-literal = { enabled = false }
+tagged-todo = { level = "error" }
+no-else-clause = { enabled = false }
+no-redundant-else = { enabled = true }
+prefer-early-continue = { enabled = false }
 
 [analyzer]
 plugins = []
@@ -45,7 +49,7 @@ find-unused-expressions = false
 analyze-dead-code = false
 memoize-properties = true
 allow-possibly-undefined-array-keys = true
-check-throws = false
+check-throws = true
 unchecked-exceptions = ["Error", "LogicException"]
 unchecked-exception-classes = []
 check-missing-override = false

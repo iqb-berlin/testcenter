@@ -26,7 +26,7 @@ class WorkspaceDAO extends DAO {
     );
 
     if ($workspace == null) {
-      throw new HttpError("Workspace `$this->workspaceId` not found", 404); // @codeCoverageIgnore
+      throw new HttpError("Workspace `$this->workspaceId` not found", 404);
     }
 
     return $workspace['name'];
@@ -61,9 +61,6 @@ class WorkspaceDAO extends DAO {
     return $arr;
   }
 
-  /**
-   * @codeCoverageIgnore
-   */
   public function updateLoginSource(string $source, LoginArray $logins): array {
     $deleted = $this->deleteLoginSource($source);
     $added = $this->addLoginSource($source, $logins);
@@ -130,9 +127,6 @@ class WorkspaceDAO extends DAO {
     return count($logins->asArray());
   }
 
-  /**
-   * @codeCoverageIgnore
-   */
   public function deleteLoginSource(string $source): int {
     $this->_(
       'delete from logins where source = :source and workspace_id = :ws_id',
@@ -211,9 +205,6 @@ class WorkspaceDAO extends DAO {
     });
   }
 
-  /**
-   * @codeCoverageIgnore
-   */
   public function deleteFile(FileData $file): void {
     $this->_("delete from files where workspace_id = ? and name = ? and type = ?", [$this->workspaceId, $file->getName(), $file->getType()]);
   }

@@ -20,9 +20,6 @@ class SessionController extends Controller {
   protected static array $_workspaces = [];
   private const SALT_LENGTH = 12;
 
-    /**
-   * @codeCoverageIgnore
-   */
   public static function createSessionFromChallenge(Request $request, Response $response): Response {
 
     $body = RequestHelper::getFields($request, [
@@ -61,9 +58,6 @@ class SessionController extends Controller {
   }
 
 
-  /**
-   * @codeCoverageIgnore
-   */
   public static function putSessionAdmin(Request $request, Response $response): Response {
 
     $body = RequestHelper::getFields($request, [
@@ -91,9 +85,6 @@ class SessionController extends Controller {
     return $response->withJson(self::createLoginSession($request, $body['name'], $body['password']));
   }
 
-  /**
-   * @codeCoverageIgnore
-   */
   public static function putSessionPerson(Request $request, Response $response): Response {
     $body = RequestHelper::getFields($request, [
       'code' => ''
