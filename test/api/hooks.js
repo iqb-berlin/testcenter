@@ -335,4 +335,10 @@ dreddHooks.before('specs > /test/{test_id}/review/{review_id} > update a booklet
 // The CSV contains the report file's modification date, which is the time the test files were copied. The sys-check
 // feature is going to be removed, so the CSV variant is not worth a workaround.
 dreddHooks.before('specs > /workspace/{ws_id}/report/sys-check > get report of system checks > 200 > text/csv;charset=utf-8', skipTransaction);
+// The test data contains no asset, and a successful upload needs a real image. Dredd does not support
+// `additionalProperties` and expects the example's slots in the answer.
+dreddHooks.before('specs > /asset-assignments > get the assets of the user interface\'s slots > 200 > application/json', skipTransaction);
+dreddHooks.before('specs > /assets > upload an asset > 200 > application/json', skipTransaction);
+dreddHooks.before('specs > /assets/{id} > delete an asset > 200 > application/json', skipTransaction);
+dreddHooks.before('specs > /asset-assignments > assign assets to slots > 200 > application/json', skipTransaction);
 dreddHooks.afterEach(finishAfterError);

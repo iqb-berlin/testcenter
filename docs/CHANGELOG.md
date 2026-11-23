@@ -28,6 +28,7 @@
 - API: `POST /asset-assignments` antwortet mit `400` und speichert nichts, wenn `assignments` fehlt oder ein Eintrag kein `slotName` (1–100 Zeichen) und kein `assetID` (Zahl oder `null`) hat oder ein `assetID` zu keinem hochgeladenen Bild gehört; kommt ein Slot mehrfach vor, gilt der letzte Eintrag. Bisher antwortete der Aufruf ohne `assignments` mit Erfolg, ohne etwas zu tun, und fehlerhafte, doppelte oder unbekannte Einträge endeten in Serverfehlern, wobei die im selben Aufruf geleerten Slots trotzdem geleert blieben.
 - Die API-Dokumentation enthält die Routen für Anhänge (`/attachment…`, `/attachments…`) und Booklets (`/booklet/…`). Bisher fehlten sie, weil beim Zusammenführen der Spec-Dateien ein leerer Eintrag sie überschrieb.
 - API: `GET /asset-assignments` antwortet ohne zugewiesene Slots mit `{}`. Bisher kam dann `[]`, ein Array statt eines Objekts.
+- API: Die Routen für die vom Superadmin hochgeladenen Bilder (`/assets`, `/asset-assignments`, `/public/uploaded_assets/{name}`) sind in der API-Dokumentation beschrieben.
 
 # 19.1.0
 

@@ -1,0 +1,412 @@
+openapi: 3.0.0
+
+info:
+  title: ""
+  version: "%%%VERSION%%%"
+
+paths:
+  /assets:
+    get:
+      summary: get all assets
+      description: >-
+        Lists the images the super admin uploaded for the slots of the user interface (logo,
+        illustrations), newest first.
+      tags:
+        - super admin
+      parameters:
+        - in: header
+          name: AuthToken
+          description: auth-token for admin-user with super-admin privilege
+          example: "a:user000000000.superadmin0"
+          required: true
+      responses:
+        "200":
+          description: List of assets
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                    originalName:
+                      type: string
+                      description: file name of the upload
+                    storedName:
+                      type: string
+                      description: random name the image is stored under
+                    createdAt:
+                      type: string
+                      description: time of the first upload
+                    url:
+                      type: string
+                      description: path of the image, relative to the backend
+                  required:
+                    - id
+                    - originalName
+                    - storedName
+                    - createdAt
+                    - url
+              example:
+                - id: 1
+                  originalName: "logo.png"
+                  storedName: "asset_6a1f0c2e9b.png"
+                  createdAt: "2026-11-23 10:00:00.123456+00"
+                  url: "public/uploaded_assets/asset_6a1f0c2e9b.png"
+        "401":
+          description: Not authenticated
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
+        "403":
+          description: Forbidden
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
+        "410":
+          description: Session Expired
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
+        "500":
+          description: Server Error
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
+
+    post:
+      summary: upload an asset
+      description: >-
+        Uploads an image (PNG, JPEG or WebP, at most 2 MB). If an asset with the same original file
+        name exists, its image is replaced: the asset keeps its id and its slot assignments, but gets
+        a new `storedName` and `url`, so no cache serves the old image.
+      tags:
+        - super admin
+      parameters:
+        - in: header
+          name: AuthToken
+          description: auth-token for admin-user with super-admin privilege
+          example: "a:user000000000.superadmin0"
+          required: true
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+              required:
+                - file
+      responses:
+        "200":
+          description: The asset was stored.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  originalName:
+                    type: string
+                  storedName:
+                    type: string
+                  url:
+                    type: string
+                required:
+                  - id
+                  - originalName
+                  - storedName
+                  - url
+              example:
+                id: 1
+                originalName: "logo.png"
+                storedName: "asset_6a1f0c2e9b.png"
+                url: "public/uploaded_assets/asset_6a1f0c2e9b.png"
+        "400":
+          description: No file, or not an image of an allowed type and size
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
+        "401":
+          description: Not authenticated
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
+        "403":
+          description: Forbidden
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
+        "410":
+          description: Session Expired
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
+        "500":
+          description: Server Error
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
+
+  /assets/{id}:
+    delete:
+      summary: delete an asset
+      description: Deletes the asset, its image and its slot assignments.
+      tags:
+        - super admin
+      parameters:
+        - in: header
+          name: AuthToken
+          description: auth-token for admin-user with super-admin privilege
+          example: "a:user000000000.superadmin0"
+          required: true
+        - in: path
+          name: id
+          description: id of the asset
+          example: 1
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: The asset was deleted.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    enum: ["deleted"]
+              example:
+                status: "deleted"
+        "401":
+          description: Not authenticated
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
+        "403":
+          description: Forbidden
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
+        "404":
+          description: No asset with this id
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
+        "410":
+          description: Session Expired
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
+        "500":
+          description: Server Error
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
+
+  /public/uploaded_assets/{name}:
+    get:
+      summary: get the image of an asset
+      description: >-
+        Public, because the images are shown before login. A stored name is random and never reused,
+        so the image behind a URL never changes and every cache may keep it
+        (`Cache-Control: public, max-age=31536000, immutable`). The `url` of an asset points here,
+        relative to the backend; the file-server answers the same path.
+      tags:
+        - run
+      parameters:
+        - in: path
+          name: name
+          description: stored name of the asset
+          example: "asset_6a1f0c2e9b.png"
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: The image (PNG, JPEG or WebP)
+          content:
+            image/*:
+              schema:
+                type: string
+                format: binary
+        "404":
+          description: No asset with this name
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
+        "500":
+          description: Server Error
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
+
+  /asset-assignments:
+    get:
+      summary: get the assets of the user interface's slots
+      description: >-
+        Returns, for each slot with an assigned asset, the asset to show. Without a token only the
+        global assignments count; with the token of a test-taker, assignments for their group and
+        their login override the global ones (login before group before global). Slots without an
+        assignment are left out.
+      tags:
+        - run
+      parameters:
+        - in: header
+          name: AuthToken
+          description: optional auth-token of a login, a person or an admin
+          example: "l:0000000000000.00000000000"
+          required: false
+      responses:
+        "200":
+          description: Assets by slot name
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+                  properties:
+                    assetID:
+                      type: integer
+                    url:
+                      type: string
+                  required:
+                    - assetID
+                    - url
+              example:
+                logo:
+                  assetID: 1
+                  url: "public/uploaded_assets/asset_6a1f0c2e9b.png"
+        "403":
+          description: Invalid token
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
+        "410":
+          description: Session Expired
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
+        "500":
+          description: Server Error
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
+
+    post:
+      summary: assign assets to slots
+      description: >-
+        Sets the global assignment of each given slot. The slot names are defined by the frontend: any
+        name is stored, and the frontend ignores the ones it does not know. If a slot appears more
+        than once, the last entry wins. The request is checked as a whole: if anything is invalid,
+        nothing is stored.
+      tags:
+        - super admin
+      parameters:
+        - in: header
+          name: AuthToken
+          description: auth-token for admin-user with super-admin privilege
+          example: "a:user000000000.superadmin0"
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                assignments:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      slotName:
+                        type: string
+                        minLength: 1
+                        maxLength: 100
+                      assetID:
+                        type: integer
+                        nullable: true
+                        description: id of the asset to show in the slot; null clears the slot
+                    required:
+                      - slotName
+                      - assetID
+              required:
+                - assignments
+            example:
+              assignments:
+                - slotName: "logo"
+                  assetID: 1
+                - slotName: "loadingProgress"
+                  assetID: null
+      responses:
+        "200":
+          description: The assignments were stored.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    enum: ["ok"]
+              example:
+                status: "ok"
+        "400":
+          description: >-
+            `assignments` missing, an entry without a valid `slotName` or `assetID`, or an `assetID`
+            with no asset
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
+        "401":
+          description: Not authenticated
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
+        "403":
+          description: Forbidden
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
+        "410":
+          description: Session Expired
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
+        "500":
+          description: Server Error
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
