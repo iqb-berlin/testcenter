@@ -33,6 +33,7 @@ import { GroupMonitorConfig } from './group-monitor.interfaces';
 import { AddFilterDialogComponent } from './components/add-filter-dialog/add-filter-dialog.component';
 import { IsCodeClearPipe } from './test-session/is-code-clear.pipe';
 import { TimeLeftPipe } from './test-session/timeleft.pipe';
+import { ClockBadgePipe } from './test-session/clock-badge.pipe';
 import { PositionPipe } from './test-session/position.pipe';
 import { BookletStatesPipe } from './test-session/bookletstates.pipe';
 import { TestletvisiblePipe } from './test-session/testletvisible.pipe';
@@ -80,6 +81,7 @@ import { TemplateContextDirective } from '@shared/directives/template-context.di
     MatCardModule,
     MatInputModule,
     CustomtextPipe,
+    ClockBadgePipe,
     AlertComponent,
     TemplateContextDirective
   ],

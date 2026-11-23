@@ -8,6 +8,7 @@ import {
 import { TestSessionUtil } from './test-session.util';
 import { IconData, superStates } from './super-states';
 import { UnitDef } from '../../shared/interfaces/booklet.interfaces';
+import { CustomtextPipe } from '../../shared/pipes/customtext/customtext.pipe';
 
 interface TestletContext {
   $implicit: Testlet,
@@ -18,6 +19,7 @@ interface TestletContext {
   selector: 'tc-test-session',
   templateUrl: './test-session.component.html',
   styleUrls: ['./test-session.component.css'],
+  providers: [CustomtextPipe],
   standalone: false
 })
 export class TestSessionComponent {
