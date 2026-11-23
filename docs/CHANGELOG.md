@@ -1,3 +1,8 @@
+# 17.6.2
+
+## Fehlerbehebungen
+- PHP-Version auf 8.3.37 aktualisiert
+
 # 17.6.1
 
 ## Fehlerbehebungen
