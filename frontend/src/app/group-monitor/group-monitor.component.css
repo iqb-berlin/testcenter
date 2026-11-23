@@ -231,6 +231,9 @@
 }
 
 .test-session-table {
+  --session-cell-padding-start: 1em;
+  --session-checkbox-padding-start: 5px;
+
   border-collapse: collapse;
   display: table;
   width: 100%;
@@ -240,22 +243,16 @@
     top: 0;
     z-index: 2;
     background: white;
+    padding-inline-start: var(--session-cell-padding-start);
     padding-top: 15px;
     padding-bottom: 10px;
+
+    &[mat-sort-header="_checked"] {
+      padding-inline-start: var(--session-checkbox-padding-start);
+      left: 0;
+      z-index: 3;
+    }
   }
-
-  td {
-    padding-left: 1em;
-  }
-
-  td[mat-sort-header="_checked"] {
-     padding-left: 5px;
-     position: sticky;
-     left: 0;
-     z-index: 3;
-     background: white;
-   }
-
 }
 
 
