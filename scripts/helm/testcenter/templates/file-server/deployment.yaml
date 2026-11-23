@@ -71,7 +71,7 @@ spec:
             failureThreshold: {{ .Values.deployment.fileServer.probes.readiness.failureThreshold }}
           env:
             - name: REDIS_HOST
-              value: "{{ .Release.Name }}-cache-server.tc.svc.cluster.local"
+              value: "{{ .Release.Name }}-cache-server.{{ .Release.Namespace }}.svc.cluster.local"
             - name: REDIS_PORT
               value: "6379"
             - name: REDIS_PASSWORD

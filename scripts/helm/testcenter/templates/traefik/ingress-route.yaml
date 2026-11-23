@@ -5,7 +5,6 @@ apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
 metadata:
   name: {{ .Release.Name }}-broadcaster-ingress
-  namespace: tc
 spec:
   entryPoints:
     {{- if .Values.ingress.tlsEnabled }}
@@ -37,7 +36,6 @@ apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
 metadata:
   name: {{ .Release.Name }}-frontend-ingress
-  namespace: tc
 spec:
   entryPoints:
     {{- if .Values.ingress.tlsEnabled }}
