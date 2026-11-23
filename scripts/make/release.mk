@@ -6,9 +6,9 @@ TC_BASE_DIR := $(shell git rev-parse --show-toplevel)
 # Sets the version numbers of a release in all files that carry one, then runs release-check.
 # Param: VERSION - e.g. 19.2.0-rc1 or 19.2.0
 release-prepare:
-	$(TC_BASE_DIR)/scripts/release.sh prepare $(VERSION)
+	@$(TC_BASE_DIR)/scripts/release.sh prepare $(VERSION)
 
 # Lists every file whose version number does not match the release.
 # Param: VERSION - optional, defaults to the version in package.json
 release-check:
-	$(TC_BASE_DIR)/scripts/release.sh check $(VERSION)
+	@$(TC_BASE_DIR)/scripts/release.sh check $(VERSION)
