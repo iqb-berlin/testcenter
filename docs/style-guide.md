@@ -38,8 +38,6 @@ Checked with [mago](https://mago.carthage.software), configured in `backend/mago
 
 - Every file declares `strict_types=1`, and types are expressed with PHP's native type hints.
 - Use phpDocumentor-style docblocks only where native type hints fall short — in practice whenever arrays appear in a function signature, or whenever values are read out of an array.
-- Prefer static functions — we aim for a functional style where the problem allows it.
-- Use enums and classes as value objects rather than passing primitives around.
 
 ## Frontend (Angular)
 

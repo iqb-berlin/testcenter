@@ -11,5 +11,6 @@
 - If there a multiple solutions for a problem ask which one to take instead of quietly picking one.
 - Existing code is not an argument for new code. "It is already done this way elsewhere" only counts if that pattern is good on its own merits; do not carry earlier bad practices into new development.
 - Do not change production code just to make tests work (e.g. branches only the test environment takes). Adapt the test setup or test infrastructure instead.
+- When a request or response of the API changes, update its description in `docs/api/`.
 - Commit messages and pull request descriptions follow the "Commit Messages" section of `docs/style-guide.md`.
 
