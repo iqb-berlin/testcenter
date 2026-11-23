@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Booklet xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+               xsi:noNamespaceSchemaLocation="https://w3id.org/iqb/spec/testcenter-booklet-xml/18.1">
+	<Metadata>
+		<Id>Cy-Bklt_Wdgt_Calc-2</Id>
+		<Label>Widget-Calc-2</Label>
+		<Description>Check calculator functions</Description>
+	</Metadata>
+
+	<BookletConfig>
+	</BookletConfig>
+
+  <Widgets>
+    <Widget id="calc" model="CALCULATOR">
+      <Parameter key="JOURNAL_LINES">2</Parameter>
+    </Widget>
+  </Widgets>
+
+  <Units widgets="calc">
+    <Unit id="CY-Unit.Sample-101" label="Aufgabe 1"/>
+  </Units>
+
+</Booklet>

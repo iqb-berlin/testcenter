@@ -3,12 +3,16 @@
                   xsi:noNamespaceSchemaLocation="https://w3id.org/iqb/spec/testcenter-testtaker-xml/18.0">
 
   <Metadata>
-    <Description>Logins für Cypress Test: Widget Calculator</Description>
+    <Description>Logins für Cypress Test: Widgets</Description>
   </Metadata>
 
-  <Group id="wdgt" label="Widget">
-    <Login mode="run-hot-restart" name="Wdgt-1" pw="123">
+  <Group id="calc-wdgt" label="Calc-Widget">
+    <Login mode="run-hot-return" name="CalcWdgt-1" pw="123">
       <Booklet>Cy-Bklt_Wdgt_Calc-1</Booklet>
     </Login>
+    <Login mode="run-hot-return" name="CalcWdgt-2" pw="123">
+      <Booklet>Cy-Bklt_Wdgt_Calc-2</Booklet>
+    </Login>
   </Group>
+
 </Testtakers>

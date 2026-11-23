@@ -5,17 +5,22 @@ import {
   loginTestTaker,
   probeBackendApi,
   resetBackendTestData,
-  visitLoginPage
+  visitLoginPage,
+  getFromIframe,
+  logout,
+  loginSuperAdmin,
+  openWorkspace,
+  selectResultGroup, logoutAdmin
 } from '../utils';
 
-describe('check calculator position in booklet', { testIsolation: false }, () => {
+describe('Check calculator booklet position', { testIsolation: false }, () => {
   before(() => {
     cleanUp();
     resetBackendTestData();
     probeBackendApi();
     visitLoginPage();
     disableSimplePlayersInternalDebounce();
-    loginTestTaker('Wdgt-1', '123');
+    loginTestTaker('CalcWdgt-1', '123');
   });
 
   it('first unit: there is no calculator', () => {
@@ -42,5 +47,78 @@ describe('check calculator position in booklet', { testIsolation: false }, () =>
     cy.get('[data-cy="toolbar-widget"]')
       .should('not.exist');
   });
-
 });
+
+describe('Check log files for the calculator result', { testIsolation: false }, () => {
+  before(() => {
+    cleanUp();
+    resetBackendTestData();
+    probeBackendApi();
+    visitLoginPage();
+    disableSimplePlayersInternalDebounce();
+    loginTestTaker('CalcWdgt-2', '123');
+  });
+
+  it('a simple addition', () => {
+
+    cy.get('[data-cy="toolbar-widget"]')
+      .click();
+    cy.get('.widget-window iframe')
+      .should('exist');
+    getFromIframe('.widget-window iframe')
+      .as('calc');
+    cy.get('@calc')
+      .find('button:contains("5")')
+      .click();
+    cy.get('@calc')
+      .find('button[title="Addition"]')
+      .click();
+    cy.get('@calc')
+      .find('button:contains("3")')
+      .click();
+    cy.get('@calc')
+      .find('button[title="Rechnung dezimal ausführen"]')
+      .click();
+  });
+
+  it('close calculator widget', () => {
+    cy.get('[data-cy="toolbar-widget"]')
+      .click();
+    cy.get('.widget-window')
+      .find('button[mat-dialog-close]')
+      .click();
+    cy.get('.widget-window')
+      .should('not.exist');
+    cy.get('[data-cy="calculator-peek-close"]')
+      .click();
+  });
+
+  it('logfiles download', () => {
+    cy.get('[data-cy="logo"]')
+      .click();
+    cy.get('[data-cy="dialog-title"]')
+      .contains('Sicher, dass du den Test beenden möchtest?')
+      .should('be.visible');
+    cy.get('[data-cy="dialog-confirm"]')
+      .click();
+    logout();
+    visitLoginPage();
+    loginSuperAdmin();
+    openWorkspace('workspace-card-sample_workspace', 1);
+    cy.get('[data-cy="Ergebnisse/Antworten"]')
+      .click();
+    selectResultGroup('Calc-Widget');
+    cy.intercept('GET', `${Cypress.env('urls').backend}/workspace/1/report/log?*`).as('waitForDownloadLogs');
+    cy.get('[data-cy="download-logs"]')
+      .click();
+    cy.wait('@waitForDownloadLogs');
+    logoutAdmin();
+  });
+
+  it('check logfile', () => {
+    cy.readFile(`${Cypress.config('downloadsFolder')}/iqb-testcenter-logs.csv`)
+      .should('include', 'CALCULATOR_CALCULATION = ""5+3=8""');
+  });
+});
+
+
