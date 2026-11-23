@@ -23,3 +23,17 @@ Reference the desired schema version in your XML files (example for booklet-xml)
 <Booklet xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:noNamespaceSchemaLocation="https://w3id.org/iqb/spec/testcenter-booklet-xml/18.0">
 ```
+
+## Introducing a new schema version
+
+1. Put the new XSD into the backend's schema cache as `data/.schemas/<repository>/<version>/<repository>.xsd`, so
+   that the backend validates against it before it is published.
+2. Reference the new version in the XML files that use the change and check that they validate.
+3. Implement and test the change in the Testcenter.
+4. For a new major version, raise `max` of the schema in [compatibility.json](compatibility.json).
+5. Release the Testcenter.
+6. Commit the XSD to its schema repository and release the version there. Its release notes name the Testcenter
+   version that is required.
+
+The order is deliberate: the schema's release notes can only name a Testcenter version that exists. Until the schema
+is released, an installation cannot download it, so XML files that use it fail validation.

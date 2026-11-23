@@ -29,14 +29,3 @@ For a pre-release, use the version with its suffix, e.g. `X.Y.Z-beta`, in every 
 3. Once the pipeline is green, create the GitHub release with the release's section of the changelog as notes and
    `scripts/install.sh` and `scripts/update.sh` attached. Mark it as pre-release or as latest.
 4. Not for pre-releases: push the Helm chart with `make push-helm-chart-production`.
-
-# Xml validation
-
-1. data/schemas: add new XSD version, add changes
-2. prepare changes in the XML
-3. specify the new XSD version number in the modified XML and verify that it validates
-4. integrate the changes into the testcenter
-5. test the new functionality
-6. register the new supported version in `definitions/compatibility.json`
-7. release the new testcenter version
-8. commit XSD changes to the spec-repository and release the new version; also note the required testcenter version in the release notes.
