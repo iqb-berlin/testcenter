@@ -690,7 +690,6 @@ class SessionDAOTest extends TestCase {
     static::assertEquals($expectation, $groupToken);
   }
 
-  // @TODO: code coverage does not work with xdebug 3.4.2 and php 8.3.12
   public function test_getOrCreateGroupToken_parallel(): void {
     $worker = Amp\Parallel\Worker\createWorker();
 

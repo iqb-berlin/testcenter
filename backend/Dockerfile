@@ -65,8 +65,7 @@ RUN --mount=type=cache,sharing=locked,target=/var/cache/apt \
     libzip-dev libpq-dev
 
 RUN docker-php-ext-install -j$(nproc) pdo_pgsql zip opcache
-RUN pecl install igbinary && docker-php-ext-enable igbinary
-RUN pecl install redis && docker-php-ext-enable redis
+RUN pecl install redis-6.3.0 && docker-php-ext-enable redis
 
 # Configure Apache
 RUN a2enmod rewrite
@@ -84,7 +83,7 @@ RUN sed -i 's|Listen 80|Listen 8080|' /etc/apache2/ports.conf
 # dev extensions are built here, before any application code is copied, so that
 # code changes do not invalidate the (slow) xdebug/pcntl compilation
 FROM system AS dev-extension
-RUN pecl install xdebug-3.4.1 && docker-php-ext-enable xdebug   # @TODO: change xdebug and php release (xdebug-3.4.2 does not work with php-8.3.12!)
+RUN pecl install xdebug-3.5.3 && docker-php-ext-enable xdebug
 RUN docker-php-ext-install pcntl && docker-php-ext-enable pcntl
 
 
