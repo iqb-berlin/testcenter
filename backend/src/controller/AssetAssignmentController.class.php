@@ -40,29 +40,49 @@ class AssetAssignmentController extends Controller {
   }
 
   public static function set(Request $request, Response $response): Response {
-    $requestData = json_decode($request->getBody()->getContents(), true);
-    $payload = $requestData['assignments'] ?? [];
+    $entries = json_decode($request->getBody()->getContents(), true)['assignments'] ?? null;
+    if (!is_array($entries) || !array_is_list($entries)) {
+      throw new HttpError('Body must contain `assignments` as an array', 400);
+    }
 
+    // keyed by slot name, so the last entry for a slot wins
     $toUpsert = [];
     $toDelete = [];
-    foreach ($payload as $assignment) {
+    foreach ($entries as $entry) {
+      $slotName = $entry['slotName'] ?? null;
+      // the slot names are defined by the frontend; `asset_assignment.slot_name` holds 100 characters
+      if (!is_string($slotName) || $slotName === '' || mb_strlen($slotName) > 100
+        || !array_key_exists('assetID', (array) $entry)
+        || !(is_int($entry['assetID']) || $entry['assetID'] === null)) {
+        throw new HttpError('Each assignment needs `slotName` (1–100 characters) and `assetID` (integer or null)', 400);
+      }
+
       $key = [
-        'slotName' => $assignment['slotName'],
+        'slotName' => $slotName,
         'scope' => 'global',
         'scopeId' => 'global',
         'workspaceId' => 0
       ];
 
-      if ($assignment['assetID'] === null) {
-        $toDelete[] = $key;
+      unset($toUpsert[$slotName], $toDelete[$slotName]);
+      if ($entry['assetID'] === null) {
+        $toDelete[$slotName] = $key;
         continue;
       }
 
-      $toUpsert[] = $key + ['assetId' => (int) $assignment['assetID']];
+      $toUpsert[$slotName] = $key + ['assetId' => $entry['assetID']];
     }
 
-    self::assetDAO()->deleteAssignments($toDelete);
-    self::assetDAO()->upsertAssignments($toUpsert);
+    // in one transaction, so a failing write leaves every slot as it was
+    self::assetDAO()->transactional(static function() use ($toDelete, $toUpsert): void {
+      $missingAssetIds = self::assetDAO()->findMissingAssetIds(array_column($toUpsert, 'assetId'));
+      if ($missingAssetIds) {
+        throw new HttpError('No asset with the id(s) ' . implode(', ', $missingAssetIds), 400);
+      }
+
+      self::assetDAO()->deleteAssignments(array_values($toDelete));
+      self::assetDAO()->upsertAssignments(array_values($toUpsert));
+    });
 
     return $response->withJson(['status' => 'ok']);
   }

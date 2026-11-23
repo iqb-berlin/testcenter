@@ -40,6 +40,19 @@ class AssetDAO extends DAO {
     );
   }
 
+  /**
+   * @param int[] $ids
+   * @return int[] those of the ids no asset has
+   */
+  public function findMissingAssetIds(array $ids): array {
+    $existingIds = $this->_(
+      'select id from assets where id = any(cast(:ids as int[]))',
+      [':ids' => '{' . implode(',', $ids) . '}'],
+      true
+    );
+    return array_values(array_diff($ids, array_column($existingIds, 'id')));
+  }
+
   public function createAsset(string $originalName, string $storedName): int {
     return $this->insert(
       'insert into assets (original_name, stored_name) values (:original_name, :stored_name)',
