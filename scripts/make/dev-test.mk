@@ -41,16 +41,6 @@ test-backend-s3:
 					--configuration /var/www/testcenter/backend/phpunit.xml\
 				/var/www/testcenter/backend/test/s3
 
-test-backend-unit-coverage:
-	cd $(TC_BASE_DIR) &&\
-	$(COMPOSE_DEV)\
-		run --rm $(UNIT_TEST_PHP_INI) backend\
-			php -dxdebug.mode='coverage' /var/www/testcenter/backend/vendor/phpunit/phpunit/phpunit\
-					--bootstrap /var/www/testcenter/backend/test/unit/bootstrap.php\
-					--configuration /var/www/testcenter/backend/phpunit.xml\
-					--coverage-html ./coverage
-				/var/www/testcenter/backend/test/unit/${target} --testdox
-
 test-backend-api:
 	cd $(TC_BASE_DIR) &&\
 	$(COMPOSE_DEV)\
