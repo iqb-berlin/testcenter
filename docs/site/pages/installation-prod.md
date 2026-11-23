@@ -140,6 +140,12 @@ Then write the printed hash into the account, using `make testcenter-connect-db`
 UPDATE users SET password = '<hash>' WHERE name = 'super';
 ```
 
+With `STORAGE_DRIVER=s3` the data files are in the S3 bucket, not in `backend_vol`, so a backup set holds only the
+database. Back up the bucket with your storage provider's tools, e.g. versioning, and restore it to the same moment as
+the database: a database and data files from different moments do not match (see
+[Restoring only one half](#restoring-only-one-half)). `make testcenter-backup` and `make testcenter-restore` warn
+about this.
+
 #### Restoring only one half
 
 `testcenter-dump-db`, `testcenter-restore-db`, `testcenter-export-backend-vol` and `testcenter-import-backend-vol`

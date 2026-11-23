@@ -39,6 +39,13 @@ spec:
             capabilities:
               drop:
                 - ALL
+          {{- if .Values.objectStore.enabled }}
+          env:
+            # allowed in the Content Security Policy: the address browsers load test files from, by default the
+            # S3 API address for browsers (the backend falls back to the endpoint the same way)
+            - name: S3_PUBLIC_ORIGIN
+              value: {{ .Values.objectStore.publicOrigin | default .Values.objectStore.publicEndpoint | default .Values.objectStore.endpoint | quote }}
+          {{- end }}
           ports:
             - name: http-container
               containerPort: 8080

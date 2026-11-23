@@ -324,6 +324,8 @@ dreddHooks.before('specs > /user/{user_id}/password > change user-password > 400
 // own virtual filesystem, so a lock written by another request is never visible here.
 dreddHooks.before('specs > /workspace/{ws_id}/file > upload file > 409', skipTransaction);
 dreddHooks.before('specs > /workspace/{ws_id}/files > delete files > 409', skipTransaction);
+// The api tests store files in the filesystem; only S3 storage redirects (covered by `make test-backend-s3`).
+dreddHooks.before('specs > /file/{group_token}/{+path} > get file by path > 302', skipTransaction);
 // Writing reviews needs a login in a mode that can review, but the sample test and its reviews belong to `test`
 // (run-hot-return), whose token every success case uses.
 dreddHooks.before('specs > /test/{test_id}/unit/{unit_name}/review > add review to unit > 201', skipTransaction);

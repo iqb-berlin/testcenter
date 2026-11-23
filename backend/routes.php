@@ -294,6 +294,8 @@ $app->post('/assets', [AssetController::class, 'upload'])
 $app->delete('/assets/{id}', [AssetController::class, 'delete'])
   ->add(new IsSuperAdmin())
   ->add(new RequireToken('admin'));
+// GET /public/uploaded_assets/{name}
+$app->get('/' . AssetStorage::URL_PREFIX . '{name}', [AssetController::class, 'getFile']);
 
 $app->post('/asset-assignments', [AssetAssignmentController::class, 'set'])
   ->add(new IsSuperAdmin())

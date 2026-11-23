@@ -15,6 +15,18 @@ x-env-db: &env-db
   DB_USER: ${DB_USER}
   DB_PASSWORD: ${DB_PASSWORD}
 
+# Where the backend keeps the files of the workspaces; without STORAGE_DRIVER=s3 the S3_* variables are not read
+x-env-storage: &env-storage
+  STORAGE_DRIVER: ${STORAGE_DRIVER:-filesystem}
+  S3_ENDPOINT: ${S3_ENDPOINT:-}
+  S3_REGION: ${S3_REGION:-}
+  S3_BUCKET: ${S3_BUCKET:-}
+  S3_ACCESS_KEY: ${S3_ACCESS_KEY:-}
+  S3_SECRET_KEY: ${S3_SECRET_KEY:-}
+  S3_USE_PATH_STYLE: ${S3_USE_PATH_STYLE:-false}
+  S3_PUBLIC_ENDPOINT: ${S3_PUBLIC_ENDPOINT:-}
+  S3_URL_RENEWAL_INTERVAL: ${S3_URL_RENEWAL_INTERVAL:-}
+
 x-env-logging-conf: &env-logging-conf
   max-size: "200m"
   max-file: "10"
@@ -45,6 +57,10 @@ services:
     depends_on:
       backend:
         condition: service_healthy
+    environment:
+      # allowed in the Content Security Policy: the address browsers load test files from in S3 mode, by default the
+      # S3 API address for browsers (the backend falls back to S3_ENDPOINT the same way)
+      S3_PUBLIC_ORIGIN: ${S3_PUBLIC_ORIGIN:-${S3_PUBLIC_ENDPOINT:-${S3_ENDPOINT:-}}}
     logging:
       options:
         <<: *env-logging-conf
@@ -59,6 +75,8 @@ services:
       - cache-server
     environment:
       <<: *env-redis
+      # with s3 the file-server asks the backend for redirects to the bucket instead of reading the data volume
+      STORAGE_DRIVER: ${STORAGE_DRIVER:-filesystem}
     volumes_from:
       - backend:ro
     networks:
@@ -78,7 +96,7 @@ services:
       BRUTE_FORCE_PROTECTION: ${BRUTE_FORCE_PROTECTION:-}
       SERVER_KEY: ${SERVER_KEY}
       XML_SCHEMA_VALIDATION: ${XML_SCHEMA_VALIDATION:-}
-      <<: [ *env-redis, *env-db ]
+      <<: [ *env-redis, *env-db, *env-storage ]
       DB_HOST: db
       DB_PORT: 5432
       PASSWORD_SALT: ${PASSWORD_SALT}

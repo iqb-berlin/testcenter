@@ -16,6 +16,7 @@ SystemConfig::apply([
   'bruteForceProtection' => ['sessions' => []],
   'server' => ['key' => 'Secret'],
   'xmlSchema' => ['validation' => true, 'cacheDir' => 'vfs://root/data/.schemas'],
-  'storage' => ['root' => 'data', 'filesystemDir' => 'vfs://root'],
+  'storage' => ['root' => 'data', 'driver' => new FilesystemDriverConfig('vfs://root')],
+  'delivery' => ['method' => new LocalDeliveryConfig()],
   'debug' => ['allowTestMode' => false]
 ]);

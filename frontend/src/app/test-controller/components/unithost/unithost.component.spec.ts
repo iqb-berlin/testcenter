@@ -7,6 +7,7 @@ import { CommonModule } from '@angular/common';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDividerModule } from '@angular/material/divider';
 import { AssetService } from '@shared/services/asset.service';
+import { FileServerService } from '@shared/services/file-server.service';
 import { UnithostComponent } from './unithost.component';
 import { TestControllerService } from '../../services/test-controller.service';
 import { BackendService } from '../../services/backend.service';
@@ -57,7 +58,7 @@ const MockTestControllerService = {
 const MockMainDataService = {
   postMessage$: new Subject<MessageEvent>(),
   appSubTitle$: new Subject<string>(),
-  appConfig: { fileServiceUri: '', veronaPlayerApiVersionMin: 1, veronaPlayerApiVersionMax: 6 },
+  appConfig: { veronaPlayerApiVersionMin: 1, veronaPlayerApiVersionMax: 6 },
   getAuthData: () => null
 };
 const MockActivatedRoute = {
@@ -98,7 +99,7 @@ describe('UnithostComponent', () => {
         { provide: MainDataService, useValue: MockMainDataService },
         { provide: ActivatedRoute, useValue: MockActivatedRoute },
         { provide: MessageService, useValue: {} },
-        { provide: 'FILE_SERVER_URL', useValue: '/files/' },
+        { provide: FileServerService, useValue: { getBaseUrl: () => '/api/' } },
         { provide: WidgetDeliveryService, useValue: widgetDelivery },
         { provide: WidgetRuntimeService, useValue: widgetRuntime }
       ]

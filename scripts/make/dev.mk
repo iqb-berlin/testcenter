@@ -96,19 +96,22 @@ composer-install:
 				--working-dir=/usr/src/testcenter/backend
 	cd $(TC_BASE_DIR) && make build service=backend
 
+# Resolves in the backend image, so packages are chosen for its PHP version and extensions. ext-apache is the Apache
+# SAPI, which the CLI never has. Root, as the mounted composer.lock belongs to the host user; COMPOSER_HOME and the
+# cache lie within open_basedir of local.php.ini.
 composer-update:
-	docker run --rm --interactive --tty\
-			--volume $(TC_BASE_DIR)/backend/composer.json:/usr/src/testcenter/backend/composer.json\
-			--volume $(TC_BASE_DIR)/backend/composer.lock:/usr/src/testcenter/backend/composer.lock\
-			--volume $(TC_BASE_DIR)/backend/src:/usr/src/testcenter/backend/src\
-			--volume $(TC_BASE_DIR)/backend/test:/usr/src/testcenter/backend/test\
-			--volume $(TC_BASE_DIR)/backend/vendor:/usr/src/testcenter/backend/vendor\
-			--volume $(HOME)/.composer:/tmp/cache\
-		composer:lts update $(lib) $(flag)\
+	cd $(TC_BASE_DIR) &&\
+	$(COMPOSE_DEV)\
+		run --rm --no-deps --user root\
+			--env COMPOSER_HOME=/tmp/composer --env COMPOSER_CACHE_DIR=/tmp/composer-cache\
+			--env COMPOSER_ALLOW_SUPERUSER=1 --env XDEBUG_MODE=off\
+			--volume $(TC_BASE_DIR)/backend/composer.lock:/var/www/testcenter/backend/composer.lock\
+			--volume $(HOME)/.composer:/tmp/composer-cache\
+		backend php /var/www/testcenter/tools/composer update $(lib) $(flag)\
 				--no-interaction\
-				--ignore-platform-reqs\
+				--ignore-platform-req=ext-apache\
 				--no-ansi\
-				--working-dir=/usr/src/testcenter/backend
+				--working-dir=/var/www/testcenter/backend
 	cd $(TC_BASE_DIR) && make build service=backend
 
 # use this whenever you created or renamed a class in backend to refresh the autoloader.

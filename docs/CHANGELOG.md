@@ -1,4 +1,4 @@
-# storage-driver (nach dem nächsten Release)
+# next
 
 ## Änderungen
 - Im Gruppen-Monitor ersetzen „Login“, „Code“ und „Suffix“ die Spalte „Teilnehmer“. Die Spalte „Suffix“ zeigt die zufällig erzeugte Kennung. Fehlt der Code, bleibt die Zelle leer. Die Tabelle sortiert standardmäßig aufsteigend nach Login. Ein Klick auf „Login“ kehrt die Reihenfolge der Login-Gruppen um. Innerhalb jeder Gruppe bleiben Codes und bei gleichem Code die Suffixe in aufsteigender Textreihenfolge, etwa `A10` vor `A2`. (#1101)
@@ -8,15 +8,19 @@
 - Beim Abbrechen der Filterbearbeitung im Gruppen-Monitor bleibt der ursprüngliche Filter unverändert. Bisher wurden Änderungen bereits vor dem Speichern auf den aktiven Filter übertragen.
 - Ressourcen-Pakete mit groß geschriebener Endung (z. B. `geogebra.ITCR.ZIP`) können von Units genutzt werden. Bisher scheiterte das Hochladen mit „Could not extract package“.
 - Ein Ressourcen-Paket und eine Ressource mit dem Namen des Pakets ohne Endung (`geogebra.itcr.zip` und `geogebra`) werden beim Hochladen abgelehnt, wenn das jeweils andere schon vorhanden ist. Bisher brach das Hochladen der Ressource mit einem Serverfehler ab, und ein so hochgeladenes Paket wurde gespeichert, ließ sich aber nicht nutzen.
-
-## Fehlerbehebungen
 - Die Bestätigung nach „Springe zu“ im Gruppen-Monitor nennt den angesprungenen Block auch dann, wenn die Blockauswahl anschließend geleert oder der nächste Block ausgewählt wird.
 - Im Gruppen-Monitor wird die Blockauswahl nach erfolgreichem Starten eines Abschnitts geleert, wenn das Monitor-Profil die automatische Auswahl des nächsten Blocks deaktiviert (`autoselectNextBlock="no"`). So bleibt der gerade gestartete Abschnitt nicht versehentlich für einen erneuten Start ausgewählt. Bei aktivierter automatischer Auswahl wird weiterhin der nächste Block ausgewählt. (#1100)
 
 ## Betrieb & Schnittstellen
+- S3: Das Backend kann die Dateien der Arbeitsbereiche in einem S3-kompatiblen Bucket ablegen statt im Dateisystem, etwa bei AWS, STACKIT oder SeaweedFS; die Browser der Testpersonen laden die Dateien der Tests dann direkt aus dem Bucket. Eingeschaltet wird es mit `STORAGE_DRIVER=s3` (Docker Compose) bzw. `objectStore.enabled` (Helm), nur bei neuen Installationen. Einstellungen, Anforderungen an den Bucket und Folgen beschreibt die Seite [S3 storage](https://iqb-berlin.github.io/testcenter/pages/storage-s3.html).
+- Mit S3 enthalten Sicherungen von `make testcenter-backup` die Dateien der Arbeitsbereiche nicht; `make testcenter-backup` und `make testcenter-restore` weisen darauf hin. Der Bucket ist mit den Werkzeugen des Anbieters zu sichern, etwa über Versionierung.
+- Das Backend startet nur, wenn es in den Speicher schreiben kann: Beim Start legt es eine Prüfdatei an und löscht sie wieder, ein Fehler nennt Bucket und Endpunkt bzw. das Verzeichnis. Das gilt auch für das Dateisystem; dort fielen fehlende Schreibrechte bisher erst beim ersten Hochladen auf.
+- Neue Abhängigkeit des Backends: `async-aws/s3`.
 - `GET /monitor/test-sessions` und `GET /monitor/group/{group_name}/test-sessions` liefern zusätzlich `loginName`, `code` und `nameSuffix`. `nameSuffix` enthält die zufällig erzeugte Kennung. Fehlt der Code oder die Kennung, fehlt auch das jeweilige Feld im response. Sitzungsdaten im WebSocket-Kanal `test-sessions` enthalten dieselben Felder. (#1101)
 - Die undokumentierte Umgebungsvariable `OVERRIDE_CONFIG` wird nicht mehr ausgewertet; das Backend wird nur noch über die einzeln benannten Umgebungsvariablen konfiguriert. Bisher konnte sie als INI-Text beliebige Einstellungen des Backends überschreiben, wurde vom Testcenter selbst seit 19.0.0 nicht mehr verwendet.
 - Datenbank: Neue Spalte `workspaces.locked_at`. Während eines Uploads oder Löschvorgangs sperrt sie den Arbeitsbereich für weitere solche Aktionen. Bisher übernahm das eine Datei `.lock` im Workspace-Ordner, die mehrere Backend-Container ohne gemeinsames Laufwerk nicht teilen können.
+- Helm: Der File-Server liefert die vom Superadmin hochgeladenen Bilder (Logo, Illustrationen) aus. Bisher fehlte dafür ein Eintrag in seiner nginx-Konfiguration, und die Bilder erschienen nicht.
+- Ohne File-Server (`FILE_SERVER_ENABLED=false`) lädt das Frontend die vom Superadmin hochgeladenen Bilder vom Backend. Bisher fragte es dafür immer den File-Server, und die Bilder erschienen nicht.
 - API: `DELETE /workspace/{ws_id}/files` löscht nur Dateien aus der Dateiliste des Arbeitsbereichs; andere Pfade erscheinen in der Antwort unter `did_not_exist`. Bisher löschte der Aufruf jede Datei im Speicher des Arbeitsbereichs, auch einzelne Dateien entpackter Ressourcen-Pakete und Anhänge, ohne zu prüfen, ob sie verwendet werden.
 
 # 19.1.0
