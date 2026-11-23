@@ -1,5 +1,5 @@
 ARG REGISTRY_PATH=""
-ARG PHP_VERSION=8.3-apache-bookworm
+ARG PHP_VERSION=8.3.37-apache-bookworm
 
 # xsd download stage
 FROM ${REGISTRY_PATH}composer:lts AS schema-downloader

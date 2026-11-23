@@ -1,3 +1,8 @@
+# 19.0.2
+
+## Fehlerbehebungen
+- PHP-Version auf 8.3.37 aktualisiert
+
 # 19.0.1
 
 ## Fehlerbehebungen
