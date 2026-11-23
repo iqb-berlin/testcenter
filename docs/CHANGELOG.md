@@ -1,3 +1,8 @@
+# 19.1.1
+
+## Fehlerbehebungen
+- PHP-Version auf 8.3.37 aktualisiert
+
 # 19.1.0
 
 ## Widgets
