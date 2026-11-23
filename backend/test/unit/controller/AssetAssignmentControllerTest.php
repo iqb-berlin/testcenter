@@ -23,6 +23,17 @@ final class AssetAssignmentControllerTest extends TestCase {
     $this->assetDaoMock->allows()->transactional(Mockery::any())->andReturnUsing(static fn(callable $work) => $work());
   }
 
+  function test_getWithoutAssignmentsShouldAnswerAnEmptyObject(): void {
+    $this->assetDaoMock->allows()->getAssignmentResolutionRows(null, null, null)->andReturn([]);
+
+    $response = AssetAssignmentController::get(
+      RequestCreator::create('GET', '/asset-assignments'),
+      ResponseCreator::createEmpty()
+    );
+
+    static::assertSame('{}', (string) $response->getBody());
+  }
+
   function test_setShouldStoreAndClearSlotsWithTheLastEntryWinning(): void {
     $key = ['scope' => 'global', 'scopeId' => 'global', 'workspaceId' => 0];
     $this->assetDaoMock->expects()->findMissingAssetIds([5])->andReturn([]);

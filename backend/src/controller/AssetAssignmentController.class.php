@@ -36,7 +36,8 @@ class AssetAssignmentController extends Controller {
       ];
     }
 
-    return $response->withJson($result ?? []);
+    // an object even without assignments, which an empty PHP array would not encode to
+    return $response->withJson($result ?? new stdClass());
   }
 
   public static function set(Request $request, Response $response): Response {

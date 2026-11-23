@@ -27,6 +27,7 @@
 - API: `DELETE /workspace/{ws_id}/files` löscht nur Dateien aus der Dateiliste des Arbeitsbereichs; andere Pfade erscheinen in der Antwort unter `did_not_exist`. Bisher löschte der Aufruf jede Datei im Speicher des Arbeitsbereichs, auch einzelne Dateien entpackter Ressourcen-Pakete und Anhänge, ohne zu prüfen, ob sie verwendet werden.
 - API: `POST /asset-assignments` antwortet mit `400` und speichert nichts, wenn `assignments` fehlt oder ein Eintrag kein `slotName` (1–100 Zeichen) und kein `assetID` (Zahl oder `null`) hat oder ein `assetID` zu keinem hochgeladenen Bild gehört; kommt ein Slot mehrfach vor, gilt der letzte Eintrag. Bisher antwortete der Aufruf ohne `assignments` mit Erfolg, ohne etwas zu tun, und fehlerhafte, doppelte oder unbekannte Einträge endeten in Serverfehlern, wobei die im selben Aufruf geleerten Slots trotzdem geleert blieben.
 - Die API-Dokumentation enthält die Routen für Anhänge (`/attachment…`, `/attachments…`) und Booklets (`/booklet/…`). Bisher fehlten sie, weil beim Zusammenführen der Spec-Dateien ein leerer Eintrag sie überschrieb.
+- API: `GET /asset-assignments` antwortet ohne zugewiesene Slots mit `{}`. Bisher kam dann `[]`, ein Array statt eines Objekts.
 
 # 19.1.0
 
