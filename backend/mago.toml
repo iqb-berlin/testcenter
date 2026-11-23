@@ -2,7 +2,7 @@
 # Welcome to Mago!
 # For full documentation, see https://mago.carthage.software/1.44.0/en/tools/overview/
 version = "1"
-php-version = "8.3.12"
+php-version = "8.3.37"
 
 [source]
 workspace = "."
