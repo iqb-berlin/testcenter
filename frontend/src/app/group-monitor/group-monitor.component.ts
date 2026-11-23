@@ -74,7 +74,6 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
   checkedSessionCount = 0;
 
   quickFilter: string = '';
-  quickFilterBoxOpen: boolean = false;
 
   messages: UIMessage[] = [];
 
@@ -415,14 +414,6 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
     }
 
     this.tsm.refreshFilters();
-  }
-
-  toggleQuickFilterBox(): void {
-    this.quickFilterBoxOpen = !this.quickFilterBoxOpen;
-  }
-
-  quickFilterOnFocusOut(): void {
-    if (!this.quickFilter) this.quickFilterBoxOpen = false;
   }
 
   private applyProfile(p: Profile): void {

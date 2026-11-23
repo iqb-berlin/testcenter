@@ -372,6 +372,10 @@
     "label" : "Control: Ansicht",
     "defaultvalue" : "Ansicht"
   },
+  "gm_search_testtaker" : {
+    "label" : "Suchfeld für Teilnehmende: Platzhalter und Beschriftung für Screenreader",
+    "defaultvalue" : "Teilnehmende suchen"
+  },
   "gm_scroll_down" : {
     "label" : "Control: Ganz nach unten",
     "defaultvalue" : "Ganz nach unten"

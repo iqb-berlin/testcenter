@@ -19,7 +19,6 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
-import { A11yModule } from '@angular/cdk/a11y';
 import { MatCardModule } from '@angular/material/card';
 import { AlertComponent, CustomtextPipe, SharedModule } from '../shared/shared.module';
 import { GroupMonitorRoutingModule } from './group-monitor-routing.module';
@@ -77,7 +76,6 @@ import { TemplateContextDirective } from '@shared/directives/template-context.di
     MatSelectModule,
     MatFormFieldModule,
     MatAutocompleteModule,
-    A11yModule,
     MatCardModule,
     MatInputModule,
     CustomtextPipe,

@@ -1,6 +1,7 @@
 /* eslint-disable class-methods-use-this */
 // eslint-disable-next-line max-classes-per-file
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatRadioModule } from '@angular/material/radio';
@@ -66,6 +67,12 @@ class MockTestSessionManagerService {
   sessions$ = new BehaviorSubject<TestSession[]>(unitTestExampleSessions);
   commandResponses$ = new BehaviorSubject<CommandResponse>(unitTestCommandResponse);
   sessions = unitTestExampleSessions;
+  filterOptions = {
+    quick: { selected: false, source: 'quick', filter: { value: '' } }
+  };
+
+  refreshFilters = jasmine.createSpy('refreshFilters');
+
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   connect = (_: string) => {};
   disconnect = () => {};
@@ -96,8 +103,10 @@ class MockMainDataService {
 describe('GroupMonitorComponent', () => {
   let component: GroupMonitorComponent;
   let fixture: ComponentFixture<GroupMonitorComponent>;
+  let sessionManager: MockTestSessionManagerService;
 
   beforeEach(waitForAsync(() => {
+    sessionManager = new MockTestSessionManagerService();
     TestBed.configureTestingModule({
       declarations: [
         GroupMonitorComponent,
@@ -106,6 +115,7 @@ describe('GroupMonitorComponent', () => {
         PositionPipe
       ],
       imports: [
+        FormsModule,
         MatIconModule,
         MatTooltipModule,
         MatDialogModule,
@@ -123,7 +133,7 @@ describe('GroupMonitorComponent', () => {
         CustomtextPipe
       ],
       providers: [
-        { provide: TestSessionManager, useValue: new MockTestSessionManagerService() },
+        { provide: TestSessionManager, useValue: sessionManager },
         { provide: MatDialog, useValue: new MockMatDialog() },
         { provide: BackendService, useValue: new MockBackendService() },
         { provide: MainDataService, useValue: new MockMainDataService() },
@@ -142,5 +152,25 @@ describe('GroupMonitorComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('should search as the input changes and keep the field visible when cleared', () => {
+    const monitor = fixture.nativeElement as HTMLElement;
+    const input = monitor.querySelector<HTMLInputElement>('input[role="searchbox"]')!;
+    const quickFilter = sessionManager.filterOptions.quick;
+
+    input.value = 'Teilnehmer 1';
+    input.dispatchEvent(new Event('input'));
+    expect(quickFilter.selected).toBeTrue();
+    expect(quickFilter.filter.value).toBe('Teilnehmer 1');
+    expect(sessionManager.refreshFilters).toHaveBeenCalledTimes(1);
+
+    input.value = '';
+    input.dispatchEvent(new Event('input'));
+    input.dispatchEvent(new FocusEvent('focusout'));
+    fixture.detectChanges();
+    expect(quickFilter.selected).toBeFalse();
+    expect(sessionManager.refreshFilters).toHaveBeenCalledTimes(2);
+    expect(monitor.querySelector('input[role="searchbox"]')).toBe(input);
   });
 });

@@ -32,13 +32,21 @@
   min-height: 0;
 }
 
-.corner-menu {
+.monitor-header {
   display: flex;
-  align-self: end;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
 }
 
-.corner-menu input[type="text"] {
-  margin: 1em;
+.participant-search {
+  box-sizing: border-box;
+  max-width: 100%;
+}
+
+.corner-menu {
+  display: flex;
+  margin-inline-start: auto;
 }
 
 .connection-status {
