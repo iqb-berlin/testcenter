@@ -7,8 +7,6 @@ info:
     It's the basis for our vision of continuous integration."
   version: "%%%VERSION%%%"
 
-paths:
-
 components:
   schemas:
 
