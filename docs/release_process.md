@@ -68,7 +68,7 @@ Fix what turns up on `master` and publish the next candidate (`-rc2`, ...).
    - `package.json` (root) and both places in `package-lock.json`
    - `scripts/helm/testcenter/Chart.yaml`: `appVersion` to the release, and raise the chart `version` - its major
      version for breaking changes to values or secrets
-   - `scripts/helm/helm-install-tc.sh`: `TESTCENTER_VERSION` and `TESTCENTER_CHART_VERSION`
+   - `scripts/helm/helm-install-tc.sh`: `TESTCENTER_CHART_VERSION`
 
    Commit as `Raise version to 19.1` and push to `master`.
 2. Tag and push the tag: `git tag 19.1.0 && git push origin 19.1.0`.

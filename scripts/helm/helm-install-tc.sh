@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 
-declare TESTCENTER_VERSION="19.1.0"
 declare TESTCENTER_CHART_VERSION="3.1.0"
 declare TRAEFIK_VERSION="v3.6.0"
 declare TRAEFIK_CHART_VERSION="37.3.0"
@@ -195,7 +194,11 @@ install_traefik() {
 
 install_testcenter() {
   declare continue
-  read -rep "Do you want to install 'Testcenter ${TESTCENTER_VERSION}'? [Y/n] " -n 1 continue
+  # The chart's appVersion is the Testcenter release it deploys.
+  declare testcenter_version
+  testcenter_version=$(helm show chart oci://registry-1.docker.io/iqbberlin/testcenter \
+    --version ${TESTCENTER_CHART_VERSION} | awk '/^appVersion:/ {print $2}')
+  read -rep "Do you want to install 'Testcenter ${testcenter_version}'? [Y/n] " -n 1 continue
 
   if ! [[ ${continue} =~ ^[nN]$ ]]; then
     printf "Download Testcenter default deployment configuration (testcenter-values.yaml) for customization ...\n"
@@ -273,7 +276,7 @@ install_testcenter() {
       --values testcenter-values.yaml \
       --version ${TESTCENTER_CHART_VERSION}; then
 
-      printf "\n'Testcenter %s' installation failed.\n" ${TESTCENTER_VERSION}
+      printf "\n'Testcenter %s' installation failed.\n" ${testcenter_version}
       read -rep "Do you want to continue anyway? [y/N] " -n 1 continue
 
       if ! [[ ${continue} =~ ^[yY]$ ]]; then
