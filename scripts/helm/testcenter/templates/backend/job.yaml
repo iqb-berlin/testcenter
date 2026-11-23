@@ -136,13 +136,13 @@ spec:
                   key: S3_SECRET_KEY
             {{- end }}
             - name: SKIP_READ_FILES
-              value: "no"
+              value: "false"
             - name: SKIP_DB_INTEGRITY
-              value: "no"
+              value: "false"
             - name: OVERWRITE_INSTALLATION
-              value: "no"
+              value: "false"
             - name: NO_SAMPLE_DATA
-              value: "no"
+              value: "false"
           volumeMounts:
             {{- if not .Values.objectStore.enabled }}
             - name: backend-volume

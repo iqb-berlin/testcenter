@@ -102,10 +102,10 @@ services:
       # data dir of the e2e tests; a volume, so the file-server gets it through volumes_from like the data dir
       - /var/www/testcenter/data-TEST
     environment:
-      SKIP_READ_FILES: ${SKIP_READ_FILES:-no}
-      SKIP_DB_INTEGRITY: ${SKIP_DB_INTEGRITY:-no}
-      OVERWRITE_INSTALLATION: ${OVERWRITE_INSTALLATION:-no}
-      NO_SAMPLE_DATA: ${NO_SAMPLE_DATA:-no}
+      SKIP_READ_FILES: ${SKIP_READ_FILES:-false}
+      SKIP_DB_INTEGRITY: ${SKIP_DB_INTEGRITY:-false}
+      OVERWRITE_INSTALLATION: ${OVERWRITE_INSTALLATION:-false}
+      NO_SAMPLE_DATA: ${NO_SAMPLE_DATA:-false}
       # lets requests switch the backend into test mode with the TestMode header (api and e2e
       # tests); must never be enabled in production
       ALLOW_TEST_MODE: "true"
