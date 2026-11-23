@@ -109,22 +109,25 @@ test-file-server-api:
 # Param: (optional) spec - comma-separated Cypress spec paths relative to e2e; omit for all.
 # Example: spec='src/e2e/Group-Monitor/**/*,src/e2e/Sys-Check/**/*'
 test-system-headless:
-	-cd $(TC_BASE_DIR) &&\
+	cd $(TC_BASE_DIR) &&\
 	make down &&\
 	$(COMPOSE_DEV)\
 			--file e2e/docker-compose.system-test-headless.yml\
 		run --rm backend /initialize_only.sh &&\
+	$(COMPOSE_DEV)\
+			--file e2e/docker-compose.system-test-headless.yml\
+		build e2e &&\
 	SPEC='$(spec)' \
 	$(COMPOSE_DEV)\
 			--file e2e/docker-compose.system-test-headless.yml\
 		up\
 			--abort-on-container-exit\
-			--exit-code-from=e2e
-	@cd $(TC_BASE_DIR) &&\
+			--exit-code-from=e2e;\
+	status=$$?;\
 	$(COMPOSE_DEV) --progress quiet\
 			--file e2e/docker-compose.system-test-headless.yml\
-		down &&\
-	docker image rm testcenter-e2e
+		down;\
+	exit $$status
 
 test-system:
 	cd $(TC_BASE_DIR) &&\
