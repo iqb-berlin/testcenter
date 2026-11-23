@@ -48,6 +48,11 @@ push-helm-chart:
 push-helm-chart-production:
 	$(MAKE) -f $(MK_FILE_DIR)/push.mk -C $(MK_FILE_DIR) $@
 
+release-prepare:
+	$(MAKE) -f $(MK_FILE_DIR)/release.mk -C $(MK_FILE_DIR) $@
+release-check:
+	$(MAKE) -f $(MK_FILE_DIR)/release.mk -C $(MK_FILE_DIR) $@
+
 scan-app:
 	$(MAKE) -f $(MK_FILE_DIR)/scan.mk -C $(MK_FILE_DIR) $@
 scan-traefik:

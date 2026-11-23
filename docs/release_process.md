@@ -1,88 +1,34 @@
-<!-- This file outlines the steps necessary for creating a new release -->
+Releases are cut from `master`. The pipeline runs on GitLab, builds the images and deploys the docs:
 
-# Release
+- `X.Y.Z` is a release: the images get that tag and the docs are deployed.
+- `X.Y.Z-beta`, `X.Y.Z-rc1` or any other suffix is a pre-release: only the images get that tag.
 
-Releases are cut from `master`. Every release first goes out as at least one release candidate, published exactly
-like a release, so that the published images and the install and update scripts are tested before anything becomes
-`latest`.
+`make release-prepare VERSION=X.Y.Z` sets the version number in all files that carry one. If they exist, it also
+(always without the suffix of a pre-release):
 
-The pipeline runs on GitLab and decides by the tag:
+- moves `scripts/database/next.sql` to `scripts/database/patches.d/X.Y.Z.sql`
+- raises the version `scripts/database/full.sql` stamps into `meta.dbSchemaVersion` to `X.Y.Z`: `full.sql` already
+  contains the change, and a lower stamp would make a fresh installation apply it a second time
+- raises `DBSchema::REQUIRED_VERSION` to `X.Y.Z`
+- renames `scripts/migration/next.sh` to `X.Y.Z.sh`
 
-- `X.Y.Z` is a release: the images get that tag and, for the highest release tag, `latest`; the docs are deployed
-  under `X.Y/` and, again only for the highest release tag, without prefix.
-- Any other tag (`X.Y.Z-rc1`, `X.Y.Z-beta`) is a pre-release: the images get that tag, nothing else moves.
+`make release-check` lists every file whose version number does not match the one in `package.json`.
 
 ## 1. Prepare
 
 - `make create-interfaces` and commit the result (usually a refreshed browser list in `definitions/browsers.json`).
-- If `scripts/database/next.sql` exists, turn it into the release's patch, e.g. for 19.1.0:
-  1. Move it to `scripts/database/patches.d/19.1.0.sql`, so the patch run applies it to existing installations.
-  2. Raise the version `scripts/database/full.sql` stamps into `meta.dbSchemaVersion` to `19.1.0`. `full.sql`
-     already contains the change, and a lower stamp would make a fresh installation apply it a second time.
-  3. Raise `DBSchema::REQUIRED_VERSION` to `19.1.0`. The backend refuses to start unless it matches the stamp.
-- Rename `scripts/migration/next.sh` after the release, e.g. `19.1.0.sh`.
-- Never add a pre-release suffix like `-rc1` to these file names.
-- Make sure `docs/CHANGELOG.md` is up to date and its top heading is the release, e.g. `# 19.1.0`.
-- For a new minor version, add it at the top of `docs/site/public/versions.json`. Remove versions whose docs are no
-  longer offered.
-- Check for a new [Mago](https://github.com/carthage-software/mago/releases) release. It is not a Composer dependency
-  but pinned in `backend/Dockerfile`; update the tag and the digest there, and the version in the URLs at the top of
-  `backend/mago.toml`.
+- Make sure `docs/CHANGELOG.md` is up to date.
+- For a new minor version, remove versions whose docs are no longer offered from `docs/site/public/versions.json`.
 
-## 2. Publish a release candidate
+## 2. Release
 
-1. Set the version, e.g. `19.1.0-rc1`, in the root `package.json` and in both places in `package-lock.json`. Commit
-   as `Prepare 19.1.0-rc1` and push to `master`.
-2. Tag and push the tag:
-   ```
-   git tag 19.1.0-rc1 && git push origin 19.1.0-rc1
-   ```
-3. Once the pre-release pipeline is green and the images are on Docker Hub, create a GitHub release for the tag,
-   marked as pre-release, with the release's section of the changelog as notes. `install.sh` only installs tags that
-   exist as a GitHub release.
+For a pre-release, use the version with its suffix, e.g. `X.Y.Z-beta`, in every step.
 
-## 3. Test the release candidate
-
-Test with the published images, in throwaway installation directories:
-
-- **Fresh install:** `bash install.sh 19.1.0-rc1`. The template sets `COMPOSE_PROJECT_NAME=testcenter`; if the
-  machine already runs an installation of that name, decline the start at the end of the installer, change the name
-  in `.env.prod`, then run `make testcenter-init` and `make testcenter-up`.
-- **Update from the last release:** install the last release with the `install.sh` from its release page, add some
-  data (upload a file, start a test), then `make testcenter-update` to the candidate. Leave `.env.prod` as the old
-  installer wrote it: leftovers in old configuration files are exactly what breaks updates (in 19.0.0 an unquoted
-  value and a missing `COMPOSE_PROJECT_NAME` did).
-- **Backup and restore:** `make testcenter-backup`, change some data, `make testcenter-restore BACKUP=backup/<set>`,
-  `make testcenter-up`, check that the change is undone. Do this on the fresh and on the updated installation.
-- **Application:** log in as admin and as testtaker, upload a file, run a test, export the CSV reports. For the group
-  monitor use two browsers or a private window - the login is kept in `localStorage`, so two tabs of one browser
-  share it - and check that a testtaker's progress shows up live and that commands like "Pause" reach the testtaker.
-- **Consumers:** tell the maintainers of applications that read testcenter data (e.g.
-  [eatPrepTBA](https://github.com/iqb-research/eatPrepTBA)) about changes to the API or the exports.
-
-Fix what turns up on `master` and publish the next candidate (`-rc2`, ...).
-
-## 4. Release
-
-1. Set the release version:
-   - `package.json` (root) and both places in `package-lock.json`
-   - `scripts/helm/testcenter/Chart.yaml`: `appVersion` to the release, and raise the chart `version` - its major
-     version for breaking changes to values or secrets
-   - `scripts/helm/helm-install-tc.sh`: `TESTCENTER_CHART_VERSION`
-
-   Commit as `Raise version to 19.1` and push to `master`.
-2. Tag and push the tag: `git tag 19.1.0 && git push origin 19.1.0`.
-3. Once the release pipeline is green, create the GitHub release for the tag, marked as latest, with the release's
-   section of the changelog as notes and `scripts/install.sh` and `scripts/update.sh` attached. Not earlier:
-   `install.sh` offers the latest GitHub release right away, and its images have to exist by then.
-4. Push the Helm chart with `make push-helm-chart-production`. Helm runs in a container and uses the Docker Hub login
-   from `~/.docker`.
-5. Check the result:
-   - `latest` of `iqbberlin/testcenter-backend`, `-frontend`, `-broadcaster` and `-file-server` on Docker Hub is the
-     release.
-   - The [docs](https://iqb.pages.cms.hu-berlin.de/testcenter/) show the release, also under `X.Y/`.
-   - `docker run --rm alpine/helm:3 show chart oci://registry-1.docker.io/iqbberlin/testcenter --version <chart>`
-     reports the new `appVersion`.
+1. `make release-prepare VERSION=X.Y.Z`, then commit as `Release X.Y.Z`.
+2. Tag and push the tag: `git tag X.Y.Z && git push origin X.Y.Z`.
+3. Once the pipeline is green, create the GitHub release with the release's section of the changelog as notes and
+   `scripts/install.sh` and `scripts/update.sh` attached. Mark it as pre-release or as latest.
+4. Not for pre-releases: push the Helm chart with `make push-helm-chart-production`.
 
 # Xml validation
 
