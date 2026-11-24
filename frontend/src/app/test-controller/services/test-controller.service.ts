@@ -1033,7 +1033,7 @@ export class TestControllerService {
   // decided (confirm dialog / info dialog / nothing) and resolves the final true/false.
   //
   // `alsoEndsTest` (see willAlsoEndTest) is true when this navigation would, by itself, also end
-  // the whole test - not just leave the current unit. TestControllerDeactivateGuard normally asks
+  // the whole test - not just leave the current unit. testControllerDeactivateGuard normally asks
   // its own separate "end the test?" question for that; when a 'confirm' result ends up showing a
   // dialog here anyway, we fold that into THIS dialog (one confirm covers both) instead of leaving
   // it to a second, separate one right after
@@ -1064,7 +1064,7 @@ export class TestControllerService {
               return of(true);
             }
             // terminateConfirmedLeave() transitions state$ away from RUNNING/PAUSED before this
-            // resolves, so confirmEndTestIfNeeded() (called next, by TestControllerDeactivateGuard)
+            // resolves, so confirmEndTestIfNeeded() (called next, by testControllerDeactivateGuard)
             // will see that and skip its own dialog/termination.
             return from(this.terminateConfirmedLeave()).pipe(map(() => true));
           })
@@ -1139,7 +1139,7 @@ export class TestControllerService {
     return ['RUNNING', 'PAUSED'].includes(this.state$.getValue());
   }
 
-  // Both UnitDeactivateGuard and TestControllerDeactivateGuard call this - instead of
+  // Both unitDeactivateGuard and testControllerDeactivateGuard call this - instead of
   // canDeactivateUnit directly - whenever the navigation is leaving a unit page.
   // So without sharing this exact check - and its result - both guards could independently run
   // the checks above and pop their dialogs on top of one another. `shareReplay(1)` makes sure the

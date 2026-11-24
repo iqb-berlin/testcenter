@@ -61,6 +61,15 @@ export function isAuthData(value: unknown): value is AuthData {
     isObject(value.viewSettings);
 }
 
+// The access object of a login that has exactly one claim, of the given type, with exactly one access object.
+export function getSoleAccess(authData: AuthData, accessType: AuthAccessType): AccessObject | null {
+  const accessObjects = authData.claims[accessType];
+  if (Object.keys(authData.claims).length !== 1 || accessObjects?.length !== 1) {
+    return null;
+  }
+  return accessObjects[0];
+}
+
 export type CodeInputType = 'text-field' | 'keypad-symbols' | 'keypad-numbers' | 'keypad-symbols-alt';
 
 export interface KeyValuePairs {

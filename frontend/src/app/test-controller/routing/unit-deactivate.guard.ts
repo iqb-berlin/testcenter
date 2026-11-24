@@ -1,33 +1,22 @@
-import { Injectable } from '@angular/core';
-import {
-  ActivatedRouteSnapshot, CanDeactivate, Router, RouterStateSnapshot
-} from '@angular/router';
+import { inject } from '@angular/core';
+import { CanDeactivateFn, Router } from '@angular/router';
 import { UnithostComponent } from '../components/unithost/unithost.component';
 import { TestControllerService } from '../services/test-controller.service';
 
-@Injectable()
-export class UnitDeactivateGuard implements CanDeactivate<UnithostComponent> {
-  constructor(
-    private tcs: TestControllerService,
-    private router: Router
-  ) {}
+export const unitDeactivateGuard: CanDeactivateFn<UnithostComponent> = (
+  _component, _currentRoute, _currentState, nextState
+) => {
+  const tcs = inject(TestControllerService);
 
-  canDeactivate(
-    _component: UnithostComponent,
-    _currentRoute: ActivatedRouteSnapshot,
-    _currentState: RouterStateSnapshot,
-    nextState: RouterStateSnapshot
-  ) {
-    // 'popstate' for browser triggers, 'imperative' for angular router triggers - not in official documentation
-    // https://angular.love/angular-router-everything-you-need-to-know-about
-    const trigger = this.router.currentNavigation()?.trigger;
-    const preventNav = this.tcs.booklet?.config.browserBehaviour === 'preventNav';
-    const browserTriggered = trigger === 'popstate' || trigger === 'hashchange';
+  // 'popstate' for browser triggers, 'imperative' for angular router triggers - not in official documentation
+  // https://angular.love/angular-router-everything-you-need-to-know-about
+  const trigger = inject(Router).currentNavigation()?.trigger;
+  const preventNav = tcs.booklet?.config.browserBehaviour === 'preventNav';
+  const browserTriggered = trigger === 'popstate' || trigger === 'hashchange';
 
-    if (browserTriggered && preventNav) {
-      return false;
-    }
-
-    return this.tcs.getUnitDeactivationCheck(nextState.url);
+  if (browserTriggered && preventNav) {
+    return false;
   }
-}
+
+  return tcs.getUnitDeactivationCheck(nextState.url);
+};

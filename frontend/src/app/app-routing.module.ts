@@ -7,15 +7,7 @@ import { AdminLoginComponent } from './app-root/login/admin-login/admin-login.co
 import { SysCheckStarterComponent } from './app-root/sys-check-starter/sys-check-starter.component';
 import { CodeLoginComponent } from './app-root/code-login/code-login.component';
 import {
-  AdminComponentActivateGuard,
-  CodeInputComponentActivateGuard,
-  DirectLoginActivateGuard,
-  GroupMonitorActivateGuard,
-  RouteDispatcherActivateGuard,
-  StarterActivateGuard,
-  StudyMonitorActivateGuard,
-  SuperAdminComponentActivateGuard,
-  TestComponentActivateGuard
+  codeInputGuard, createClaimGuard, directLoginGuard, routeDispatcherGuard, starterGuard
 } from './app-route-guards';
 import { PageNotFoundComponent } from './app-root/page-not-found/page-not-found.component';
 import { GenericInfoPageComponent } from './app-root/generic-info-page/generic-info-page.component';
@@ -58,17 +50,17 @@ const routes: Routes = [
       {
         path: 'route-dispatcher',
         component: EmptyComponent,
-        canActivate: [RouteDispatcherActivateGuard]
+        canActivate: [routeDispatcherGuard]
       },
       {
         path: 'code-input',
         component: CodeLoginComponent,
-        canActivate: [CodeInputComponentActivateGuard]
+        canActivate: [codeInputGuard]
       },
       {
         path: 'starter',
         component: StarterComponent,
-        canActivate: [StarterActivateGuard]
+        canActivate: [starterGuard]
       }
     ]
   },
@@ -103,41 +95,41 @@ const routes: Routes = [
   {
     path: 'admin',
     loadChildren: () => import('./workspace-admin/workspace.module').then(module => module.WorkspaceModule),
-    canActivate: [AdminComponentActivateGuard]
+    canActivate: [createClaimGuard('workspaceAdmin')]
   },
   {
     path: 'superadmin',
     loadChildren: () => import('./superadmin/superadmin.module').then(module => module.SuperadminModule),
-    canActivate: [SuperAdminComponentActivateGuard]
+    canActivate: [createClaimGuard('superAdmin')]
   },
   {
     path: 'gm',
     loadChildren: () => import('./group-monitor/group-monitor.module').then(module => module.GroupMonitorModule),
-    canActivate: [GroupMonitorActivateGuard]
+    canActivate: [createClaimGuard('testGroupMonitor')]
   },
   {
     path: 'sm',
     loadChildren: () => import('./study-monitor/study-monitor.module').then(module => module.StudyMonitorModule),
-    canActivate: [StudyMonitorActivateGuard]
+    canActivate: [createClaimGuard('studyMonitor')]
   },
   {
     path: 'am',
     loadChildren: () => import('./attachment-manager/attachment-manager.module')
       .then(module => module.AttachmentManagerModule)
-    // canActivate: [GroupMonitorActivateGuard]
+    // canActivate: [createClaimGuard('testGroupMonitor')]
   },
   {
     path: 't',
     loadChildren: () => import('./test-controller/test-controller.module').then(module => module.TestControllerModule),
-    canActivate: [TestComponentActivateGuard],
-    data: <AppModuleSettings>{
+    canActivate: [createClaimGuard('test')],
+    data: {
       httpRetryPolicy: 'test'
-    }
+    } satisfies AppModuleSettings
   },
   {
     path: '**',
     component: PageNotFoundComponent,
-    canActivate: [DirectLoginActivateGuard]
+    canActivate: [directLoginGuard]
   }
 ];
 
@@ -146,10 +138,6 @@ const routes: Routes = [
     enableTracing: false,
     canceledNavigationResolution: 'computed'
   })],
-  exports: [RouterModule],
-  providers: [RouteDispatcherActivateGuard, DirectLoginActivateGuard,
-    CodeInputComponentActivateGuard, AdminComponentActivateGuard,
-    SuperAdminComponentActivateGuard, TestComponentActivateGuard
-  ]
+  exports: [RouterModule]
 })
 export class AppRoutingModule { }

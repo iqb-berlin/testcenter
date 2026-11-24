@@ -3,7 +3,9 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { switchMap, take } from 'rxjs';
 import { CodeInputComponent } from '@shared/components/code-input/code-input.component';
 import { AlertComponent } from '@shared/components/alert/alert.component';
-import { AppError, AuthData, CodeInputType } from '@app/app.interfaces';
+import {
+  AppError, AuthData, CodeInputType, getSoleAccess
+} from '@app/app.interfaces';
 import { Router } from '@angular/router';
 import { BackendService } from '@app/backend.service';
 import { MainDataService } from '@shared/services/maindata/maindata.service';
@@ -89,8 +91,9 @@ export class CodeLoginComponent {
   private loginObserver = {
     next: (authData: AuthData) => {
       this.mds.setAuthData(authData);
-      if (authData.claims.test?.length === 1 && Object.keys(authData.claims).length === 1) {
-        this.bs.startTest(authData.claims.test[0].id).subscribe(testId => {
+      const test = getSoleAccess(authData, 'test');
+      if (test) {
+        this.bs.startTest(test.id).subscribe(testId => {
           this.router.navigate(['/t', testId]);
         });
       } else {

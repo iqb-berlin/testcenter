@@ -13,31 +13,31 @@ import { NavigationState, TestControllerState, Unit } from '../interfaces/test-c
 import { TestControllerService } from '../services/test-controller.service';
 import { MessageService } from '../../shared/services/message.service';
 import { getTestData } from '../test/test-data';
-import { TestControllerErrorPausedActivateGuard } from './test-controller-error-paused-activate.guard';
-import { UnitActivateGuard } from './unit-activate.guard';
-import { UnitDeactivateGuard } from './unit-deactivate.guard';
-import { TestControllerDeactivateGuard } from './test-controller-deactivate.guard';
+import { testControllerErrorPausedActivateGuard } from './test-controller-error-paused-activate.guard';
+import { unitActivateGuard } from './unit-activate.guard';
+import { unitDeactivateGuard } from './unit-deactivate.guard';
+import { testControllerDeactivateGuard } from './test-controller-deactivate.guard';
 
 @Component({ template: '' })
 class RoutedComponent {}
 
 // Without a router outlet, no route component gets created, but all guards run. The unit route
-// names UnithostComponent because TestControllerDeactivateGuard checks for it.
+// names UnithostComponent because testControllerDeactivateGuard checks for it.
 const routes: Routes = [
   { path: '', component: RoutedComponent, pathMatch: 'full' },
   { path: 'elsewhere', component: RoutedComponent },
   {
     path: 't/:t',
     component: RoutedComponent,
-    canDeactivate: [TestControllerDeactivateGuard],
+    canDeactivate: [testControllerDeactivateGuard],
     children: [
       { path: '', pathMatch: 'full', children: [] },
       { path: 'status', component: RoutedComponent },
       {
         path: 'u/:u',
         component: UnithostComponent,
-        canActivate: [TestControllerErrorPausedActivateGuard, UnitActivateGuard],
-        canDeactivate: [UnitDeactivateGuard]
+        canActivate: [testControllerErrorPausedActivateGuard, unitActivateGuard],
+        canDeactivate: [unitDeactivateGuard]
       }
     ]
   }
@@ -136,11 +136,7 @@ describe('Test controller route guards', () => {
         SpyLocation,
         { provide: Location, useExisting: SpyLocation },
         { provide: TestControllerService, useValue: tcs },
-        { provide: MessageService, useValue: messageService },
-        TestControllerErrorPausedActivateGuard,
-        UnitActivateGuard,
-        UnitDeactivateGuard,
-        TestControllerDeactivateGuard
+        { provide: MessageService, useValue: messageService }
       ]
     });
     location = TestBed.inject(SpyLocation);

@@ -26,10 +26,6 @@ import { TestControllerRoutingModule } from './routing/test-controller-routing.m
 import { UnitMenuComponent } from './components/unit-menu/unit-menu.component';
 import { AlertComponent, CustomtextPipe } from '../shared/shared.module';
 import { LoadingProgressComponent } from '../shared/components/loading-progress/loading-progress.component';
-import { UnitActivateGuard } from './routing/unit-activate.guard';
-import { UnitDeactivateGuard } from './routing/unit-deactivate.guard';
-import { TestControllerErrorPausedActivateGuard } from './routing/test-controller-error-paused-activate.guard';
-import { TestControllerDeactivateGuard } from './routing/test-controller-deactivate.guard';
 import { ReviewPanelComponent } from './components/review-panel/review-panel.component';
 import { NavigationComponent } from './components/navigation/navigation.component';
 import { DebugPaneComponent } from '@app/test-controller/components/debug-pane/debug-pane.component';
@@ -81,10 +77,6 @@ export { TestControllerService } from './services/test-controller.service';
     UnitMenuComponent
   ],
   providers: [
-    UnitActivateGuard,
-    UnitDeactivateGuard,
-    TestControllerErrorPausedActivateGuard,
-    TestControllerDeactivateGuard,
     {
       provide: MAT_FORM_FIELD_DEFAULT_OPTIONS,
       useValue: {

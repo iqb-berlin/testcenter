@@ -9,33 +9,25 @@ import { MainDataService } from './shared/shared.module';
 import { BackendService } from './backend.service';
 import { AccessObject, AuthData, AuthFlagType } from './app.interfaces';
 import {
-  AdminComponentActivateGuard,
-  CodeInputComponentActivateGuard,
-  DirectLoginActivateGuard,
-  GroupMonitorActivateGuard,
-  RouteDispatcherActivateGuard,
-  StarterActivateGuard,
-  StudyMonitorActivateGuard,
-  SuperAdminComponentActivateGuard,
-  TestComponentActivateGuard
+  codeInputGuard, createClaimGuard, directLoginGuard, routeDispatcherGuard, starterGuard
 } from './app-route-guards';
 
 @Component({ template: '' })
 class RoutedComponent {}
 
 const routes: Routes = [
-  { path: 'guarded/dispatcher', component: RoutedComponent, canActivate: [RouteDispatcherActivateGuard] },
-  { path: 'guarded/code-input', component: RoutedComponent, canActivate: [CodeInputComponentActivateGuard] },
-  { path: 'guarded/starter', component: RoutedComponent, canActivate: [StarterActivateGuard] },
-  { path: 'guarded/admin', component: RoutedComponent, canActivate: [AdminComponentActivateGuard] },
-  { path: 'guarded/superadmin', component: RoutedComponent, canActivate: [SuperAdminComponentActivateGuard] },
-  { path: 'guarded/test', component: RoutedComponent, canActivate: [TestComponentActivateGuard] },
-  { path: 'guarded/gm', component: RoutedComponent, canActivate: [GroupMonitorActivateGuard] },
-  { path: 'guarded/sm', component: RoutedComponent, canActivate: [StudyMonitorActivateGuard] },
+  { path: 'guarded/dispatcher', component: RoutedComponent, canActivate: [routeDispatcherGuard] },
+  { path: 'guarded/code-input', component: RoutedComponent, canActivate: [codeInputGuard] },
+  { path: 'guarded/starter', component: RoutedComponent, canActivate: [starterGuard] },
+  { path: 'guarded/admin', component: RoutedComponent, canActivate: [createClaimGuard('workspaceAdmin')] },
+  { path: 'guarded/superadmin', component: RoutedComponent, canActivate: [createClaimGuard('superAdmin')] },
+  { path: 'guarded/test', component: RoutedComponent, canActivate: [createClaimGuard('test')] },
+  { path: 'guarded/gm', component: RoutedComponent, canActivate: [createClaimGuard('testGroupMonitor')] },
+  { path: 'guarded/sm', component: RoutedComponent, canActivate: [createClaimGuard('studyMonitor')] },
   { path: 'r', children: [{ path: '**', component: RoutedComponent }] },
   { path: 't', children: [{ path: '**', component: RoutedComponent }] },
   { path: 'check', children: [{ path: '**', component: RoutedComponent }] },
-  { path: '**', component: RoutedComponent, canActivate: [DirectLoginActivateGuard] }
+  { path: '**', component: RoutedComponent, canActivate: [directLoginGuard] }
 ];
 
 function createAccess(id: string): AccessObject {
@@ -80,9 +72,7 @@ describe('App route guards', () => {
       providers: [
         provideRouter(routes),
         { provide: MainDataService, useValue: mainDataService },
-        { provide: BackendService, useValue: backendService },
-        RouteDispatcherActivateGuard,
-        DirectLoginActivateGuard
+        { provide: BackendService, useValue: backendService }
       ]
     });
     router = TestBed.inject(Router);
