@@ -12,7 +12,6 @@ import {
 } from 'rxjs/operators';
 import { CustomtextPipe, CustomtextService, MainDataService } from '@shared/shared.module';
 import { AppError, AuthData, CodeInputType } from '@app/app.interfaces';
-import { ThemeService } from '@shared/services/theme.service';
 import { FileServerService } from '@shared/services/file-server.service';
 import { CodeInputComponent } from '@shared/components/code-input/code-input.component';
 import { TestControllerService } from '../../services/test-controller.service';
@@ -69,7 +68,6 @@ export class UnithostComponent implements OnInit, OnDestroy {
   constructor(public tcs: TestControllerService, private mds: MainDataService, private pageService: PageService,
               private apiService: VeronaAPIService,
               private fileServerService: FileServerService,
-              public themeService: ThemeService,
               private messageService: MessageService,
               private bs: BackendService, private route: ActivatedRoute,
               private cts: CustomtextService,

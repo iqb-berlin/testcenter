@@ -6,6 +6,7 @@
 - Im Gruppen-Monitor ersetzen „Login“, „Code“ und „Suffix“ die Spalte „Teilnehmer“. Die Spalte „Suffix“ zeigt die zufällig erzeugte Kennung. Fehlt der Code, bleibt die Zelle leer. Die Tabelle sortiert standardmäßig aufsteigend nach Login. Ein Klick auf „Login“ kehrt die Reihenfolge der Login-Gruppen um. Innerhalb jeder Gruppe bleiben Codes und bei gleichem Code die Suffixe in aufsteigender Textreihenfolge, etwa `A10` vor `A2`. (#1101)
 
 ## Fehlerbehebungen
+- Wer ohne Neuladen der Seite zu einem anderen Login wechselt, etwa über einen Direkt-Link wie `…/#/login-name`, sieht dessen Theme und die ihm zugewiesenen Bilder. Bisher blieben Theme und Bilder des vorherigen Logins bis zum Neuladen erhalten. Logins ohne eigenes Theme erhalten das in den Systemeinstellungen gewählte. (#1677)
 - Im Gruppen-Monitor erscheint der Tooltip zur Blockzeit beim Überfahren der gesamten Uhranzeige wie beim Schloss. Er bleibt beim Starten, Pausieren und Ablaufen der Zeit sichtbar, solange der Mauszeiger über der Anzeige bleibt. (#829)
 - In der Testtakers-XML definierte Aktivitätsfilter mit `type="equal"` lassen sich im Gruppen-Monitor bearbeiten. Bisher brach der Dialog bei einem einzelnen Zustandswert mit „Value must be an array in multiple-selection mode“ ab. (#1107)
 - Beim Abbrechen der Filterbearbeitung im Gruppen-Monitor bleibt der ursprüngliche Filter unverändert. Bisher wurden Änderungen bereits vor dem Speichern auf den aktiven Filter übertragen.

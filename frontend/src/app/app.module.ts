@@ -1,7 +1,9 @@
 import { BrowserModule, DomSanitizer } from '@angular/platform-browser';
 import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { ApplicationModule, ErrorHandler, NgModule } from '@angular/core';
+import {
+  ApplicationModule, ErrorHandler, inject, NgModule, provideAppInitializer
+} from '@angular/core';
 import { LocationStrategy, HashLocationStrategy } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -39,6 +41,7 @@ import { HeaderComponent } from './shared/components/header/header.component';
 import { FooterComponent } from './shared/components/footer/footer.component';
 import { TestCardComponent } from './app-root/starter/test-card.component';
 import { ToastContainerComponent } from './shared/components/toast/toast-container.component';
+import { ThemeService } from './shared/services/theme.service';
 
 @NgModule({
   declarations: [
@@ -104,7 +107,11 @@ import { ToastContainerComponent } from './shared/components/toast/toast-contain
       provide: LocationStrategy,
       useClass: HashLocationStrategy
     },
-    provideHttpClient(withInterceptorsFromDi())
+    provideHttpClient(withInterceptorsFromDi()),
+    // ThemeService applies the theme by itself, so it has to exist before anything asks for it.
+    provideAppInitializer(() => {
+      inject(ThemeService);
+    })
   ]
 })
 export class AppModule {

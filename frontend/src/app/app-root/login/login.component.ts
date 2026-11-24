@@ -20,7 +20,6 @@ import { AuthData } from '@app/app.interfaces';
 import { BackendService } from '@app/backend.service';
 import { BruteForceProtectionService } from '@app/brute-force-protection.service';
 import { FooterService } from '@shared/services/footer.service';
-import { ThemeService } from '@shared/services/theme.service';
 import { HeaderService } from '@shared/services/header.service';
 import { AssetService } from '@shared/services/asset.service';
 import {
@@ -77,7 +76,6 @@ export class LoginComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private headerService: HeaderService,
     private footerService: FooterService,
-    private themeService: ThemeService,
     protected assetService: AssetService
   ) { }
 
@@ -107,8 +105,6 @@ export class LoginComponent implements OnInit, OnDestroy {
       next: authData => {
         const authDataTyped = authData as AuthData;
         this.mainDataService.setAuthData(authDataTyped);
-        if (authData.viewSettings.theme) this.themeService.setTheme(authData.viewSettings.theme);
-        this.assetService.refreshAssetSlots();
         this.navigateAfterLogin(authDataTyped);
       },
       error: error => {
@@ -143,8 +139,6 @@ export class LoginComponent implements OnInit, OnDestroy {
     return {
       next: authData => {
         this.mainDataService.setAuthData(authData);
-        if (authData.viewSettings.theme) this.themeService.setTheme(authData.viewSettings.theme);
-        this.assetService.refreshAssetSlots();
         this.navigateAfterLogin(authData);
       },
       error: error => {

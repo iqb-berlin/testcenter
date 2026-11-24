@@ -39,7 +39,7 @@ export class MessageService {
       typeof userClaims?.superAdmin !== 'undefined' ||
       userClaims?.workspaceAdmin !== undefined ||
       userClaims?.testGroupMonitor !== undefined;
-    const safeMode: boolean = !isAdmin && this.themeService.activeTheme.targetAudience === 'children';
+    const safeMode: boolean = !isAdmin && this.themeService.getActiveTheme().targetAudience === 'children';
     return this.dialog.open(ConfirmDialogComponent, {
       data: { ...dialogData, safeMode },
       autoFocus: 'dialog'

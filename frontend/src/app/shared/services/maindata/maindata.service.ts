@@ -8,9 +8,10 @@ import { shareReplay } from 'rxjs/internal/operators/shareReplay';
 import { filter } from 'rxjs/operators';
 import { CustomtextService } from '../customtext/customtext.service';
 import {
-  AccessObject, AppError, AuthAccessType, AuthData
+  AccessObject, AppError, AuthAccessType, AuthData, isAuthData
 } from '../../../app.interfaces';
 import { AppConfig } from '../../classes/app.config';
+import { AppSettings } from '../../interfaces/app-config.interfaces';
 import { BackendService } from '../backend.service';
 import { SysStatus } from '../../interfaces/service-status.interfaces';
 
@@ -34,7 +35,9 @@ export class MainDataService {
     this._appError$.next(error);
   }
 
-  private _authData$ = new BehaviorSubject<AuthData | null>(null);
+  // Holds the current login and is null exactly when nobody is logged in. Seeded from localStorage, so that a
+  // login survives a page reload.
+  private _authData$ = new BehaviorSubject<AuthData | null>(MainDataService.readStoredAuthData());
   get authData$(): Observable<AuthData | null> {
     return this._authData$.asObservable();
   }
@@ -51,6 +54,16 @@ export class MainDataService {
   }
 
   set appConfig$(appConfig: AppConfig) {
+    this._appConfig$.next(appConfig);
+  }
+
+  // Applies changed settings and notifies everyone who follows appConfig$, e.g. title, warning and theme.
+  updateAppSettings(settings: AppSettings): void {
+    const appConfig = this._appConfig$.getValue();
+    if (!appConfig) {
+      throw new Error('App settings were changed before the app config was loaded.');
+    }
+    appConfig.setAppConfig(settings);
     this._appConfig$.next(appConfig);
   }
 
@@ -74,16 +87,15 @@ export class MainDataService {
   isTestingMode: boolean = false;
 
   getAuthData(): AuthData | null {
-    if (this._authData$.getValue()) {
-      return this._authData$.getValue();
-    }
+    return this._authData$.getValue();
+  }
+
+  private static readStoredAuthData(): AuthData | null {
     try {
       const entry = localStorage.getItem(localStorageAuthDataKey);
-      if (!entry) {
-        return null;
-      }
-      return JSON.parse(entry);
-    } catch (e) {
+      const authData: unknown = entry ? JSON.parse(entry) : null;
+      return isAuthData(authData) ? authData : null;
+    } catch {
       return null;
     }
   }

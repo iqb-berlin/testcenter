@@ -9,9 +9,8 @@ import {
 } from './shared/shared.module';
 import { BackendService } from './backend.service';
 import { AppConfig } from './shared/classes/app.config';
-import { ThemeService } from './shared/services/theme.service';
+import { THEMES } from './shared/services/theme.service';
 import { FooterService } from '@shared/services/footer.service';
-import { AssetService } from '@shared/services/asset.service';
 import { MessageService } from '@shared/services/message.service';
 
 @Component({
@@ -29,8 +28,6 @@ export class AppComponent implements OnInit, OnDestroy {
               private backendService: BackendService,
               private customtextService: CustomtextService,
               private titleService: Title,
-              private themeService: ThemeService,
-              private assetService: AssetService,
               private messageService: MessageService,
               private sanitizer: DomSanitizer,
               private route: ActivatedRoute,
@@ -69,11 +66,8 @@ export class AppComponent implements OnInit, OnDestroy {
     this.backendService.getSysConfig()
       .subscribe((sysConfig: SysConfig) => {
         this.mainDataService.appConfig$ = new AppConfig(sysConfig, this.customtextService,
-                                                        this.themeService.availableThemes[0].name,
+                                                        THEMES[0].name,
                                                         this.sanitizer);
-        this.themeService.setTheme(
-          this.mainDataService.getAuthData()?.viewSettings.theme || sysConfig.appConfig.themeName);
-        this.assetService.refreshAssetSlots();
       });
 
     // TODO don't ask for Syschecks on start, do it on SysCheck starter. Save calls.

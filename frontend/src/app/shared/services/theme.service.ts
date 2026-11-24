@@ -1,30 +1,48 @@
 import { Injectable } from '@angular/core';
+import {
+  BehaviorSubject, combineLatest, distinctUntilChanged, map, Observable
+} from 'rxjs';
 import { AppError } from '../../app.interfaces';
+import { MainDataService } from './maindata/maindata.service';
 import type { AssetSlotName } from './asset.service';
 
+// The active theme follows the current login: its own theme if it has one, the system default otherwise.
 @Injectable({
   providedIn: 'root'
 })
 export class ThemeService {
-  activeTheme: Theme;
-  availableThemes = THEMES;
+  readonly availableThemes = THEMES;
 
-  constructor() {
-    this.activeTheme = THEMES[0];
-    document.body.className = this.activeTheme.cssClassName;
+  private readonly _activeTheme$ = new BehaviorSubject<Theme>(THEMES[0]);
+  readonly activeTheme$: Observable<Theme> = this._activeTheme$.asObservable();
+  getActiveTheme(): Theme {
+    return this._activeTheme$.getValue();
   }
 
-  setTheme(themeName: string = this.availableThemes[0].name) {
-    const newTheme = THEMES.find(theme => theme.name === themeName);
-    if (!newTheme) {
-      throw new AppError({
-        type: 'warning',
-        description: '',
-        label: `Theme "${themeName}" konnte nicht geladen werden.`
+  constructor(private mainDataService: MainDataService) {
+    combineLatest([mainDataService.authData$, mainDataService.appConfig$])
+      .pipe(
+        map(([authData, appConfig]) => this.findTheme(authData?.viewSettings.theme || appConfig.themeName)),
+        distinctUntilChanged()
+      )
+      .subscribe(theme => this._activeTheme$.next(theme));
+    this.activeTheme$
+      .subscribe((theme) => {
+        document.body.className = theme.cssClassName;
       });
+  }
+
+  private findTheme(themeName: string): Theme {
+    const theme = THEMES.find(t => t.name === themeName);
+    if (theme) {
+      return theme;
     }
-    this.activeTheme = newTheme;
-    document.body.className = this.activeTheme.cssClassName;
+    this.mainDataService.appError = new AppError({
+      type: 'warning',
+      description: '',
+      label: `Theme "${themeName}" konnte nicht geladen werden.`
+    });
+    return THEMES[0];
   }
 }
 

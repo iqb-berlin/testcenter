@@ -1,5 +1,7 @@
 import { Injectable } from '@angular/core';
-import { Observable, ReplaySubject } from 'rxjs';
+import {
+  combineLatest, distinctUntilChanged, Observable, ReplaySubject, switchMap
+} from 'rxjs';
 import { map } from 'rxjs/operators';
 import { BackendService } from '@app/superadmin/backend.service';
 import { MessageService } from '@shared/services/message.service';
@@ -34,16 +36,29 @@ const ASSET_SLOT_NAMES = [
 })
 export class AssetService {
   private assetSlotsSubject = new ReplaySubject<AssetAssignments>(1);
-  assetSlots$ = this.assetSlotsSubject.asObservable();
+  // Emits whenever the result of getAssetSrc() may change: on new assignments and on a theme change, since the
+  // theme provides fallback images.
+  readonly assetSlots$: Observable<AssetAssignments>;
   private assetSlots: AssetAssignments = {};
   allAssets: Asset[] = [];
   availableAssetSlots: { slotName: AssetSlotName, slotLabel: string }[] = ASSET_SLOT_NAMES
     .map(slotName => ({ slotName, slotLabel: slotName }));
 
   constructor(private backendService: BackendService, private messageService: MessageService,
-              private mainDataService: MainDataService,
+              mainDataService: MainDataService,
               private themeService: ThemeService,
-              private fileServerService: FileServerService) { }
+              private fileServerService: FileServerService) {
+    this.assetSlots$ = combineLatest([this.assetSlotsSubject, themeService.activeTheme$])
+      .pipe(map(([assetSlots]) => assetSlots));
+    // Assignments depend on the login (login before group before global), so they follow its token.
+    mainDataService.authData$
+      .pipe(
+        map(authData => authData?.token),
+        distinctUntilChanged(),
+        switchMap(() => this.backendService.getAssetAssignments())
+      )
+      .subscribe(assignments => this.setAssetSlots(assignments));
+  }
 
   private loadAssets(): void {
     this.backendService.getAllAssets().subscribe(assets => {
@@ -90,7 +105,7 @@ export class AssetService {
         next: result => {
           this.messageService.showSnackbar('Bild entfernt');
           this.allAssets = this.allAssets.filter(asset => asset.id !== id);
-          this.refreshAssetSlots();
+          this.loadAssetSlots();
           resolve();
         },
         error: err => reject(err)
@@ -121,7 +136,7 @@ export class AssetService {
         scopeID: 'global' as const
       }));
     this.backendService.setAssetAssignments({ assignments }).subscribe(() => {
-      this.refreshAssetSlots();
+      this.loadAssetSlots();
       this.messageService.showSnackbar('Zuordnungen aktualisiert');
     });
   }
@@ -133,7 +148,7 @@ export class AssetService {
     }
     // Fallback case. Checks the theme for an image and then uses the general fallback assets defined above.
     return (
-      this.themeService.activeTheme.imagePaths?.[slotName] ||
+      this.themeService.getActiveTheme().imagePaths?.[slotName] ||
       DEFAULT_ASSETS[slotName]
     );
   }
@@ -142,11 +157,14 @@ export class AssetService {
     return `${this.fileServerService.getBaseUrl()}${url}`;
   }
 
-  refreshAssetSlots(): void {
-    this.backendService.getAssetAssignments().subscribe((assignments: AssetAssignments) => {
-      this.assetSlots = assignments;
-      this.assetSlotsSubject.next(assignments);
-    });
+  private loadAssetSlots(): void {
+    this.backendService.getAssetAssignments()
+      .subscribe(assignments => this.setAssetSlots(assignments));
+  }
+
+  private setAssetSlots(assignments: AssetAssignments): void {
+    this.assetSlots = assignments;
+    this.assetSlotsSubject.next(assignments);
   }
 }
 

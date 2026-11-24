@@ -166,13 +166,7 @@ export class SettingsComponent implements OnInit {
         this.messageService.showSnackbar('Konfigurationsdaten der Anwendung gespeichert');
         this.configForm.markAsPristine();
         this.configForm.markAsUntouched();
-        if (!this.mainDataService.appConfig) {
-          return;
-        }
-        this.mainDataService.appConfig.setAppConfig(appConfig);
-        this.mainDataService.appTitle$.next(appConfig.appTitle);
-        this.themeService.setTheme(appConfig.themeName);
-        this.mainDataService.globalWarning = this.mainDataService.appConfig.getWarningMessage();
+        this.mainDataService.updateAppSettings(appConfig);
       });
   }
 

@@ -16,7 +16,6 @@ import { MatDialog } from '@angular/material/dialog';
 import { FileService } from '@shared/services/file.service';
 import { MessageService } from '@shared/services/message.service';
 import { HeaderService } from '@shared/services/header.service';
-import { ThemeService } from '@shared/services/theme.service';
 import { SysCheckDataService } from '@app/sys-check/sys-check-data.service';
 import { TestCardComponent } from '@app/app-root/starter/test-card.component';
 import {
@@ -69,7 +68,6 @@ export class StarterComponent implements OnInit, AfterViewInit, OnDestroy {
   constructor(private router: Router, private bs: BackendService, public cts: CustomtextService,
               public mds: MainDataService, public ds: SysCheckDataService,
               public pcs: PasswordChangeService, private dialog: MatDialog,
-              public themeService: ThemeService,
               public assetService: AssetService,
               private headerService: HeaderService, private ms: MessageService) { }
 

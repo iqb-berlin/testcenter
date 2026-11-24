@@ -50,6 +50,17 @@ export interface AuthData {
   }
 }
 
+// Checks the fields the app relies on, for AuthData from untrusted sources such as localStorage.
+export function isAuthData(value: unknown): value is AuthData {
+  const isObject = (v: unknown): v is Record<string, unknown> => typeof v === 'object' && v !== null;
+  return isObject(value) &&
+    typeof value.token === 'string' &&
+    isObject(value.claims) &&
+    Array.isArray(value.flags) &&
+    isObject(value.customTexts) &&
+    isObject(value.viewSettings);
+}
+
 export type CodeInputType = 'text-field' | 'keypad-symbols' | 'keypad-numbers' | 'keypad-symbols-alt';
 
 export interface KeyValuePairs {
