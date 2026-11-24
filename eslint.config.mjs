@@ -247,6 +247,13 @@ export default defineConfig([
     }
   },
   {
+    files: ['**/*.spec.ts'],
+    rules: {
+      // flags every expect(spy) of a Jasmine spy, which never depends on `this`
+      '@typescript-eslint/unbound-method': 'off'
+    }
+  },
+  {
     files: ['frontend/src/**/*.{js,ts}'],
     languageOptions: { globals: globals.browser }
   },
