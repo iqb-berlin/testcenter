@@ -78,4 +78,18 @@ describe('MainDataService', () => {
     localStorage.setItem(storageKey, '{broken');
     expect(createService().getAuthData()).toBeNull();
   });
+
+  it('counts nobody as test taker when nobody is logged in', () => {
+    expect(createService().isTestTaker()).toBeFalse();
+  });
+
+  it('counts logins whose code is not yet entered as test takers', () => {
+    localStorage.setItem(storageKey, JSON.stringify({ ...storedAuthData, claims: {} }));
+    expect(createService().isTestTaker()).toBeTrue();
+  });
+
+  it('does not count group monitors that may also run tests as test takers', () => {
+    localStorage.setItem(storageKey, JSON.stringify({ ...storedAuthData, claims: { test: [], testGroupMonitor: [] } }));
+    expect(createService().isTestTaker()).toBeFalse();
+  });
 });

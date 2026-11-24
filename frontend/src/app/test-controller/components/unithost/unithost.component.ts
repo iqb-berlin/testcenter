@@ -146,8 +146,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
     if (typeof playerApiVersion !== 'string') {
       throw new AppError({
         description: 'Player did not report its Verona version (apiVersion or metadata.specVersion)',
-        label: 'Unbekannte Verona-Version',
-        type: 'verona_player_runtime_error'
+        label: 'Unbekannte Verona-Version'
       });
     }
     const playerApiVersionMajor = parseInt(playerApiVersion.split('.').shift() ?? '', 10);
@@ -161,8 +160,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
       throw new AppError({
         description: `Player uses Verona ${playerApiVersion}, but this testcenter only support 
               ${this.mds.appConfig.veronaPlayerApiVersionMin} to ${this.mds.appConfig.veronaPlayerApiVersionMax}`,
-        label: 'Unpassende Verona-Version',
-        type: 'verona_player_runtime_error'
+        label: 'Unpassende Verona-Version'
       });
     }
 
@@ -331,7 +329,6 @@ export class UnithostComponent implements OnInit, OnDestroy {
         throw new AppError({
           label: 'Fehler beim Abspielen der Aufgabe',
           description: errorMessage,
-          type: 'verona_player_runtime_error',
           code: VeronaPlayerRuntimeErrorCodes.indexOf(errorCode)
         });
       }
@@ -380,10 +377,9 @@ export class UnithostComponent implements OnInit, OnDestroy {
       .subscribe({
         error: err => {
           settledSynchronously = true;
-          this.mds.appError = new AppError({
+          throw new AppError({
             label: `Unit konnte nicht geladen werden. ${err.info}`,
-            description: (err.info) ? err.info : err,
-            type: 'network'
+            description: (err.info) ? err.info : err
           });
         },
         complete: () => {
@@ -449,12 +445,10 @@ export class UnithostComponent implements OnInit, OnDestroy {
     }
     this.iFrameItemplayer = <HTMLIFrameElement>document.createElement('iframe');
     if (!('srcdoc' in this.iFrameItemplayer)) {
-      this.mds.appError = new AppError({
+      throw new AppError({
         label: 'Veralteter Browser',
-        description: 'Ihr browser is veraltet oder inkompatibel mit dieser Anwendung!',
-        type: 'general'
+        description: 'Ihr browser is veraltet oder inkompatibel mit dieser Anwendung!'
       });
-      return;
     }
     this.iFrameItemplayer.setAttribute('class', 'unitHost');
     this.iFrameHostElement.nativeElement.appendChild(this.iFrameItemplayer);

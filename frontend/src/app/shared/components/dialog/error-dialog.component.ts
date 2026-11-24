@@ -1,14 +1,13 @@
-import { Component, inject, OnInit } from '@angular/core';
-import { DatePipe } from '@angular/common';
-import { AppError } from '@app/app.interfaces';
-import { TestControllerService } from '@app/test-controller';
+import { Component, inject } from '@angular/core';
+import { AsyncPipe, DatePipe } from '@angular/common';
+import { AppErrorInterface } from '@app/app.interfaces';
 import { MainDataService } from '@shared/services/maindata/maindata.service';
 import { MAT_DIALOG_DATA, MatDialogActions, MatDialogContent, MatDialogTitle } from '@angular/material/dialog';
-import { Subscription } from 'rxjs';
 import { MatExpansionPanel, MatExpansionPanelHeader, MatExpansionPanelTitle } from '@angular/material/expansion';
 import UAParser from 'ua-parser-js';
 import { MatButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
+import { CustomtextPipe } from '@shared/pipes/customtext/customtext.pipe';
 
 @Component({
   selector: 'app-error',
@@ -18,42 +17,33 @@ import { MatIcon } from '@angular/material/icon';
     MatExpansionPanelHeader,
     MatExpansionPanelTitle,
     DatePipe,
+    AsyncPipe,
+    CustomtextPipe,
     MatButton,
     MatIcon,
     MatDialogContent,
     MatDialogActions
   ],
   template: `
-    <h2 mat-dialog-title><mat-icon [svgIcon]="'error'"></mat-icon>{{error?.label}}</h2>
+    <h2 mat-dialog-title><mat-icon [svgIcon]="'error'"></mat-icon>{{error.label}}</h2>
     <mat-dialog-content>
-      @if (error?.errorId) {
-        <p><b>Error-Id:</b> {{error?.errorId}} {{error?.testMode ? '(test-mode: ' + error?.testMode + ')' : ''}}</p>
+      @if (error.errorId) {
+        <p><b>Error-Id:</b> {{error.errorId}} {{error.testMode ? '(test-mode: ' + error.testMode + ')' : ''}}</p>
       }
-      @if (errorMessage) {
-        <p style="white-space: pre-wrap">
-          {{ errorMessage }}
+      @if (isTestTaker) {
+        <p class="custom-text">
+          {{ '' | customtext:(error.sessionInvalid ? 'booklet_sessionerrormessage' : 'booklet_errormessage') | async }}
+        </p>
+      } @else if (error.sessionInvalid) {
+        <p>
+          Die Sitzung ist nicht mehr gültig, zum Beispiel weil mit denselben Zugangsdaten eine Anmeldung auf einem
+          anderen Gerät erfolgt ist. Beim Schließen erfolgt die Abmeldung.
         </p>
       } @else {
-        @switch (error?.type) {
-          @case ('network') {
-            Leider ist ein Verbindungsfehler aufgetreten.
-            Prüfen Sie Ihre Internetverbindung, laden Sie die Seite neu und probieren es noch einmal.
-          }
-          @case ('network_temporally') {
-            Leider ist ein (vermutlich vorübergehender) Verbindungsfehler aufgetreten.
-            Prüfen Sie Ihre Internetverbindung, laden Sie die Seite neu und probieren es noch einmal.
-          }
-          @case ('session') {
-            Haben Sie sich eventuell auf einem anderen Gerät oder Browserfenster angemeldet?
-            Versuchen Sie, sich neu anzumelden.
-          }
-          @case ('warning') {}
-          @default {
-            Es ist ein Programmfehler aufgetreten.
-            Laden Sie die Seite neu und probieren es noch einmal. Sollte das Problem weiterhin bestehen bleiben,
-            melden Sie es dem zuständigen Systemadministrator.
-          }
-        }
+        <p>
+          Es ist ein Fehler aufgetreten. Eine mögliche Ursache ist eine unterbrochene Internetverbindung. Tritt der
+          Fehler nach dem Neuladen erneut auf, kann die zuständige Administration weiterhelfen.
+        </p>
       }
       <mat-expansion-panel>
         <mat-expansion-panel-header>
@@ -61,33 +51,18 @@ import { MatIcon } from '@angular/material/icon';
             Fehlerdetails
           </mat-panel-title>
         </mat-expansion-panel-header>
-        <h3>Fehlerbericht: {{error?.label}}</h3>
-        <p [innerHtml]="error?.description"></p>
-        @if (error?.errorId) {
-          <p><b>Error-Id:</b> {{error?.errorId}}</p>
+        <h3>Fehlerbericht: {{error.label}}</h3>
+        <p [innerHtml]="error.description"></p>
+        @if (error.errorId) {
+          <p><b>Error-Id:</b> {{error.errorId}}</p>
         }
         <p><b>Zeitpunkt:</b> {{timestamp | date:'medium'}}</p>
         <p><b>Url: </b>{{url}}</p>
-        <p><b>Browser: </b>{{browser?.browser?.name}} {{browser?.browser?.version}}</p>
-        <p><b>Betriebssystem: </b>{{browser?.os?.name}} {{browser?.os?.version}}</p>
-        <p><b>Gerät: </b>{{browser?.device?.type}} {{browser?.device?.vendor}} {{browser?.device?.model}}</p>
-        <p><b>Booklet: </b>{{ tcs.booklet?.metadata?.label || tcs.booklet?.metadata?.id || '' }}</p>
+        <p><b>Browser: </b>{{browser.browser.name}} {{browser.browser.version}}</p>
+        <p><b>Betriebssystem: </b>{{browser.os.name}} {{browser.os.version}}</p>
+        <p><b>Gerät: </b>{{browser.device.type}} {{browser.device.vendor}} {{browser.device.model}}</p>
         <p><b>Login: </b>{{loginName}}</p>
-        <p><b>Mode: </b>{{ tcs.testMode.modeLabel }}</p>
-        <p>{{error?.details}}</p>
-
-        @if (errorBuffer.length) {
-          <p><b>Weitere Fehler:</b></p>
-          <div>
-            @for (err of errorBuffer; track err.label) {
-              <p><b>{{err.label}}: </b>{{err.description}}</p>
-              @if (err.errorId) {
-                <p><b>Error-Id:</b> {{err.errorId}}</p>
-              }
-              <p>{{err.details}}</p>
-            }
-          </div>
-        }
+        <p>{{error.details}}</p>
       </mat-expansion-panel>
     </mat-dialog-content>
     <mat-dialog-actions>
@@ -107,46 +82,22 @@ import { MatIcon } from '@angular/material/icon';
     .mat-expansion-panel {
       margin-bottom: 10px;
     }
+    .custom-text {
+      white-space: pre-wrap;
+    }
   `
 })
-export class ErrorDialogComponent implements OnInit {
-  errorMessage = inject<string>(MAT_DIALOG_DATA);
-  private appErrorSubscription: Subscription | null = null;
+export class ErrorDialogComponent {
+  readonly error = inject<AppErrorInterface>(MAT_DIALOG_DATA);
+  private readonly mainDataService = inject(MainDataService);
 
-  error: AppError | null = null;
-  errorBuffer: AppError[] = [];
-  loginName: string = '??';
-  timestamp: number = -1;
-  url: string = '';
-  browser: UAParser.IResult | null = null;
-
-  constructor(public tcs: TestControllerService, public mainDataService: MainDataService) {
-    const authData = this.mainDataService.getAuthData();
-    if (authData) {
-      this.loginName = authData.displayName;
-    }
-  }
-
-  ngOnInit(): void {
-    this.browser = new UAParser().getResult();
-    this.appErrorSubscription = this.mainDataService.appError$
-      .subscribe(err => {
-        if (this.error) {
-          this.errorBuffer.push(this.error);
-        }
-        this.error = err;
-
-        this.url = window.location.href;
-        this.timestamp = Date.now();
-      });
-  }
+  readonly loginName = this.mainDataService.getAuthData()?.displayName ?? '??';
+  readonly isTestTaker = this.mainDataService.isTestTaker();
+  readonly timestamp = Date.now();
+  readonly url = window.location.href;
+  readonly browser = new UAParser().getResult();
 
   protected onClose() {
-    const resetAuthData = this.error?.type === 'session';
-    this.mainDataService.reloadPage(resetAuthData);
-  }
-
-  ngOnDestroy(): void {
-    this.appErrorSubscription?.unsubscribe();
+    this.mainDataService.reloadPage(this.error.sessionInvalid);
   }
 }

@@ -4,7 +4,7 @@ import {
 } from '@angular/core';
 import { combineLatest, Observable, Subscription } from 'rxjs';
 import {
-  debounceTime, distinctUntilChanged, filter, map
+  debounceTime, distinctUntilChanged, map
 } from 'rxjs/operators';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -28,6 +28,7 @@ import { VeronaAPIService } from '../../services/verona-api.service';
 import { MessageService } from '@shared/services/message.service';
 import { WidgetRuntimeService } from '../../services/widget-runtime.service';
 import { ToolbarWidgetService } from '../../services/toolbar-widget.service';
+import { AppErrorHandler } from '../../../app.error-handler';
 
 @Component({
   templateUrl: './test-controller.component.html',
@@ -85,6 +86,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
               private apiService: VeronaAPIService,
               private messageService: MessageService,
               public toolbarWidgets: ToolbarWidgetService,
+              private errorHandler: AppErrorHandler,
               @Inject('IS_PRODUCTION_MODE') public isProductionMode: boolean) { }
 
   // Whether there is currently nothing ready to show to the testee yet: either the test itself is
@@ -98,12 +100,8 @@ export class TestControllerComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     setTimeout(() => {
-      this.mainDataService.clearErrorBuffer();
-      this.subscriptions.errorReporting = this.mainDataService.appError$
-        .pipe(filter(e => !!e))
-        .subscribe(() => {
-          void this.tcs.errorOut();
-        });
+      this.subscriptions.errorReporting = this.errorHandler.fatalError$
+        .subscribe(() => this.tcs.errorOut());
 
       this.subscriptions.testStatus = this.tcs.state$
         .pipe(distinctUntilChanged())

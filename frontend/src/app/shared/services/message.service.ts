@@ -7,6 +7,7 @@ import { MainDataService } from '@shared/services/maindata/maindata.service';
 import { ToastContent, ToastService } from '@shared/services/toast.service';
 import { ConfirmDialogComponent } from '../components/dialog/confirm-dialog.component';
 import { ErrorDialogComponent } from '@shared/components/dialog/error-dialog.component';
+import { AppErrorInterface } from '@app/app.interfaces';
 
 @Injectable({
   providedIn: 'root'
@@ -53,9 +54,9 @@ export class MessageService {
     }).afterClosed();
   }
 
-  showErrorDialog(errorMessage?: string): void {
+  showErrorDialog(error: AppErrorInterface): void {
     this.dialog.open(ErrorDialogComponent, {
-      data: errorMessage,
+      data: error,
       disableClose: true,
       autoFocus: 'dialog'
     });

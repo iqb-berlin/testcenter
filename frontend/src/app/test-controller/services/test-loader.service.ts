@@ -112,7 +112,7 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
 
   private async resumeTest(lastState: { [k in TestStateKey]?: string }): Promise<boolean> {
     if (!this.tcs.booklet) {
-      throw new AppError({ description: '', label: 'Booklet not loaded yet.', type: 'script' });
+      throw new AppError({ description: '', label: 'Booklet not loaded yet.' });
     }
 
     this.restoreLastState(lastState);
@@ -136,8 +136,7 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
       const info = (err as { info?: string })?.info;
       throw new AppError({
         label: `Unit konnte nicht geladen werden. ${info || ''}`,
-        description: info || String(err),
-        type: 'network'
+        description: info || String(err)
       });
     }
     return this.tcs.setUnitNavigationRequest(resumeTargetUnitSequenceId.toString());
@@ -278,7 +277,7 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
   private prepareUnitContentLoadingQueueOrder(currentUnitId: string): void {
     if (!this.tcs.booklet) {
       throw new AppError({
-        description: '', label: 'Testheft noch nicht verfügbar', type: 'script'
+        description: '', label: 'Testheft noch nicht verfügbar'
       });
     }
     const currentUnitSequenceId = this.tcs.unitAliasMap[currentUnitId];
@@ -410,8 +409,7 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
       if (!this.tcs.units[this.tcs.unitAliasMap[source.unitAlias]]) {
         throw new AppError({
           description: `Unit or Alias not defined: \`${source.unitAlias}\``,
-          label: 'Booklet Error',
-          type: 'xml'
+          label: 'Booklet Error'
         });
       }
       this.tcs.units[this.tcs.unitAliasMap[source.unitAlias]].variables[source.variable] =

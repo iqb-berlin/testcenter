@@ -60,17 +60,17 @@ export abstract class BookletParserService<
     const bookletElement = domParser.parseFromString(xmlStringWithOutBom, 'text/xml').documentElement;
 
     if (bookletElement.nodeName !== 'Booklet') {
-      throw new AppError({ label: 'Invalid XML', description: 'wrong root-tag', type: 'xml' });
+      throw new AppError({ label: 'Invalid XML', description: 'wrong root-tag' });
     }
 
     const unitsElement = this.xmlGetChildIfExists(bookletElement, 'Units');
     if (unitsElement == null) {
-      throw new AppError({ label: 'Invalid XML', description: 'no <units>', type: 'xml' });
+      throw new AppError({ label: 'Invalid XML', description: 'no <units>' });
     }
 
     const metadata = this.parseMetadata(bookletElement);
     if (metadata == null) {
-      throw new AppError({ label: 'Invalid XML', description: 'invalid metadata', type: 'xml' });
+      throw new AppError({ label: 'Invalid XML', description: 'invalid metadata' });
     }
 
     const config = this.parseBookletConfig(bookletElement);

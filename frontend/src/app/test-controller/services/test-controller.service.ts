@@ -449,8 +449,7 @@ export class TestControllerService {
       console.error(`Unit not found: ${unitSequenceId}`);
       throw new AppError({
         label: `Unit not found: ${unitSequenceId}`,
-        description: '',
-        type: 'script'
+        description: ''
       });
     }
     return unit;
@@ -646,15 +645,11 @@ export class TestControllerService {
     }
   }
 
-  // Works also when the test could not be loaded. Errors after the first one end up in the already open dialog.
-  async errorOut(): Promise<void> {
-    if (this.state$.getValue() === 'ERROR') {
-      return;
-    }
+  // Works also when the test could not be loaded.
+  errorOut(): void {
     this.totalLoadingProgress = 0;
     this.state$.next('ERROR');
-    await this.closeAllBuffers('errorOut');
-    this.messageService.showErrorDialog(this.cts.getCustomText('booklet_errormessage'));
+    void this.closeAllBuffers('errorOut');
   }
 
   pause(): Promise<boolean> {

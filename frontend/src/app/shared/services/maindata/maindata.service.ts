@@ -1,10 +1,6 @@
 import { Inject, Injectable } from '@angular/core';
-import {
-  BehaviorSubject, Observable, ReplaySubject, Subject
-} from 'rxjs';
+import { BehaviorSubject, Observable, Subject } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
-import { distinct } from 'rxjs/internal/operators/distinct';
-import { shareReplay } from 'rxjs/internal/operators/shareReplay';
 import { filter } from 'rxjs/operators';
 import { CustomtextService } from '../customtext/customtext.service';
 import {
@@ -21,20 +17,6 @@ const localStorageAuthDataKey = 'iqb-tc-a';
   providedIn: 'root'
 })
 export class MainDataService {
-  private _appError$ = new ReplaySubject<AppError | void>(0);
-  get appError$(): Observable<AppError> {
-    return this._appError$
-      .pipe(
-        filter((v: AppError | void): v is AppError => v !== undefined),
-        distinct(error => (error?.stack ?? '') + (error?.errorId ?? '')),
-        shareReplay(0)
-      );
-  }
-
-  set appError(error: AppError) {
-    this._appError$.next(error);
-  }
-
   // Holds the current login and is null exactly when nobody is logged in. Seeded from localStorage, so that a
   // login survives a page reload.
   private _authData$ = new BehaviorSubject<AuthData | null>(MainDataService.readStoredAuthData());
@@ -100,14 +82,26 @@ export class MainDataService {
     }
   }
 
+  // A test taker is logged in without administrative or supervising access. Logins with a code
+  // not yet entered have no claims at all and count as test takers too.
+  isTestTaker(): boolean {
+    const claims = this.getAuthData()?.claims;
+    if (!claims) {
+      return false;
+    }
+    const supervisingAccessTypes: AuthAccessType[] =
+      ['workspaceAdmin', 'superAdmin', 'testGroupMonitor', 'studyMonitor', 'attachmentManager'];
+    return !supervisingAccessTypes.some(accessType => accessType in claims);
+  }
+
   getAccessObject(type: AuthAccessType, id: string): AccessObject {
     const authData = this.getAuthData();
     if (!authData) {
-      throw new AppError({ type: 'session', description: '', label: 'Nicht angemeldet' });
+      throw new AppError({ sessionInvalid: true, description: '', label: 'Nicht angemeldet' });
     }
     const claim = authData.claims[type].find(accessObject => accessObject.id === id);
     if (!claim) {
-      throw new AppError({ type: 'session', description: '', label: `${type} ${id} nicht freigegeben.` });
+      throw new AppError({ sessionInvalid: true, description: '', label: `${type} ${id} nicht freigegeben.` });
     }
     return claim;
   }
@@ -168,10 +162,6 @@ export class MainDataService {
       .subscribe(sysStatus => {
         this.sysStatus = sysStatus;
       });
-  }
-
-  clearErrorBuffer(): void {
-    this._appError$.next();
   }
 
   // integrations tests use this.

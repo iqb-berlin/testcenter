@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 import {
   BehaviorSubject, combineLatest, distinctUntilChanged, map, Observable
 } from 'rxjs';
-import { AppError } from '../../app.interfaces';
 import { MainDataService } from './maindata/maindata.service';
 import type { AssetSlotName } from './asset.service';
 
@@ -19,7 +18,7 @@ export class ThemeService {
     return this._activeTheme$.getValue();
   }
 
-  constructor(private mainDataService: MainDataService) {
+  constructor(mainDataService: MainDataService) {
     combineLatest([mainDataService.authData$, mainDataService.appConfig$])
       .pipe(
         map(([authData, appConfig]) => this.findTheme(authData?.viewSettings.theme || appConfig.themeName)),
@@ -37,11 +36,7 @@ export class ThemeService {
     if (theme) {
       return theme;
     }
-    this.mainDataService.appError = new AppError({
-      type: 'warning',
-      description: '',
-      label: `Theme "${themeName}" konnte nicht geladen werden.`
-    });
+    console.warn(`Theme "${themeName}" is not available, using "${THEMES[0].name}" instead.`);
     return THEMES[0];
   }
 }

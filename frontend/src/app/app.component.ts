@@ -3,7 +3,6 @@ import {
 } from '@angular/core';
 import { Subscription, combineLatest } from 'rxjs';
 import { DomSanitizer, Title } from '@angular/platform-browser';
-import { ActivatedRoute } from '@angular/router';
 import {
   CustomtextService, MainDataService, SysConfig
 } from './shared/shared.module';
@@ -11,7 +10,6 @@ import { BackendService } from './backend.service';
 import { AppConfig } from './shared/classes/app.config';
 import { THEMES } from './shared/services/theme.service';
 import { FooterService } from '@shared/services/footer.service';
-import { MessageService } from '@shared/services/message.service';
 
 @Component({
   selector: 'tc-root',
@@ -21,26 +19,16 @@ import { MessageService } from '@shared/services/message.service';
 })
 
 export class AppComponent implements OnInit, OnDestroy {
-  private appErrorSubscription: Subscription | null = null;
   private appTitleSubscription: Subscription | null = null;
 
   constructor(public mainDataService: MainDataService,
               private backendService: BackendService,
               private customtextService: CustomtextService,
               private titleService: Title,
-              private messageService: MessageService,
               private sanitizer: DomSanitizer,
-              private route: ActivatedRoute,
               public footerService: FooterService) { }
 
   ngOnInit(): void {
-    this.appErrorSubscription = this.mainDataService.appError$
-      .subscribe(() => {
-        if (!this.disableGlobalErrorDisplay()) {
-          this.messageService.showErrorDialog();
-        }
-      });
-
     this.appTitleSubscription = combineLatest([this.mainDataService.appTitle$, this.mainDataService.appSubTitle$])
       .subscribe(titles => {
         if (titles[1]) {
@@ -77,11 +65,6 @@ export class AppComponent implements OnInit, OnDestroy {
       });
   }
 
-  private disableGlobalErrorDisplay(): boolean {
-    const routeData = this.route.firstChild?.routeConfig?.data ?? {};
-    return 'disableGlobalErrorDisplay' in routeData;
-  }
-
   private setupFocusListeners(): void {
     if (typeof document.hidden !== 'undefined') {
       document.addEventListener('visibilitychange', () => {
@@ -110,9 +93,6 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    if (this.appErrorSubscription !== null) {
-      this.appErrorSubscription.unsubscribe();
-    }
     if (this.appTitleSubscription !== null) {
       this.appTitleSubscription.unsubscribe();
     }

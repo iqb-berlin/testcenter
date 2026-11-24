@@ -79,9 +79,10 @@ import { ThemeService } from './shared/services/theme.service';
   providers: [
     BackendService,
     MatDialog,
+    AppErrorHandler,
     {
       provide: ErrorHandler,
-      useClass: AppErrorHandler
+      useExisting: AppErrorHandler
     },
     {
       provide: HTTP_INTERCEPTORS,

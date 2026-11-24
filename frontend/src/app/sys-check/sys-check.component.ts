@@ -33,7 +33,7 @@ export class SysCheckComponent implements OnInit {
       const workspaceId = params.get('workspace-id');
       if (!sysCheckId || !workspaceId) {
         throw new AppError({
-          description: '', label: 'Invalid Route Parameters', type: 'script'
+          description: '', label: 'Invalid Route Parameters'
         });
       }
       setTimeout(() => {
