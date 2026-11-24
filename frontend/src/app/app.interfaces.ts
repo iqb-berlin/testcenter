@@ -38,7 +38,7 @@ export interface AuthData {
   pwSetByAdmin?: boolean;
   customTexts: KeyValuePairs;
   flags: AuthFlagType[];
-  claims: { [key in AuthAccessType]: AccessObject[] };
+  claims: Partial<Record<AuthAccessType, AccessObject[]>>;
   groupToken: string | null;
   viewSettings: {
     theme?: string;

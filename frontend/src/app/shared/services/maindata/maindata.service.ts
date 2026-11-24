@@ -99,7 +99,7 @@ export class MainDataService {
     if (!authData) {
       throw new AppError({ sessionInvalid: true, description: '', label: 'Nicht angemeldet' });
     }
-    const claim = authData.claims[type].find(accessObject => accessObject.id === id);
+    const claim = authData.claims[type]?.find(accessObject => accessObject.id === id);
     if (!claim) {
       throw new AppError({ sessionInvalid: true, description: '', label: `${type} ${id} nicht freigegeben.` });
     }

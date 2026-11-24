@@ -98,7 +98,7 @@ export class StarterComponent implements OnInit, AfterViewInit, OnDestroy {
         if (this.getWorkspaceDataSubscription !== null) {
           this.getWorkspaceDataSubscription.unsubscribe();
         }
-        this.workspaces = authData.claims.workspaceAdmin;
+        this.workspaces = authData.claims.workspaceAdmin ?? [];
         this.isSuperAdmin = typeof authData.claims.superAdmin !== 'undefined';
 
         if (authData.pwSetByAdmin && !this.isSuperAdmin) {

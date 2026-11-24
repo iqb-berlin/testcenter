@@ -89,7 +89,7 @@ export class CodeLoginComponent {
   private loginObserver = {
     next: (authData: AuthData) => {
       this.mds.setAuthData(authData);
-      if (authData.claims.test.length === 1 && Object.keys(authData.claims).length === 1) {
+      if (authData.claims.test?.length === 1 && Object.keys(authData.claims).length === 1) {
         this.bs.startTest(authData.claims.test[0].id).subscribe(testId => {
           this.router.navigate(['/t', testId]);
         });
