@@ -5,6 +5,7 @@ Formatting rules are integrated into tooling. It is expected that these have bee
 ## Commit Messages
 
 - Write the subject in the imperative mood ("Add", not "Added" or "Adds"), capitalized and without a trailing period. Keep it short — around 50 characters, and no more than 72 including the tag.
+- Start the subject of a bugfix with "Fix" and name what was broken, not how it was fixed, e.g. `[fe] Fix theme after switching logins`.
 - Separate subject and body with a blank line and wrap the body at 72 characters. Indent continuation lines of list items by two spaces.
 - Use the body to explain *why* the change was made and what it does, not how it works — the diff already shows that.
 - If a commit belongs to an issue, reference it in the body as plain `#123`. Don't use GitHub's closing keywords (`Fixes`, `Closes`, `Resolves`), in commits or in pull request descriptions.
