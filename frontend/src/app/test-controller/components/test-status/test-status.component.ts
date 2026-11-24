@@ -17,8 +17,7 @@ import { TestControllerService } from '@app/test-controller';
     CustomtextPipe,
     NgSwitchCase,
     AlertComponent
-  ],
-  styleUrls: ['./test-status.component.css']
+  ]
 })
 
 export class TestStatusComponent implements OnInit {
