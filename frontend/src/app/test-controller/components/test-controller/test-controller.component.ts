@@ -102,7 +102,9 @@ export class TestControllerComponent implements OnInit, OnDestroy {
       this.mainDataService.clearErrorBuffer();
       this.subscriptions.errorReporting = this.mainDataService.appError$
         .pipe(filter(e => !!e))
-        .subscribe(() => this.tcs.errorOut());
+        .subscribe(() => {
+          void this.tcs.errorOut();
+        });
 
       this.subscriptions.testStatus = this.tcs.state$
         .pipe(distinctUntilChanged())

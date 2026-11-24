@@ -604,10 +604,6 @@ export class TestControllerService {
     }
     let navigation: NavigationState;
     switch (navString) {
-    case UnitNavigationTarget.ERROR:
-      navigation = await this.closeAllBuffers(`setUnitNavigationRequest(${navString} NEXT`);
-      this.messageService.showErrorDialog(this.cts.getCustomText('booklet_errormessage'));
-      return false;
     case UnitNavigationTarget.PAUSE:
       navigation = await this.closeAllBuffers(`setUnitNavigationRequest(${navString} NEXT`);
       return this.router.navigate([`/t/${this.testId}/status`], { skipLocationChange: true, state: { force } });
@@ -650,10 +646,15 @@ export class TestControllerService {
     }
   }
 
-  errorOut(): void {
+  // Works also when the test could not be loaded. Errors after the first one end up in the already open dialog.
+  async errorOut(): Promise<void> {
+    if (this.state$.getValue() === 'ERROR') {
+      return;
+    }
     this.totalLoadingProgress = 0;
     this.state$.next('ERROR');
-    this.setUnitNavigationRequest(UnitNavigationTarget.ERROR);
+    await this.closeAllBuffers('errorOut');
+    this.messageService.showErrorDialog(this.cts.getCustomText('booklet_errormessage'));
   }
 
   pause(): Promise<boolean> {

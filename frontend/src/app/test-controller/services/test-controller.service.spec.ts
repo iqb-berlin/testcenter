@@ -67,6 +67,8 @@ class MockMessageService {
 
   // eslint-disable-next-line class-methods-use-this
   showSnackbar(text: string): void {}
+
+  showErrorDialog(): void {}
 }
 
 describe('TestControllerService', () => {
@@ -132,6 +134,27 @@ describe('TestControllerService', () => {
 
   it('should be created', () => {
     expect(service).toBeTruthy();
+  });
+
+  describe('errorOut', () => {
+    let showErrorDialog: jasmine.Spy;
+
+    beforeEach(() => {
+      showErrorDialog = spyOn(TestBed.inject(MessageService), 'showErrorDialog');
+    });
+
+    it('shows the error dialog when the test could not be loaded', async () => {
+      service.booklet = null;
+      await service.errorOut();
+      expect(service.state$.getValue()).toBe('ERROR');
+      expect(showErrorDialog).toHaveBeenCalledTimes(1);
+    });
+
+    it('shows only one dialog for several errors', async () => {
+      await service.errorOut();
+      await service.errorOut();
+      expect(showErrorDialog).toHaveBeenCalledTimes(1);
+    });
   });
 
   describe('addSharedParameters', () => {

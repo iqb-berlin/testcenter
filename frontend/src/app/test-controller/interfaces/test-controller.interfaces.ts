@@ -178,7 +178,6 @@ export interface KeyValuePairNumber {
 
 export enum UnitNavigationTarget {
   NEXT = '#next',
-  ERROR = '#error',
   PREVIOUS = '#previous',
   FIRST = '#first',
   LAST = '#last',
