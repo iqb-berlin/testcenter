@@ -12,7 +12,7 @@ import { MatIconTestingModule } from '@angular/material/icon/testing';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { Component } from '@angular/core';
 import {
-  CustomtextService, ConnectionStatus, MainDataService, BookletConfig, TestMode, BackendService as SharedBackendService
+  CustomtextService, ConnectionStatus, MainDataService, BookletConfig, TestMode
 } from '../../../shared/shared.module';
 import { BackendService } from '../../services/backend.service';
 import { CommandService } from '../../services/command.service';
@@ -77,8 +77,6 @@ const MockTestControllerService = {
   resetDataStore: () => {}
 };
 
-const MockSharedBackendService = {};
-
 const MockActivatedRoute = {
   params: routeParams$
 };
@@ -112,7 +110,6 @@ describe('TestControllerComponent', () => {
         { provide: CommandService, useValue: MockCommandService },
         { provide: MainDataService, useValue: MockMainDataService },
         { provide: ActivatedRoute, useValue: MockActivatedRoute },
-        { provide: SharedBackendService, useValue: MockSharedBackendService },
         { provide: 'IS_PRODUCTION_MODE', useValue: false },
         provideHttpClient(withInterceptorsFromDi())
       ]

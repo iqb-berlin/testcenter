@@ -31,6 +31,7 @@
 - Die API-Dokumentation enthält die Routen für Anhänge (`/attachment…`, `/attachments…`) und Booklets (`/booklet/…`). Bisher fehlten sie, weil beim Zusammenführen der Spec-Dateien ein leerer Eintrag sie überschrieb.
 - API: `GET /asset-assignments` antwortet ohne zugewiesene Slots mit `{}`. Bisher kam dann `[]`, ein Array statt eines Objekts.
 - API: Die Routen für die vom Superadmin hochgeladenen Bilder (`/assets`, `/asset-assignments`, `/public/uploaded_assets/{name}`) sind in der API-Dokumentation beschrieben.
+- (potenziell breaking) API: Die Route `POST /clear-cache` entfällt. Sie war nicht dokumentiert und damit nicht Teil der öffentlichen Schnittstelle. Sie sollte über den Header `Clear-Site-Data` den Browser-Cache leeren, wenn nach einem Fehler oder über den Knopf „Neu laden“ die Seite neu geladen wird. Nach einem Fehler wurde sie aber nie aufgerufen, und für den Knopf fehlten im Header die vom Standard verlangten Anführungszeichen.
 - Helm: Das Chart lässt sich in jeden Namespace installieren. Bisher waren die Traefik-Ressourcen und die Redis-Adresse des File-Servers auf den Namespace `tc` festgelegt, und in einem anderen Namespace fehlten dem File-Server die Verbindung zu Redis und den Routen das Ziel.
 
 # 19.1.0

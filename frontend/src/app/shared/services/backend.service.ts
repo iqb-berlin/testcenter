@@ -30,11 +30,6 @@ export class BackendService {
       );
   }
 
-  clearCache(...directives: string[]): Observable<void> {
-    const payload = directives.length ? { directives } : {};
-    return this.http.post<void>(`${this.serverUrl}clear-cache`, payload);
-  }
-
   getSysStatus(): Observable<SysStatus> {
     return this.http.get<SysStatus>(`${this.serverUrl}system/status`);
   }

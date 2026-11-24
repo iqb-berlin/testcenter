@@ -10,7 +10,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { HeaderService } from '@shared/services/header.service';
 import {
-  CustomtextService, MainDataService, BackendService as SharedBackendService
+  CustomtextService, MainDataService
 } from '../../../shared/shared.module';
 import {
   Command, MaxTimerEvent, NavControlContext, NavigationState, Unit,
@@ -74,7 +74,6 @@ export class TestControllerComponent implements OnInit, OnDestroy {
   constructor(public mainDataService: MainDataService,
               public tcs: TestControllerService,
               private bs: BackendService,
-              private sharedBs: SharedBackendService,
               private snackBar: MatSnackBar,
               private route: ActivatedRoute,
               private cts: CustomtextService,
@@ -224,9 +223,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
   }
 
   reload() {
-    this.sharedBs.clearCache('cache').subscribe();
-    // @ts-ignore: force reload with 'true' only works for firefox so far, that's why we clear cache manually
-    setTimeout(() => { window.location.reload(true); }, 100);
+    window.location.reload();
   }
 
   private startAppFocusLogging() {

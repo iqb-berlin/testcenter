@@ -160,8 +160,7 @@ export class MainDataService {
       this._authData$.next(null);
       localStorage.removeItem(localStorageAuthDataKey);
     }
-    this.bs.clearCache(); // todo this function is not called - (.subscribe() is missing).
-    setTimeout(() => { window.location.href = '/'; }, 100);
+    window.location.href = '/';
   }
 
   refreshSysStatus(): void {

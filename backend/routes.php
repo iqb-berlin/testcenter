@@ -18,8 +18,6 @@ $app->group('/booklet', function (RouteCollectorProxy $group) {
 
 $app->get('/flush-broadcasting-service', [SystemController::class, 'getFlushBroadcastingService']);
 
-$app->post('/clear-cache', [SystemController::class, 'postClearCache']);
-
 $app->get('/list/routes', [SystemController::class, 'getListRoutes']);
 
 $app->group('/monitor', function (RouteCollectorProxy $group) {

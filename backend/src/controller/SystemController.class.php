@@ -209,13 +209,4 @@ class SystemController extends Controller {
     BroadcastService::send('system/clean');
     return $response->withStatus(200);
   }
-
-  public static function postClearCache(Request $request, Response $response): Response {
-    $directives = JSON::decode($request->getBody()->getContents())->directives;
-    return $response
-      ->withHeader('Clear-Site-Data',
-        !empty($directives) ?
-          implode(',', $directives) :
-          '"*"');
-  }
 }
