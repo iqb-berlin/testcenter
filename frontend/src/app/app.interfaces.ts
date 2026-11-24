@@ -56,17 +56,6 @@ export interface KeyValuePairs {
   [K: string]: string;
 }
 
-export type AppErrorType =
-    'session'
-    | 'general'
-    | 'backend'
-    | 'network'
-    | 'script'
-    | 'warning'
-    | 'network_temporally'
-    | 'xml'
-    | 'verona_player_runtime_error';
-
 export const TestModeNames = ['prepare', 'api', 'integration', 'prepare-integration'] as const;
 
 export type TestModeName = typeof TestModeNames[number];
@@ -77,7 +66,8 @@ export const isTestModeName =
 export interface AppErrorInterface {
   label: string;
   description: string;
-  type?: AppErrorType;
+  // closing the error dialog logs out instead of just reloading
+  sessionInvalid?: boolean;
   code?: number;
   testMode?: TestModeName | null;
   details?: string;
@@ -87,7 +77,7 @@ export interface AppErrorInterface {
 export class AppError extends Error implements AppErrorInterface {
   label: string = '';
   description: string = '';
-  type: AppErrorType = 'general';
+  sessionInvalid: boolean = false;
   code?: number;
   testMode?: TestModeName | null;
   details?: string;
@@ -122,5 +112,4 @@ export interface HttpRetryPolicy {
 
 export interface AppModuleSettings {
   httpRetryPolicy: HttpRetryPolicyNames;
-  disableGlobalErrorDisplay?: true;
 }

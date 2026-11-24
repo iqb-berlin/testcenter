@@ -11,7 +11,6 @@ export class TestMode extends TestModeData {
 
     if (!mode || !TestModeData.modes[mode]) {
       throw new AppError({
-        type: 'warning',
         label: 'Unbekannte Nutzerrolle',
         description: `Unbekannte Nutzerrolle: ${mode}.`
       });

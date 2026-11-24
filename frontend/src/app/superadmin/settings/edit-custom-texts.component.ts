@@ -142,8 +142,7 @@ export class EditCustomTextsComponent {
         if (!this.mainDataService.appConfig) {
           throw new AppError({
             description: '',
-            label: 'appConfig not yet loaded',
-            type: 'script'
+            label: 'appConfig not yet loaded'
           });
         }
         this.messageService.showSnackbar('Textersetzungen gespeichert');

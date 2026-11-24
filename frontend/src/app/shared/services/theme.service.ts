@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { AppError } from '../../app.interfaces';
 import type { AssetSlotName } from './asset.service';
 
 @Injectable({
@@ -15,13 +14,10 @@ export class ThemeService {
   }
 
   setTheme(themeName: string = this.availableThemes[0].name) {
-    const newTheme = THEMES.find(theme => theme.name === themeName);
+    let newTheme = THEMES.find(theme => theme.name === themeName);
     if (!newTheme) {
-      throw new AppError({
-        type: 'warning',
-        description: '',
-        label: `Theme "${themeName}" konnte nicht geladen werden.`
-      });
+      newTheme = THEMES[0];
+      console.warn(`Theme "${themeName}" is not available, using "${newTheme.name}" instead.`);
     }
     this.activeTheme = newTheme;
     document.body.className = this.activeTheme.cssClassName;

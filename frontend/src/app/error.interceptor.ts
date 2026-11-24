@@ -5,7 +5,7 @@ import {
 } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-import { AppError, AppErrorType, isTestModeName } from './app.interfaces';
+import { AppError, isTestModeName } from './app.interfaces';
 
 @Injectable()
 export class ErrorInterceptor implements HttpInterceptor {
@@ -33,8 +33,7 @@ export class ErrorInterceptor implements HttpInterceptor {
                 label: 'Der Server ist augenblicklich nicht erreichbar',
                 description: `${missingService} not Available`,
                 details: error.url ?? '',
-                code: 503,
-                type: 'network_temporally'
+                code: 503
               });
             });
           }
@@ -68,7 +67,6 @@ export class ErrorInterceptor implements HttpInterceptor {
         label: 'Netzwerkfehler',
         description: httpError.error.type,
         details: httpError.message,
-        type: 'network',
         errorId: httpError.headers.get('error-id'),
         testMode
       });
@@ -79,7 +77,6 @@ export class ErrorInterceptor implements HttpInterceptor {
         code: httpError.status,
         label: 'Fehler in der Netzwerkverbindung',
         description: httpError.error.message,
-        type: 'network',
         details: httpError.message,
         errorId: httpError.headers.get('error-id'),
         testMode
@@ -93,7 +90,6 @@ export class ErrorInterceptor implements HttpInterceptor {
             code: httpError.status,
             label: 'Download konnte nicht bereitgestellt werden!',
             description: text,
-            type: 'network',
             details: httpError.message,
             errorId: httpError.headers.get('error-id'),
             testMode
@@ -103,7 +99,7 @@ export class ErrorInterceptor implements HttpInterceptor {
     }
 
     let statusMessage: string;
-    let errorType: AppErrorType = 'backend';
+    let sessionInvalid = false;
     let description = '';
     switch (httpError.status) {
       case 202:
@@ -114,18 +110,18 @@ export class ErrorInterceptor implements HttpInterceptor {
         break;
       case 401:
         statusMessage = 'Bitte für diese Aktion erst anmelden!';
-        errorType = 'session';
+        sessionInvalid = true;
         break;
       case 403:
         statusMessage = 'Sitzung nicht mehr gültig.';
-        errorType = 'session';
+        sessionInvalid = true;
         break;
       case 404:
         statusMessage = 'Daten/Objekt nicht gefunden.';
         break;
       case 410:
         statusMessage = 'Anmeldung abgelaufen oder noch nicht gültig. Bitte erneut anmelden!';
-        errorType = 'session';
+        sessionInvalid = true;
         break;
       case 409:
         statusMessage = 'Konflikt mit vorhandenen Daten.';
@@ -135,7 +131,7 @@ export class ErrorInterceptor implements HttpInterceptor {
         break;
       case 429:
         statusMessage = 'Login ist gesperrt!';
-        errorType = 'session';
+        sessionInvalid = true;
         break;
       case 500:
         statusMessage = 'Allgemeines Server-Problem.';
@@ -143,14 +139,12 @@ export class ErrorInterceptor implements HttpInterceptor {
       case 502:
       case 503:
         statusMessage = 'Der Server ist augenblicklich nicht erreichbar';
-        errorType = 'network_temporally';
         break;
       case 504:
         statusMessage = 'Der Server ist augenblicklich überlastet!';
         break;
       default:
         statusMessage = 'Unbekanntes Verbindungsproblem';
-        errorType = 'network';
     }
 
     if (typeof httpError.error === 'string') {
@@ -170,7 +164,7 @@ export class ErrorInterceptor implements HttpInterceptor {
       code: httpError.status,
       label: statusMessage,
       description: description,
-      type: errorType,
+      sessionInvalid,
       details: httpError.message,
       errorId: httpError.headers.get('error-id')?.toLowerCase(),
       testMode

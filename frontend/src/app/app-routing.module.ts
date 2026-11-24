@@ -131,8 +131,7 @@ const routes: Routes = [
     loadChildren: () => import('./test-controller/test-controller.module').then(module => module.TestControllerModule),
     canActivate: [TestComponentActivateGuard],
     data: <AppModuleSettings>{
-      httpRetryPolicy: 'test',
-      disableGlobalErrorDisplay: true // because test-controller module has its own error display
+      httpRetryPolicy: 'test'
     }
   },
   {

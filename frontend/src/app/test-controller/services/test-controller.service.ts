@@ -449,8 +449,7 @@ export class TestControllerService {
       console.error(`Unit not found: ${unitSequenceId}`);
       throw new AppError({
         label: `Unit not found: ${unitSequenceId}`,
-        description: '',
-        type: 'script'
+        description: ''
       });
     }
     return unit;
@@ -604,10 +603,6 @@ export class TestControllerService {
     }
     let navigation: NavigationState;
     switch (navString) {
-    case UnitNavigationTarget.ERROR:
-      navigation = await this.closeAllBuffers(`setUnitNavigationRequest(${navString} NEXT`);
-      this.messageService.showErrorDialog(this.cts.getCustomText('booklet_errormessage'));
-      return false;
     case UnitNavigationTarget.PAUSE:
       navigation = await this.closeAllBuffers(`setUnitNavigationRequest(${navString} NEXT`);
       return this.router.navigate([`/t/${this.testId}/status`], { skipLocationChange: true, state: { force } });
@@ -653,7 +648,7 @@ export class TestControllerService {
   errorOut(): void {
     this.totalLoadingProgress = 0;
     this.state$.next('ERROR');
-    this.setUnitNavigationRequest(UnitNavigationTarget.ERROR);
+    this.closeAllBuffers('errorOut');
   }
 
   pause(): Promise<boolean> {

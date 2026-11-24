@@ -22,6 +22,7 @@ import {
 } from '../../interfaces/test-controller.interfaces';
 import { TestControllerService } from '../../services/test-controller.service';
 import { AppError } from '../../../app.interfaces';
+import { AppErrorHandler } from '../../../app.error-handler';
 import { TimerData } from '../../classes/test-controller.classes';
 import { MatMenu, MatMenuTrigger } from '@angular/material/menu';
 import { NavigationComponent } from '../navigation/navigation.component';
@@ -32,7 +33,7 @@ const testData$ = new Subject<boolean | TestData>();
 const command$ = new Subject<Command>();
 const connectionStatus$ = new Subject<ConnectionStatus>();
 const appWindowHasFocus$ = new Subject<WindowFocusState>();
-const appError$ = new Subject<AppError>();
+const fatalError$ = new Subject<AppError>();
 const state$ = new BehaviorSubject<TestControllerState>('ERROR');
 const unitContentReady$ = new BehaviorSubject<boolean>(true);
 const maxTimeTimer$ = new Subject<TimerData>();
@@ -60,7 +61,6 @@ const MockCommandService = {
 const MockMainDataService = {
   progressVisualEnabled: false,
   appWindowHasFocus$,
-  appError$,
   getAuthData: () => ({
     displayName: 'testAccountName'
   })
@@ -78,6 +78,10 @@ const MockTestControllerService = {
 };
 
 const MockSharedBackendService = {};
+
+const MockAppErrorHandler = {
+  fatalError$
+};
 
 const MockActivatedRoute = {
   params: routeParams$
@@ -113,6 +117,7 @@ describe('TestControllerComponent', () => {
         { provide: MainDataService, useValue: MockMainDataService },
         { provide: ActivatedRoute, useValue: MockActivatedRoute },
         { provide: SharedBackendService, useValue: MockSharedBackendService },
+        { provide: AppErrorHandler, useValue: MockAppErrorHandler },
         { provide: 'IS_PRODUCTION_MODE', useValue: false },
         provideHttpClient(withInterceptorsFromDi())
       ]

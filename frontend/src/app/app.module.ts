@@ -76,9 +76,10 @@ import { ToastContainerComponent } from './shared/components/toast/toast-contain
   providers: [
     BackendService,
     MatDialog,
+    AppErrorHandler,
     {
       provide: ErrorHandler,
-      useClass: AppErrorHandler
+      useExisting: AppErrorHandler
     },
     {
       provide: HTTP_INTERCEPTORS,
