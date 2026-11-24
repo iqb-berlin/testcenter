@@ -62,6 +62,33 @@ The frontend's development server reports port 8080 in the log, but that port is
 network. Open the application under http://localhost.
 :::
 
+## 4. Run with S3 storage
+
+For development, you can use a local S3-compatible service (SeaweedFS) instead of the filesystem for storing workspace files.
+
+```
+make up LOCAL_S3=true
+```
+
+This starts all containers plus a SeaweedFS container that provides S3-compatible storage. Files are stored in a bucket named `testcenter` and served directly from the S3 endpoint at `http://localhost:8333`.
+
+::: warning
+With S3 storage, browsers load files directly from the S3 endpoint. Ensure port 8333 (S3 API) and 23646 (Admin UI) are available on your machine.
+:::
+
+The S3 service provides an admin interface at http://localhost:23646. Log in with username `admin` and password `testcenter` to browse the bucket contents.
+
+To verify the S3 setup:
+1. Access the admin interface at http://localhost:23646
+2. Log in with `admin` / `testcenter`
+3. Check that the bucket `testcenter` exists and contains a `data/` directory
+
+To switch back to filesystem storage:
+```
+make down
+make up
+```
+
 ## Login
 
 After installation two logins are prepared:
