@@ -292,6 +292,14 @@
     "label" : "Spalte: Login",
     "defaultvalue" : "Login"
   },
+  "gm_col_code" : {
+    "label" : "Spalte: Code",
+    "defaultvalue" : "Code"
+  },
+  "gm_col_nameSuffix" : {
+    "label" : "Spalte: Suffix",
+    "defaultvalue" : "Suffix"
+  },
   "gm_col_state" : {
     "label" : "Spalte: Aktivität",
     "defaultvalue" : "Aktivität"
@@ -395,6 +403,14 @@
   "gm_filter_pending" : {
     "label" : "Filter: nicht gestartete ausblenden",
     "defaultvalue" : "nicht gestartete"
+  },
+  "gm_filter_target_loginName": {
+    "label": "Benutzerdefinierter Filter: Ziel - Login",
+    "defaultvalue": "Login"
+  },
+  "gm_filter_target_personLabel": {
+    "label": "Benutzerdefinierter Filter: Ziel - Login, Code und Suffix als ein Wert",
+    "defaultvalue": "Teilnehmer (Login/Code/Suffix)"
   },
   "gm_filter_target_mode": {
     "label": "Benutzerdefinierter Filter: Ziel - Modus",

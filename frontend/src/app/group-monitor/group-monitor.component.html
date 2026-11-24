@@ -249,8 +249,8 @@
               <td mat-sort-header="personLabel">
                 {{'Login' | customtext:'gm_col_personLabel' | async}}
               </td>
-              <td>Code</td>
-              <td>Suffix</td>
+              <td>{{'Code' | customtext:'gm_col_code' | async}}</td>
+              <td>{{'Suffix' | customtext:'gm_col_nameSuffix' | async}}</td>
               <td mat-sort-header="bookletName" *ngIf="displayOptions.bookletColumn === 'show'">
                 {{'Testheft' | customtext:'gm_col_bookletLabel' | async}}
               </td>

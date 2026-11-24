@@ -35,11 +35,13 @@ export const testSessionFilterTargetLists = {
     'testState',
     'mode',
     'bookletSpecies',
-    'unitId'
+    'unitId',
+    'personLabel'
   ],
   basic: [
     'bookletLabel',
-    'personLabel',
+    'loginName',
+    'code',
     'state',
     'blockLabel',
     'unitLabel',

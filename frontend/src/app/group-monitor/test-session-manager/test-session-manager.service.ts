@@ -235,6 +235,8 @@ export class TestSessionManager {
         switch (nextFilter.target) {
           case 'groupName':
           case 'personLabel':
+          case 'loginName':
+          case 'code':
           case 'mode':
             return apply(session.data[nextFilter.target] || '', nextFilter);
           case 'bookletId':

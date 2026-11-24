@@ -47,7 +47,7 @@ export class AddFilterDialogComponent implements OnInit {
   filter: TestSessionFilter = {
     id: '',
     label: '',
-    target: 'personLabel',
+    target: 'loginName',
     value: '',
     not: false,
     type: 'equal'
@@ -73,6 +73,8 @@ export class AddFilterDialogComponent implements OnInit {
     bookletSpecies: [],
     groupName: [],
     mode: [],
+    loginName: [],
+    code: [],
     personLabel: [],
     state: [],
     testState: [],
@@ -96,6 +98,8 @@ export class AddFilterDialogComponent implements OnInit {
     this.tsm.sessions
       .forEach(session => {
         pushUnique(this.lists.groupName, session.data.groupName);
+        pushUnique(this.lists.loginName, session.data.loginName || '');
+        pushUnique(this.lists.code, session.data.code || '');
         pushUnique(this.lists.bookletId, session.data.bookletName || '');
         pushUnique(this.lists.blockId, session.current?.ancestor?.blockId || '');
         pushUnique(this.lists.blockLabel, session.current?.ancestor?.blockId || '');
@@ -117,6 +121,13 @@ export class AddFilterDialogComponent implements OnInit {
       });
 
     this.lists.mode = Object.keys(TestMode.modes).map(mode => mode.toLowerCase());
+  }
+
+  /** The filter's own text wins, so a field can be named differently than the column that shows it. */
+  targetLabel(target: TestSessionFilterTarget): string {
+    return this.cts.getCustomText(`gm_filter_target_${target}`) ||
+      this.cts.getCustomText(`gm_col_${target}`) ||
+      target;
   }
 
   validate(): void {
@@ -154,7 +165,7 @@ export class AddFilterDialogComponent implements OnInit {
     this.filter.id = this.originalId || newId;
 
     const label = {
-      target: this.cts.getCustomText(`gm_filter_target_${this.filter.target}`) || this.filter.target,
+      target: this.targetLabel(this.filter.target),
       type: this.cts.getCustomText(`gm_filter_type_${this.filter.type}`) || this.filter.type,
       not: this.filter.not ? (this.cts.getCustomText('gm_filter_not') ?? 'not') : '',
       value: '',
