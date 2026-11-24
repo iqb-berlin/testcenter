@@ -5,7 +5,7 @@ import { Observable, of } from 'rxjs';
 import { Pipe } from '@angular/core';
 import {
   Booklet, BookletError, CommandResponse, GroupMonitorConfig,
-  Selected, Testlet, TestSessionData, TestSessionFilter, TestSessionSetStat, TestSessionSuperState
+  Selected, Testlet, TestSession, TestSessionData, TestSessionFilter, TestSessionSetStat, TestSessionSuperState
 } from '../group-monitor.interfaces';
 import { BookletService } from '../booklet/booklet.service';
 import { BackendService } from '../backend.service';
@@ -316,6 +316,54 @@ describe('TestSessionManager', () => {
       const result = filterSessions(sessionsSet, [removeInactiveStates])
         .map(s => s.data.testId);
       expect(result).toEqual([2]);
+    });
+
+    describe('by participant', () => {
+      const participant = (
+        testId: number, loginName: string, code?: string, nameSuffix?: string
+      ): TestSession => ({
+        ...unitTestExampleSessions[0],
+        data: {
+          ...unitTestExampleSessions[0].data,
+          testId,
+          loginName,
+          code,
+          nameSuffix,
+          personLabel: [loginName, code, nameSuffix].filter(part => !!part).join('/')
+        }
+      });
+      const participants = [
+        participant(1, 'test', 'aaa', 'x1'),
+        participant(2, 'test', 'bbb', 'x2'),
+        participant(3, 'other', 'aaa', 'x3'),
+        participant(4, 'test-2')
+      ];
+      const participantFilter = (
+        target: TestSessionFilter['target'], value: string, not: boolean = false
+      ): TestSessionFilter => ({
+        id: `${target}_${value}`, label: `${target}_${value}`, target, value, type: 'equal', not
+      });
+      const remaining = (filter: TestSessionFilter): number[] => filterSessions(participants, [filter])
+        .map(s => s.data.testId);
+
+      it('should match the login whatever code and suffix are', () => {
+        expect(remaining(participantFilter('loginName', 'test'))).toEqual([3, 4]);
+        expect(remaining(participantFilter('loginName', 'test', true))).toEqual([1, 2]);
+      });
+
+      it('should match the code whatever the login is', () => {
+        expect(remaining(participantFilter('code', 'aaa'))).toEqual([2, 4]);
+        expect(remaining(participantFilter('code', 'aaa', true))).toEqual([1, 3]);
+      });
+
+      it('should treat a participant without code as having an empty code', () => {
+        expect(remaining({ ...participantFilter('code', '.+'), type: 'regex' })).toEqual([4]);
+      });
+
+      it('should keep matching personLabel against login, code and suffix as one value', () => {
+        expect(remaining(participantFilter('personLabel', 'test'))).toEqual([1, 2, 3, 4]);
+        expect(remaining(participantFilter('personLabel', 'test/aaa/x1'))).toEqual([2, 3, 4]);
+      });
     });
   });
 

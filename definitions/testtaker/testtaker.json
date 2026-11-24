@@ -303,6 +303,8 @@
                 "enum": [
                   "bookletLabel",
                   "personLabel",
+                  "loginName",
+                  "code",
                   "state",
                   "blockLabel",
                   "groupName",
