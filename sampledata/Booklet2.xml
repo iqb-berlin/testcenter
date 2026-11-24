@@ -9,10 +9,10 @@
 
   <BookletConfig>
     <Config key="pagingMode">separate</Config>
-    <Config key="page_navibuttons">FULL</Config>
-    <Config key="unit_screenheader">WITH_BOOKLET_TITLE</Config>
-    <Config key="unit_menu">FULL</Config>
-    <Config key="unit_navibuttons">LABEL</Config>
+    <Config key="navbar_page_label">INDEX</Config>
+    <Config key="header_content">BOOKLET_LABEL</Config>
+    <Config key="toolbar_show_unit_list">TRUE</Config>
+    <Config key="navbar_unit_label">LABEL</Config>
   </BookletConfig>
 
   <States>

@@ -10,8 +10,8 @@
   <BookletConfig>
     <Config key="logPolicy">debug</Config>
     <Config key="pagingMode">concat-scroll-snap</Config>
-    <Config key="page_navibuttons">FULL</Config>
-    <Config key="unit_screenheader">WITH_BOOKLET_TITLE</Config>
+    <Config key="navbar_page_label">LABEL</Config>
+    <Config key="header_content">BOOKLET_LABEL</Config>
   </BookletConfig>
 
   <Units>
