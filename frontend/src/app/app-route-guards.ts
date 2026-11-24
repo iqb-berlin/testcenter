@@ -11,7 +11,7 @@ export const routeDispatcherGuard: CanActivateFn = () => {
   const authData = inject(MainDataService).getAuthData();
 
   if (!authData) {
-    return router.createUrlTree(['/r/login', '']);
+    return router.createUrlTree(['/r/login']);
   }
 
   if (authData.flags.includes('codeRequired')) {

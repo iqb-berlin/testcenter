@@ -150,7 +150,7 @@ export const twoStepLogin = (username: string, password = '') => {
 
 export const logoutAdmin = () => cy.url()
   .then(url => {
-    if (url !== `${Cypress.config().baseUrl}/#/r/login/`) {
+    if (!url.includes('/#/r/login')) {
       cy.get('[data-cy="logo"]')
         .click();
       cy.url()

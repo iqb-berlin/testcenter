@@ -80,7 +80,7 @@ describe('App route guards', () => {
 
   describe('route dispatcher', () => {
     it('sends to the login without auth data', async () => {
-      expect(await navigate('/guarded/dispatcher')).toBe('/r/login/');
+      expect(await navigate('/guarded/dispatcher')).toBe('/r/login');
     });
 
     it('sends to the code input if a code is required', async () => {
