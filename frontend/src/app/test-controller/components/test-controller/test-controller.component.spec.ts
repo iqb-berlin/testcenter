@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDialogModule } from '@angular/material/dialog';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -89,8 +89,8 @@ describe('TestControllerComponent', () => {
   let component: TestControllerComponent;
   let fixture: ComponentFixture<TestControllerComponent>;
 
-  beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
       declarations: [
         TestControllerComponent,
         MockUnitMenuComponent
@@ -132,7 +132,7 @@ describe('TestControllerComponent', () => {
         }
       })
       .compileComponents();
-  }));
+  });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(TestControllerComponent);

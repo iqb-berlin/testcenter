@@ -20,6 +20,7 @@ export class AppErrorHandler implements ErrorHandler {
 
       // closing the dialog reloads the page, so it stays open and the first error is the one shown
       if (this.isDialogOpen) {
+        // eslint-disable-next-line no-console
         console.error(appError);
         return;
       }

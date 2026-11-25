@@ -28,7 +28,6 @@ import { UsersComponent } from './users/users.component';
 import { SuperadminComponent } from './superadmin.component';
 import { SuperadminRoutingModule } from './superadmin-routing.module';
 import { BackendService } from './backend.service';
-import { NewUserComponent } from './users/newuser/new-user.component';
 import { NewworkspaceComponent } from './workspaces/newworkspace/newworkspace.component';
 import { EditworkspaceComponent } from './workspaces/editworkspace/editworkspace.component';
 import {

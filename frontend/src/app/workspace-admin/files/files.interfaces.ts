@@ -12,7 +12,7 @@ export interface UploadReport {
     warning?: string[];
     error?: string[];
     info?: string[];
-  }
+  };
 }
 
 export enum UploadStatus {

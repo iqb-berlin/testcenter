@@ -1,16 +1,15 @@
-/* eslint-disable max-classes-per-file */
 export type AuthFlagType = 'codeRequired';
 
 export type AuthAccessType =
-  | 'workspaceAdmin'
-  | 'superAdmin'
-  | 'test'
-  | 'workspaceMonitor'
-  | 'testGroupMonitor'
-  | 'attachmentManager'
-  | 'studyMonitor'
-  | 'sysCheck'
-  | 'review';
+  'workspaceAdmin' |
+  'superAdmin' |
+  'test' |
+  'workspaceMonitor' |
+  'testGroupMonitor' |
+  'attachmentManager' |
+  'studyMonitor' |
+  'sysCheck' |
+  'review';
 
 export interface AccessObject {
   label: string;
@@ -45,9 +44,9 @@ export interface AuthData {
     codeInput?: {
       type: CodeInputType;
       length: number;
-    },
+    };
     monitorBookletVisibility?: 'visible' | 'collapsed' | 'hidden';
-  }
+  };
 }
 
 // Checks the fields the app relies on, for AuthData from untrusted sources such as localStorage.
@@ -101,9 +100,9 @@ export class AppError extends Error implements AppErrorInterface {
   code?: number;
   testMode?: TestModeName | null;
   details?: string;
-  errorId?: string;
+  errorId?: string | null;
   constructor(p: AppErrorInterface) {
-    super();
+    super(p.label);
     Object.assign(this, p);
     if (!this.details) {
       this.details = this.stack;
@@ -111,9 +110,9 @@ export class AppError extends Error implements AppErrorInterface {
   }
 }
 
-export class WrappedError extends Error {
-  promise: Promise<never> | null = null;
-  rejection: Error | null = null;
+export interface WrappedError extends Error {
+  promise: Promise<never> | null;
+  rejection: Error | null;
 }
 
 export interface SysCheckInfo {

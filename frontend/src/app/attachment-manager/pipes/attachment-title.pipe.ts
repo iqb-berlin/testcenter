@@ -3,8 +3,8 @@ import { CustomtextService } from '../../shared/services/customtext/customtext.s
 import { AttachmentData } from '../interfaces/users.interfaces';
 
 @Pipe({
-    name: 'AttachmentTitle',
-    standalone: false
+  name: 'AttachmentTitle',
+  standalone: false
 })
 export class AttachmentTitlePipe implements PipeTransform {
   private template: string | null = null;

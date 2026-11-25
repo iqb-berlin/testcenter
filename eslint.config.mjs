@@ -40,7 +40,11 @@ export default defineConfig([
       '@stylistic/max-len': ['warn', 120],
       '@stylistic/function-call-argument-newline': ['error', 'consistent'],
       '@stylistic/function-call-spacing': ['error', 'never'],
-      '@stylistic/function-paren-newline': ['error', 'multiline-arguments'],
+      // Arguments and parameters start right after the paren and continue aligned with it, so they
+      // never share their column with the body below. Conditions may be laid out the same way;
+      // indent-binary-ops would force their continuation lines into the body's column.
+      '@stylistic/function-paren-newline': ['error', 'never'],
+      '@stylistic/indent-binary-ops': 'off',
       '@stylistic/implicit-arrow-linebreak': ['error', 'beside'],
       '@stylistic/linebreak-style': ['error', 'unix'],
       '@stylistic/newline-per-chained-call': ['error', { ignoreChainWithDepth: 4 }],
@@ -122,7 +126,7 @@ export default defineConfig([
       'no-new-func': 'error',
       'no-new-wrappers': 'error',
       'no-object-constructor': 'error',
-      'no-param-reassign': ['error', { props: false }],
+      'no-param-reassign': ['error', { props: true }],
       'no-plusplus': ['error', { allowForLoopAfterthoughts: true }],
       'no-promise-executor-return': 'error',
       'no-restricted-exports': ['error', { restrictedNamedExports: ['default', 'then'] }],
@@ -203,12 +207,16 @@ export default defineConfig([
     rules: {
       '@typescript-eslint/no-inferrable-types': 'off',
       '@stylistic/function-call-argument-newline': 'off',
-      '@stylistic/function-paren-newline': 'off',
       camelcase: 'off',
       'class-methods-use-this': 'off',
+      // Methods Angular calls on the instance must stay instance methods, whether they use `this` or not.
       '@typescript-eslint/class-methods-use-this': ['error', {
-        ignoreClassesThatImplementAnInterface: true,
-        ignoreOverrideMethods: true
+        ignoreOverrideMethods: true,
+        exceptMethods: [
+          'transform',
+          'ngOnChanges', 'ngOnInit', 'ngDoCheck', 'ngAfterContentInit', 'ngAfterContentChecked',
+          'ngAfterViewInit', 'ngAfterViewChecked', 'ngOnDestroy'
+        ]
       }],
       'default-case': 'off',
       '@typescript-eslint/switch-exhaustiveness-check': ['error', { requireDefaultForNonUnion: true }],

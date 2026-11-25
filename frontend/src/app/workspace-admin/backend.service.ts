@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import { Injectable, Inject, SkipSelf } from '@angular/core';
 import { HttpClient, HttpEvent, HttpEventType } from '@angular/common/http';
 
@@ -21,21 +20,16 @@ import { AppError } from '../app.interfaces';
   providedIn: 'root'
 })
 export class BackendService {
-  constructor(
-    @Inject('BACKEND_URL') private readonly serverUrl: string,
-    @SkipSelf() private http: HttpClient
-  ) {
-  }
+  constructor(@Inject('BACKEND_URL') private readonly serverUrl: string,
+              @SkipSelf() private http: HttpClient) { }
 
   getFiles(workspaceId: number): Observable<GetFileResponseData> {
     return this.http.get<GetFileResponseData>(`${this.serverUrl}workspace/${workspaceId}/files`);
   }
 
   deleteFiles(workspaceId: number, filesToDelete: Array<string>): Observable<FileDeletionReport> {
-    return this.http.delete<FileDeletionReport>(
-      `${this.serverUrl}workspace/${workspaceId}/files`,
-      { body: { f: filesToDelete } }
-    );
+    return this.http.delete<FileDeletionReport>(`${this.serverUrl}workspace/${workspaceId}/files`,
+                                                { body: { f: filesToDelete } });
   }
 
   getResults(workspaceId: number): Observable<ResultData[]> {
@@ -52,10 +46,8 @@ export class BackendService {
   }
 
   deleteSysCheckReports(workspaceId: number, checkIds: string[]): Observable<FileDeletionReport> {
-    return this.http.delete<FileDeletionReport>(
-      `${this.serverUrl}workspace/${workspaceId}/sys-check/reports`,
-      { body: { checkIds } }
-    );
+    return this.http.delete<FileDeletionReport>(`${this.serverUrl}workspace/${workspaceId}/sys-check/reports`,
+                                                { body: { checkIds } });
   }
 
   getReport(workspaceId: number, reportType: ReportType, dataIds: string[], useNewVersion: boolean) : Observable<Blob> {
@@ -125,10 +117,8 @@ export class BackendService {
 
   getFilesWithDependencies(workspaceId: number, ...files: string[]): Observable<GetFileResponseData> {
     return this.http
-      .post<GetFileResponseData>(
-      `${this.serverUrl}workspace/${workspaceId}/files-dependencies`,
-      { body: files }
-    );
+      .post<GetFileResponseData>(`${this.serverUrl}workspace/${workspaceId}/files-dependencies`,
+                                 { body: files });
   }
 
   getTestSessions(workspaceId: number): Observable<TestSessionsResponse> {
@@ -136,9 +126,7 @@ export class BackendService {
   }
 
   deleteTestSessionResponses(workspaceId: number, tests: TestSessionRequest[]): Observable<void> {
-    return this.http.delete<void>(
-      `${this.serverUrl}workspace/${workspaceId}/responses/detailed`,
-      { body: { personSessions: tests } }
-    );
+    return this.http.delete<void>(`${this.serverUrl}workspace/${workspaceId}/responses/detailed`,
+                                  { body: { personSessions: tests } });
   }
 }

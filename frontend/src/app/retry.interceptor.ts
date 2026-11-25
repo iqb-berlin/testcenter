@@ -20,11 +20,8 @@ const retryPolicies: { [name in HttpRetryPolicyNames]: HttpRetryPolicy } = {
 
 @Injectable()
 export class RetryInterceptor implements HttpInterceptor {
-  constructor(
-    private route: ActivatedRoute
-  ) {}
+  constructor(private route: ActivatedRoute) { }
 
-  // eslint-disable-next-line class-methods-use-this
   intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
     const routeData = this.route.firstChild?.routeConfig?.data ?? { httpRetryPolicy: 'none' };
     const retryPolicyName = routeData.httpRetryPolicy;

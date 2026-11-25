@@ -13,11 +13,8 @@ import {
 })
 
 export class BackendService {
-  constructor(
-    @Inject('BACKEND_URL') private readonly serverUrl: string,
-    private http: HttpClient
-  ) {
-  }
+  constructor(@Inject('BACKEND_URL') private readonly serverUrl: string,
+              private http: HttpClient) { }
 
   getUsers(): Observable<UserData[]> {
     return this.http.get<UserData[]>(`${this.serverUrl}users`);

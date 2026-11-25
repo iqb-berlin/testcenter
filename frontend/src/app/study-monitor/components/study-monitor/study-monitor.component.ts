@@ -9,9 +9,9 @@ import { BackendService } from '../../services/backend.service';
 import { HeaderService } from '@shared/services/header.service';
 
 @Component({
-    templateUrl: './study-monitor.component.html',
-    styleUrls: ['./study-monitor.component.css'],
-    standalone: false
+  templateUrl: './study-monitor.component.html',
+  styleUrls: ['./study-monitor.component.css'],
+  standalone: false
 })
 export class StudyMonitorComponent {
   displayedColumns: string[] = [

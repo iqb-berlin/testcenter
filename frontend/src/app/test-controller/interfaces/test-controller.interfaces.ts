@@ -28,9 +28,9 @@ export interface KeyValuePairString {
 }
 
 export type WindowFocusState =
-  | 'PLAYER'
-  | 'HOST'
-  | 'UNKNOWN';
+  'PLAYER' |
+  'HOST' |
+  'UNKNOWN';
 
 export type UnitData = {
   dataParts: KeyValuePairString;
@@ -60,28 +60,27 @@ export interface TestData {
 }
 
 export type TestControllerState =
-  | 'INIT'
-  | 'LOADING'
-  | 'RUNNING'
-  | 'TERMINATED'
-  | 'TERMINATED_PAUSED'
-  | 'PAUSED'
-  | 'ERROR';
+  'INIT' |
+  'LOADING' |
+  'RUNNING' |
+  'TERMINATED' |
+  'TERMINATED_PAUSED' |
+  'PAUSED' |
+  'ERROR';
 
 export type AppFocusState =
-  | 'HAS'
-  | 'HAS_NOT';
+  'HAS' |
+  'HAS_NOT';
 
 export type TestStateConnectionValue =
-  | 'WEBSOCKET'
-  | 'POLLING';
+  'WEBSOCKET' |
+  'POLLING';
 
-export type TestLogEntryKey =
-  | 'LOADCOMPLETE';
+export type TestLogEntryKey = 'LOADCOMPLETE';
 
 export type UnitPlayerState =
-  | 'LOADING'
-  | 'RUNNING';
+  'LOADING' |
+  'RUNNING';
 
 export type TestState = {
   CURRENT_UNIT_ID: string;
@@ -108,12 +107,12 @@ export type UnitState = {
 export type TestStateKey = keyof TestState;
 
 export type UnitStateKey =
-  | 'PRESENTATION_PROGRESS'
-  | 'RESPONSE_PROGRESS'
-  | 'CURRENT_PAGE_ID'
-  | 'CURRENT_PAGE_NR'
-  | 'PAGE_COUNT'
-  | 'PLAYER';
+  'PRESENTATION_PROGRESS' |
+  'RESPONSE_PROGRESS' |
+  'CURRENT_PAGE_ID' |
+  'CURRENT_PAGE_NR' |
+  'PAGE_COUNT' |
+  'PLAYER';
 
 export interface UnitDataParts {
   testId: string;

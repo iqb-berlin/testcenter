@@ -94,10 +94,10 @@ export class CodeLoginComponent {
       const test = getSoleAccess(authData, 'test');
       if (test) {
         this.bs.startTest(test.id).subscribe(testId => {
-          this.router.navigate(['/t', testId]);
+          void this.router.navigate(['/t', testId]);
         });
       } else {
-        this.router.navigate(['/r']);
+        void this.router.navigate(['/r']);
       }
     },
     error: (error: AppError) => {

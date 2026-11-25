@@ -8,9 +8,6 @@ import { UploadReport, UploadStatus } from '../files.interfaces';
 import { WorkspaceDataService } from '../../workspacedata.service';
 import { MainDataService } from '../../../shared/services/maindata/maindata.service';
 import { AlertLevel, isAlertLevel } from '../../../shared/interfaces/alert.interfaces';
-import { KeyValuePipe, NgForOf, NgIf } from '@angular/common';
-import { MatProgressBar } from '@angular/material/progress-bar';
-import { AlertComponent } from '@shared/components/alert/alert.component';
 
 @Component({
   selector: 'tc-files-upload',
@@ -21,12 +18,10 @@ import { AlertComponent } from '@shared/components/alert/alert.component';
 export class IqbFilesUploadComponent implements OnInit, OnDestroy {
   @HostBinding('class') myclass = 'iqb-files-upload';
 
-  constructor(
-    private bs: BackendService,
-    private rbs: RootBackendService,
-    private mds: MainDataService,
-    public wds: WorkspaceDataService
-  ) { }
+  constructor(private bs: BackendService,
+              private rbs: RootBackendService,
+              private mds: MainDataService,
+              public wds: WorkspaceDataService) { }
 
   private _status: UploadStatus = UploadStatus.ready;
   get status(): UploadStatus {

@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -65,7 +65,7 @@ describe('UnitMenuComponent', () => {
   const entry = (label: string): HTMLElement =>
     fixture.nativeElement.querySelector(`[data-cy="unit-menu-unitbutton-${label}"]`);
 
-  beforeEach(waitForAsync(() => {
+  beforeEach(async () => {
     tcs = {
       navigation$: new BehaviorSubject<NavigationState>(allDirectionsAllowed),
       booklet: buildBooklet(),
@@ -76,7 +76,7 @@ describe('UnitMenuComponent', () => {
       onStateOptionChanged: jasmine.createSpy('onStateOptionChanged')
     };
 
-    TestBed.configureTestingModule({
+    await TestBed.configureTestingModule({
       imports: [
         CommonModule,
         MatButtonModule,
@@ -99,7 +99,7 @@ describe('UnitMenuComponent', () => {
     fixture = TestBed.createComponent(UnitMenuComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
-  }));
+  });
 
   it('lists an entry for every unit of the booklet', () => {
     expect(entry('Unit-1')).toBeTruthy();

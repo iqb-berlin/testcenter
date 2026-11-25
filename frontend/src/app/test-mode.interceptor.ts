@@ -8,11 +8,8 @@ import { MainDataService } from './shared/shared.module';
 
 @Injectable()
 export class TestModeInterceptor implements HttpInterceptor {
-  constructor(
-    @Inject('IS_PRODUCTION_MODE') public isProductionMode: boolean,
-    private mds: MainDataService
-  ) {
-  }
+  constructor(@Inject('IS_PRODUCTION_MODE') public isProductionMode: boolean,
+              private mds: MainDataService) { }
 
   intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
     if (this.isProductionMode) return next.handle(request);

@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 import {
   MAT_DIALOG_DATA,
@@ -14,8 +14,8 @@ describe('EditworkspaceComponent', () => {
   let component: EditworkspaceComponent;
   let fixture: ComponentFixture<EditworkspaceComponent>;
 
-  beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
       declarations: [EditworkspaceComponent],
       imports: [
         MatDialogModule,
@@ -30,7 +30,7 @@ describe('EditworkspaceComponent', () => {
       ]
     })
       .compileComponents();
-  }));
+  });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(EditworkspaceComponent);

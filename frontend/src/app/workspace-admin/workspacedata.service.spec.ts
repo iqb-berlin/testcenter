@@ -13,7 +13,6 @@ import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http'
 import { MessageService } from '@shared/services/message.service';
 
 class MockMatDialog {
-  // eslint-disable-next-line class-methods-use-this
   open(): { afterClosed: () => Observable<{ action: boolean }> } {
     return {
       afterClosed: () => of({ action: true })

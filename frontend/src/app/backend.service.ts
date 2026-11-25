@@ -5,7 +5,7 @@ import { SysCheckInfo, AuthData } from './app.interfaces';
 import { SysConfig } from './shared/shared.module';
 
 export type ChallengeRequest =
-  { loginType: 'admin' | 'login', name: string, password: string } | { code: string };
+  { loginType: 'admin' | 'login'; name: string; password: string } | { code: string };
 
 export type Challenge = {
   algorithm: 'SHA-1' | 'SHA-256' | 'SHA-512';
@@ -26,13 +26,11 @@ export class BackendService {
     return this.http.post<Challenge>(this.serverUrl + path, request);
   }
 
-  createSession(
-    algorithm: Challenge['algorithm'],
-    challenge: Challenge['challenge'],
-    salt: Challenge['salt'],
-    signature: Challenge['signature'],
-    number: number
-  ): Observable<AuthData> {
+  createSession(algorithm: Challenge['algorithm'],
+                challenge: Challenge['challenge'],
+                salt: Challenge['salt'],
+                signature: Challenge['signature'],
+                number: number): Observable<AuthData> {
     return this.http.put<AuthData>(`${this.serverUrl}session`, { algorithm, challenge, salt, signature, number });
   }
 

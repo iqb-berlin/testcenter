@@ -1,7 +1,7 @@
 import {
   Component, OnDestroy, OnInit, inject
 } from '@angular/core';
-import { AsyncPipe, NgClass } from '@angular/common';
+import { AsyncPipe } from '@angular/common';
 import {
   FormControl, FormGroup, ReactiveFormsModule, Validators
 } from '@angular/forms';
@@ -69,15 +69,13 @@ export class LoginComponent implements OnInit, OnDestroy {
     pw: new FormControl('')
   });
 
-  constructor(
-    public mainDataService: MainDataService,
-    private backendService: BackendService,
-    private router: Router,
-    private route: ActivatedRoute,
-    private headerService: HeaderService,
-    private footerService: FooterService,
-    protected assetService: AssetService
-  ) { }
+  constructor(public mainDataService: MainDataService,
+              private backendService: BackendService,
+              private router: Router,
+              private route: ActivatedRoute,
+              private headerService: HeaderService,
+              private footerService: FooterService,
+              protected assetService: AssetService) { }
 
   ngOnInit(): void {
     this.mainDataService.appSubTitle$.next('Anmelden');
@@ -103,7 +101,7 @@ export class LoginComponent implements OnInit, OnDestroy {
     // try if login without password (= with empty password) is possible; otherwise, ask for password input
     this.backendService.login(loginData.name, '').subscribe({
       next: authData => {
-        const authDataTyped = authData as AuthData;
+        const authDataTyped = authData;
         this.mainDataService.setAuthData(authDataTyped);
         this.navigateAfterLogin(authDataTyped);
       },
@@ -190,9 +188,9 @@ export class LoginComponent implements OnInit, OnDestroy {
 
   private navigateAfterLogin(authData: AuthData): void {
     if (this.returnTo) {
-      this.router.navigateByUrl(this.returnTo).then(navOk => {
+      void this.router.navigateByUrl(this.returnTo).then(navOk => {
         if (!navOk) {
-          this.router.navigate(['/r']);
+          void this.router.navigate(['/r']);
         }
       });
     } else if (!authData.flags.includes('codeRequired')) {
@@ -202,10 +200,10 @@ export class LoginComponent implements OnInit, OnDestroy {
       if (authData.claims.test && authData.claims.test.length === 1 && Object.keys(authData.claims).length === 1) {
         this.backendService.startTest(authData.claims.test[0].id).subscribe({
           next: testId => {
-            this.router.navigate(['/t', testId]);
+            void this.router.navigate(['/t', testId]);
           },
           error: () => {
-            this.router.navigate(['/r/starter']);
+            void this.router.navigate(['/r/starter']);
           }
         });
         // only jump into test, when there is only 1 test, and there are no other claims ->
@@ -213,12 +211,12 @@ export class LoginComponent implements OnInit, OnDestroy {
         // so a shortcut jump would not hurt a specific workflow
       } else if (authData.claims.sysCheck && authData.claims.sysCheck.length === 1 &&
         Object.keys(authData.claims).length === 1) {
-        this.router.navigate(['/check', authData.claims.sysCheck[0].workspaceId, authData.claims.sysCheck[0].id]);
+        void this.router.navigate(['/check', authData.claims.sysCheck[0].workspaceId, authData.claims.sysCheck[0].id]);
       } else {
-        this.router.navigate(['/r/starter']);
+        void this.router.navigate(['/r/starter']);
       }
     } else {
-      this.router.navigate(['/r']);
+      void this.router.navigate(['/r']);
     }
   }
 

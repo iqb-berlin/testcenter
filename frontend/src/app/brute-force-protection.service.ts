@@ -56,14 +56,12 @@ export class BruteForceProtectionService {
   /** Finds the number the challenge hash was built from by brute force, spread over several web workers. */
   private async solve(challenge: Challenge): Promise<number> {
     const { solveChallengeWorkers } = await import('altcha-lib');
-    const solution = await solveChallengeWorkers(
-      `${window.document.baseURI}/altcha-lib/dist/worker.js`,
-      8,
-      challenge.challenge,
-      challenge.salt,
-      challenge.algorithm,
-      challenge.maxNumber
-    );
+    const solution = await solveChallengeWorkers(`${window.document.baseURI}/altcha-lib/dist/worker.js`,
+                                                 8,
+                                                 challenge.challenge,
+                                                 challenge.salt,
+                                                 challenge.algorithm,
+                                                 challenge.maxNumber);
     if (!solution) {
       throw new AppError({
         label: 'Problem bei der Anmeldung.',

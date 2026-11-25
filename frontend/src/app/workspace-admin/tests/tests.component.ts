@@ -1,9 +1,9 @@
 import {
-  Component, OnInit, OnDestroy, ViewChild, AfterViewInit
+  Component, OnInit, OnDestroy
 } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { MatSort, Sort } from '@angular/material/sort';
+import { Sort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatDialog } from '@angular/material/dialog';
 import {
@@ -15,10 +15,10 @@ import { TestSession, TestSessionRequest, TestSessionsResponse } from '../worksp
 import { MessageService } from '@shared/services/message.service';
 
 @Component({
-    selector: 'tc-tests',
-    templateUrl: './tests.component.html',
-    styleUrls: ['./tests.component.css'],
-    standalone: false
+  selector: 'tc-tests',
+  templateUrl: './tests.component.html',
+  styleUrls: ['./tests.component.css'],
+  standalone: false
 })
 export class TestsComponent implements OnInit, OnDestroy {
   testSessions: TestSessionsResponse | null = null;
@@ -31,14 +31,11 @@ export class TestsComponent implements OnInit, OnDestroy {
     direction: 'asc'
   };
 
-  constructor(
-    public mainDataService: MainDataService,
-    public workspaceDataService: WorkspaceDataService,
-    private backendService: BackendService,
-    private snackBar: MatSnackBar,
-    private messageService: MessageService,
-    private confirmDialog: MatDialog
-  ) { }
+  constructor(public mainDataService: MainDataService,
+              public workspaceDataService: WorkspaceDataService,
+              private backendService: BackendService,
+              private snackBar: MatSnackBar,
+              private messageService: MessageService) { }
 
   ngOnInit(): void {
     this.workspaceSubscription = this.workspaceDataService.workspaceId$.subscribe(workspaceId => {

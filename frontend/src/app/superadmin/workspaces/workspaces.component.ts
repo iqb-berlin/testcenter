@@ -11,9 +11,9 @@ import { IdAndName, IdRoleData } from '../superadmin.interfaces';
 import { ConfirmWithPasswordComponent } from '../confirm-with-password/confirm-with-password.component';
 
 @Component({
-    templateUrl: './workspaces.component.html',
-    styleUrls: ['./workspaces.component.css'],
-    standalone: false
+  templateUrl: './workspaces.component.html',
+  styleUrls: ['./workspaces.component.css'],
+  standalone: false
 })
 export class WorkspacesComponent implements OnInit {
   workspaces: MatTableDataSource<IdAndName> = new MatTableDataSource<IdAndName>();

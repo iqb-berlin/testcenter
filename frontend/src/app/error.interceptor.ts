@@ -11,7 +11,6 @@ import { AppError, isTestModeName } from './app.interfaces';
 export class ErrorInterceptor implements HttpInterceptor {
   constructor(@Inject('IS_PRODUCTION_MODE') public isProductionMode: boolean) { }
 
-  // eslint-disable-next-line class-methods-use-this
   intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
     return next.handle(request).pipe(
       catchError(error => {

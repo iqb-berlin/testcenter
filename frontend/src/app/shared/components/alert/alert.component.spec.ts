@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatIconModule, MatIconRegistry } from '@angular/material/icon';
 import { matIconRegistryMock } from '@app/test-controller/test/icon-registry-mock';
 import { AlertComponent } from './alert.component';
@@ -37,13 +37,13 @@ describe('AlertComponent', () => {
     component['cts']['addCustomTexts']({ [key]: value });
   };
 
-  beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
       imports: [
         AlertComponent, MatIconModule
       ],
     }).compileComponents();
-  }));
+  });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(AlertComponent);

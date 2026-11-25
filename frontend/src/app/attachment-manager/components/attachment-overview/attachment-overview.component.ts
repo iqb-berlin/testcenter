@@ -12,12 +12,12 @@ import { FileService } from '../../../shared/services/file.service';
 import { CustomtextService } from '../../../shared/services/customtext/customtext.service';
 
 @Component({
-    templateUrl: './attachment-overview.component.html',
-    styleUrls: [
-        '../attachment-manager/monitor-layout.css',
-        './attachment-overview.component.css'
-    ],
-    standalone: false
+  templateUrl: './attachment-overview.component.html',
+  styleUrls: [
+    '../attachment-manager/monitor-layout.css',
+    './attachment-overview.component.css'
+  ],
+  standalone: false
 })
 export class AttachmentOverviewComponent implements OnInit {
   @ViewChild(MatSort) sort!: MatSort;
@@ -55,10 +55,10 @@ export class AttachmentOverviewComponent implements OnInit {
       ])
       .subscribe(result => {
         if (result.matches) {
-          this.sidenav.close();
+          void this.sidenav.close();
           this.mobileView = true;
         } else {
-          this.sidenav.open();
+          void this.sidenav.open();
           this.mobileView = false;
         }
       });
@@ -85,7 +85,7 @@ export class AttachmentOverviewComponent implements OnInit {
 
   selectAttachment(index: number): void {
     this.selectedAttachmentImage = '';
-    this.sidenav.open();
+    void this.sidenav.open();
 
     this.selectedAttachmentIndex = index;
     this.selectedAttachmentFileIndex = 0;
@@ -162,16 +162,16 @@ export class AttachmentOverviewComponent implements OnInit {
 
   sidebarClick(): void {
     if (this.sidenav.opened) {
-      this.sidenav.close();
+      void this.sidenav.close();
     } else {
-      this.sidenav.open()
+      void this.sidenav.open()
         .then(() => this.selectAttachment(-1));
     }
   }
 
   addClick(): void {
     this.selectAttachment(-1);
-    this.sidenav.open();
+    void this.sidenav.open();
   }
 
   downloadAllPageTemplates(): void {

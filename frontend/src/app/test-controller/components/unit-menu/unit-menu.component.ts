@@ -5,10 +5,10 @@ import { TestControllerService } from '../../services/test-controller.service';
 import { Testlet, isTestlet } from '../../interfaces/test-controller.interfaces';
 
 @Component({
-    selector: 'tc-unit-menu',
-    templateUrl: './unit-menu.component.html',
-    styleUrls: ['./unit-menu.component.css'],
-    standalone: false
+  selector: 'tc-unit-menu',
+  templateUrl: './unit-menu.component.html',
+  styleUrls: ['./unit-menu.component.css'],
+  standalone: false
 })
 export class UnitMenuComponent {
   @Output() close = new EventEmitter<void>();

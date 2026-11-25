@@ -61,12 +61,12 @@ import { createTicker } from '../util/worker.util';
 type LeaveCheckResult =
   // proceed; `notify` is an optional non-blocking FYI toast (test-mode preview of what would have
   // been blocked/warned about in real test mode)
-  | { kind: 'allow'; notify?: string }
+  { kind: 'allow'; notify?: string } |
   // block navigation; either silently, with an FYI toast, or after a blocking info dialog the
   // user just acknowledges (no real choice involved)
-  | { kind: 'deny'; notify?: string; infoDialog?: { title: string; content: string } }
+  { kind: 'deny'; notify?: string; infoDialog?: { title: string; content: string } } |
   // block unless the user explicitly confirms leaving
-  | { kind: 'confirm'; title: string; content: string; onConfirmed: () => string | undefined };
+  { kind: 'confirm'; title: string; content: string; onConfirmed: () => string | undefined };
 
 @Injectable({
   providedIn: 'root'

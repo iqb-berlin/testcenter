@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
@@ -31,8 +31,8 @@ describe('Workspace-Admin: SyscheckComponent', () => {
   let component: SyscheckComponent;
   let fixture: ComponentFixture<SyscheckComponent>;
 
-  beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
       declarations: [SyscheckComponent],
       imports: [MatDialogModule,
         MatSnackBarModule,
@@ -51,7 +51,7 @@ describe('Workspace-Admin: SyscheckComponent', () => {
         provideHttpClient(withInterceptorsFromDi())
       ]
     }).compileComponents();
-  }));
+  });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(SyscheckComponent);

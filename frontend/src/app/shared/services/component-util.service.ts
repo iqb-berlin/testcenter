@@ -13,9 +13,7 @@ export class ComponentUtilService {
   reloadComponent(self:boolean, urlToNavigateTo ?:string) {
     const url = self ? this.router.url : urlToNavigateTo;
     // skipLocationChange:true means don't update the url to / when navigating
-    this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
-      this.router.navigate([`/${url}`]).then(() => {
-      });
-    });
+    void this.router.navigateByUrl('/', { skipLocationChange: true })
+      .then(() => this.router.navigate([`/${url}`]));
   }
 }

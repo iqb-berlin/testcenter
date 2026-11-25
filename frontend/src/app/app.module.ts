@@ -116,10 +116,8 @@ import { ThemeService } from './shared/services/theme.service';
   ]
 })
 export class AppModule {
-  constructor(private matIconRegistry: MatIconRegistry,
-              private domSanitizer: DomSanitizer) {
-    this.matIconRegistry.addSvgIconSet(
-      this.domSanitizer.bypassSecurityTrustResourceUrl('assets/icons/material-icons.svg')
-    );
+  constructor() {
+    const iconSetUrl = inject(DomSanitizer).bypassSecurityTrustResourceUrl('assets/icons/material-icons.svg');
+    inject(MatIconRegistry).addSvgIconSet(iconSetUrl);
   }
 }

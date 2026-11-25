@@ -1,6 +1,6 @@
 /* eslint-disable class-methods-use-this */
 // eslint-disable-next-line max-classes-per-file
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSidenavModule } from '@angular/material/sidenav';
@@ -81,8 +81,8 @@ class MockTestSessionManagerService {
 }
 
 @Pipe({
-    name: 'customtext',
-    standalone: false
+  name: 'customtext',
+  standalone: false
 })
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 class MockCustomtextPipe {
@@ -105,9 +105,9 @@ describe('GroupMonitorComponent', () => {
   let fixture: ComponentFixture<GroupMonitorComponent>;
   let sessionManager: MockTestSessionManagerService;
 
-  beforeEach(waitForAsync(() => {
+  beforeEach(async () => {
     sessionManager = new MockTestSessionManagerService();
-    TestBed.configureTestingModule({
+    await TestBed.configureTestingModule({
       declarations: [
         GroupMonitorComponent,
         TestSessionComponent,
@@ -142,7 +142,7 @@ describe('GroupMonitorComponent', () => {
       ]
     })
       .compileComponents();
-  }));
+  });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(GroupMonitorComponent);

@@ -10,12 +10,12 @@ import { BackendService } from '../../services/backend/backend.service';
 import { PageDesign } from '../../interfaces/page.interfaces';
 
 @Component({
-    templateUrl: './capture-image.component.html',
-    styleUrls: [
-        '../attachment-manager/monitor-layout.css',
-        './capture-image.component.css'
-    ],
-    standalone: false
+  templateUrl: './capture-image.component.html',
+  styleUrls: [
+    '../attachment-manager/monitor-layout.css',
+    './capture-image.component.css'
+  ],
+  standalone: false
 })
 export class CaptureImageComponent implements OnInit, OnDestroy {
   @ViewChild('video') video!: ElementRef;
@@ -77,12 +77,12 @@ export class CaptureImageComponent implements OnInit, OnDestroy {
       .subscribe(result => {
         if (result.matches) {
           if (this.sidenav) {
-            this.sidenav.close();
+            void this.sidenav.close();
           }
           this.mobileView = true;
         } else {
           if (this.sidenav) {
-            this.sidenav.open();
+            void this.sidenav.open();
           }
           this.mobileView = false;
         }

@@ -1,6 +1,6 @@
 // eslint-disable-next-line max-classes-per-file
 import {
-  ComponentFixture, fakeAsync, TestBed, tick, waitForAsync
+  ComponentFixture, fakeAsync, TestBed, tick
 } from '@angular/core/testing';
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { MatIconTestingModule } from '@angular/material/icon/testing';
@@ -19,7 +19,6 @@ import { MainDataService, PasswordChangeService } from '../../shared/shared.modu
 import { IdRoleData, UserData } from '../superadmin.interfaces';
 
 class MockBackendService {
-  // eslint-disable-next-line class-methods-use-this
   getUsers(): Observable<UserData[]> {
     return of([{
       id: 0,
@@ -30,24 +29,20 @@ class MockBackendService {
     }]);
   }
 
-  // eslint-disable-next-line class-methods-use-this
   setSuperUserStatus(): Observable<void> {
     return of(undefined);
   }
 
-  // eslint-disable-next-line class-methods-use-this
   getWorkspacesByUser(): Observable<IdRoleData[]> {
     return of([]);
   }
 }
 
 class MockPasswordChangeService {
-  // eslint-disable-next-line class-methods-use-this
   showPasswordChangeDialog(): void { }
 }
 
 class MockService {
-  // eslint-disable-next-line class-methods-use-this
   showSnackbar(): Observable<void> {
     return of(undefined);
   }
@@ -57,8 +52,8 @@ describe('UsersComponent', () => {
   let component: UsersComponent;
   let fixture: ComponentFixture<UsersComponent>;
 
-  beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
       declarations: [UsersComponent],
       imports: [
         MatDialogModule,
@@ -83,7 +78,7 @@ describe('UsersComponent', () => {
       ]
     })
       .compileComponents();
-  }));
+  });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(UsersComponent);

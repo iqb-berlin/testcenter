@@ -1,8 +1,8 @@
 import { Directive, OnInit, ElementRef } from '@angular/core';
 
 @Directive({
-    selector: '[customAutofocus]',
-    standalone: false
+  selector: '[customAutofocus]',
+  standalone: false
 })
 export class AutofocusDirective implements OnInit {
   constructor(private elementRef: ElementRef) { }

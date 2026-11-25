@@ -15,7 +15,7 @@ export interface IQBFile {
     error: string[];
     warning: string[];
     info: string[];
-  },
+  };
   info: {
     totalSize?: number;
     testtakers?: number;
@@ -25,7 +25,7 @@ export interface IQBFile {
     playerId?: string;
     description?: string;
     label?: string;
-  }
+  };
 }
 
 export type GetFileResponseData = {

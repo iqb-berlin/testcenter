@@ -2,21 +2,16 @@ import {
   Component, OnDestroy, OnInit, ViewChild
 } from '@angular/core';
 import {
-  MatCell, MatCellDef,
-  MatColumnDef,
-  MatHeaderCell,
-  MatHeaderCellDef, MatHeaderRow, MatRow,
-  MatTable,
   MatTableDataSource
 } from '@angular/material/table';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { MatSort, Sort } from '@angular/material/sort';
+import { Sort } from '@angular/material/sort';
 import { map, take } from 'rxjs/operators';
 import { Subscription } from 'rxjs';
 import { MessageService } from '@shared/services/message.service';
 import { AppConfig } from '@shared/classes/app.config';
 import {
-  MainDataService,
+  MainDataService
 } from '../../shared/shared.module';
 import { WorkspaceDataService } from '../workspacedata.service';
 import {
@@ -30,7 +25,7 @@ import { FileService } from '../../shared/services/file.service';
 interface FileStats {
   invalid: {
     [type in IQBFileType]?: number;
-  }
+  };
   total: {
     count: number;
     invalid: number;
@@ -72,7 +67,7 @@ export class FilesComponent implements OnInit, OnDestroy {
     testtakers: 0
   };
 
-  supportedVersions: { label: string, versions: string }[] = [];
+  supportedVersions: { label: string; versions: string }[] = [];
 
   selectedRow: IQBFile | null = null;
   dependenciesOfRow: IQBFile[] = [];
@@ -84,16 +79,14 @@ export class FilesComponent implements OnInit, OnDestroy {
   @ViewChild('fileUploadQueue', { static: true }) uploadQueue!: IqbFilesUploadQueueComponent;
 
   IQBFileContext?: {
-    $implicit: IQBFile
+    $implicit: IQBFile;
   };
 
-  constructor(
-    private bs: BackendService,
-    public wds: WorkspaceDataService,
-    private mds: MainDataService,
-    private messageService: MessageService,
-    public snackBar: MatSnackBar
-  ) {
+  constructor(private bs: BackendService,
+              public wds: WorkspaceDataService,
+              private mds: MainDataService,
+              private messageService: MessageService,
+              public snackBar: MatSnackBar) {
     this.files = IQBFileTypes.reduce((acc, str) => {
       acc[str] = new MatTableDataSource<IQBFile>();
       return acc;
@@ -115,17 +108,13 @@ export class FilesComponent implements OnInit, OnDestroy {
       .filter(type => appConfig.xmlSchemaVersions[type])
       .map(type => ({
         label: this.typeLabels[type],
-        versions: FilesComponent.formatVersionRange(
-          appConfig.xmlSchemaVersions[type].min,
-          appConfig.xmlSchemaVersions[type].max
-        )
+        versions: FilesComponent.formatVersionRange(appConfig.xmlSchemaVersions[type].min,
+                                                    appConfig.xmlSchemaVersions[type].max)
       }));
     this.supportedVersions.push({
       label: 'Verona-Player',
-      versions: FilesComponent.formatVersionRange(
-        appConfig.veronaPlayerApiVersionMin,
-        appConfig.veronaPlayerApiVersionMax
-      )
+      versions: FilesComponent.formatVersionRange(appConfig.veronaPlayerApiVersionMin,
+                                                  appConfig.veronaPlayerApiVersionMax)
     });
   }
 
@@ -258,7 +247,6 @@ export class FilesComponent implements OnInit, OnDestroy {
     if (file.info.veronaModuleType === 'player' && file.info.veronaVersion) {
       const fileMayor = parseInt(file.info.veronaVersion.toString().split('.').shift() ?? '', 10);
       if (typeof file.report.error === 'undefined') {
-        // eslint-disable-next-line no-param-reassign
         file.report.error = [];
       }
       if (
@@ -267,11 +255,9 @@ export class FilesComponent implements OnInit, OnDestroy {
           fileMayor > this.mds.appConfig?.veronaPlayerApiVersionMax
         )
       ) {
-        file.report.error.push(
-          `Verona Version \`${fileMayor}\` is not supported
+        file.report.error.push(`Verona Version \`${fileMayor}\` is not supported
           (only versions between \`${this.mds.appConfig?.veronaPlayerApiVersionMin}\` 
-          and \`${this.mds.appConfig?.veronaPlayerApiVersionMax}\`)`
-        );
+          and \`${this.mds.appConfig?.veronaPlayerApiVersionMax}\`)`);
       }
     }
     return file;

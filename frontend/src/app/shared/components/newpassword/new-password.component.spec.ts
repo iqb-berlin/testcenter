@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import {
   MAT_DIALOG_DATA,
 } from '@angular/material/dialog';
@@ -14,8 +14,8 @@ describe('NewpasswordComponent', () => {
   let component: NewPasswordComponent;
   let fixture: ComponentFixture<NewPasswordComponent>;
 
-  beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
       providers: [
         { provide: BackendService, useValue: new MockService() },
         { provide: MainDataService, useValue: new MockService() },
@@ -23,7 +23,7 @@ describe('NewpasswordComponent', () => {
       ]
     })
       .compileComponents();
-  }));
+  });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(NewPasswordComponent);

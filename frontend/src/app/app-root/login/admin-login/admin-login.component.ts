@@ -94,7 +94,7 @@ export class AdminLoginComponent implements OnInit, OnDestroy {
     return {
       next: authData => {
         this.mainDataService.setAuthData(authData);
-        this.router.navigate(['/r/starter']);
+        void this.router.navigate(['/r/starter']);
       },
       error: error => {
         this.busy = false;

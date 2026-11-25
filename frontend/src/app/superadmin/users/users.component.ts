@@ -28,15 +28,11 @@ export class UsersComponent implements OnInit {
 
   @ViewChild(MatSort) sort: MatSort = new MatSort();
 
-  constructor(
-    private bs: BackendService,
-    private newuserDialog: MatDialog,
-    private confirmDialog: MatDialog,
-    private superadminPasswordDialog: MatDialog,
-    private messsageDialog: MatDialog,
-    private messageService: MessageService,
-    private newpasswordService: PasswordChangeService
-  ) {
+  constructor(private bs: BackendService,
+              private newuserDialog: MatDialog,
+              private superadminPasswordDialog: MatDialog,
+              private messageService: MessageService,
+              private newpasswordService: PasswordChangeService) {
     this.tableSelectionRow.changed.subscribe(
       r => {
         if (r.added.length > 0) {
@@ -77,7 +73,7 @@ export class UsersComponent implements OnInit {
       return;
     }
 
-    const userObject = <UserData>selectedRows[0];
+    const userObject = selectedRows[0];
     const passwdDialogRef = this.superadminPasswordDialog.open(ConfirmWithPasswordComponent, {
       width: '600px',
       data: { title: `Superadmin-Status ${userObject.isSuperadmin ? 'entziehen' : 'setzen'}` }

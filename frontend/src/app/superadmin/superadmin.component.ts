@@ -3,9 +3,9 @@ import { MainDataService } from '../shared/shared.module';
 import { HeaderService } from '@shared/services/header.service';
 
 @Component({
-    templateUrl: './superadmin.component.html',
-    styleUrls: ['./superadmin.component.css'],
-    standalone: false
+  templateUrl: './superadmin.component.html',
+  styleUrls: ['./superadmin.component.css'],
+  standalone: false
 })
 export class SuperadminComponent implements OnInit {
   constructor(public mds: MainDataService, private headerService: HeaderService) { }
@@ -16,7 +16,7 @@ export class SuperadminComponent implements OnInit {
     { path: 'settings', label: 'Einstellungen' }
   ];
 
-  ngOnInit():void {
+  ngOnInit(): void {
     this.mds.appSubTitle$.next('Systemverwaltung');
     this.headerService.title = 'Systemverwaltung';
     this.headerService.showAccountPanel = true;

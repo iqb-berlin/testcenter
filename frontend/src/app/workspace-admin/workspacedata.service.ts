@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { BehaviorSubject } from 'rxjs';
 import { BackendService } from './backend.service';
@@ -21,12 +20,9 @@ export class WorkspaceDataService {
     return this.workspaceId$.getValue();
   }
 
-  constructor(
-    private backendService: BackendService,
-    private deleteConfirmDialog: MatDialog,
-    private messageService: MessageService,
-    public snackBar: MatSnackBar
-  ) {
+  constructor(private backendService: BackendService,
+              private messageService: MessageService,
+              public snackBar: MatSnackBar) {
     this.workspaceId$ = new BehaviorSubject<number>(-1);
   }
 

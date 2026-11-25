@@ -2,7 +2,6 @@ import {
   Component, OnDestroy, OnInit, ViewChild
 } from '@angular/core';
 import { SelectionModel } from '@angular/cdk/collections';
-import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
@@ -13,9 +12,9 @@ import { ReportType, ResultData } from '../workspace.interfaces';
 import { MessageService } from '@shared/services/message.service';
 
 @Component({
-    templateUrl: './results.component.html',
-    styleUrls: ['./results.component.css'],
-    standalone: false
+  templateUrl: './results.component.html',
+  styleUrls: ['./results.component.css'],
+  standalone: false
 })
 export class ResultsComponent implements OnInit, OnDestroy {
   displayedColumns: string[] = [
@@ -29,13 +28,10 @@ export class ResultsComponent implements OnInit, OnDestroy {
 
   private wsIdSubscription: Subscription | null = null;
 
-  constructor(
-    private backendService: BackendService,
-    private deleteConfirmDialog: MatDialog,
-    public workspaceDataService: WorkspaceDataService,
-    private messageService: MessageService,
-    public snackBar: MatSnackBar
-  ) { }
+  constructor(private backendService: BackendService,
+              public workspaceDataService: WorkspaceDataService,
+              private messageService: MessageService,
+              public snackBar: MatSnackBar) { }
 
   ngOnInit(): void {
     this.wsIdSubscription = this.workspaceDataService.workspaceId$

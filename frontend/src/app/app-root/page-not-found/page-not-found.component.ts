@@ -23,9 +23,7 @@ import { Router, RouterState, RouterStateSnapshot } from '@angular/router';
 export class PageNotFoundComponent {
   url = '';
 
-  constructor(
-    private router: Router
-  ) {
+  constructor(private router: Router) {
     const state: RouterState = router.routerState;
     const snapshot: RouterStateSnapshot = state.snapshot;
     this.url = snapshot.url;

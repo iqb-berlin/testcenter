@@ -1,5 +1,5 @@
 // eslint-disable max-classes-per-file
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatDialogModule } from '@angular/material/dialog';
@@ -68,9 +68,9 @@ describe('FilesComponent', () => {
   let fixture: ComponentFixture<FilesComponent>;
   let backendService: MockBackendService;
 
-  beforeEach(waitForAsync(() => {
+  beforeEach(async () => {
     backendService = new MockBackendService();
-    TestBed.configureTestingModule({
+    await TestBed.configureTestingModule({
       declarations: [
         FilesComponent,
         IqbFilesUploadQueueComponent,
@@ -102,7 +102,7 @@ describe('FilesComponent', () => {
       ]
     })
       .compileComponents();
-  }));
+  });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(FilesComponent);

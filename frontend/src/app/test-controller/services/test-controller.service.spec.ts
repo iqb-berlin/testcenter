@@ -70,9 +70,9 @@ class MockMessageService {
 }
 
 describe('TestControllerService', () => {
-  beforeEach(() => {
+  beforeEach(async () => {
     backend = new MockBackendService();
-    TestBed.configureTestingModule({
+    await TestBed.configureTestingModule({
     imports: [RouterTestingModule,
         MatDialogModule],
     providers: [

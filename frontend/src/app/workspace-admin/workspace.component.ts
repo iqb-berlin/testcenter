@@ -6,9 +6,9 @@ import { WorkspaceDataService } from './workspacedata.service';
 import { HeaderService } from '@shared/services/header.service';
 
 @Component({
-    templateUrl: './workspace.component.html',
-    styleUrls: ['./workspace.component.css'],
-    standalone: false
+  templateUrl: './workspace.component.html',
+  styleUrls: ['./workspace.component.css'],
+  standalone: false
 })
 export class WorkspaceComponent implements OnInit, OnDestroy {
   private routingSubscription: Subscription | null = null;

@@ -12,7 +12,6 @@ import {
 } from '@shared/shared.module';
 import { BackendService } from '@app/backend.service';
 import { AccessObject, AuthAccessType } from '@app/app.interfaces';
-import { MatDialog } from '@angular/material/dialog';
 import { FileService } from '@shared/services/file.service';
 import { MessageService } from '@shared/services/message.service';
 import { HeaderService } from '@shared/services/header.service';
@@ -67,8 +66,7 @@ export class StarterComponent implements OnInit, AfterViewInit, OnDestroy {
 
   constructor(private router: Router, private bs: BackendService, public cts: CustomtextService,
               public mds: MainDataService, public ds: SysCheckDataService,
-              public pcs: PasswordChangeService, private dialog: MatDialog,
-              public assetService: AssetService,
+              public pcs: PasswordChangeService, public assetService: AssetService,
               private headerService: HeaderService, private ms: MessageService) { }
 
   ngOnInit(): void {
@@ -158,7 +156,7 @@ export class StarterComponent implements OnInit, AfterViewInit, OnDestroy {
       } else if ('test' in test) {
         this.reloadTestList();
       } else {
-        this.router.navigate(['/t', testId]);
+        void this.router.navigate(['/t', testId]);
       }
     });
   }
@@ -177,17 +175,17 @@ export class StarterComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   buttonGotoStudyMonitor(accessObject: AccessObject): void {
-    this.router.navigateByUrl(`/sm/${accessObject.id.toString()}`);
+    void this.router.navigateByUrl(`/sm/${accessObject.id.toString()}`);
   }
 
   buttonGotoMonitor(accessObject: AccessObject): void {
     let url = `/gm/${accessObject.id.toString()}`;
     if (accessObject.flags.profile) url += `/${accessObject.flags.profile}`;
-    this.router.navigateByUrl(url);
+    void this.router.navigateByUrl(url);
   }
 
   buttonGotoAttachmentManager(accessObject: AccessObject) {
-    this.router.navigateByUrl(`/am/${accessObject.id.toString()}`);
+    void this.router.navigateByUrl(`/am/${accessObject.id.toString()}`);
   }
 
   private reloadTestList(): void {
@@ -201,7 +199,7 @@ export class StarterComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   buttonGotoWorkspaceAdmin(ws: AccessObject): void {
-    this.router.navigateByUrl(`/admin/${ws.id.toString()}/files`);
+    void this.router.navigateByUrl(`/admin/${ws.id.toString()}/files`);
   }
 
   downloadReview() {

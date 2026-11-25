@@ -1,6 +1,6 @@
 /* eslint-disable class-methods-use-this */
 // eslint-disable-next-line max-classes-per-file
-import { TestBed, waitForAsync } from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
 import { Observable, of } from 'rxjs';
 import { Pipe } from '@angular/core';
 import {
@@ -56,8 +56,8 @@ class MockCustomtextPipe {
 describe('TestSessionManager', () => {
   let service: TestSessionManager;
 
-  beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
       declarations: [],
       imports: [],
       providers: [
@@ -70,7 +70,7 @@ describe('TestSessionManager', () => {
       .compileComponents();
     service = TestBed.inject(TestSessionManager);
     service.connect('unit-test-group-name');
-  }));
+  });
 
   it('should create', () => {
     expect(service).toBeTruthy();

@@ -1,6 +1,6 @@
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatIconTestingModule } from '@angular/material/icon/testing';
 import { TestSessionComponent } from './test-session.component';
@@ -13,13 +13,13 @@ describe('TestViewComponent', () => {
   let component: TestSessionComponent;
   let fixture: ComponentFixture<TestSessionComponent>;
 
-  beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
       declarations: [TestSessionComponent, PositionPipe],
       imports: [MatIconModule, MatTooltipModule, MatCheckboxModule, MatIconTestingModule, TemplateContextDirective]
     })
       .compileComponents();
-  }));
+  });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(TestSessionComponent);

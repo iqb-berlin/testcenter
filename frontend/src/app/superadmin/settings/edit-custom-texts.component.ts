@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { CustomtextService, MainDataService, customTextDefaults } from '../../shared/shared.module';
 import { BackendService } from '../backend.service';
 import { EditCustomTextComponent } from './edit-custom-text.component';
@@ -16,15 +16,15 @@ import { KeyValuePipe } from '@angular/common';
 import { MessageService } from '@shared/services/message.service';
 
 export interface CustomTextData {
-  key: string,
-  label: string,
-  defaultValue: string,
-  value: string
+  key: string;
+  label: string;
+  defaultValue: string;
+  value: string;
 }
 
 export interface CustomTextDataGroup {
-  label: string,
-  texts: CustomTextData[]
+  label: string;
+  texts: CustomTextData[];
 }
 
 @Component({
@@ -69,38 +69,33 @@ export interface CustomTextDataGroup {
 })
 
 export class EditCustomTextsComponent {
-  customTextGroups: {
-    [key in 'booklet' | 'login' | 'syscheck' | 'gm']: CustomTextDataGroup
-  } = {
-      booklet: {
-        label: 'Testheft',
-        texts: []
-      },
-      login: {
-        label: 'Login',
-        texts: []
-      },
-      syscheck: {
-        label: 'Systemcheck',
-        texts: []
-      },
-      gm: {
-        label: 'Gruppenmonitor',
-        texts: []
-      }
-    };
+  customTextGroups: { [key in 'booklet' | 'login' | 'syscheck' | 'gm']: CustomTextDataGroup } = {
+    booklet: {
+      label: 'Testheft',
+      texts: []
+    },
+    login: {
+      label: 'Login',
+      texts: []
+    },
+    syscheck: {
+      label: 'Systemcheck',
+      texts: []
+    },
+    gm: {
+      label: 'Gruppenmonitor',
+      texts: []
+    }
+  };
 
   customTextsForm: FormGroup;
   changedData: KeyValuePairs = {};
   dataChanged = false;
 
-  constructor(
-    private formBuilder: FormBuilder,
-    private mainDataService: MainDataService,
-    private backendService: BackendService,
-    private customtextService: CustomtextService,
-    private messageService: MessageService
-  ) {
+  constructor(private mainDataService: MainDataService,
+              private backendService: BackendService,
+              private customtextService: CustomtextService,
+              private messageService: MessageService) {
     this.customTextsForm = new FormGroup({});
 
     Object.keys(customTextDefaults)
@@ -136,7 +131,7 @@ export class EditCustomTextsComponent {
     this.dataChanged = Object.keys(this.changedData).length > 0;
   }
 
-  saveData():void {
+  saveData(): void {
     this.backendService.setCustomTexts(this.changedData)
       .subscribe(() => {
         if (!this.mainDataService.appConfig) {
