@@ -7,10 +7,10 @@ Releases are cut from `master`. The pipeline runs on GitLab, builds the images a
 (always without the suffix of a pre-release):
 
 - moves `scripts/database/next.sql` to `scripts/database/patches.d/X.Y.Z.sql`
-- raises the version `scripts/database/full.sql` stamps into `meta.dbSchemaVersion` to `X.Y.Z`: `full.sql` already
-  contains the change, and a lower stamp would make a fresh installation apply it a second time
-- raises `DBSchema::REQUIRED_VERSION` to `X.Y.Z`
 - renames `scripts/migration/next.sh` to `X.Y.Z.sh`
+- raises the version `scripts/database/full.sql` stamps into `meta.dbSchemaVersion` to `X.Y.Z`
+- raises `DBSchema::REQUIRED_VERSION` to `X.Y.Z`
+- Pre-release: only touches `package.json` and `package-lock.json`
 
 `make release-check` lists every file whose version number does not match the one in `package.json`.
 
@@ -18,7 +18,7 @@ Releases are cut from `master`. The pipeline runs on GitLab, builds the images a
 
 - `make create-interfaces` and commit the result (usually a refreshed browser list in `definitions/browsers.json`).
 - Make sure `docs/CHANGELOG.md` is up to date.
-- For a new minor version, remove versions whose docs are no longer offered from `docs/site/public/versions.json`.
+- For a new minor version, remove versions whose docs are no longer offered from `docs/site/public/versions.json`. Policy on whats documented TBD
 
 ## 2. Release
 
