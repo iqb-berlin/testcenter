@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Testtakers xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                  xsi:noNamespaceSchemaLocation="https://w3id.org/iqb/spec/testcenter-testtaker-xml/18.0">
+                  xsi:noNamespaceSchemaLocation="https://w3id.org/iqb/spec/testcenter-testtaker-xml/18.3">
 
   <Metadata>
     <Description>This file contains some logins for testing and works a sample for developers.</Description>
@@ -23,6 +23,7 @@
         view="small"
         filterLocked="yes"
         filterPending="yes"
+        hiddenControls="goto unlock finish"
       >
         <Filter label="Reduced Booklet" type="equal" field="bookletLabel" value="Reduced Booklet" />
       </Profile>

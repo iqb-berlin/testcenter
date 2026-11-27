@@ -109,6 +109,19 @@ export const isColumnOption = (v: string): v is ColumnOption => ['show', 'hide']
 export const isViewOption = (v: string): v is ViewOption => ['full', 'medium', 'small'].includes(v);
 export const isYesNoOption = (v: string): v is YesNoOption => ['yes', 'no'].includes(v);
 
+// analogous to GroupMonitorProfileControl in Testtakers.xsd
+export type GroupMonitorControl = 'resume' | 'pause' | 'goto' | 'unlock' | 'finish';
+export type GroupMonitorControlVisibility = { [control in GroupMonitorControl]: boolean };
+
+export const groupMonitorControlVisibility =
+  (isVisible: (control: GroupMonitorControl) => boolean): GroupMonitorControlVisibility => ({
+    resume: isVisible('resume'),
+    pause: isVisible('pause'),
+    goto: isVisible('goto'),
+    unlock: isVisible('unlock'),
+    finish: isVisible('finish')
+  });
+
 export interface TestViewDisplayOptions extends MonitorProfileTestViewDisplayOptions {
   highlightSpecies: boolean;
   manualChecking: boolean;

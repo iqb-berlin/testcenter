@@ -308,6 +308,15 @@
     <xs:attribute name="filterPending" type="GroupMonitorProfileFilterSetting" />
     <xs:attribute name="filterLocked" type="GroupMonitorProfileFilterSetting" />
     <xs:attribute name="autoselectNextBlock" type="GroupMonitorProfileFilterSetting" />
+    <xs:attribute name="hiddenControls" type="GroupMonitorProfileControlList">
+      <xs:annotation>
+        <xs:documentation>
+          Buttons of the test control that the Group Monitor does not show, separated by spaces,
+          e.g. `goto unlock finish`. Without this attribute all buttons are shown.
+          Hiding a button prevents accidental use, it does not restrict what the login is allowed to do.
+        </xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
   </xs:complexType>
 
   <xs:complexType name="FilterType">
@@ -370,6 +379,20 @@
       <xs:enumeration value="medium"/>
       <xs:enumeration value="small"/>
     </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="GroupMonitorProfileControl">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="resume"/>
+      <xs:enumeration value="pause"/>
+      <xs:enumeration value="goto"/>
+      <xs:enumeration value="unlock"/>
+      <xs:enumeration value="finish"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="GroupMonitorProfileControlList">
+    <xs:list itemType="GroupMonitorProfileControl"/>
   </xs:simpleType>
 
   <xs:simpleType name="GroupMonitorBookletVisibilityType">
