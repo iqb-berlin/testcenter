@@ -37,6 +37,7 @@ import {
 import { TemplateContextDirective } from '../shared/directives/template-context.directive';
 import { TimeLeftPipe } from './test-session/timeleft.pipe';
 import { PositionPipe } from './test-session/position.pipe';
+import { TestletvisiblePipe } from './test-session/testletvisible.pipe';
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { MatIconTestingModule } from '@angular/material/icon/testing';
 
@@ -112,7 +113,8 @@ describe('GroupMonitorComponent', () => {
         GroupMonitorComponent,
         TestSessionComponent,
         TimeLeftPipe,
-        PositionPipe
+        PositionPipe,
+        TestletvisiblePipe
       ],
       imports: [
         FormsModule,

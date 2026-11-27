@@ -171,7 +171,7 @@
     </span>
 
     <span
-      *ngIf="isTestlet(testletOrUnit)"
+      *ngIf="isTestlet(testletOrUnit) && (testSession | testletvisible: testletOrUnit)"
       class="testlet"
       matTooltip="{{testletOrUnit.label}}"
       [class]="{
