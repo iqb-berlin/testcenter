@@ -28,7 +28,8 @@ import {
   isBooklet,
   TestSessionFilter,
   TestSessionFilterListEntry,
-  testSessionFilterListEntrySources, Profile, isColumnOption, isViewOption, isYesNoOption
+  testSessionFilterListEntrySources, Profile, isColumnOption, isViewOption, isYesNoOption,
+  groupMonitorControlVisibility
 } from './group-monitor.interfaces';
 import { TestSessionManager } from './test-session-manager/test-session-manager.service';
 import { BookletUtil } from './booklet/booklet.util';
@@ -69,6 +70,8 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
     autoselectNextBlock: true
   };
 
+  visibleControls = groupMonitorControlVisibility(() => false);
+
   isScrollable = false;
   isClosing = false;
   checkedSessionCount = 0;
@@ -103,6 +106,8 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
       this.route.params.subscribe(params => {
         this.groupLabel = this.mds.getAccessObject('testGroupMonitor', params['group-name']).label;
         const profileId = params['profile-id'];
+        // a profile can hide controls, so with a profile they stay hidden until it is loaded
+        this.visibleControls = groupMonitorControlVisibility(() => !profileId);
         if (profileId) {
           this.bs.getProfile(profileId).subscribe(profile => this.applyProfile(profile));
         }
@@ -431,6 +436,9 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
       });
 
     this.displayOptions.bookletStatesColumns = (p.settings.bookletStatesColumns || '').split(/[\W,]+/);
+
+    const hiddenControls = (p.settings.hiddenControls || '').split(/\s+/);
+    this.visibleControls = groupMonitorControlVisibility(control => !hiddenControls.includes(control));
 
     Object.entries(p.filtersEnabled || [])
       .forEach(([f, onOff]) => {

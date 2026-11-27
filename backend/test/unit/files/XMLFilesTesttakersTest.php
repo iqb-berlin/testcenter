@@ -436,7 +436,8 @@ END;
               'groupColumn' => 'show',
               'bookletColumn' => 'show',
               'bookletStatesColumns' => 'level bonus',
-              'autoselectNextBlock' => 'no'
+              'autoselectNextBlock' => 'no',
+              'hiddenControls' => ''
             ],
             'filters' => [],
             'filtersEnabled' => [
@@ -454,7 +455,8 @@ END;
               'groupColumn' => 'hide',
               'bookletColumn' => 'hide',
               'bookletStatesColumns' => '',
-              'autoselectNextBlock' => 'yes'
+              'autoselectNextBlock' => 'yes',
+              'hiddenControls' => 'goto unlock finish'
             ],
             'filters' => [
               [

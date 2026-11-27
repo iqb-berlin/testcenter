@@ -73,6 +73,18 @@ describe('Group-Monitor User', () => {
     cy.contains('testtaker-a');
   });
 
+  it('hides the controls configured in the small profile', () => {
+    clickCardButton('gm-card-1');
+    cy.get('[data-cy="GM_forward_button"]');
+    cy.get('[data-cy="GM_pause_button"]');
+    cy.get('[data-cy="GM_jump_button"]')
+      .should('not.exist');
+    cy.get('[data-cy="GM_lock_button"]')
+      .should('not.exist');
+    cy.get('[data-cy="GM_end_button"]')
+      .should('not.exist');
+  });
+
   it('set the view that configured in the full profile', () => {
     clickCardButton('gm-card-0');
     cy.get('[data-cy="GM_setting_button"]')

@@ -443,7 +443,8 @@ class XMLFileTesttakers extends XMLFile {
           'groupColumn' => ((string) $profileElem['groupColumn']) ?? "hide",
           'bookletColumn' => ((string) $profileElem['bookletColumn']) ?? "show",
           'bookletStatesColumns' => ((string) $profileElem['bookletStatesColumns']) ?? '',
-          'autoselectNextBlock' => ((string) $profileElem['autoselectNextBlock'] === 'no') ? 'no' : 'yes'
+          'autoselectNextBlock' => ((string) $profileElem['autoselectNextBlock'] === 'no') ? 'no' : 'yes',
+          'hiddenControls' => (string) $profileElem['hiddenControls']
         ],
         'filters' => array_map(
           static fn (SimpleXMLElement $filterElem): array => [

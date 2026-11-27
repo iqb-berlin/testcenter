@@ -290,6 +290,10 @@
           "description": "Steuert die automatische Auswahl des nächsten Blocks. Im Detail: Ist yes als Wert hinterlegt, wird nach jedem Sprung zu einem Block automatisch der nächste Block markiert. Ein erneuter Klick auf den Schalter “Springe zu” veranlasst dann einen Sprung zu dem automatisch markierten Block. Der Wert no verhindert diese automatische Markierung des nächsten Blocks. Das kann dann Sinn machen, wenn die Gefahr verringert werden soll, dass aus Versehen (Doppelklick auf “Springe zu”) in einen Block gesprungen wird, der noch nicht an der Reihe ist.",
           "enum": ["yes", "no"]
         },
+        "hiddenControls": {
+          "type": "string",
+          "description": "Durch Leerzeichen getrennte Liste der Knöpfe der Test-Steuerung, die der Gruppenmonitor nicht anzeigt, z. B. `goto unlock finish`. Mögliche Werte: `resume` (weiter), `pause` (pause), `goto` (Springe zu), `unlock` (Test entsperren), `finish` (Testung beenden). Ohne Angabe sind alle Knöpfe sichtbar."
+        },
         "filters": {
           "type": "array",
           "items": {
